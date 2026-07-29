@@ -2,7 +2,8 @@ name: Update PolyBuzz statistics
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "0 14 * * *"
+    timezone: "Europe/Amsterdam"
 permissions:
   contents: write
 jobs:
