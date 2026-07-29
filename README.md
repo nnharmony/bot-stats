@@ -1,3 +1,3 @@
-# Bot tracker
+# bot tracker
 
-Automatische tracker voor statistieken.
+daily update.
