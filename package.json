@@ -1,0 +1,8 @@
+{
+  "name": "polybuzz-tracker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "track": "node tracker.mjs"
+  }
+}
