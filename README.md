@@ -1,3 +1,3 @@
 # Bot tracker
 
-Automatische tracker voor exacte PolyBuzz-statistieken.
+Automatische tracker voor statistieken.
