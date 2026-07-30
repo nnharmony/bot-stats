@@ -1,3 +1,3 @@
-# bot tracker
+# Stats
 
-daily update.
+Daily character statistics tracker.

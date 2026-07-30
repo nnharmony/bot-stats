@@ -1,5 +1,5 @@
 {
-  "name": "polybuzz-tracker",
+  "name": "bot-stats",
   "private": true,
   "type": "module",
   "scripts": {
