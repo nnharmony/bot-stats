@@ -1,0 +1,59 @@
+name: Update characters
+
+on:
+  workflow_dispatch:
+  schedule:
+    # GitHub cron uses UTC. Running at both possibilities plus the local-time
+    # check below keeps the actual update at about 14:00 in Amsterdam year-round.
+    - cron: "7 12 * * *"
+    - cron: "7 13 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-character-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Amsterdam time
+        id: local_time
+        shell: bash
+        run: |
+          HOUR=$(TZ=Europe/Amsterdam date +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$HOUR" = "14" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out repository
+        if: steps.local_time.outputs.run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        if: steps.local_time.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Collect statistics
+        if: steps.local_time.outputs.run == 'true'
+        run: npm run track
+
+      - name: Commit updated history
+        if: steps.local_time.outputs.run == 'true'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/history.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update character data"
+            git push
+          fi
