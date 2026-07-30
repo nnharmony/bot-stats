@@ -1,865 +1,253 @@
 {
-  "generated_at": "2026-07-30T17:11:35.527Z",
+  "generated_at": "2026-07-30T14:50:42+02:00",
   "snapshots": [
     {
-      "timestamp": "2026-07-29T14:35:01.000Z",
+      "timestamp": "2026-07-30T14:50:42+02:00",
       "bots": [
         {
-          "name": "Dimitri",
-          "url": "https://www.polybuzz.ai/character/profile/dimitri-4kqes?pre_source=1",
-          "messages": 7454,
-          "collectors": 1
-        },
-        {
-          "name": "Mafia — the Haddad Family",
-          "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
-          "messages": 2573,
-          "collectors": 2
-        },
-        {
-          "name": "Vadim",
-          "url": "https://www.polybuzz.ai/character/profile/vadim-4ADuq?pre_source=1",
-          "messages": 546722,
-          "collectors": 66
-        },
-        {
-          "name": "Idris Kassab - mafia enemy",
-          "url": "https://www.polybuzz.ai/character/profile/idris-kassab-mafia-enemy-Xt443?pre_source=1",
-          "messages": 28192,
-          "collectors": 6
-        },
-        {
+          "cid": "XQXYf",
           "name": "David",
           "url": "https://www.polybuzz.ai/character/profile/david-XQXYf?pre_source=1",
           "messages": 332,
           "collectors": 1
         },
         {
+          "cid": "XQ5RC",
           "name": "Jona",
           "url": "https://www.polybuzz.ai/character/profile/jona-XQ5RC?pre_source=1",
           "messages": 1249,
           "collectors": 3
         },
         {
+          "cid": "XRdDd",
           "name": "Your dad Rafik",
           "url": "https://www.polybuzz.ai/character/profile/your-dad-rafik-XRdDd?pre_source=1",
           "messages": 3656,
           "collectors": 1
         },
         {
-          "name": "Soren",
-          "url": "https://www.polybuzz.ai/character/profile/soren-XSNEh?pre_source=1",
-          "messages": 76319,
-          "collectors": 33
-        },
-        {
-          "name": "Boxing brothers",
-          "url": "https://www.polybuzz.ai/character/profile/boxing-brothers-XA5He?pre_source=1",
-          "messages": 222,
-          "collectors": 2
-        },
-        {
-          "name": "Jonathan",
-          "url": "https://www.polybuzz.ai/character/profile/jonathan-XAFVe?pre_source=1",
-          "messages": 389,
-          "collectors": 4
-        },
-        {
-          "name": "The obsession",
-          "url": "https://www.polybuzz.ai/character/profile/the-obsession-YRQhH?pre_source=1",
-          "messages": 1656,
-          "collectors": 2
-        },
-        {
-          "name": "Kieran",
-          "url": "https://www.polybuzz.ai/character/profile/kieran-YZFnB?pre_source=1",
-          "messages": 3865,
-          "collectors": 6
-        },
-        {
-          "name": "Xander",
-          "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
-          "messages": 249041,
-          "collectors": 97
-        },
-        {
-          "name": "Intruder",
-          "url": "https://www.polybuzz.ai/character/profile/intruder-XKZNk?pre_source=1",
-          "messages": 2349,
-          "collectors": 3
-        },
-        {
-          "name": "Train Compartment",
-          "url": "https://www.polybuzz.ai/character/profile/train-compartment-YYZd8?pre_source=1",
-          "messages": 1642,
-          "collectors": 1
-        },
-        {
-          "name": "Your Russian bodyguard",
-          "url": "https://www.polybuzz.ai/character/profile/your-russian-bodyguard-YSMu5?pre_source=1",
-          "messages": 7831,
-          "collectors": 4
-        },
-        {
-          "name": "Military unit",
-          "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
-          "messages": 12395,
-          "collectors": 4
-        },
-        {
-          "name": "Kade",
-          "url": "https://www.polybuzz.ai/character/profile/kade-YeCb8?pre_source=1",
-          "messages": 274571,
-          "collectors": 53
-        },
-        {
-          "name": "Military boyfriend",
-          "url": "https://www.polybuzz.ai/character/profile/military-boyfriend-4D6Ww?pre_source=1",
-          "messages": 434678,
-          "collectors": 102
-        },
-        {
-          "name": "Jarek Dragan",
-          "url": "https://www.polybuzz.ai/character/profile/jarek-dragan-XUEfB?pre_source=1",
-          "messages": 7366,
-          "collectors": 5
-        },
-        {
-          "name": "Armin - loose ends",
-          "url": "https://www.polybuzz.ai/character/profile/armin-loose-ends-XUUmn?pre_source=1",
-          "messages": 100377,
-          "collectors": 23
-        },
-        {
-          "name": "Toby - anger issues",
-          "url": "https://www.polybuzz.ai/character/profile/toby-anger-issues-XSahn?pre_source=1",
-          "messages": 3258,
-          "collectors": 2
-        },
-        {
-          "name": "Psych ward",
-          "url": "https://www.polybuzz.ai/character/profile/psych-ward-XS5br?pre_source=1",
-          "messages": 6805,
-          "collectors": 3
-        },
-        {
-          "name": "Matyas",
-          "url": "https://www.polybuzz.ai/character/profile/matyas-4DNE3?pre_source=1",
-          "messages": 378,
-          "collectors": 1
-        },
-        {
-          "name": "Ilyas",
-          "url": "https://www.polybuzz.ai/character/profile/ilyas-442bT?pre_source=1",
-          "messages": 2465,
-          "collectors": 2
-        },
-        {
-          "name": "Silas Moreau",
-          "url": "https://www.polybuzz.ai/character/profile/silas-moreau-XYqtB?pre_source=1",
-          "messages": 5837,
-          "collectors": 6
-        },
-        {
-          "name": "Ezra",
-          "url": "https://www.polybuzz.ai/character/profile/ezra-4mBT9?pre_source=1",
-          "messages": 821,
-          "collectors": 1
-        },
-        {
-          "name": "Jung Jae",
-          "url": "https://www.polybuzz.ai/character/profile/jung-jae-4EGsN?pre_source=1",
-          "messages": 3346,
-          "collectors": 5
-        },
-        {
-          "name": "Troy",
-          "url": "https://www.polybuzz.ai/character/profile/troy-4qHqN?pre_source=1",
-          "messages": 5046,
-          "collectors": 4
-        },
-        {
-          "name": "Yuri",
-          "url": "https://www.polybuzz.ai/character/profile/yuri-YUwTr?pre_source=1",
-          "messages": 2360,
-          "collectors": 3
-        },
-        {
-          "name": "Karim",
-          "url": "https://www.polybuzz.ai/character/profile/karim-4Jq6k?pre_source=1",
-          "messages": 981,
-          "collectors": 1
-        },
-        {
-          "name": "Byron",
-          "url": "https://www.polybuzz.ai/character/profile/byron-48TWk?pre_source=1",
-          "messages": 5032,
-          "collectors": 2
-        },
-        {
-          "name": "Tyger",
-          "url": "https://www.polybuzz.ai/character/profile/tyger-XVWHL?pre_source=1",
-          "messages": 1305,
-          "collectors": 2
-        },
-        {
-          "name": "Mika",
-          "url": "https://www.polybuzz.ai/character/profile/mika-aTDfY?pre_source=1",
-          "messages": 5151,
-          "collectors": 5
-        },
-        {
-          "name": "Ren",
-          "url": "https://www.polybuzz.ai/character/profile/ren-YVLJv?pre_source=1",
-          "messages": 1640383,
-          "collectors": 205
-        }
-      ]
-    },
-    {
-      "timestamp": "2026-07-29T15:54:10.009Z",
-      "bots": [
-        {
-          "name": "Dimitri",
-          "url": "https://www.polybuzz.ai/character/profile/dimitri-4kqes?pre_source=1",
-          "messages": 7454,
-          "collectors": 1
-        },
-        {
-          "name": "Mafia — the Haddad Family",
-          "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
-          "messages": 2573,
-          "collectors": 2
-        },
-        {
-          "name": "Vadim",
-          "url": "https://www.polybuzz.ai/character/profile/vadim-4ADuq?pre_source=1",
-          "messages": 546722,
-          "collectors": 66
-        },
-        {
-          "name": "Idris Kassab - mafia enemy",
-          "url": "https://www.polybuzz.ai/character/profile/idris-kassab-mafia-enemy-Xt443?pre_source=1",
-          "messages": 28192,
-          "collectors": 6
-        },
-        {
-          "name": "David",
-          "url": "https://www.polybuzz.ai/character/profile/david-XQXYf?pre_source=1",
-          "messages": null,
-          "collectors": null,
-          "error": "No interaction statistics found"
-        },
-        {
-          "name": "Jona",
-          "url": "https://www.polybuzz.ai/character/profile/jona-XQ5RC?pre_source=1",
-          "messages": 1249,
-          "collectors": 3
-        },
-        {
-          "name": "Your dad Rafik",
-          "url": "https://www.polybuzz.ai/character/profile/your-dad-rafik-XRdDd?pre_source=1",
-          "messages": 3656,
-          "collectors": 1
-        },
-        {
-          "name": "Soren",
-          "url": "https://www.polybuzz.ai/character/profile/soren-XSNEh?pre_source=1",
-          "messages": 76319,
-          "collectors": 33
-        },
-        {
-          "name": "Boxing brothers",
-          "url": "https://www.polybuzz.ai/character/profile/boxing-brothers-XA5He?pre_source=1",
-          "messages": 222,
-          "collectors": 2
-        },
-        {
-          "name": "Jonathan",
-          "url": "https://www.polybuzz.ai/character/profile/jonathan-XAFVe?pre_source=1",
-          "messages": 389,
-          "collectors": 4
-        },
-        {
-          "name": "The obsession",
-          "url": "https://www.polybuzz.ai/character/profile/the-obsession-YRQhH?pre_source=1",
-          "messages": 1656,
-          "collectors": 2
-        },
-        {
-          "name": "Kieran",
-          "url": "https://www.polybuzz.ai/character/profile/kieran-YZFnB?pre_source=1",
-          "messages": 3865,
-          "collectors": 6
-        },
-        {
-          "name": "Xander",
-          "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
-          "messages": 249041,
-          "collectors": 97
-        },
-        {
-          "name": "Intruder",
-          "url": "https://www.polybuzz.ai/character/profile/intruder-XKZNk?pre_source=1",
-          "messages": 2349,
-          "collectors": 3
-        },
-        {
-          "name": "Train Compartment",
-          "url": "https://www.polybuzz.ai/character/profile/train-compartment-YYZd8?pre_source=1",
-          "messages": 1642,
-          "collectors": 1
-        },
-        {
-          "name": "Your Russian bodyguard",
-          "url": "https://www.polybuzz.ai/character/profile/your-russian-bodyguard-YSMu5?pre_source=1",
-          "messages": 7831,
-          "collectors": 4
-        },
-        {
-          "name": "Military unit",
-          "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
-          "messages": 12395,
-          "collectors": 4
-        },
-        {
-          "name": "Kade",
-          "url": "https://www.polybuzz.ai/character/profile/kade-YeCb8?pre_source=1",
-          "messages": 274571,
-          "collectors": 53
-        },
-        {
-          "name": "Military boyfriend",
-          "url": "https://www.polybuzz.ai/character/profile/military-boyfriend-4D6Ww?pre_source=1",
-          "messages": 434678,
-          "collectors": 102
-        },
-        {
-          "name": "Jarek Dragan",
-          "url": "https://www.polybuzz.ai/character/profile/jarek-dragan-XUEfB?pre_source=1",
-          "messages": 7366,
-          "collectors": 5
-        },
-        {
-          "name": "Armin - loose ends",
-          "url": "https://www.polybuzz.ai/character/profile/armin-loose-ends-XUUmn?pre_source=1",
-          "messages": 100377,
-          "collectors": 23
-        },
-        {
-          "name": "Toby - anger issues",
-          "url": "https://www.polybuzz.ai/character/profile/toby-anger-issues-XSahn?pre_source=1",
-          "messages": 3258,
-          "collectors": 2
-        },
-        {
-          "name": "Psych ward",
-          "url": "https://www.polybuzz.ai/character/profile/psych-ward-XS5br?pre_source=1",
-          "messages": 6805,
-          "collectors": 3
-        },
-        {
-          "name": "Matyas",
-          "url": "https://www.polybuzz.ai/character/profile/matyas-4DNE3?pre_source=1",
-          "messages": 378,
-          "collectors": 1
-        },
-        {
-          "name": "Ilyas",
-          "url": "https://www.polybuzz.ai/character/profile/ilyas-442bT?pre_source=1",
-          "messages": 2465,
-          "collectors": 2
-        },
-        {
-          "name": "Silas Moreau",
-          "url": "https://www.polybuzz.ai/character/profile/silas-moreau-XYqtB?pre_source=1",
-          "messages": 5837,
-          "collectors": 6
-        },
-        {
-          "name": "Ezra",
-          "url": "https://www.polybuzz.ai/character/profile/ezra-4mBT9?pre_source=1",
-          "messages": 821,
-          "collectors": 1
-        },
-        {
-          "name": "Jung Jae",
-          "url": "https://www.polybuzz.ai/character/profile/jung-jae-4EGsN?pre_source=1",
-          "messages": 3346,
-          "collectors": 5
-        },
-        {
-          "name": "Troy",
-          "url": "https://www.polybuzz.ai/character/profile/troy-4qHqN?pre_source=1",
-          "messages": 5046,
-          "collectors": 4
-        },
-        {
-          "name": "Yuri",
-          "url": "https://www.polybuzz.ai/character/profile/yuri-YUwTr?pre_source=1",
-          "messages": 2360,
-          "collectors": 3
-        },
-        {
-          "name": "Karim",
-          "url": "https://www.polybuzz.ai/character/profile/karim-4Jq6k?pre_source=1",
-          "messages": 981,
-          "collectors": 1
-        },
-        {
-          "name": "Byron",
-          "url": "https://www.polybuzz.ai/character/profile/byron-48TWk?pre_source=1",
-          "messages": 5032,
-          "collectors": 2
-        },
-        {
-          "name": "Tyger",
-          "url": "https://www.polybuzz.ai/character/profile/tyger-XVWHL?pre_source=1",
-          "messages": 1305,
-          "collectors": 2
-        },
-        {
-          "name": "Mika",
-          "url": "https://www.polybuzz.ai/character/profile/mika-aTDfY?pre_source=1",
-          "messages": 5151,
-          "collectors": 5
-        },
-        {
-          "name": "Ren",
-          "url": "https://www.polybuzz.ai/character/profile/ren-YVLJv?pre_source=1",
-          "messages": 1640383,
-          "collectors": 205
-        }
-      ]
-    },
-    {
-      "timestamp": "2026-07-30T12:35:09.513Z",
-      "bots": [
-        {
-          "name": "Dimitri",
-          "url": "https://www.polybuzz.ai/character/profile/dimitri-4kqes?pre_source=1",
-          "messages": 7454,
-          "collectors": 1
-        },
-        {
-          "name": "Mafia — the Haddad Family",
-          "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
-          "messages": 2573,
-          "collectors": 2
-        },
-        {
-          "name": "Vadim",
-          "url": "https://www.polybuzz.ai/character/profile/vadim-4ADuq?pre_source=1",
-          "messages": 547413,
-          "collectors": 66
-        },
-        {
-          "name": "Idris Kassab - mafia enemy",
-          "url": "https://www.polybuzz.ai/character/profile/idris-kassab-mafia-enemy-Xt443?pre_source=1",
-          "messages": 32142,
-          "collectors": 7
-        },
-        {
-          "name": "David",
-          "url": "https://www.polybuzz.ai/character/profile/david-XQXYf?pre_source=1",
-          "messages": 332,
-          "collectors": 1
-        },
-        {
-          "name": "Jona",
-          "url": "https://www.polybuzz.ai/character/profile/jona-XQ5RC?pre_source=1",
-          "messages": 1249,
-          "collectors": 3
-        },
-        {
-          "name": "Your dad Rafik",
-          "url": "https://www.polybuzz.ai/character/profile/your-dad-rafik-XRdDd?pre_source=1",
-          "messages": 3656,
-          "collectors": 1
-        },
-        {
+          "cid": "XSNEh",
           "name": "Soren",
           "url": "https://www.polybuzz.ai/character/profile/soren-XSNEh?pre_source=1",
           "messages": 76977,
           "collectors": 33
         },
         {
-          "name": "Boxing brothers",
-          "url": "https://www.polybuzz.ai/character/profile/boxing-brothers-XA5He?pre_source=1",
-          "messages": 222,
-          "collectors": 2
-        },
-        {
-          "name": "Jonathan",
-          "url": "https://www.polybuzz.ai/character/profile/jonathan-XAFVe?pre_source=1",
-          "messages": 389,
-          "collectors": 4
-        },
-        {
-          "name": "The obsession",
-          "url": "https://www.polybuzz.ai/character/profile/the-obsession-YRQhH?pre_source=1",
-          "messages": 1656,
-          "collectors": 2
-        },
-        {
-          "name": "Kieran",
-          "url": "https://www.polybuzz.ai/character/profile/kieran-YZFnB?pre_source=1",
-          "messages": 3865,
-          "collectors": 6
-        },
-        {
-          "name": "Xander",
-          "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
-          "messages": 249063,
-          "collectors": 97
-        },
-        {
-          "name": "Intruder",
-          "url": "https://www.polybuzz.ai/character/profile/intruder-XKZNk?pre_source=1",
-          "messages": 2622,
-          "collectors": 3
-        },
-        {
-          "name": "Train Compartment",
-          "url": "https://www.polybuzz.ai/character/profile/train-compartment-YYZd8?pre_source=1",
-          "messages": 1643,
-          "collectors": 1
-        },
-        {
-          "name": "Your Russian bodyguard",
-          "url": "https://www.polybuzz.ai/character/profile/your-russian-bodyguard-YSMu5?pre_source=1",
-          "messages": 7947,
-          "collectors": 4
-        },
-        {
-          "name": "Military unit",
-          "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
-          "messages": 12894,
-          "collectors": 4
-        },
-        {
-          "name": "Kade",
-          "url": "https://www.polybuzz.ai/character/profile/kade-YeCb8?pre_source=1",
-          "messages": 276563,
-          "collectors": 55
-        },
-        {
-          "name": "Military boyfriend",
-          "url": "https://www.polybuzz.ai/character/profile/military-boyfriend-4D6Ww?pre_source=1",
-          "messages": 435144,
-          "collectors": 102
-        },
-        {
-          "name": "Jarek Dragan",
-          "url": "https://www.polybuzz.ai/character/profile/jarek-dragan-XUEfB?pre_source=1",
-          "messages": 7368,
-          "collectors": 5
-        },
-        {
-          "name": "Armin - loose ends",
-          "url": "https://www.polybuzz.ai/character/profile/armin-loose-ends-XUUmn?pre_source=1",
-          "messages": 100377,
-          "collectors": 23
-        },
-        {
+          "cid": "XSahn",
           "name": "Toby - anger issues",
           "url": "https://www.polybuzz.ai/character/profile/toby-anger-issues-XSahn?pre_source=1",
           "messages": 3258,
           "collectors": 2
         },
         {
+          "cid": "XS5br",
           "name": "Psych ward",
           "url": "https://www.polybuzz.ai/character/profile/psych-ward-XS5br?pre_source=1",
           "messages": 6840,
           "collectors": 3
         },
         {
-          "name": "Matyas",
-          "url": "https://www.polybuzz.ai/character/profile/matyas-4DNE3?pre_source=1",
-          "messages": 378,
-          "collectors": 1
-        },
-        {
-          "name": "Ilyas",
-          "url": "https://www.polybuzz.ai/character/profile/ilyas-442bT?pre_source=1",
-          "messages": 2465,
-          "collectors": 2
-        },
-        {
-          "name": "Silas Moreau",
-          "url": "https://www.polybuzz.ai/character/profile/silas-moreau-XYqtB?pre_source=1",
-          "messages": 5837,
-          "collectors": 6
-        },
-        {
-          "name": "Ezra",
-          "url": "https://www.polybuzz.ai/character/profile/ezra-4mBT9?pre_source=1",
-          "messages": 821,
-          "collectors": 1
-        },
-        {
-          "name": "Jung Jae",
-          "url": "https://www.polybuzz.ai/character/profile/jung-jae-4EGsN?pre_source=1",
-          "messages": 3492,
-          "collectors": 5
-        },
-        {
-          "name": "Troy",
-          "url": "https://www.polybuzz.ai/character/profile/troy-4qHqN?pre_source=1",
-          "messages": 5079,
+          "cid": "XAFVe",
+          "name": "Jonathan",
+          "url": "https://www.polybuzz.ai/character/profile/jonathan-XAFVe?pre_source=1",
+          "messages": 389,
           "collectors": 4
         },
         {
-          "name": "Yuri",
-          "url": "https://www.polybuzz.ai/character/profile/yuri-YUwTr?pre_source=1",
-          "messages": 2425,
-          "collectors": 3
-        },
-        {
-          "name": "Karim",
-          "url": "https://www.polybuzz.ai/character/profile/karim-4Jq6k?pre_source=1",
-          "messages": null,
-          "collectors": null,
-          "error": "No interaction statistics found"
-        },
-        {
-          "name": "Byron",
-          "url": "https://www.polybuzz.ai/character/profile/byron-48TWk?pre_source=1",
-          "messages": 5032,
+          "cid": "XA5He",
+          "name": "Boxing brothers",
+          "url": "https://www.polybuzz.ai/character/profile/boxing-brothers-XA5He?pre_source=1",
+          "messages": 222,
           "collectors": 2
         },
         {
+          "cid": "XUEfB",
+          "name": "Jarek Dragan",
+          "url": "https://www.polybuzz.ai/character/profile/jarek-dragan-XUEfB?pre_source=1",
+          "messages": 7368,
+          "collectors": 5
+        },
+        {
+          "cid": "XUUmn",
+          "name": "Armin - loose ends",
+          "url": "https://www.polybuzz.ai/character/profile/armin-loose-ends-XUUmn?pre_source=1",
+          "messages": 100377,
+          "collectors": 23
+        },
+        {
+          "cid": "XVWHL",
           "name": "Tyger",
           "url": "https://www.polybuzz.ai/character/profile/tyger-XVWHL?pre_source=1",
           "messages": 1305,
           "collectors": 2
         },
         {
-          "name": "Mika",
-          "url": "https://www.polybuzz.ai/character/profile/mika-aTDfY?pre_source=1",
-          "messages": 8292,
+          "cid": "XKZNk",
+          "name": "Intruder",
+          "url": "https://www.polybuzz.ai/character/profile/intruder-XKZNk?pre_source=1",
+          "messages": 2622,
+          "collectors": 3
+        },
+        {
+          "cid": "XKK4Q",
+          "name": "Xander",
+          "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
+          "messages": 249063,
+          "collectors": 97
+        },
+        {
+          "cid": "XYqtB",
+          "name": "Silas Moreau",
+          "url": "https://www.polybuzz.ai/character/profile/silas-moreau-XYqtB?pre_source=1",
+          "messages": 5837,
           "collectors": 6
         },
         {
+          "cid": "Xt443",
+          "name": "Idris Kassab - mafia enemy",
+          "url": "https://www.polybuzz.ai/character/profile/idris-kassab-mafia-enemy-Xt443?pre_source=1",
+          "messages": 32142,
+          "collectors": 7
+        },
+        {
+          "cid": "YZFnB",
+          "name": "Kieran",
+          "url": "https://www.polybuzz.ai/character/profile/kieran-YZFnB?pre_source=1",
+          "messages": 3865,
+          "collectors": 6
+        },
+        {
+          "cid": "YL4ys",
+          "name": "Mafia — the Haddad Family",
+          "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
+          "messages": 2573,
+          "collectors": 2
+        },
+        {
+          "cid": "YRQhH",
+          "name": "The obsession",
+          "url": "https://www.polybuzz.ai/character/profile/the-obsession-YRQhH?pre_source=1",
+          "messages": 1656,
+          "collectors": 2
+        },
+        {
+          "cid": "YSMu5",
+          "name": "Your Russian bodyguard",
+          "url": "https://www.polybuzz.ai/character/profile/your-russian-bodyguard-YSMu5?pre_source=1",
+          "messages": 7947,
+          "collectors": 4
+        },
+        {
+          "cid": "Yvvgu",
+          "name": "Military unit",
+          "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
+          "messages": 12894,
+          "collectors": 4
+        },
+        {
+          "cid": "YUwTr",
+          "name": "Yuri",
+          "url": "https://www.polybuzz.ai/character/profile/yuri-YUwTr?pre_source=1",
+          "messages": 2425,
+          "collectors": 3
+        },
+        {
+          "cid": "YVLJv",
           "name": "Ren",
           "url": "https://www.polybuzz.ai/character/profile/ren-YVLJv?pre_source=1",
           "messages": 1640499,
           "collectors": 204
-        }
-      ]
-    },
-    {
-      "timestamp": "2026-07-30T17:11:35.527Z",
-      "bots": [
-        {
-          "name": "Dimitri",
-          "url": "https://www.polybuzz.ai/character/profile/dimitri-4kqes?pre_source=1",
-          "messages": 7454,
-          "collectors": 1
         },
         {
-          "name": "Mafia — the Haddad Family",
-          "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
-          "messages": 2573,
-          "collectors": 2
-        },
-        {
-          "name": "Vadim",
-          "url": "https://www.polybuzz.ai/character/profile/vadim-4ADuq?pre_source=1",
-          "messages": 547413,
-          "collectors": 66
-        },
-        {
-          "name": "Idris Kassab - mafia enemy",
-          "url": "https://www.polybuzz.ai/character/profile/idris-kassab-mafia-enemy-Xt443?pre_source=1",
-          "messages": 32142,
-          "collectors": 7
-        },
-        {
-          "name": "David",
-          "url": "https://www.polybuzz.ai/character/profile/david-XQXYf?pre_source=1",
-          "messages": 332,
-          "collectors": 1
-        },
-        {
-          "name": "Jona",
-          "url": "https://www.polybuzz.ai/character/profile/jona-XQ5RC?pre_source=1",
-          "messages": 1249,
-          "collectors": 3
-        },
-        {
-          "name": "Your dad Rafik",
-          "url": "https://www.polybuzz.ai/character/profile/your-dad-rafik-XRdDd?pre_source=1",
-          "messages": 3656,
-          "collectors": 1
-        },
-        {
-          "name": "Soren",
-          "url": "https://www.polybuzz.ai/character/profile/soren-XSNEh?pre_source=1",
-          "messages": 76977,
-          "collectors": 33
-        },
-        {
-          "name": "Boxing brothers",
-          "url": "https://www.polybuzz.ai/character/profile/boxing-brothers-XA5He?pre_source=1",
-          "messages": 222,
-          "collectors": 2
-        },
-        {
-          "name": "Jonathan",
-          "url": "https://www.polybuzz.ai/character/profile/jonathan-XAFVe?pre_source=1",
-          "messages": 389,
-          "collectors": 4
-        },
-        {
-          "name": "The obsession",
-          "url": "https://www.polybuzz.ai/character/profile/the-obsession-YRQhH?pre_source=1",
-          "messages": 1656,
-          "collectors": 2
-        },
-        {
-          "name": "Kieran",
-          "url": "https://www.polybuzz.ai/character/profile/kieran-YZFnB?pre_source=1",
-          "messages": 3865,
-          "collectors": 6
-        },
-        {
-          "name": "Xander",
-          "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
-          "messages": 249063,
-          "collectors": 97
-        },
-        {
-          "name": "Intruder",
-          "url": "https://www.polybuzz.ai/character/profile/intruder-XKZNk?pre_source=1",
-          "messages": 2622,
-          "collectors": 3
-        },
-        {
+          "cid": "YYZd8",
           "name": "Train Compartment",
           "url": "https://www.polybuzz.ai/character/profile/train-compartment-YYZd8?pre_source=1",
           "messages": 1643,
           "collectors": 1
         },
         {
-          "name": "Your Russian bodyguard",
-          "url": "https://www.polybuzz.ai/character/profile/your-russian-bodyguard-YSMu5?pre_source=1",
-          "messages": 7947,
-          "collectors": 5
-        },
-        {
-          "name": "Military unit",
-          "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
-          "messages": 12894,
-          "collectors": 4
-        },
-        {
+          "cid": "YeCb8",
           "name": "Kade",
           "url": "https://www.polybuzz.ai/character/profile/kade-YeCb8?pre_source=1",
           "messages": 276563,
           "collectors": 55
         },
         {
+          "cid": "4D6Ww",
           "name": "Military boyfriend",
           "url": "https://www.polybuzz.ai/character/profile/military-boyfriend-4D6Ww?pre_source=1",
           "messages": 435144,
           "collectors": 102
         },
         {
-          "name": "Jarek Dragan",
-          "url": "https://www.polybuzz.ai/character/profile/jarek-dragan-XUEfB?pre_source=1",
-          "messages": 7368,
-          "collectors": 5
-        },
-        {
-          "name": "Armin - loose ends",
-          "url": "https://www.polybuzz.ai/character/profile/armin-loose-ends-XUUmn?pre_source=1",
-          "messages": 100377,
-          "collectors": 23
-        },
-        {
-          "name": "Toby - anger issues",
-          "url": "https://www.polybuzz.ai/character/profile/toby-anger-issues-XSahn?pre_source=1",
-          "messages": 3258,
-          "collectors": 2
-        },
-        {
-          "name": "Psych ward",
-          "url": "https://www.polybuzz.ai/character/profile/psych-ward-XS5br?pre_source=1",
-          "messages": 6840,
-          "collectors": 3
-        },
-        {
+          "cid": "4DNE3",
           "name": "Matyas",
           "url": "https://www.polybuzz.ai/character/profile/matyas-4DNE3?pre_source=1",
           "messages": 378,
           "collectors": 1
         },
         {
-          "name": "Ilyas",
-          "url": "https://www.polybuzz.ai/character/profile/ilyas-442bT?pre_source=1",
-          "messages": 2465,
-          "collectors": 2
-        },
-        {
-          "name": "Silas Moreau",
-          "url": "https://www.polybuzz.ai/character/profile/silas-moreau-XYqtB?pre_source=1",
-          "messages": 5837,
-          "collectors": 6
-        },
-        {
-          "name": "Ezra",
-          "url": "https://www.polybuzz.ai/character/profile/ezra-4mBT9?pre_source=1",
-          "messages": 821,
-          "collectors": 1
-        },
-        {
+          "cid": "4EGsN",
           "name": "Jung Jae",
           "url": "https://www.polybuzz.ai/character/profile/jung-jae-4EGsN?pre_source=1",
           "messages": 3492,
           "collectors": 5
         },
         {
+          "cid": "4qHqN",
           "name": "Troy",
           "url": "https://www.polybuzz.ai/character/profile/troy-4qHqN?pre_source=1",
           "messages": 5079,
           "collectors": 4
         },
         {
-          "name": "Yuri",
-          "url": "https://www.polybuzz.ai/character/profile/yuri-YUwTr?pre_source=1",
-          "messages": 2425,
-          "collectors": 3
+          "cid": "4ADuq",
+          "name": "Vadim",
+          "url": "https://www.polybuzz.ai/character/profile/vadim-4ADuq?pre_source=1",
+          "messages": 547413,
+          "collectors": 66
         },
         {
-          "name": "Karim",
-          "url": "https://www.polybuzz.ai/character/profile/karim-4Jq6k?pre_source=1",
-          "messages": 981,
-          "collectors": 1
-        },
-        {
+          "cid": "48TWk",
           "name": "Byron",
           "url": "https://www.polybuzz.ai/character/profile/byron-48TWk?pre_source=1",
           "messages": 5032,
           "collectors": 2
         },
         {
-          "name": "Tyger",
-          "url": "https://www.polybuzz.ai/character/profile/tyger-XVWHL?pre_source=1",
-          "messages": 1305,
+          "cid": "4Jq6k",
+          "name": "Karim",
+          "url": "https://www.polybuzz.ai/character/profile/karim-4Jq6k?pre_source=1",
+          "messages": 981,
+          "collectors": 1
+        },
+        {
+          "cid": "442bT",
+          "name": "Ilyas",
+          "url": "https://www.polybuzz.ai/character/profile/ilyas-442bT?pre_source=1",
+          "messages": 2465,
           "collectors": 2
         },
         {
+          "cid": "4kqes",
+          "name": "Dimitri",
+          "url": "https://www.polybuzz.ai/character/profile/dimitri-4kqes?pre_source=1",
+          "messages": 7454,
+          "collectors": 1
+        },
+        {
+          "cid": "4mBT9",
+          "name": "Ezra",
+          "url": "https://www.polybuzz.ai/character/profile/ezra-4mBT9?pre_source=1",
+          "messages": 821,
+          "collectors": 1
+        },
+        {
+          "cid": "aTDfY",
           "name": "Mika",
           "url": "https://www.polybuzz.ai/character/profile/mika-aTDfY?pre_source=1",
           "messages": 8292,
           "collectors": 6
-        },
-        {
-          "name": "Ren",
-          "url": "https://www.polybuzz.ai/character/profile/ren-YVLJv?pre_source=1",
-          "messages": 1640499,
-          "collectors": 205
         }
       ]
     }
