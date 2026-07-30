@@ -3,10 +3,8 @@ name: Update characters
 on:
   workflow_dispatch:
   schedule:
-    # GitHub cron uses UTC. Running at both possibilities plus the local-time
-    # check below keeps the actual update at about 14:00 in Amsterdam year-round.
-    - cron: "7 12 * * *"
-    - cron: "7 13 * * *"
+    - cron: "30 20 * * *"
+      timezone: "Asia/Shanghai"
 
 permissions:
   contents: write
