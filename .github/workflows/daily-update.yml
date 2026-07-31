@@ -3,7 +3,7 @@ name: Update characters
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 20 * * *"
+    - cron: "30 19 * * *"
       timezone: "Asia/Shanghai"
 
 permissions:
