@@ -17,33 +17,18 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Amsterdam time
-        id: local_time
-        shell: bash
-        run: |
-          HOUR=$(TZ=Europe/Amsterdam date +%H)
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$HOUR" = "14" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Check out repository
-        if: steps.local_time.outputs.run == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Node
-        if: steps.local_time.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
       - name: Collect statistics
-        if: steps.local_time.outputs.run == 'true'
         run: npm run track
 
       - name: Commit updated history
-        if: steps.local_time.outputs.run == 'true'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
