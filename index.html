@@ -9,7 +9,7 @@
 </head>
 <body><main><h1>stats</h1><div id="updated" class="muted">Laden…</div>
 <div class="controls"><input id="search" placeholder="Zoek naam of CID"><select id="sort"><option value="creation">Creatievolgorde</option><option value="growth">Grootste groei</option><option value="messages">Meeste messages</option><option value="collectors">Meeste collectors</option><option value="name">Alfabetisch</option></select></div>
-<table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>Collectors</th></tr></thead><tbody id="rows"></tbody></table></main>
+<table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
 <script>
 const fmt=new Intl.NumberFormat('nl-NL');const state={bots:[],meta:new Map()};
 Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/history.json',{cache:'no-store'}).then(r=>r.json())]).then(([bots,history])=>{
