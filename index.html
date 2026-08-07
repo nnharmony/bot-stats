@@ -95,7 +95,7 @@
     <tbody id="compareRows"></tbody>
   </table>
 </div>
-<div class="controls"><input id="search" placeholder="Search bot"><select id="sort"><option value="creation">Date</option><option value="growth">Growth</option><option value="messages">Messages</option><option value="collectors">Meeste collectors</option><option value="name">Alfabetisch</option></select></div>
+<div class="controls"><input id="search" placeholder="Search bot"><select id="sort"><option value="creation">Date</option><option value="growth">Growth</option><option value="messages">Messages</option><option value="collectors">Collectors</option><option value="name">Name</option></select></div>
 
 <table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
 <script>
@@ -112,7 +112,12 @@ Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data
 
 const compareBots=document.querySelector('#compareBots');
 
-compareBots.innerHTML=[...bots]
+compareBots.innerHTML=`
+  <label>
+    <input type="checkbox" id="selectAllBots">
+    Select all
+  </label>
+` + [...bots]
   .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
   .map(b=>`
     <label>
@@ -259,10 +264,15 @@ function drawCompareChart(){
 
 document.querySelector('#compareMetric')
   .addEventListener('change',drawCompareChart);
-
 document.querySelector('#comparePeriod')
   .addEventListener('change',drawCompareChart);
-
 document.querySelector('#compareBots')
   .addEventListener('change',drawCompareChart);
+document.querySelector('#selectAllBots')
+  .addEventListener('change',e=>{
+    document.querySelectorAll('#compareBots input[type="checkbox"]:not(#selectAllBots)')
+      .forEach(cb=>cb.checked=e.target.checked);
+
+    drawCompareChart();
+  });
 </script></body></html>
