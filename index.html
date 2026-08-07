@@ -30,8 +30,11 @@
 </div>
 <table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
 <script>
-const fmt=new Intl.NumberFormat('nl-NL');const state={bots:[],meta:new Map()};
+const fmt=new Intl.NumberFormat('nl-NL');
+const state={bots:[],meta:new Map(),history:null};
+let botChart=null;
 Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/history.json',{cache:'no-store'}).then(r=>r.json())]).then(([bots,history])=>{
+ state.history=history;
  bots.forEach(b=>state.meta.set(b.cid,b));
  const latest=history.snapshots.at(-1), previous=history.snapshots.at(-2);
  const prev=new Map((previous?.bots||[]).map(b=>[b.cid,b]));
