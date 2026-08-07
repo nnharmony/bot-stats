@@ -132,10 +132,10 @@ const state={bots:[],meta:new Map(),history:null};
 let compareChart=null;
 function displayLabel(cid){
   const bot=state.meta.get(cid);
-  const mode=document.querySelector('#displayMode')?.value | | 'cid';
+  const mode=document.querySelector('#displayMode')?.value || 'cid';
 
   return mode==='name'
-   ? (bot?.name | | cid)
+   ? (bot?.name || cid)
    : cid;
 }
 Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/history.json',{cache:'no-store'}).then(r=>r.json())]).then(([bots,history])=>{
