@@ -23,11 +23,112 @@
   flex:1;
   min-width:0;
 }
+.comparebox{
+
+  margin:20px 0;
+
+  padding:14px;
+
+  background:#fff;
+
+  color:#111;
+
+  border-radius:14px;
+
+}
+
+
+
+.compare-controls{
+
+  display:flex;
+
+  gap:8px;
+
+  flex-wrap:wrap;
+
+  margin-bottom:12px;
+
+}
+
+
+
+.compare-controls select,
+
+.bot-picker{
+
+  flex:1;
+
+  min-width:120px;
+
+}
+
+
+
+.bot-picker{
+
+  background:#1a1d23;
+
+  color:#fff;
+
+  border:1px solid #343945;
+
+  border-radius:10px;
+
+  padding:10px;
+
+}
+
+
+
+.bot-picker summary{
+
+  cursor:pointer;
+
+}
+
+
+
+#compareBots{
+
+  max-height:250px;
+
+  overflow-y:auto;
+
+  margin-top:10px;
+
+}
+
+
+
+#compareBots label{
+
+  display:block;
+
+  padding:6px 2px;
+
+}
+
+
+
+#compareChart{
+
+  height:340px !important;
+
+}
+
+
+
+.compare-table{
+
+  margin-top:18px;
+
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body><main><h1>stats</h1><div id="updated" class="muted">Laden…</div>
-<div class="controls"><input id="search" placeholder="Zoek naam of CID"><select id="sort"><option value="creation">Creatievolgorde</option><option value="growth">Grootste groei</option><option value="messages">Meeste messages</option><option value="collectors">Meeste collectors</option><option value="name">Alfabetisch</option></select></div>
+<div class="controls"><input id="search" placeholder="Search bot"><select id="sort"><option value="creation">Creatievolgorde</option><option value="growth">Grootste groei</option><option value="messages">Meeste messages</option><option value="collectors">Meeste collectors</option><option value="name">Alfabetisch</option></select></div>
 <div class="chartbox">
   <div class="chart-controls">
     <select id="chartBot"></select>
@@ -46,11 +147,77 @@
 
   <canvas id="botChart"></canvas>
 </div>
+<div class="comparebox">
+
+  <div class="compare-controls">
+
+    <select id="compareMetric">
+
+      <option value="messages">Messages</option>
+
+      <option value="collectors">Collectors</option>
+
+    </select>
+
+
+
+    <select id="comparePeriod">
+
+      <option value="all">Alles</option>
+
+      <option value="30">30 day</option>
+
+      <option value="7">7 day</option>
+
+    </select>
+
+
+
+    <details class="bot-picker">
+
+      <summary id="compareSummary">Bots</summary>
+
+      <div id="compareBots"></div>
+
+    </details>
+
+  </div>
+
+
+
+  <canvas id="compareChart"></canvas>
+
+
+
+  <table class="compare-table">
+
+    <thead>
+
+      <tr>
+
+        <th>Bot</th>
+
+        <th>Start</th>
+
+        <th>Now</th>
+
+        <th>Grow</th>
+
+      </tr>
+
+    </thead>
+
+    <tbody id="compareRows"></tbody>
+
+  </table>
+
+</div>
 <table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
 <script>
 const fmt=new Intl.NumberFormat('nl-NL');
 const state={bots:[],meta:new Map(),history:null};
 let botChart=null;
+let compareChart=null;
 Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/history.json',{cache:'no-store'}).then(r=>r.json())]).then(([bots,history])=>{
  state.history=history;
  bots.forEach(b=>state.meta.set(b.cid,b));
@@ -62,6 +229,25 @@ Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data
 chartBot.innerHTML=bots
   .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
   .map(b=>`<option value="${b.cid}">${b.cid}</option>`)
+  .join('');
+const compareBots=document.querySelector('#compareBots');
+
+compareBots.innerHTML=[...bots]
+
+  .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
+
+  .map(b=>`
+
+    <label>
+
+      <input type="checkbox" value="${b.cid}">
+
+      ${b.cid}
+
+    </label>
+
+  `)
+
   .join('');
 
 drawChart();
@@ -82,6 +268,135 @@ function drawChart(){
     const cutoff=Date.now()-(Number(period)*24*60*60*1000);
     snapshots=snapshots.filter(s=>new Date(s.timestamp).getTime()>=cutoff);
   }
+function drawCompareChart(){
+  const metric=document.querySelector('#compareMetric').value;
+  const period=document.querySelector('#comparePeriod').value;
+
+  const selected=[...document.querySelectorAll('#compareBots input:checked')]
+    .map(i=>i.value);
+
+  document.querySelector('#compareSummary').textContent=
+    selected.length===0
+      ? 'Bots'
+      : selected.length+' bots selected';
+
+  if(compareChart){
+    compareChart.destroy();
+    compareChart=null;
+  }
+
+  document.querySelector('#compareRows').innerHTML='';
+
+  if(selected.length===0 || !state.history) return;
+
+  let snapshots=[...state.history.snapshots];
+
+  if(period!=='all'){
+    const cutoff=Date.now()-(Number(period)*24*60*60*1000);
+    snapshots=snapshots.filter(
+      s=>new Date(s.timestamp).getTime()>=cutoff
+    );
+  }
+
+  const daily=new Map();
+
+  snapshots.forEach(s=>{
+    const date=new Date(s.timestamp);
+    const key=date.toLocaleDateString('sv-SE');
+    daily.set(key,s);
+  });
+
+  const days=[...daily.values()];
+
+  const labels=days.map(s=>
+    new Date(s.timestamp).toLocaleDateString('nl-NL',{
+      day:'2-digit',
+      month:'2-digit',
+      year:'2-digit'
+    })
+  );
+
+  const datasets=selected.map(cid=>{
+    const values=days.map(s=>{
+      const bot=(s.bots||[]).find(b=>b.cid===cid);
+      return bot && Number.isFinite(bot[metric])
+        ? bot[metric]
+        : null;
+    });
+
+    return {
+      label:cid,
+      data:values,
+      tension:0.2,
+      spanGaps:true
+    };
+  });
+
+  compareChart=new Chart(
+    document.querySelector('#compareChart'),
+    {
+      type:'line',
+      data:{
+        labels,
+        datasets
+      },
+      options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        interaction:{
+          intersect:false,
+          mode:'index'
+        },
+        scales:{
+          y:{
+            ticks:{
+              callback:value=>fmt.format(value)
+            }
+          }
+        }
+      }
+    }
+  );
+
+  document.querySelector('#compareRows').innerHTML=
+    selected.map(cid=>{
+      const values=days
+        .map(s=>{
+          const bot=(s.bots||[]).find(b=>b.cid===cid);
+          return bot && Number.isFinite(bot[metric])
+            ? bot[metric]
+            : null;
+        })
+        .filter(v=>v!==null);
+
+      if(!values.length){
+        return `
+          <tr>
+            <td>${cid}</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        `;
+      }
+
+      const start=values[0];
+      const current=values.at(-1);
+      const growth=current-start;
+
+      return `
+        <tr>
+          <td>${cid}</td>
+          <td>${fmt.format(start)}</td>
+          <td>${fmt.format(current)}</td>
+          <td class="${growth>0?'positive':growth<0?'negative':''}">
+            ${growth>0?'+':''}${fmt.format(growth)}
+          </td>
+        </tr>
+      `;
+    })
+    .join('');
+}
 
   // Alleen de laatste meting van iedere kalenderdag gebruiken
   const daily=new Map();
@@ -143,4 +458,12 @@ function drawChart(){
 document.querySelector('#chartBot').addEventListener('change',drawChart);
 document.querySelector('#chartMetric').addEventListener('change',drawChart);
 document.querySelector('#chartPeriod').addEventListener('change',drawChart);
+document.querySelector('#compareMetric')
+  .addEventListener('change',drawCompareChart);
+
+document.querySelector('#comparePeriod')
+  .addEventListener('change',drawCompareChart);
+
+document.querySelector('#compareBots')
+  .addEventListener('change',drawCompareChart);
 </script></body></html>
