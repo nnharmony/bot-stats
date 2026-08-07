@@ -136,8 +136,8 @@ function drawCompareChart(){
   const metric=document.querySelector('#compareMetric').value;
   const period=document.querySelector('#comparePeriod').value;
 
-  const selected=[...document.querySelectorAll('#compareBots input:checked')]
-    .map(i=>i.value);
+const selected=[...document.querySelectorAll('#compareBots input[type="checkbox"]:checked:not(#selectAllBots)')]
+  .map(i=>i.value);
 
   document.querySelector('#compareSummary').textContent=
     selected.length===0
@@ -266,13 +266,13 @@ document.querySelector('#compareMetric')
   .addEventListener('change',drawCompareChart);
 document.querySelector('#comparePeriod')
   .addEventListener('change',drawCompareChart);
-document.querySelector('#compareBots')
-  .addEventListener('change',drawCompareChart);
-document.querySelector('#selectAllBots')
-  .addEventListener('change',e=>{
-    document.querySelectorAll('#compareBots input[type="checkbox"]:not(#selectAllBots)')
-      .forEach(cb=>cb.checked=e.target.checked);
 
+document.querySelector('#compareBots')
+  .addEventListener('change',e=>{
+    if(e.target.id==='selectAllBots'){
+      document.querySelectorAll('#compareBots input[type="checkbox"]:not(#selectAllBots)')
+        .forEach(cb=>cb.checked=e.target.checked);
+    }
     drawCompareChart();
   });
 </script></body></html>
