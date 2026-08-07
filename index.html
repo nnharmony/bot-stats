@@ -24,105 +24,55 @@
   min-width:0;
 }
 .comparebox{
-
   margin:20px 0;
-
   padding:14px;
-
   background:#fff;
-
   color:#111;
-
   border-radius:14px;
-
 }
-
-
 
 .compare-controls{
-
   display:flex;
-
   gap:8px;
-
   flex-wrap:wrap;
-
   margin-bottom:12px;
-
 }
-
-
 
 .compare-controls select,
-
 .bot-picker{
-
   flex:1;
-
   min-width:120px;
-
 }
-
-
 
 .bot-picker{
-
   background:#1a1d23;
-
   color:#fff;
-
   border:1px solid #343945;
-
   border-radius:10px;
-
   padding:10px;
-
 }
-
-
 
 .bot-picker summary{
-
   cursor:pointer;
-
 }
-
-
 
 #compareBots{
-
   max-height:250px;
-
   overflow-y:auto;
-
   margin-top:10px;
-
 }
-
-
 
 #compareBots label{
-
   display:block;
-
   padding:6px 2px;
-
 }
-
-
 
 #compareChart{
-
   height:340px !important;
-
 }
 
-
-
 .compare-table{
-
   margin-top:18px;
-
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -148,69 +98,37 @@
   <canvas id="botChart"></canvas>
 </div>
 <div class="comparebox">
-
   <div class="compare-controls">
-
     <select id="compareMetric">
-
       <option value="messages">Messages</option>
-
       <option value="collectors">Collectors</option>
-
     </select>
-
-
 
     <select id="comparePeriod">
-
-      <option value="all">Alles</option>
-
+      <option value="all">All</option>
       <option value="30">30 day</option>
-
       <option value="7">7 day</option>
-
     </select>
 
-
-
     <details class="bot-picker">
-
       <summary id="compareSummary">Bots</summary>
-
       <div id="compareBots"></div>
-
     </details>
-
   </div>
-
-
 
   <canvas id="compareChart"></canvas>
 
-
-
   <table class="compare-table">
-
     <thead>
-
       <tr>
-
         <th>Bot</th>
-
         <th>Start</th>
-
         <th>Now</th>
-
         <th>Grow</th>
-
       </tr>
-
     </thead>
-
     <tbody id="compareRows"></tbody>
-
   </table>
-
 </div>
 <table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
 <script>
@@ -233,21 +151,13 @@ chartBot.innerHTML=bots
 const compareBots=document.querySelector('#compareBots');
 
 compareBots.innerHTML=[...bots]
-
   .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
-
   .map(b=>`
-
     <label>
-
       <input type="checkbox" value="${b.cid}">
-
       ${b.cid}
-
     </label>
-
   `)
-
   .join('');
 
 drawChart();
@@ -268,6 +178,63 @@ function drawChart(){
     const cutoff=Date.now()-(Number(period)*24*60*60*1000);
     snapshots=snapshots.filter(s=>new Date(s.timestamp).getTime()>=cutoff);
   }
+
+  // Alleen de laatste meting van iedere kalenderdag gebruiken
+  const daily=new Map();
+
+  snapshots.forEach(s=>{
+    const date=new Date(s.timestamp);
+    const key=date.toLocaleDateString('sv-SE');
+    daily.set(key,s);
+  });
+
+  const points=[...daily.values()]
+    .map(s=>{
+      const bot=(s.bots||[]).find(b=>b.cid===cid);
+      return bot && Number.isFinite(bot[metric])
+        ? {
+            date:new Date(s.timestamp).toLocaleDateString('nl-NL',{
+              day:'2-digit',
+              month:'2-digit',
+              year:'2-digit'
+            }),
+            value:bot[metric]
+          }
+        : null;
+    })
+    .filter(Boolean);
+
+  const ctx=document.querySelector('#botChart');
+
+  if(botChart) botChart.destroy();
+
+  botChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:points.map(p=>p.date),
+      datasets:[{
+        label:metric==='messages'?'Messages':'Collectors',
+        data:points.map(p=>p.value),
+        tension:0.2
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{
+        intersect:false,
+        mode:'index'
+      },
+      scales:{
+        y:{
+          ticks:{
+            callback:value=>fmt.format(value)
+          }
+        }
+      }
+    }
+  });
+}
 function drawCompareChart(){
   const metric=document.querySelector('#compareMetric').value;
   const period=document.querySelector('#comparePeriod').value;
@@ -397,64 +364,6 @@ function drawCompareChart(){
     })
     .join('');
 }
-
-  // Alleen de laatste meting van iedere kalenderdag gebruiken
-  const daily=new Map();
-
-  snapshots.forEach(s=>{
-    const date=new Date(s.timestamp);
-    const key=date.toLocaleDateString('sv-SE');
-    daily.set(key,s);
-  });
-
-  const points=[...daily.values()]
-    .map(s=>{
-      const bot=(s.bots||[]).find(b=>b.cid===cid);
-      return bot && Number.isFinite(bot[metric])
-        ? {
-            date:new Date(s.timestamp).toLocaleDateString('nl-NL',{
-              day:'2-digit',
-              month:'2-digit',
-              year:'2-digit'
-            }),
-            value:bot[metric]
-          }
-        : null;
-    })
-    .filter(Boolean);
-
-  const ctx=document.querySelector('#botChart');
-
-  if(botChart) botChart.destroy();
-
-  botChart=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:points.map(p=>p.date),
-      datasets:[{
-        label:metric==='messages'?'Messages':'Collectors',
-        data:points.map(p=>p.value),
-        tension:0.2
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      interaction:{
-        intersect:false,
-        mode:'index'
-      },
-      scales:{
-        y:{
-          ticks:{
-            callback:value=>fmt.format(value)
-          }
-        }
-      }
-    }
-  });
-}
-
 document.querySelector('#chartBot').addEventListener('change',drawChart);
 document.querySelector('#chartMetric').addEventListener('change',drawChart);
 document.querySelector('#chartPeriod').addEventListener('change',drawChart);
