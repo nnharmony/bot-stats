@@ -60,7 +60,7 @@ Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data
  document.querySelector('#updated').textContent='Laatste meting: '+new Date(latest.timestamp).toLocaleString('nl-NL');
  const chartBot=document.querySelector('#chartBot');
 chartBot.innerHTML=bots
-  .sort((a,b)=>(a.creation_order??9999)-(b.creation_order??9999))
+  .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
   .map(b=>`<option value="${b.cid}">${b.cid}</option>`)
   .join('');
 
