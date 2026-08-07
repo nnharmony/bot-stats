@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Stats</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#101114;color:#f5f5f5}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:52px;margin:0 0 20px}.muted{color:#b7bac3;margin-bottom:22px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}input,select{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}th:first-child,td:first-child{text-align:left}.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}.positive{color:#7ee787;font-weight:700}.negative{color:#ff7b72}.stale{color:#e3b341}.error{color:#ff7b72}@media(max-width:650px){main{padding:18px 14px}h1{font-size:48px}th,td{padding:11px 6px}}
+:root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#101114;color:#f5f5f5}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:52px;margin:0 0 20px}.muted{color:#b7bac3;margin-bottom:22px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}input,select,button{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}th:first-child,td:first-child{text-align:left}.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}.positive{color:#7ee787;font-weight:700}.negative{color:#ff7b72}.stale{color:#e3b341}.error{color:#ff7b72}@media(max-width:650px){main{padding:18px 14px}h1{font-size:48px}th,td{padding:11px 6px}}
 
 .comparebox{
   margin:20px 0;
@@ -106,8 +106,20 @@
     <tbody id="compareRows"></tbody>
   </table>
 </div>
-<div class="controls"><input id="search" placeholder="Search bot"><select id="sort"><option value="creation">Date</option><option value="growth">Growth</option><option value="messages">Messages</option><option value="collectors">Collectors</option><option value="name">Name</option></select></div>
+<div class="controls">
+  <input id="search" placeholder="Search bot">
 
+  <select id="sort">
+    <option value="creation">Date</option>
+    <option value="growth">Growth</option>
+    <option value="messages">Messages</option>
+    <option value="collectors">Collectors</option>
+    <option value="name">Name</option>
+  </select>
+
+  <input id="historyDate" type="date">
+  <button id="latestDate">Latest</button>
+</div>
 <table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
 <script>
 const fmt=new Intl.NumberFormat('nl-NL');
@@ -140,7 +152,54 @@ compareBots.innerHTML=`
 
 render();
 }).catch(e=>document.querySelector('#updated').textContent='Fout: '+e.message);
-function render(){const q=document.querySelector('#search').value.toLowerCase(),s=document.querySelector('#sort').value;let a=state.bots.filter(b=>(b.name+' '+b.cid).toLowerCase().includes(q));a.sort((x,y)=>s==='growth'?(y.growth??-Infinity)-(x.growth??-Infinity):s==='messages'?(y.messages??-Infinity)-(x.messages??-Infinity):s==='collectors'?(y.collectors??-Infinity)-(x.collectors??-Infinity):s==='name'?x.name.localeCompare(y.name):y.order-x.order);document.querySelector('#rows').innerHTML=a.map(b=>`<tr><td><a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${b.cid}</a></td><td class="${b.stale?'stale':''}">${b.messages==null?'—':fmt.format(b.messages)}</td><td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${b.growth==null?'—':(b.growth>0?'+':'')+fmt.format(b.growth)}</td><td>${b.collectors==null?'—':fmt.format(b.collectors)}</td></tr>`).join('')}
+
+function getTableBots(){
+  const chosen=document.querySelector('#historyDate')?.value;
+
+  if(!chosen){
+    return state.bots;
+  }
+
+  const snapshots=state.history?.snapshots || [];
+  let targetIndex=-1;
+
+  snapshots.forEach((snapshot,index)=>{
+    const day=new Date(snapshot.timestamp).toLocaleDateString('sv-SE');
+
+    if(day===chosen){
+      targetIndex=index;
+    }
+  });
+
+  if(targetIndex===-1){
+    return [];
+  }
+
+  const target=snapshots[targetIndex];
+  const previous=snapshots[targetIndex-1];
+
+  const prev=new Map(
+    (previous?.bots || []).map(b=>[b.cid,b])
+  );
+
+  return (target.bots || []).map(b=>{
+    const m=state.meta.get(b.cid) || {};
+
+    return {
+      ...b,
+      name:m.name || b.name,
+      url:m.url || b.url,
+      order:m.creation_order ?? 9999,
+      growth:
+        Number.isFinite(b.messages) &&
+        Number.isFinite(prev.get(b.cid)?.messages)
+          ? b.messages-prev.get(b.cid).messages
+          : null
+    };
+  });
+}
+
+function render(){const q=document.querySelector('#search').value.toLowerCase(),s=document.querySelector('#sort').value;let a=getTableBots().filter(b=>(b.name+' '+b.cid).toLowerCase().includes(q));a.sort((x,y)=>s==='growth'?(y.growth??-Infinity)-(x.growth??-Infinity):s==='messages'?(y.messages??-Infinity)-(x.messages??-Infinity):s==='collectors'?(y.collectors??-Infinity)-(x.collectors??-Infinity):s==='name'?x.name.localeCompare(y.name):y.order-x.order);document.querySelector('#rows').innerHTML=a.map(b=>`<tr><td><a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${b.cid}</a></td><td class="${b.stale?'stale':''}">${b.messages==null?'—':fmt.format(b.messages)}</td><td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${b.growth==null?'—':(b.growth>0?'+':'')+fmt.format(b.growth)}</td><td>${b.collectors==null?'—':fmt.format(b.collectors)}</td></tr>`).join('')}
 document.querySelector('#search').addEventListener('input',render);document.querySelector('#sort').addEventListener('change',render);
 
 function drawCompareChart(){
@@ -308,4 +367,12 @@ document.querySelector('#compareBots')
     }
     drawCompareChart();
   });
+  document.querySelector('#historyDate')
+  .addEventListener('change',render);
+
+document.querySelector('#latestDate')
+  .addEventListener('click',()=>{
+    document.querySelector('#historyDate').value='';
+    render();
+  });
 </script></body></html>
