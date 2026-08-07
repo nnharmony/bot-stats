@@ -22,7 +22,7 @@
 }
 
 .compare-controls select,
-.bot-picker{
+.compare-controls button{
   flex:1;
   min-width:120px;
 }
@@ -72,33 +72,30 @@
 
 <div class="comparebox">
   <div class="compare-controls">
-    <select id="compareMetric">
-      <option value="messages">Messages</option>
-      <option value="collectors">Collectors</option>
-    </select>
+  <select id="compareMetric">
+    <option value="messages">Messages</option>
+    <option value="collectors">Collectors</option>
+  </select>
 
-    <select id="comparePeriod">
-      <option value="all">All</option>
-      <option value="30">30 day</option>
-      <option value="7">7 day</option>
-      <option value="1">1 day</option>
-    </select>
+  <select id="comparePeriod">
+    <option value="all">All</option>
+    <option value="30">30 day</option>
+    <option value="7">7 day</option>
+    <option value="1">1 day</option>
+  </select>
 
-    <select id="displayMode">
-      <option value="cid">CID</option>
-      <option value="name">Name</option>
-    </select>
+  <select id="displayMode">
+    <option value="cid">CID</option>
+    <option value="name">Name</option>
+  </select>
 
-    <details class="bot-picker">
-      <summary id="compareSummary">Bots</summary>
-      <div id="compareBots"></div>
-    </details>
-  </div>
-<button id="resetZoom">Reset zoom</button>
-<div class="chart-area">
-  <canvas id="compareChart"></canvas>
+  <button id="resetZoom">Reset zoom</button>
 </div>
 
+<details class="bot-picker">
+  <summary id="compareSummary">Bots</summary>
+  <div id="compareBots"></div>
+</details>
   <table class="compare-table">
     <thead>
       <tr>
