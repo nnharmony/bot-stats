@@ -65,6 +65,8 @@
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
 <body><main><h1>stats</h1><div id="updated" class="muted">Laden…</div>
 
@@ -86,7 +88,7 @@
       <div id="compareBots"></div>
     </details>
   </div>
-
+<button id="resetZoom">Reset zoom</button>
 <div class="chart-area">
   <canvas id="compareChart"></canvas>
 </div>
@@ -97,7 +99,7 @@
         <th>Bot</th>
         <th>Start</th>
         <th>Now</th>
-        <th>Grow</th>
+        <th>Growth</th>
       </tr>
     </thead>
     <tbody id="compareRows"></tbody>
@@ -219,6 +221,23 @@ const selected=[...document.querySelectorAll('#compareBots input[type="checkbox"
           intersect:false,
           mode:'index'
         },
+        plugins:{
+  zoom:{
+    pan:{
+      enabled:true,
+      mode:'x'
+    },
+    zoom:{
+      wheel:{
+        enabled:true
+      },
+      pinch:{
+        enabled:true
+      },
+      mode:'x'
+    }
+  }
+},
         scales:{
           y:{
             ticks:{
@@ -274,7 +293,10 @@ document.querySelector('#compareMetric')
   .addEventListener('change',drawCompareChart);
 document.querySelector('#comparePeriod')
   .addEventListener('change',drawCompareChart);
-
+document.querySelector('#resetZoom')
+  .addEventListener('click',()=>{
+    if(compareChart) compareChart.resetZoom();
+  });
 document.querySelector('#compareBots')
   .addEventListener('change',e=>{
     if(e.target.id==='selectAllBots'){
