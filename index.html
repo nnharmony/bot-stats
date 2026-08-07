@@ -5,24 +5,7 @@
 <title>Stats</title>
 <style>
 :root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#101114;color:#f5f5f5}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:52px;margin:0 0 20px}.muted{color:#b7bac3;margin-bottom:22px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}input,select{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}th:first-child,td:first-child{text-align:left}.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}.positive{color:#7ee787;font-weight:700}.negative{color:#ff7b72}.stale{color:#e3b341}.error{color:#ff7b72}@media(max-width:650px){main{padding:18px 14px}h1{font-size:48px}th,td{padding:11px 6px}}
-.chartbox{
-  margin:20px 0;
-  padding:14px;
-  background:#fff;
-  border-radius:14px;
-  height:340px;
-}
 
-.chart-controls{
-  display:flex;
-  gap:8px;
-  margin-bottom:12px;
-}
-
-.chart-controls select{
-  flex:1;
-  min-width:0;
-}
 .comparebox{
   margin:20px 0;
   padding:14px;
@@ -79,21 +62,6 @@
 </head>
 <body><main><h1>stats</h1><div id="updated" class="muted">Laden…</div>
 <div class="controls"><input id="search" placeholder="Search bot"><select id="sort"><option value="creation">Creatievolgorde</option><option value="growth">Grootste groei</option><option value="messages">Meeste messages</option><option value="collectors">Meeste collectors</option><option value="name">Alfabetisch</option></select></div>
-<div class="chartbox">
-  <div class="chart-controls">
-    <select id="chartBot"></select>
-
-    <select id="chartMetric">
-      <option value="messages">Messages</option>
-      <option value="collectors">Collectors</option>
-    </select>
-
-    <select id="chartPeriod">
-      <option value="all">All</option>
-      <option value="30">30 day</option>
-      <option value="7">7 day</option>
-    </select>
-  </div>
 
   <canvas id="botChart"></canvas>
 </div>
@@ -134,7 +102,6 @@
 <script>
 const fmt=new Intl.NumberFormat('nl-NL');
 const state={bots:[],meta:new Map(),history:null};
-let botChart=null;
 let compareChart=null;
 Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/history.json',{cache:'no-store'}).then(r=>r.json())]).then(([bots,history])=>{
  state.history=history;
@@ -143,11 +110,7 @@ Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data
  const prev=new Map((previous?.bots||[]).map(b=>[b.cid,b]));
  state.bots=(latest?.bots||[]).map(b=>{const m=state.meta.get(b.cid)||{};return {...b,name:m.name||b.name,url:m.url||b.url,order:m.creation_order??9999,growth:Number.isFinite(b.messages)&&Number.isFinite(prev.get(b.cid)?.messages)?b.messages-prev.get(b.cid).messages:null}});
  document.querySelector('#updated').textContent='Laatste meting: '+new Date(latest.timestamp).toLocaleString('nl-NL');
- const chartBot=document.querySelector('#chartBot');
-chartBot.innerHTML=bots
-  .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
-  .map(b=>`<option value="${b.cid}">${b.cid}</option>`)
-  .join('');
+
 const compareBots=document.querySelector('#compareBots');
 
 compareBots.innerHTML=[...bots]
@@ -160,24 +123,10 @@ compareBots.innerHTML=[...bots]
   `)
   .join('');
 
-drawChart();
 render();
 }).catch(e=>document.querySelector('#updated').textContent='Fout: '+e.message);
 function render(){const q=document.querySelector('#search').value.toLowerCase(),s=document.querySelector('#sort').value;let a=state.bots.filter(b=>(b.name+' '+b.cid).toLowerCase().includes(q));a.sort((x,y)=>s==='growth'?(y.growth??-Infinity)-(x.growth??-Infinity):s==='messages'?(y.messages??-Infinity)-(x.messages??-Infinity):s==='collectors'?(y.collectors??-Infinity)-(x.collectors??-Infinity):s==='name'?x.name.localeCompare(y.name):y.order-x.order);document.querySelector('#rows').innerHTML=a.map(b=>`<tr><td><a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${b.cid}</a></td><td class="${b.stale?'stale':''}">${b.messages==null?'—':fmt.format(b.messages)}</td><td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${b.growth==null?'—':(b.growth>0?'+':'')+fmt.format(b.growth)}</td><td>${b.collectors==null?'—':fmt.format(b.collectors)}</td></tr>`).join('')}
 document.querySelector('#search').addEventListener('input',render);document.querySelector('#sort').addEventListener('change',render);
-function drawChart(){
-  const cid=document.querySelector('#chartBot').value;
-  const metric=document.querySelector('#chartMetric').value;
-  const period=document.querySelector('#chartPeriod').value;
-
-  if(!cid || !state.history) return;
-
-  let snapshots=[...state.history.snapshots];
-
-  if(period!=='all'){
-    const cutoff=Date.now()-(Number(period)*24*60*60*1000);
-    snapshots=snapshots.filter(s=>new Date(s.timestamp).getTime()>=cutoff);
-  }
 
   // Alleen de laatste meting van iedere kalenderdag gebruiken
   const daily=new Map();
@@ -364,9 +313,7 @@ function drawCompareChart(){
     })
     .join('');
 }
-document.querySelector('#chartBot').addEventListener('change',drawChart);
-document.querySelector('#chartMetric').addEventListener('change',drawChart);
-document.querySelector('#chartPeriod').addEventListener('change',drawChart);
+
 document.querySelector('#compareMetric')
   .addEventListener('change',drawCompareChart);
 
