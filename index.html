@@ -225,11 +225,13 @@ const selected=[...document.querySelectorAll('#compareBots input[type="checkbox"
   zoom:{
     pan:{
       enabled:true,
-      mode:'x'
+      mode:'x',
+      threshold:25
     },
     zoom:{
       wheel:{
-        enabled:true
+        enabled:true,
+        speed:0.05
       },
       pinch:{
         enabled:true
