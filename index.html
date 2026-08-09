@@ -1,4 +1,108 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stats</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#101114;color:#f5f5f5}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:52px;margin:0 0 20px}.muted{color:#b7bac3;margin-bottom:22px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}input,select,button{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}th:first-child,td:first-child{text-align:left}.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}.positive{color:#7ee787;font-weight:700}.negative{color:#ff7b72}.stale{color:#e3b341}.error{color:#ff7b72}@media(max-width:650px){main{padding:18px 14px}h1{font-size:48px}th,td{padding:11px 6px}}
 
+.comparebox{
+  margin:20px 0;
+  padding:14px;
+  background:#fff;
+  color:#111;
+  border-radius:14px;
+}
+
+.compare-controls{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.compare-controls select,
+.compare-controls button{
+  flex:1;
+  min-width:120px;
+}
+
+.date-range{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:12px 0;
+}
+
+.date-field{
+  flex:1;
+  min-width:150px;
+}
+
+.date-field span{
+  display:block;
+  font-size:12px;
+  margin-bottom:4px;
+  color:#555;
+}
+
+.date-field input{
+  width:100%;
+  box-sizing:border-box;
+}
+
+.bot-picker{
+  background:#1a1d23;
+  color:#fff;
+  border:1px solid #343945;
+  border-radius:10px;
+  padding:10px;
+}
+
+.bot-picker summary{
+  cursor:pointer;
+}
+
+#compareBots{
+  max-height:250px;
+  overflow-y:auto;
+  margin-top:10px;
+}
+
+#compareBots label{
+  display:block;
+  padding:6px 2px;
+}
+
+.chart-area{
+  height:340px;
+  position:relative;
+}
+
+#compareChart{
+  width:100% !important;
+  height:100% !important;
+}
+
+.compare-table{
+  margin-top:18px;
+}
+
+.main-table{
+  font-size:13px;
+}
+
+@media(max-width:650px){
+  .main-table{
+    font-size:12px;
+  }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
 
 <body>
 <main>
