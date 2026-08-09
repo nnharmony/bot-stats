@@ -14,41 +14,46 @@
   border-radius:14px;
 }
 
-.compare-controls{
-  display:flex;
+.date-controls{
+  display:grid;
+  grid-template-columns:0.8fr 1.1fr 1.1fr;
   gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:12px;
-}
-
-.compare-controls select,
-.compare-controls button{
-  flex:1;
-  min-width:120px;
-}
-
-.date-range{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin:12px 0;
+  align-items:end;
+  margin-bottom:8px;
 }
 
 .date-field{
-  flex:1;
-  min-width:150px;
+  min-width:0;
 }
 
 .date-field span{
   display:block;
   font-size:12px;
-  margin-bottom:4px;
+  margin:0 0 4px 4px;
   color:#555;
 }
 
 .date-field input{
   width:100%;
+  min-width:0;
   box-sizing:border-box;
+}
+
+.date-controls button{
+  width:100%;
+}
+
+.compare-controls{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.compare-controls select,
+.compare-controls button{
+  width:100%;
+  min-width:0;
 }
 
 .bot-picker{
@@ -112,42 +117,42 @@
 
 <div class="comparebox">
 
-<div class="compare-controls">
+<div class="date-controls">
 
-<select id="compareMetric">
-<option value="messages">Messages</option>
-<option value="collectors">Collectors</option>
-</select>
+  <button id="latestDate">Latest</button>
 
-<select id="comparePeriod">
-<option value="all">All</option>
-<option value="30">30 day</option>
-<option value="7">7 day</option>
-<option value="1">1 day</option>
-</select>
+  <label class="date-field">
+    <span>From</span>
+    <input id="fromDate" type="date">
+  </label>
 
-<select id="displayMode">
-<option value="cid">CID</option>
-<option value="name">Name</option>
-</select>
-
-<button id="resetZoom">Reset zoom</button>
+  <label class="date-field">
+    <span>To</span>
+    <input id="toDate" type="date">
+  </label>
 
 </div>
 
-<div class="date-range">
+<div class="compare-controls">
 
-<label class="date-field">
-<span>From</span>
-<input id="fromDate" type="date">
-</label>
+  <select id="displayMode">
+    <option value="cid">CID</option>
+    <option value="name">Name</option>
+  </select>
 
-<label class="date-field">
-<span>To</span>
-<input id="toDate" type="date">
-</label>
+  <select id="compareMetric">
+    <option value="messages">Messages</option>
+    <option value="collectors">Collectors</option>
+  </select>
 
-<button id="latestDate">Latest</button>
+  <select id="comparePeriod">
+    <option value="all">All</option>
+    <option value="30">30 day</option>
+    <option value="7">7 day</option>
+    <option value="1">1 day</option>
+  </select>
+
+  <button id="resetZoom">Reset</button>
 
 </div>
 
