@@ -68,7 +68,7 @@
 <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
-<body><main><h1>stats</h1><div id="updated" class="muted">Laden…</div>
+<body><main><h1>stats</h1><div id="updated" class="muted">Loading…</div>
 
 <div class="comparebox">
   <div class="compare-controls">
@@ -146,7 +146,7 @@ Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data
  const latest=history.snapshots.at(-1), previous=history.snapshots.at(-2);
  const prev=new Map((previous?.bots||[]).map(b=>[b.cid,b]));
  state.bots=(latest?.bots||[]).map(b=>{const m=state.meta.get(b.cid)||{};return {...b,name:m.name||b.name,url:m.url||b.url,order:m.creation_order??9999,growth:Number.isFinite(b.messages)&&Number.isFinite(prev.get(b.cid)?.messages)?b.messages-prev.get(b.cid).messages:null}});
- document.querySelector('#updated').textContent='Laatste meting: '+new Date(latest.timestamp).toLocaleString('nl-NL');
+ document.querySelector('#updated').textContent='Last updated: '+new Date(latest.timestamp).toLocaleString('nl-NL');
 
 const compareBots=document.querySelector('#compareBots');
 
