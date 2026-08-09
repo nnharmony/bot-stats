@@ -16,7 +16,7 @@
 
 .date-controls{
   display:grid;
-  grid-template-columns:0.8fr 1.1fr 1.1fr;
+  grid-template-columns:0.8fr 1fr 1fr;
   gap:8px;
   align-items:end;
   margin-bottom:8px;
@@ -24,6 +24,7 @@
 
 .date-field{
   min-width:0;
+  overflow:hidden;
 }
 
 .date-field span{
@@ -34,13 +35,18 @@
 }
 
 .date-field input{
+  display:block;
   width:100%;
+  max-width:100%;
   min-width:0;
   box-sizing:border-box;
+  padding:10px 5px;
+  font-size:14px;
 }
 
 .date-controls button{
   width:100%;
+  min-width:0;
 }
 
 .compare-controls{
