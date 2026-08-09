@@ -1,411 +1,1157 @@
-<!doctype html>
-<html lang="nl">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stats</title>
-<style>
-:root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#101114;color:#f5f5f5}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:52px;margin:0 0 20px}.muted{color:#b7bac3;margin-bottom:22px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}input,select,button{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}th:first-child,td:first-child{text-align:left}.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}.positive{color:#7ee787;font-weight:700}.negative{color:#ff7b72}.stale{color:#e3b341}.error{color:#ff7b72}@media(max-width:650px){main{padding:18px 14px}h1{font-size:48px}th,td{padding:11px 6px}}
 
-.comparebox{
-  margin:20px 0;
-  padding:14px;
-  background:#fff;
-  color:#111;
-  border-radius:14px;
-}
 
-.compare-controls{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:12px;
-}
+<body>
+<main>
 
-.compare-controls select,
-.compare-controls button{
-  flex:1;
-  min-width:120px;
-}
-
-.bot-picker{
-  background:#1a1d23;
-  color:#fff;
-  border:1px solid #343945;
-  border-radius:10px;
-  padding:10px;
-}
-
-.bot-picker summary{
-  cursor:pointer;
-}
-
-#compareBots{
-  max-height:250px;
-  overflow-y:auto;
-  margin-top:10px;
-}
-
-#compareBots label{
-  display:block;
-  padding:6px 2px;
-}
-
-.chart-area{
-  height:340px;
-  position:relative;
-}
-
-#compareChart{
-  width:100% !important;
-  height:100% !important;
-}
-
-.compare-table{
-  margin-top:18px;
-}
-</style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
-</head>
-<body><main><h1>stats</h1><div id="updated" class="muted">Loading…</div>
+<h1>stats</h1>
+<div id="updated" class="muted">Loading…</div>
 
 <div class="comparebox">
-  <div class="compare-controls">
-  <select id="compareMetric">
-    <option value="messages">Messages</option>
-    <option value="collectors">Collectors</option>
-  </select>
 
-  <select id="comparePeriod">
-    <option value="all">All</option>
-    <option value="30">30 day</option>
-    <option value="7">7 day</option>
-    <option value="1">1 day</option>
-  </select>
+<div class="compare-controls">
 
-  <select id="displayMode">
-    <option value="cid">CID</option>
-    <option value="name">Name</option>
-  </select>
+<select id="compareMetric">
+<option value="messages">Messages</option>
+<option value="collectors">Collectors</option>
+</select>
 
-  <button id="resetZoom">Reset zoom</button>
+<select id="comparePeriod">
+<option value="all">All</option>
+<option value="30">30 day</option>
+<option value="7">7 day</option>
+<option value="1">1 day</option>
+</select>
+
+<select id="displayMode">
+<option value="cid">CID</option>
+<option value="name">Name</option>
+</select>
+
+<button id="resetZoom">Reset zoom</button>
+
+</div>
+
+<div class="date-range">
+
+<label class="date-field">
+<span>From</span>
+<input id="fromDate" type="date">
+</label>
+
+<label class="date-field">
+<span>To</span>
+<input id="toDate" type="date">
+</label>
+
+<button id="latestDate">Latest</button>
+
 </div>
 
 <details class="bot-picker">
-  <summary id="compareSummary">Bots</summary>
-  <div id="compareBots"></div>
+<summary id="compareSummary">Bots</summary>
+<div id="compareBots"></div>
 </details>
 
 <div class="chart-area">
-  <canvas id="compareChart"></canvas>
+<canvas id="compareChart"></canvas>
 </div>
-  
-  <table class="compare-table">
-    <thead>
-      <tr>
-        <th>Bot</th>
-        <th>Start</th>
-        <th>Now</th>
-        <th>Growth</th>
-      </tr>
-    </thead>
-    <tbody id="compareRows"></tbody>
-  </table>
+
+<table class="compare-table">
+<thead>
+<tr>
+<th>Bot</th>
+<th>Start</th>
+<th>Now</th>
+<th>Growth</th>
+</tr>
+</thead>
+<tbody id="compareRows"></tbody>
+</table>
+
 </div>
+
 <div class="controls">
-  <input id="search" placeholder="Search bot">
 
-  <select id="sort">
-    <option value="creation">Date</option>
-    <option value="growth">Growth</option>
-    <option value="messages">Messages</option>
-    <option value="collectors">Collectors</option>
-    <option value="name">Name</option>
-  </select>
+<input id="search" placeholder="Search bot">
 
-  <input id="historyDate" type="date">
-  <button id="latestDate">Latest</button>
+<select id="sort">
+<option value="creation">Date</option>
+<option value="growth">Growth</option>
+<option value="messages">Messages</option>
+<option value="collectors">Collectors</option>
+<option value="name">Name</option>
+</select>
+
 </div>
-<table><thead><tr><th>Bot</th><th>Messages</th><th>Δ</th><th>C.</th></tr></thead><tbody id="rows"></tbody></table></main>
+
+<table class="main-table">
+<thead>
+<tr>
+<th>Bot</th>
+<th>Start</th>
+<th>Now</th>
+<th>Growth</th>
+<th>C.</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+</main>
+
 <script>
 const fmt=new Intl.NumberFormat('nl-NL');
-const state={bots:[],meta:new Map(),history:null};
+
+const state={
+bots:[],
+meta:new Map(),
+history:null,
+daily:[]
+};
+
 let compareChart=null;
+
+
 function displayLabel(cid){
-  const bot=state.meta.get(cid);
-  const mode=document.querySelector('#displayMode')?.value || 'cid';
+const bot=state.meta.get(cid);
+const mode=document.querySelector('#displayMode')?.value || 'cid';
 
-  return mode==='name'
-   ? (bot?.name || cid)
-   : cid;
+return mode==='name'
+? (bot?.name || cid)
+: cid;
 }
-Promise.all([fetch('bots.json',{cache:'no-store'}).then(r=>r.json()),fetch('data/history.json',{cache:'no-store'}).then(r=>r.json())]).then(([bots,history])=>{
- state.history=history;
- bots.forEach(b=>state.meta.set(b.cid,b));
- const latest=history.snapshots.at(-1), previous=history.snapshots.at(-2);
- const prev=new Map((previous?.bots||[]).map(b=>[b.cid,b]));
- state.bots=(latest?.bots||[]).map(b=>{const m=state.meta.get(b.cid)||{};return {...b,name:m.name||b.name,url:m.url||b.url,order:m.creation_order??9999,growth:Number.isFinite(b.messages)&&Number.isFinite(prev.get(b.cid)?.messages)?b.messages-prev.get(b.cid).messages:null}});
- document.querySelector('#updated').textContent='Last updated: '+new Date(latest.timestamp).toLocaleString('nl-NL');
 
-const compareBots=document.querySelector('#compareBots');
+
+function dayKey(timestamp){
+return new Date(timestamp).toLocaleDateString('sv-SE');
+}
+
+
+function buildDailySnapshots(snapshots){
+const daily=new Map();
+
+snapshots.forEach(snapshot=>{
+daily.set(
+dayKey(snapshot.timestamp),
+snapshot
+);
+});
+
+return [...daily.entries()]
+.sort((a,b)=>a[0].localeCompare(b[0]))
+.map(([date,snapshot])=>({
+date,
+snapshot
+}));
+}
+
+
+function getDailyEntry(date){
+return state.daily.find(
+item=>item.date===date
+) || null;
+}
+
+
+function getLatestEntry(){
+return state.daily.at(-1) || null;
+}
+
+
+function getPreviousEntry(entry){
+if(!entry) return null;
+
+const index=state.daily.findIndex(
+item=>item.date===entry.date
+);
+
+return index>0
+? state.daily[index-1]
+: null;
+}
+
+
+function getSelectedRange(){
+
+const from=
+document.querySelector('#fromDate')?.value || '';
+
+const to=
+document.querySelector('#toDate')?.value || '';
+
+const latest=getLatestEntry();
+
+let endEntry=
+to
+? getDailyEntry(to)
+: latest;
+
+let startEntry=null;
+
+if(from){
+
+startEntry=getDailyEntry(from);
+
+}else if(endEntry){
+
+startEntry=getPreviousEntry(endEntry);
+
+}
+
+return {
+from,
+to,
+startEntry,
+endEntry
+};
+}
+
+
+function getTableRows(){
+
+const {
+startEntry,
+endEntry
+}=getSelectedRange();
+
+if(!endEntry){
+return [];
+}
+
+const startMap=
+new Map(
+(startEntry?.snapshot.bots || [])
+.map(b=>[b.cid,b])
+);
+
+const endMap=
+new Map(
+(endEntry.snapshot.bots || [])
+.map(b=>[b.cid,b])
+);
+
+return [...state.meta.values()]
+.map(meta=>{
+
+const startBot=
+startMap.get(meta.cid);
+
+const endBot=
+endMap.get(meta.cid);
+
+const startMessages=
+Number.isFinite(startBot?.messages)
+? startBot.messages
+: null;
+
+const endMessages=
+Number.isFinite(endBot?.messages)
+? endBot.messages
+: null;
+
+const growth=
+Number.isFinite(startMessages) &&
+Number.isFinite(endMessages)
+? endMessages-startMessages
+: null;
+
+return {
+cid:meta.cid,
+name:meta.name || meta.cid,
+url:meta.url,
+order:meta.creation_order ?? 9999,
+startMessages,
+messages:endMessages,
+growth,
+collectors:
+Number.isFinite(endBot?.collectors)
+? endBot.collectors
+: null,
+stale:endBot?.stale || false
+};
+
+});
+}
+
+
+function getGraphDays(){
+
+let days=[...state.daily];
+
+const from=
+document.querySelector('#fromDate')?.value || '';
+
+const to=
+document.querySelector('#toDate')?.value || '';
+
+const period=
+document.querySelector('#comparePeriod').value;
+
+
+if(from){
+
+const endDate=
+to || getLatestEntry()?.date;
+
+days=days.filter(item=>
+item.date>=from &&
+(!endDate || item.date<=endDate)
+);
+
+return days;
+}
+
+
+if(to){
+
+days=days.filter(
+item=>item.date<=to
+);
+
+}
+
+
+if(period!=='all' && days.length){
+
+const endTime=
+new Date(
+days.at(-1).snapshot.timestamp
+).getTime();
+
+const cutoff=
+endTime-
+(
+Number(period)*
+24*60*60*1000
+);
+
+days=days.filter(
+item=>
+new Date(
+item.snapshot.timestamp
+).getTime()>=cutoff
+);
+
+}
+
+return days;
+}
+
+
+Promise.all([
+
+fetch(
+'bots.json',
+{cache:'no-store'}
+).then(r=>r.json()),
+
+fetch(
+'data/history.json',
+{cache:'no-store'}
+).then(r=>r.json())
+
+]).then(([bots,history])=>{
+
+state.history=history;
+
+bots.forEach(
+b=>state.meta.set(b.cid,b)
+);
+
+state.daily=
+buildDailySnapshots(
+history.snapshots || []
+);
+
+
+const latest=
+history.snapshots.at(-1);
+
+const previous=
+history.snapshots.at(-2);
+
+const prev=
+new Map(
+(previous?.bots||[])
+.map(b=>[b.cid,b])
+);
+
+
+state.bots=
+(latest?.bots||[])
+.map(b=>{
+
+const m=
+state.meta.get(b.cid)||{};
+
+return {
+...b,
+name:m.name||b.name,
+url:m.url||b.url,
+order:
+m.creation_order??9999,
+growth:
+Number.isFinite(b.messages) &&
+Number.isFinite(
+prev.get(b.cid)?.messages
+)
+? b.messages-
+prev.get(b.cid).messages
+: null
+};
+
+});
+
+
+if(latest){
+
+document.querySelector('#updated')
+.textContent=
+'Last updated: '+
+new Date(
+latest.timestamp
+).toLocaleString('nl-NL');
+
+}else{
+
+document.querySelector('#updated')
+.textContent=
+'No measurements yet';
+
+}
+
+
+if(state.daily.length){
+
+const minDate=
+state.daily[0].date;
+
+const maxDate=
+state.daily.at(-1).date;
+
+document.querySelector('#fromDate')
+.min=minDate;
+
+document.querySelector('#fromDate')
+.max=maxDate;
+
+document.querySelector('#toDate')
+.min=minDate;
+
+document.querySelector('#toDate')
+.max=maxDate;
+
+}
+
+
+const compareBots=
+document.querySelector(
+'#compareBots'
+);
+
 
 compareBots.innerHTML=`
-  <label>
-    <input type="checkbox" id="selectAllBots">
-    Select all
-  </label>
-` + [...bots]
-  .sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
-  .map(b=>`
-    <label>
-      <input type="checkbox" value="${b.cid}">
-      ${displayLabel(b.cid)}
-    </label>
-  `)
-  .join('');
+
+<label>
+<input
+type="checkbox"
+id="selectAllBots"
+>
+Select all
+</label>
+
+` +
+
+[...bots]
+
+.sort(
+(a,b)=>
+(b.creation_order??9999)-
+(a.creation_order??9999)
+)
+
+.map(b=>`
+
+<label>
+
+<input
+type="checkbox"
+value="${b.cid}"
+>
+
+${displayLabel(b.cid)}
+
+</label>
+
+`)
+
+.join('');
+
 
 render();
-}).catch(e=>document.querySelector('#updated').textContent='Fout: '+e.message);
 
-function getTableBots(){
-  const chosen=document.querySelector('#historyDate')?.value;
+}).catch(e=>{
 
-  if(!chosen){
-    return state.bots;
-  }
+document.querySelector('#updated')
+.textContent=
+'Error: '+e.message;
 
-  const snapshots=state.history?.snapshots || [];
-  let targetIndex=-1;
+});
 
-  snapshots.forEach((snapshot,index)=>{
-    const day=new Date(snapshot.timestamp).toLocaleDateString('sv-SE');
 
-    if(day===chosen){
-      targetIndex=index;
-    }
-  });
+function render(){
 
-  if(targetIndex===-1){
-    return [];
-  }
+const q=
+document.querySelector('#search')
+.value
+.toLowerCase();
 
-  const target=snapshots[targetIndex];
-  const previous=snapshots[targetIndex-1];
+const s=
+document.querySelector('#sort')
+.value;
 
-  const prev=new Map(
-    (previous?.bots || []).map(b=>[b.cid,b])
-  );
 
-  return (target.bots || []).map(b=>{
-    const m=state.meta.get(b.cid) || {};
+let a=
+getTableRows()
+.filter(
+b=>
+(
+b.name+
+' '+
+b.cid
+)
+.toLowerCase()
+.includes(q)
+);
 
-    return {
-      ...b,
-      name:m.name || b.name,
-      url:m.url || b.url,
-      order:m.creation_order ?? 9999,
-      growth:
-        Number.isFinite(b.messages) &&
-        Number.isFinite(prev.get(b.cid)?.messages)
-          ? b.messages-prev.get(b.cid).messages
-          : null
-    };
-  });
+
+a.sort((x,y)=>
+
+s==='growth'
+? (y.growth??-Infinity)-
+(x.growth??-Infinity)
+
+: s==='messages'
+? (y.messages??-Infinity)-
+(x.messages??-Infinity)
+
+: s==='collectors'
+? (y.collectors??-Infinity)-
+(x.collectors??-Infinity)
+
+: s==='name'
+? x.name.localeCompare(y.name)
+
+: y.order-x.order
+
+);
+
+
+document.querySelector('#rows')
+.innerHTML=
+
+a.map(b=>`
+
+<tr>
+
+<td>
+<a
+href="${b.url}"
+target="_blank"
+style="
+color:inherit;
+text-decoration:none
+"
+>
+${displayLabel(b.cid)}
+</a>
+</td>
+
+<td>
+${
+b.startMessages==null
+? '—'
+: fmt.format(
+b.startMessages
+)
+}
+</td>
+
+<td
+class="${
+b.stale
+? 'stale'
+: ''
+}"
+>
+${
+b.messages==null
+? '—'
+: fmt.format(
+b.messages
+)
+}
+</td>
+
+<td
+class="${
+b.growth>0
+? 'positive'
+: b.growth<0
+? 'negative'
+: ''
+}"
+>
+${
+b.growth==null
+? '—'
+:
+(
+b.growth>0
+? '+'
+: ''
+)+
+fmt.format(
+b.growth
+)
+}
+</td>
+
+<td>
+${
+b.collectors==null
+? '—'
+: fmt.format(
+b.collectors
+)
+}
+</td>
+
+</tr>
+
+`).join('');
+
 }
 
-function render(){const q=document.querySelector('#search').value.toLowerCase(),s=document.querySelector('#sort').value;let a=getTableBots().filter(b=>(b.name+' '+b.cid).toLowerCase().includes(q));a.sort((x,y)=>s==='growth'?(y.growth??-Infinity)-(x.growth??-Infinity):s==='messages'?(y.messages??-Infinity)-(x.messages??-Infinity):s==='collectors'?(y.collectors??-Infinity)-(x.collectors??-Infinity):s==='name'?x.name.localeCompare(y.name):y.order-x.order);document.querySelector('#rows').innerHTML=a.map(b=>`<tr><td><a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${displayLabel(b.cid)}</a></td><td class="${b.stale?'stale':''}">${b.messages==null?'—':fmt.format(b.messages)}</td><td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${b.growth==null?'—':(b.growth>0?'+':'')+fmt.format(b.growth)}</td><td>${b.collectors==null?'—':fmt.format(b.collectors)}</td></tr>`).join('')}
-document.querySelector('#search').addEventListener('input',render);document.querySelector('#sort').addEventListener('change',render);
+
+document.querySelector('#search')
+.addEventListener(
+'input',
+render
+);
+
+
+document.querySelector('#sort')
+.addEventListener(
+'change',
+render
+);
+
 
 function drawCompareChart(){
-  const metric=document.querySelector('#compareMetric').value;
-  const period=document.querySelector('#comparePeriod').value;
 
-const selected=[...document.querySelectorAll('#compareBots input[type="checkbox"]:checked:not(#selectAllBots)')]
-  .map(i=>i.value);
+const metric=
+document.querySelector(
+'#compareMetric'
+).value;
 
-  document.querySelector('#compareSummary').textContent=
-    selected.length===0
-      ? 'Bots'
-      : selected.length+' bots selected';
 
-  if(compareChart){
-    compareChart.destroy();
-    compareChart=null;
-  }
+const selected=
+[
+...document.querySelectorAll(
+'#compareBots input[type="checkbox"]:checked:not(#selectAllBots)'
+)
+]
+.map(
+i=>i.value
+);
 
-  document.querySelector('#compareRows').innerHTML='';
 
-  if(selected.length===0 || !state.history) return;
+document.querySelector(
+'#compareSummary'
+).textContent=
 
-  let snapshots=[...state.history.snapshots];
+selected.length===0
+? 'Bots'
+: selected.length+
+' bots selected';
 
-  if(period!=='all'){
-    const cutoff=Date.now()-(Number(period)*24*60*60*1000);
-    snapshots=snapshots.filter(
-      s=>new Date(s.timestamp).getTime()>=cutoff
-    );
-  }
 
-  const daily=new Map();
+if(compareChart){
 
-  snapshots.forEach(s=>{
-    const date=new Date(s.timestamp);
-    const key=date.toLocaleDateString('sv-SE');
-    daily.set(key,s);
-  });
+compareChart.destroy();
 
-  const days=[...daily.values()];
+compareChart=null;
 
-  const labels=days.map(s=>
-    new Date(s.timestamp).toLocaleDateString('nl-NL',{
-      day:'2-digit',
-      month:'2-digit',
-      year:'2-digit'
-    })
-  );
-
-  const datasets=selected.map(cid=>{
-    const values=days.map(s=>{
-      const bot=(s.bots||[]).find(b=>b.cid===cid);
-      return bot && Number.isFinite(bot[metric])
-        ? bot[metric]
-        : null;
-    });
-
-    return {
-      label:displayLabel(cid),
-      data:values,
-      tension:0.2,
-      spanGaps:true
-    };
-  });
-
-  compareChart=new Chart(
-    document.querySelector('#compareChart'),
-    {
-      type:'line',
-      data:{
-        labels,
-        datasets
-      },
-      options:{
-        responsive:true,
-        maintainAspectRatio:false,
-        interaction:{
-          intersect:false,
-          mode:'index'
-        },
-        plugins:{
-  zoom:{
-    pan:{
-      enabled:true,
-      mode:'x',
-      threshold:25
-    },
-    zoom:{
-      wheel:{
-        enabled:true,
-        speed:0.05
-      },
-      pinch:{
-        enabled:true
-      },
-      mode:'x'
-    }
-  }
-},
-        scales:{
-          y:{
-            ticks:{
-              callback:value=>fmt.format(value)
-            }
-          }
-        }
-      }
-    }
-  );
-
-  document.querySelector('#compareRows').innerHTML=
-    selected.map(cid=>{
-      const values=days
-        .map(s=>{
-          const bot=(s.bots||[]).find(b=>b.cid===cid);
-          return bot && Number.isFinite(bot[metric])
-            ? bot[metric]
-            : null;
-        })
-        .filter(v=>v!==null);
-
-      if(!values.length){
-        return `
-          <tr>
-            <td>${displayLabel(cid)}</td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-        `;
-      }
-
-      const start=values[0];
-      const current=values.at(-1);
-      const growth=current-start;
-
-      return `
-        <tr>
-          <td>${displayLabel(cid)}</td>
-          <td>${fmt.format(start)}</td>
-          <td>${fmt.format(current)}</td>
-          <td class="${growth>0?'positive':growth<0?'negative':''}">
-            ${growth>0?'+':''}${fmt.format(growth)}
-          </td>
-        </tr>
-      `;
-    })
-    .join('');
 }
 
+
+document.querySelector(
+'#compareRows'
+).innerHTML='';
+
+
+if(
+selected.length===0 ||
+!state.history
+){
+return;
+}
+
+
+const days=
+getGraphDays();
+
+
+if(!days.length){
+return;
+}
+
+
+const labels=
+
+days.map(item=>
+
+new Date(
+item.snapshot.timestamp
+)
+.toLocaleDateString(
+'nl-NL',
+{
+day:'2-digit',
+month:'2-digit',
+year:'2-digit'
+}
+)
+
+);
+
+
+const datasets=
+
+selected.map(cid=>{
+
+const values=
+
+days.map(item=>{
+
+const bot=
+(
+item.snapshot.bots||
+[]
+)
+.find(
+b=>b.cid===cid
+);
+
+return (
+bot &&
+Number.isFinite(
+bot[metric]
+)
+)
+? bot[metric]
+: null;
+
+});
+
+
+return {
+
+label:
+displayLabel(cid),
+
+data:
+values,
+
+tension:
+0.2,
+
+spanGaps:
+true
+
+};
+
+});
+
+
+compareChart=
+new Chart(
+
+document.querySelector(
+'#compareChart'
+),
+
+{
+
+type:'line',
+
+data:{
+labels,
+datasets
+},
+
+options:{
+
+responsive:true,
+
+maintainAspectRatio:false,
+
+interaction:{
+intersect:false,
+mode:'index'
+},
+
+plugins:{
+
+zoom:{
+
+pan:{
+enabled:true,
+mode:'x',
+threshold:25
+},
+
+zoom:{
+
+wheel:{
+enabled:true,
+speed:0.05
+},
+
+pinch:{
+enabled:true
+},
+
+mode:'x'
+
+}
+
+}
+
+},
+
+scales:{
+
+y:{
+
+ticks:{
+
+callback:
+value=>
+fmt.format(
+value
+)
+
+}
+
+}
+
+}
+
+}
+
+}
+
+);
+
+
+document.querySelector(
+'#compareRows'
+).innerHTML=
+
+selected.map(cid=>{
+
+const values=
+
+days
+.map(item=>{
+
+const bot=
+(
+item.snapshot.bots||
+[]
+)
+.find(
+b=>b.cid===cid
+);
+
+return (
+bot &&
+Number.isFinite(
+bot[metric]
+)
+)
+? bot[metric]
+: null;
+
+})
+
+.filter(
+v=>v!==null
+);
+
+
+if(!values.length){
+
+return `
+
+<tr>
+<td>
+${displayLabel(cid)}
+</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+
+`;
+
+}
+
+
+const start=
+values[0];
+
+const current=
+values.at(-1);
+
+const growth=
+current-start;
+
+
+return `
+
+<tr>
+
+<td>
+${displayLabel(cid)}
+</td>
+
+<td>
+${fmt.format(start)}
+</td>
+
+<td>
+${fmt.format(current)}
+</td>
+
+<td
+class="${
+growth>0
+? 'positive'
+: growth<0
+? 'negative'
+: ''
+}"
+>
+${
+growth>0
+? '+'
+: ''
+}${fmt.format(growth)}
+</td>
+
+</tr>
+
+`;
+
+})
+
+.join('');
+
+}
+
+
 document.querySelector('#compareMetric')
-  .addEventListener('change',drawCompareChart);
+.addEventListener(
+'change',
+drawCompareChart
+);
+
+
 document.querySelector('#comparePeriod')
-  .addEventListener('change',drawCompareChart);
+.addEventListener(
+'change',
+drawCompareChart
+);
+
+
 document.querySelector('#resetZoom')
-  .addEventListener('click',()=>{
-    if(compareChart) compareChart.resetZoom();
-  });
+.addEventListener(
+'click',
+()=>{
+if(compareChart){
+compareChart.resetZoom();
+}
+}
+);
+
+
 document.querySelector('#compareBots')
-  .addEventListener('change',e=>{
-    if(e.target.id==='selectAllBots'){
-      document.querySelectorAll('#compareBots input[type="checkbox"]:not(#selectAllBots)')
-        .forEach(cb=>cb.checked=e.target.checked);
-    }
-    drawCompareChart();
-  });
-  document.querySelector('#historyDate')
-  .addEventListener('change',render);
+.addEventListener(
+'change',
+e=>{
+
+if(
+e.target.id===
+'selectAllBots'
+){
+
+document.querySelectorAll(
+'#compareBots input[type="checkbox"]:not(#selectAllBots)'
+)
+.forEach(
+cb=>
+cb.checked=
+e.target.checked
+);
+
+}
+
+drawCompareChart();
+
+}
+);
+
+
+function updateDateSelection(){
+
+const from=
+document.querySelector(
+'#fromDate'
+).value;
+
+const to=
+document.querySelector(
+'#toDate'
+).value;
+
+
+if(
+from &&
+to &&
+from>to
+){
+
+document.querySelector(
+'#toDate'
+).value=
+from;
+
+}
+
+
+document.querySelector(
+'#comparePeriod'
+).disabled=
+Boolean(
+document.querySelector(
+'#fromDate'
+).value
+);
+
+
+render();
+
+drawCompareChart();
+
+}
+
+
+document.querySelector('#fromDate')
+.addEventListener(
+'change',
+updateDateSelection
+);
+
+
+document.querySelector('#toDate')
+.addEventListener(
+'change',
+updateDateSelection
+);
+
 
 document.querySelector('#latestDate')
-  .addEventListener('click',()=>{
-    document.querySelector('#historyDate').value='';
-    render();
-  });
+.addEventListener(
+'click',
+()=>{
+
+document.querySelector(
+'#fromDate'
+).value='';
+
+document.querySelector(
+'#toDate'
+).value='';
+
+document.querySelector(
+'#comparePeriod'
+).disabled=false;
+
+render();
+
+drawCompareChart();
+
+}
+);
+
+
 document.querySelector('#displayMode')
-  .addEventListener('change',()=>{
-    document.querySelectorAll('#compareBots label').forEach(label=>{
-      const input=label.querySelector('input[type="checkbox"]');
+.addEventListener(
+'change',
+()=>{
 
-      if(input && input.id!=='selectAllBots'){
-        const textNode=[...label.childNodes]
-          .find(node=>node.nodeType===Node.TEXT_NODE);
+document.querySelectorAll(
+'#compareBots label'
+)
+.forEach(label=>{
 
-        if(textNode){
-          textNode.textContent=' '+displayLabel(input.value);
-        }
-      }
-    });
+const input=
+label.querySelector(
+'input[type="checkbox"]'
+);
 
-    render();
-    drawCompareChart();
-  });
-</script></body></html>
+
+if(
+input &&
+input.id!==
+'selectAllBots'
+){
+
+const textNode=
+[...label.childNodes]
+.find(
+node=>
+node.nodeType===
+Node.TEXT_NODE
+);
+
+
+if(textNode){
+
+textNode.textContent=
+' '+
+displayLabel(
+input.value
+);
+
+}
+
+}
+
+});
+
+
+render();
+
+drawCompareChart();
+
+}
+);
+
+</script>
+
+</body>
+</html>
