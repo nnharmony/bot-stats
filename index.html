@@ -14,39 +14,54 @@
   border-radius:14px;
 }
 
+.date-labels{
+  display:grid;
+  grid-template-columns:0.8fr 1fr 1fr;
+  gap:8px;
+  margin-bottom:4px;
+  text-align:center;
+  font-size:12px;
+  color:#555;
+}
+
 .date-controls{
   display:grid;
   grid-template-columns:0.8fr 1fr 1fr;
   gap:8px;
-  align-items:end;
   margin-bottom:8px;
 }
 
-.date-field{
+.date-controls button,
+.date-box{
   min-width:0;
-  overflow:hidden;
-}
-
-.date-field span{
-  display:block;
-  font-size:12px;
-  margin:0 0 4px 4px;
-  color:#555;
-}
-
-.date-field input{
-  display:block;
-  width:100%;
-  max-width:100%;
-  min-width:0;
+  height:52px;
   box-sizing:border-box;
-  padding:10px 5px;
-  font-size:14px;
+  border:1px solid #343945;
+  border-radius:10px;
+  background:#1a1d23;
 }
 
 .date-controls button{
   width:100%;
+  padding:0 6px;
+}
+
+.date-box{
+  display:flex;
+  align-items:center;
+  padding:0 6px;
+}
+
+.date-box input[type="date"]{
+  display:block;
+  width:100%;
   min-width:0;
+  border:0;
+  padding:0;
+  margin:0;
+  background:transparent;
+  color:#fff;
+  font-size:13px;
 }
 
 .compare-controls{
@@ -123,20 +138,22 @@
 
 <div class="comparebox">
 
-<div class="date-controls">
+<div class="date-labels">
+  <span></span>
+  <span>From</span>
+  <span>To</span>
+</div>
 
+<div class="date-controls">
   <button id="latestDate">Latest</button>
 
-  <label class="date-field">
-    <span>From</span>
+  <div class="date-box">
     <input id="fromDate" type="date">
-  </label>
+  </div>
 
-  <label class="date-field">
-    <span>To</span>
+  <div class="date-box">
     <input id="toDate" type="date">
-  </label>
-
+  </div>
 </div>
 
 <div class="compare-controls">
