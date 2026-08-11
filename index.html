@@ -1058,109 +1058,223 @@ value
 );
 
 
+const compareData=
+
+  selected.map(cid=>{
+
+    const rawValues=
+
+      days.map(item=>{
+
+        const bot=
+          (
+            item.snapshot.bots||
+            []
+          )
+          .find(
+            b=>b.cid===cid
+          );
+
+        if(!bot){
+          return null;
+        }
+
+        const sourceMetric=
+          metric==='growth'
+            ? 'messages'
+            : metric;
+
+        return Number.isFinite(
+          bot[sourceMetric]
+        )
+          ? bot[sourceMetric]
+          : null;
+
+      })
+
+      .filter(
+        value=>value!==null
+      );
+
+
+    if(!rawValues.length){
+
+      return {
+        cid,
+        start:null,
+        current:null,
+        growth:null
+      };
+
+    }
+
+
+    const first=
+      rawValues[0];
+
+    const last=
+      rawValues.at(-1);
+
+
+    if(metric==='growth'){
+
+      const growth=
+        last-first;
+
+      return {
+        cid,
+        start:0,
+        current:growth,
+        growth:growth
+      };
+
+    }
+
+
+    return {
+      cid,
+      start:first,
+      current:last,
+      growth:last-first
+    };
+
+  });
+
+
+const totalStart=
+  compareData.reduce(
+    (sum,row)=>
+      sum+(row.start??0),
+    0
+  );
+
+const totalCurrent=
+  compareData.reduce(
+    (sum,row)=>
+      sum+(row.current??0),
+    0
+  );
+
+const totalGrowth=
+  compareData.reduce(
+    (sum,row)=>
+      sum+(row.growth??0),
+    0
+  );
+
+
+const compareRowsHtml=
+
+  compareData.map(row=>{
+
+    if(
+      row.start===null ||
+      row.current===null
+    ){
+
+      return `
+
+        <tr>
+          <td>${displayLabel(row.cid)}</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+
+      `;
+
+    }
+
+
+    return `
+
+      <tr>
+
+        <td>
+          ${displayLabel(row.cid)}
+        </td>
+
+        <td>
+          ${fmt.format(row.start)}
+        </td>
+
+        <td>
+          ${
+            row.current>0 &&
+            metric==='growth'
+              ? '+'
+              : ''
+          }${fmt.format(row.current)}
+        </td>
+
+        <td
+          class="${
+            row.growth>0
+              ? 'positive'
+              : row.growth<0
+                ? 'negative'
+                : ''
+          }"
+        >
+          ${
+            row.growth>0
+              ? '+'
+              : ''
+          }${fmt.format(row.growth)}
+        </td>
+
+      </tr>
+
+    `;
+
+  }).join('');
+
+
+const compareTotalHtml=`
+
+  <tr class="total-row">
+
+    <td>Total</td>
+
+    <td>
+      ${fmt.format(totalStart)}
+    </td>
+
+    <td>
+      ${
+        totalCurrent>0 &&
+        metric==='growth'
+          ? '+'
+          : ''
+      }${fmt.format(totalCurrent)}
+    </td>
+
+    <td
+      class="${
+        totalGrowth>0
+          ? 'positive'
+          : totalGrowth<0
+            ? 'negative'
+            : ''
+      }"
+    >
+      ${
+        totalGrowth>0
+          ? '+'
+          : ''
+      }${fmt.format(totalGrowth)}
+    </td>
+
+  </tr>
+
+`;
+
+
 document.querySelector(
-'#compareRows'
+  '#compareRows'
 ).innerHTML=
-
-selected.map(cid=>{
-
-const values=
-
-days
-.map(item=>{
-
-const bot=
-(
-item.snapshot.bots||
-[]
-)
-.find(
-b=>b.cid===cid
-);
-
-return (
-bot &&
-Number.isFinite(
-bot[metric]
-)
-)
-? bot[metric]
-: null;
-
-})
-
-.filter(
-v=>v!==null
-);
-
-
-if(!values.length){
-
-return `
-
-<tr>
-<td>
-${displayLabel(cid)}
-</td>
-<td>—</td>
-<td>—</td>
-<td>—</td>
-</tr>
-
-`;
-
-}
-
-
-const start=
-values[0];
-
-const current=
-values.at(-1);
-
-const growth=
-current-start;
-
-
-return `
-
-<tr>
-
-<td>
-${displayLabel(cid)}
-</td>
-
-<td>
-${fmt.format(start)}
-</td>
-
-<td>
-${fmt.format(current)}
-</td>
-
-<td
-class="${
-growth>0
-? 'positive'
-: growth<0
-? 'negative'
-: ''
-}"
->
-${
-growth>0
-? '+'
-: ''
-}${fmt.format(growth)}
-</td>
-
-</tr>
-
-`;
-
-})
-
-.join('');
+  compareRowsHtml+
+  compareTotalHtml;
 
 }
 
