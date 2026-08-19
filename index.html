@@ -4,7 +4,39 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Stats</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,sans-serif}body{margin:0;background:#101114;color:#f5f5f5}main{max-width:1050px;margin:auto;padding:20px}h1{font-size:52px;margin:0 0 20px}.muted{color:#b7bac3;margin-bottom:22px}.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}input,select,button{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse}th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}th:first-child,td:first-child{text-align:left}.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}.positive{color:#7ee787;font-weight:700}.negative{color:#ff7b72}.stale{color:#e3b341}.error{color:#ff7b72}@media(max-width:650px){main{padding:18px 14px}h1{font-size:48px}th,td{padding:11px 6px}}
+:root{color-scheme:dark;font-family:system-ui,sans-serif}
+body{margin:0;background:#101114;color:#f5f5f5}
+main{max-width:1050px;margin:auto;padding:20px}
+h1{font-size:52px;margin:0 0 20px}
+.muted{color:#b7bac3;margin-bottom:22px}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input,select,button{background:#1a1d23;color:#fff;border:1px solid #343945;border-radius:10px;padding:10px}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 10px;border-bottom:1px solid #30343d;text-align:right}
+th:first-child,td:first-child{text-align:left}
+.cid{display:block;color:#8d93a1;font-size:12px;margin-top:3px}
+.positive{color:#7ee787;font-weight:700}
+.negative{color:#ff7b72}
+.stale{color:#e3b341}
+.error{color:#ff7b72}
+
+.all-bots{
+  margin:0 0 20px;
+  border:1px solid #30343d;
+  border-radius:12px;
+  background:#15171c;
+}
+
+.all-bots summary{
+  cursor:pointer;
+  padding:12px 14px;
+  font-size:14px;
+  font-weight:700;
+}
+
+.all-bots-content{
+  padding:0 12px 12px;
+}
 
 .comparebox{
   margin:20px 0;
@@ -87,6 +119,7 @@
 
 .bot-picker summary{
   cursor:pointer;
+  font-size:13px;
 }
 
 #compareBots{
@@ -98,7 +131,7 @@
 #compareBots label{
   display:block;
   padding:6px 2px;
-  font-size:13px
+  font-size:13px;
 }
 
 .chart-area{
@@ -119,24 +152,21 @@
 .main-table{
   font-size:13px;
 }
+
 .total-row td{
   font-weight:700;
   border-top:2px solid #f5f5f5;
 }
 
 @media(max-width:650px){
-  .compare-table{
-    font-size:12px;
-  }
-  #compareBots label{
-    font-size:12px;
-  }
-  .bot-picker summary{
-    font-size:12px;
-  }
-  .main-table{
-    font-size:12px;
-  }
+  main{padding:18px 14px}
+  h1{font-size:48px}
+  th,td{padding:11px 6px}
+  .compare-table{font-size:12px}
+  #compareBots label{font-size:12px}
+  .bot-picker summary{font-size:12px}
+  .main-table{font-size:12px}
+  .all-bots summary{font-size:13px}
 }
 </style>
 
@@ -151,101 +181,104 @@
 <h1>stats</h1>
 <div id="updated" class="muted">Loading…</div>
 
-<div class="comparebox">
+<details class="all-bots">
+  <summary>All bots</summary>
 
-<div class="date-labels">
-  <span>From</span>
-  <span>To</span>
-  <span></span>
-</div>
+  <div class="all-bots-content">
 
-<div class="date-controls">
-  
-  <div class="date-box">
-    <input id="fromDate" type="date">
+    <div class="controls">
+      <input id="search" placeholder="Search bot">
+
+      <select id="sort">
+        <option value="creation">Latest</option>
+        <option value="growth">Growth</option>
+        <option value="messages">Messages</option>
+        <option value="collectors">Collectors</option>
+        <option value="name">Name</option>
+      </select>
+    </div>
+
+    <table class="main-table">
+      <thead>
+        <tr>
+          <th>Bot</th>
+          <th>Start</th>
+          <th>Now</th>
+          <th>Growth</th>
+          <th>C.</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
   </div>
-  
-  <div class="date-box">
-    <input id="toDate" type="date">
-  </div>
-  
-  <button id="latestDate">Latest</button>
-
-</div>
-
-<div class="compare-controls">
-
-  <select id="displayMode">
-    <option value="cid">CID</option>
-    <option value="name">Name</option>
-  </select>
-
-<select id="compareMetric">
-  <option value="messages">Messages</option>
-  <option value="growth">Growth</option>
-  <option value="collectors">Collectors</option>
-</select>
-
-  <select id="comparePeriod">
-    <option value="all">All</option>
-    <option value="30">30 day</option>
-    <option value="7">7 day</option>
-    <option value="1">1 day</option>
-  </select>
-
-  <button id="resetZoom">Zoom 0</button>
-
-</div>
-
-<details class="bot-picker">
-<summary id="compareSummary">Bots</summary>
-<div id="compareBots"></div>
 </details>
 
-<div class="chart-area">
-<canvas id="compareChart"></canvas>
+<div class="comparebox">
+
+  <div class="date-labels">
+    <span>From</span>
+    <span>To</span>
+    <span></span>
+  </div>
+
+  <div class="date-controls">
+    <div class="date-box">
+      <input id="fromDate" type="date">
+    </div>
+
+    <div class="date-box">
+      <input id="toDate" type="date">
+    </div>
+
+    <button id="latestDate">Latest</button>
+  </div>
+
+  <div class="compare-controls">
+
+    <select id="displayMode">
+      <option value="cid">CID</option>
+      <option value="name">Name</option>
+    </select>
+
+    <select id="compareMetric">
+      <option value="messages">Messages</option>
+      <option value="growth">Growth</option>
+      <option value="collectors">Collectors</option>
+    </select>
+
+    <select id="comparePeriod">
+      <option value="all">All</option>
+      <option value="30">30 day</option>
+      <option value="7">7 day</option>
+      <option value="1">1 day</option>
+    </select>
+
+    <button id="resetZoom">Zoom 0</button>
+  </div>
+
+  <details class="bot-picker">
+    <summary id="compareSummary">Bots</summary>
+    <div id="compareBots"></div>
+  </details>
+
+  <div class="chart-area">
+    <canvas id="compareChart"></canvas>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Bot</th>
+        <th>Start</th>
+        <th>Now</th>
+        <th>Growth</th>
+      </tr>
+    </thead>
+    <tbody id="compareRows"></tbody>
+  </table>
+
 </div>
-
-<table class="compare-table">
-<thead>
-<tr>
-<th>Bot</th>
-<th>Start</th>
-<th>Now</th>
-<th>Growth</th>
-</tr>
-</thead>
-<tbody id="compareRows"></tbody>
-</table>
-
-</div>
-
-<div class="controls">
-
-<input id="search" placeholder="Search bot">
-
-<select id="sort">
-<option value="creation">Latest</option>
-<option value="growth">Growth</option>
-<option value="messages">Messages</option>
-<option value="collectors">Collectors</option>
-<option value="name">Name</option>
-</select>
-
-</div>
-
-<table class="main-table">
-<thead>
-<tr>
-<th>Bot</th>
-<th>Start</th>
-<th>Now</th>
-<th>Growth</th>
-<th>C.</th>
-</tr>
-</thead>
-<tbody id="rows"></tbody>
-</table>
 
 </main>
 
@@ -253,404 +286,387 @@
 const fmt=new Intl.NumberFormat('nl-NL');
 
 const state={
-bots:[],
-meta:new Map(),
-history:null,
-daily:[]
+  bots:[],
+  meta:new Map(),
+  history:null,
+  daily:[]
 };
 
 let compareChart=null;
 
 
 function displayLabel(cid){
-const bot=state.meta.get(cid);
-const mode=document.querySelector('#displayMode')?.value || 'cid';
+  if(cid==='__total__') return 'Total';
 
-return mode==='name'
-? (bot?.name || cid)
-: cid;
+  const bot=state.meta.get(cid);
+  const mode=document.querySelector('#displayMode')?.value || 'cid';
+
+  return mode==='name'
+    ? (bot?.name || cid)
+    : cid;
 }
 
 
 function dayKey(timestamp){
-return new Date(timestamp).toLocaleDateString('sv-SE');
+  return new Date(timestamp).toLocaleDateString('sv-SE');
 }
 
 
 function buildDailySnapshots(snapshots){
-const daily=new Map();
+  const daily=new Map();
 
-snapshots.forEach(snapshot=>{
-daily.set(
-dayKey(snapshot.timestamp),
-snapshot
-);
-});
+  snapshots.forEach(snapshot=>{
+    daily.set(
+      dayKey(snapshot.timestamp),
+      snapshot
+    );
+  });
 
-return [...daily.entries()]
-.sort((a,b)=>a[0].localeCompare(b[0]))
-.map(([date,snapshot])=>({
-date,
-snapshot
-}));
+  return [...daily.entries()]
+    .sort((a,b)=>a[0].localeCompare(b[0]))
+    .map(([date,snapshot])=>({
+      date,
+      snapshot
+    }));
 }
 
 
 function getDailyEntry(date){
-return state.daily.find(
-item=>item.date===date
-) || null;
+  return state.daily.find(
+    item=>item.date===date
+  ) || null;
 }
 
 
 function getLatestEntry(){
-return state.daily.at(-1) || null;
+  return state.daily.at(-1) || null;
 }
 
 
 function getPreviousEntry(entry){
-if(!entry) return null;
+  if(!entry) return null;
 
-const index=state.daily.findIndex(
-item=>item.date===entry.date
-);
+  const index=state.daily.findIndex(
+    item=>item.date===entry.date
+  );
 
-return index>0
-? state.daily[index-1]
-: null;
+  return index>0
+    ? state.daily[index-1]
+    : null;
 }
 
 
 function getSelectedRange(){
+  const from=
+    document.querySelector('#fromDate')?.value || '';
 
-const from=
-document.querySelector('#fromDate')?.value || '';
+  const to=
+    document.querySelector('#toDate')?.value || '';
 
-const to=
-document.querySelector('#toDate')?.value || '';
+  const latest=getLatestEntry();
 
-const latest=getLatestEntry();
+  const endEntry=
+    to
+      ? getDailyEntry(to)
+      : latest;
 
-let endEntry=
-to
-? getDailyEntry(to)
-: latest;
+  let startEntry=null;
 
-let startEntry=null;
+  if(from){
+    startEntry=getDailyEntry(from);
+  }else if(endEntry){
+    startEntry=getPreviousEntry(endEntry);
+  }
 
-if(from){
-
-startEntry=getDailyEntry(from);
-
-}else if(endEntry){
-
-startEntry=getPreviousEntry(endEntry);
-
-}
-
-return {
-from,
-to,
-startEntry,
-endEntry
-};
+  return {
+    from,
+    to,
+    startEntry,
+    endEntry
+  };
 }
 
 
 function getTableRows(){
+  const {
+    startEntry,
+    endEntry
+  }=getSelectedRange();
 
-const {
-startEntry,
-endEntry
-}=getSelectedRange();
+  if(!endEntry){
+    return [];
+  }
 
-if(!endEntry){
-return [];
-}
+  const startMap=
+    new Map(
+      (startEntry?.snapshot.bots || [])
+        .map(b=>[b.cid,b])
+    );
 
-const startMap=
-new Map(
-(startEntry?.snapshot.bots || [])
-.map(b=>[b.cid,b])
-);
+  const endMap=
+    new Map(
+      (endEntry.snapshot.bots || [])
+        .map(b=>[b.cid,b])
+    );
 
-const endMap=
-new Map(
-(endEntry.snapshot.bots || [])
-.map(b=>[b.cid,b])
-);
+  return [...state.meta.values()]
+    .map(meta=>{
+      const startBot=
+        startMap.get(meta.cid);
 
-return [...state.meta.values()]
-.map(meta=>{
+      const endBot=
+        endMap.get(meta.cid);
 
-const startBot=
-startMap.get(meta.cid);
+      const startMessages=
+        Number.isFinite(startBot?.messages)
+          ? startBot.messages
+          : null;
 
-const endBot=
-endMap.get(meta.cid);
+      const endMessages=
+        Number.isFinite(endBot?.messages)
+          ? endBot.messages
+          : null;
 
-const startMessages=
-Number.isFinite(startBot?.messages)
-? startBot.messages
-: null;
+      const growth=
+        Number.isFinite(startMessages) &&
+        Number.isFinite(endMessages)
+          ? endMessages-startMessages
+          : null;
 
-const endMessages=
-Number.isFinite(endBot?.messages)
-? endBot.messages
-: null;
-
-const growth=
-Number.isFinite(startMessages) &&
-Number.isFinite(endMessages)
-? endMessages-startMessages
-: null;
-
-return {
-cid:meta.cid,
-name:meta.name || meta.cid,
-url:meta.url,
-order:meta.creation_order ?? 9999,
-startMessages,
-messages:endMessages,
-growth,
-collectors:
-Number.isFinite(endBot?.collectors)
-? endBot.collectors
-: null,
-stale:endBot?.stale || false
-};
-
-});
+      return {
+        cid:meta.cid,
+        name:meta.name || meta.cid,
+        url:meta.url,
+        order:meta.creation_order ?? 9999,
+        startMessages,
+        messages:endMessages,
+        growth,
+        collectors:
+          Number.isFinite(endBot?.collectors)
+            ? endBot.collectors
+            : null,
+        stale:endBot?.stale || false
+      };
+    });
 }
 
 
 function getGraphDays(){
+  let days=[...state.daily];
 
-let days=[...state.daily];
+  const from=
+    document.querySelector('#fromDate')?.value || '';
 
-const from=
-document.querySelector('#fromDate')?.value || '';
+  const to=
+    document.querySelector('#toDate')?.value || '';
 
-const to=
-document.querySelector('#toDate')?.value || '';
+  const period=
+    document.querySelector('#comparePeriod').value;
 
-const period=
-document.querySelector('#comparePeriod').value;
+  if(from){
+    const endDate=
+      to || getLatestEntry()?.date;
 
+    days=days.filter(item=>
+      item.date>=from &&
+      (!endDate || item.date<=endDate)
+    );
 
-if(from){
+    return days;
+  }
 
-const endDate=
-to || getLatestEntry()?.date;
+  if(to){
+    days=days.filter(
+      item=>item.date<=to
+    );
+  }
 
-days=days.filter(item=>
-item.date>=from &&
-(!endDate || item.date<=endDate)
-);
+  if(period!=='all' && days.length){
+    const endTime=
+      new Date(
+        days.at(-1).snapshot.timestamp
+      ).getTime();
 
-return days;
+    const cutoff=
+      endTime-
+      (
+        Number(period)*
+        24*60*60*1000
+      );
+
+    days=days.filter(
+      item=>
+        new Date(
+          item.snapshot.timestamp
+        ).getTime()>=cutoff
+    );
+  }
+
+  return days;
 }
 
 
-if(to){
+function totalForSnapshot(snapshot,metric){
+  const sourceMetric=
+    metric==='growth'
+      ? 'messages'
+      : metric;
 
-days=days.filter(
-item=>item.date<=to
-);
-
-}
-
-
-if(period!=='all' && days.length){
-
-const endTime=
-new Date(
-days.at(-1).snapshot.timestamp
-).getTime();
-
-const cutoff=
-endTime-
-(
-Number(period)*
-24*60*60*1000
-);
-
-days=days.filter(
-item=>
-new Date(
-item.snapshot.timestamp
-).getTime()>=cutoff
-);
-
-}
-
-return days;
+  return (snapshot.bots||[])
+    .reduce(
+      (sum,bot)=>
+        sum+
+        (
+          Number.isFinite(bot[sourceMetric])
+            ? bot[sourceMetric]
+            : 0
+        ),
+      0
+    );
 }
 
 
 Promise.all([
+  fetch(
+    'bots.json',
+    {cache:'no-store'}
+  ).then(r=>r.json()),
 
-fetch(
-'bots.json',
-{cache:'no-store'}
-).then(r=>r.json()),
-
-fetch(
-'data/history.json',
-{cache:'no-store'}
-).then(r=>r.json())
-
+  fetch(
+    'data/history.json',
+    {cache:'no-store'}
+  ).then(r=>r.json())
 ]).then(([bots,history])=>{
 
-state.history=history;
+  state.history=history;
 
-bots.forEach(
-b=>state.meta.set(b.cid,b)
-);
+  bots.forEach(
+    b=>state.meta.set(b.cid,b)
+  );
 
-state.daily=
-buildDailySnapshots(
-history.snapshots || []
-);
+  state.daily=
+    buildDailySnapshots(
+      history.snapshots || []
+    );
 
+  const latest=
+    history.snapshots.at(-1);
 
-const latest=
-history.snapshots.at(-1);
+  const previous=
+    history.snapshots.at(-2);
 
-const previous=
-history.snapshots.at(-2);
+  const prev=
+    new Map(
+      (previous?.bots||[])
+        .map(b=>[b.cid,b])
+    );
 
-const prev=
-new Map(
-(previous?.bots||[])
-.map(b=>[b.cid,b])
-);
+  state.bots=
+    (latest?.bots||[])
+      .map(b=>{
+        const m=
+          state.meta.get(b.cid)||{};
 
+        return {
+          ...b,
+          name:m.name||b.name,
+          url:m.url||b.url,
+          order:
+            m.creation_order??9999,
+          growth:
+            Number.isFinite(b.messages) &&
+            Number.isFinite(
+              prev.get(b.cid)?.messages
+            )
+              ? b.messages-
+                prev.get(b.cid).messages
+              : null
+        };
+      });
 
-state.bots=
-(latest?.bots||[])
-.map(b=>{
+  if(latest){
+    document.querySelector('#updated')
+      .textContent=
+        'Last updated: '+
+        new Date(
+          latest.timestamp
+        ).toLocaleString('nl-NL');
+  }else{
+    document.querySelector('#updated')
+      .textContent=
+        'No measurements yet';
+  }
 
-const m=
-state.meta.get(b.cid)||{};
+  if(state.daily.length){
+    const minDate=
+      state.daily[0].date;
 
-return {
-...b,
-name:m.name||b.name,
-url:m.url||b.url,
-order:
-m.creation_order??9999,
-growth:
-Number.isFinite(b.messages) &&
-Number.isFinite(
-prev.get(b.cid)?.messages
-)
-? b.messages-
-prev.get(b.cid).messages
-: null
-};
+    const maxDate=
+      state.daily.at(-1).date;
 
-});
+    document.querySelector('#fromDate')
+      .min=minDate;
 
+    document.querySelector('#fromDate')
+      .max=maxDate;
 
-if(latest){
+    document.querySelector('#toDate')
+      .min=minDate;
 
-document.querySelector('#updated')
-.textContent=
-'Last updated: '+
-new Date(
-latest.timestamp
-).toLocaleString('nl-NL');
+    document.querySelector('#toDate')
+      .max=maxDate;
+  }
 
-}else{
+  const compareBots=
+    document.querySelector(
+      '#compareBots'
+    );
 
-document.querySelector('#updated')
-.textContent=
-'No measurements yet';
+  compareBots.innerHTML=`
+    <label>
+      <input
+        type="checkbox"
+        id="selectAllBots"
+      >
+      Select all
+    </label>
 
-}
+    <label>
+      <input
+        type="checkbox"
+        id="totalProfile"
+        value="__total__"
+      >
+      Total
+    </label>
+  ` +
+  [...bots]
+    .sort(
+      (a,b)=>
+        (b.creation_order??9999)-
+        (a.creation_order??9999)
+    )
+    .map(b=>`
+      <label>
+        <input
+          type="checkbox"
+          value="${b.cid}"
+        >
+        ${displayLabel(b.cid)}
+      </label>
+    `)
+    .join('');
 
-
-if(state.daily.length){
-
-const minDate=
-state.daily[0].date;
-
-const maxDate=
-state.daily.at(-1).date;
-
-document.querySelector('#fromDate')
-.min=minDate;
-
-document.querySelector('#fromDate')
-.max=maxDate;
-
-document.querySelector('#toDate')
-.min=minDate;
-
-document.querySelector('#toDate')
-.max=maxDate;
-
-}
-
-
-const compareBots=
-document.querySelector(
-'#compareBots'
-);
-
-
-compareBots.innerHTML=`
-
-<label>
-<input
-type="checkbox"
-id="selectAllBots"
->
-Select all
-</label>
-
-` +
-
-[...bots]
-
-.sort(
-(a,b)=>
-(b.creation_order??9999)-
-(a.creation_order??9999)
-)
-
-.map(b=>`
-
-<label>
-
-<input
-type="checkbox"
-value="${b.cid}"
->
-
-${displayLabel(b.cid)}
-
-</label>
-
-`)
-
-.join('');
-
-
-render();
+  render();
 
 }).catch(e=>{
-
-document.querySelector('#updated')
-.textContent=
-'Error: '+e.message;
-
+  document.querySelector('#updated')
+    .textContent=
+      'Error: '+e.message;
 });
 
 
 function render(){
-
   const q=
     document.querySelector('#search')
       .value
@@ -676,7 +692,6 @@ function render(){
       );
 
   a.sort((x,y)=>
-
     s==='growth'
       ? (y.growth??-Infinity)-
         (x.growth??-Infinity)
@@ -693,23 +708,17 @@ function render(){
       ? x.name.localeCompare(y.name)
 
     : y.order-x.order
-
   );
 
   const rowsHtml=
-
     a.map(b=>`
-
       <tr>
-
         <td>
-          <a
-            href="${b.url}"
-            target="_blank"
-            style="color:inherit;text-decoration:none"
-          >
-            ${displayLabel(b.cid)}
-          </a>
+          ${
+            b.url
+              ? `<a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${displayLabel(b.cid)}</a>`
+              : displayLabel(b.cid)
+          }
         </td>
 
         <td>
@@ -751,9 +760,7 @@ function render(){
               : fmt.format(b.collectors)
           }
         </td>
-
       </tr>
-
     `).join('');
 
   const totalStart=
@@ -778,15 +785,10 @@ function render(){
     );
 
   const totalHtml=`
-
     <tr class="total-row">
-
       <td>Total</td>
-
       <td>${fmt.format(totalStart)}</td>
-
       <td>${fmt.format(totalNow)}</td>
-
       <td class="${
         totalGrowth>0
           ? 'positive'
@@ -800,11 +802,8 @@ function render(){
             : ''
         }${fmt.format(totalGrowth)}
       </td>
-
       <td>${fmt.format(totalCollectors)}</td>
-
     </tr>
-
   `;
 
   document.querySelector('#rows')
@@ -812,660 +811,586 @@ function render(){
       rowsHtml+totalHtml;
 }
 
+
 document.querySelector('#search')
-.addEventListener(
-'input',
-render
-);
+  .addEventListener(
+    'input',
+    render
+  );
 
 
 document.querySelector('#sort')
-.addEventListener(
-'change',
-render
-);
+  .addEventListener(
+    'change',
+    render
+  );
 
 
 function drawCompareChart(){
+  const metric=
+    document.querySelector(
+      '#compareMetric'
+    ).value;
 
-const metric=
-document.querySelector(
-'#compareMetric'
-).value;
+  const selected=
+    [
+      ...document.querySelectorAll(
+        '#compareBots input[type="checkbox"]:checked:not(#selectAllBots)'
+      )
+    ]
+    .map(
+      i=>i.value
+    );
 
+  const realSelected=
+    selected.filter(
+      cid=>cid!=='__total__'
+    );
 
-const selected=
-[
-...document.querySelectorAll(
-'#compareBots input[type="checkbox"]:checked:not(#selectAllBots)'
-)
-]
-.map(
-i=>i.value
-);
+  const totalSelected=
+    selected.includes('__total__');
 
+  document.querySelector(
+    '#compareSummary'
+  ).textContent=
+    selected.length===0
+      ? 'Bots'
+      : totalSelected && realSelected.length===0
+        ? 'Total selected'
+        : totalSelected
+          ? realSelected.length+' bots + Total'
+          : realSelected.length+' bots selected';
 
-document.querySelector(
-'#compareSummary'
-).textContent=
+  if(compareChart){
+    compareChart.destroy();
+    compareChart=null;
+  }
 
-selected.length===0
-? 'Bots'
-: selected.length+
-' bots selected';
+  document.querySelector(
+    '#compareRows'
+  ).innerHTML='';
 
+  if(
+    selected.length===0 ||
+    !state.history
+  ){
+    return;
+  }
 
-if(compareChart){
+  const days=
+    getGraphDays();
 
-compareChart.destroy();
+  if(!days.length){
+    return;
+  }
 
-compareChart=null;
+  const labels=
+    days.map(item=>
+      new Date(
+        item.snapshot.timestamp
+      )
+      .toLocaleDateString(
+        'nl-NL',
+        {
+          day:'2-digit',
+          month:'2-digit',
+          year:'2-digit'
+        }
+      )
+    );
 
-}
+  const datasets=
+    selected.map(cid=>{
 
+      let rawValues;
 
-document.querySelector(
-'#compareRows'
-).innerHTML='';
-
-
-if(
-selected.length===0 ||
-!state.history
-){
-return;
-}
-
-
-const days=
-getGraphDays();
-
-
-if(!days.length){
-return;
-}
-
-
-const labels=
-
-days.map(item=>
-
-new Date(
-item.snapshot.timestamp
-)
-.toLocaleDateString(
-'nl-NL',
-{
-day:'2-digit',
-month:'2-digit',
-year:'2-digit'
-}
-)
-
-);
-
-
-const datasets=
-
-  selected.map(cid=>{
-
-    const rawValues=
-
-      days.map(item=>{
-
-        const bot=
-          (
-            item.snapshot.bots||
-            []
-          )
-          .find(
-            b=>b.cid===cid
+      if(cid==='__total__'){
+        rawValues=
+          days.map(item=>
+            totalForSnapshot(
+              item.snapshot,
+              metric
+            )
           );
-
-        if(!bot){
-          return null;
-        }
-
-        if(metric==='growth'){
-          return Number.isFinite(bot.messages)
-            ? bot.messages
-            : null;
-        }
-
-        return Number.isFinite(bot[metric])
-          ? bot[metric]
-          : null;
-
-      });
-
-    let values=rawValues;
-
-    if(metric==='growth'){
-
-      const first=
-        rawValues.find(
-          value=>value!==null
-        );
-
-      values=
-        rawValues.map(
-          value=>
-            value===null ||
-            first===undefined
-              ? null
-              : value-first
-        );
-
-    }
-
-    return {
-
-      label:
-        displayLabel(cid),
-
-      data:
-        values,
-
-      tension:
-        0.2,
-
-      spanGaps:
-        true
-
-    };
-
-  });
-
-
-compareChart=
-new Chart(
-
-document.querySelector(
-'#compareChart'
-),
-
-{
-
-type:'line',
-
-data:{
-labels,
-datasets
-},
-
-options:{
-
-responsive:true,
-
-maintainAspectRatio:false,
-
-interaction:{
-intersect:false,
-mode:'index'
-},
-
-plugins:{
-
-zoom:{
-
-pan:{
-enabled:true,
-mode:'x',
-threshold:25
-},
-
-zoom:{
-
-wheel:{
-enabled:true,
-speed:0.05
-},
-
-pinch:{
-enabled:true
-},
-
-mode:'x'
-
-}
-
-}
-
-},
-
-scales:{
-
-y:{
-
-ticks:{
-
-callback:
-value=>
-fmt.format(
-value
-)
-
-}
-
-}
-
-}
-
-}
-
-}
-
-);
-
-
-const compareData=
-
-  selected.map(cid=>{
-
-    const rawValues=
-
-      days.map(item=>{
-
-        const bot=
-          (
-            item.snapshot.bots||
-            []
-          )
-          .find(
-            b=>b.cid===cid
-          );
-
-        if(!bot){
-          return null;
-        }
-
+      }else{
         const sourceMetric=
           metric==='growth'
             ? 'messages'
             : metric;
 
-        return Number.isFinite(
-          bot[sourceMetric]
-        )
-          ? bot[sourceMetric]
-          : null;
+        rawValues=
+          days.map(item=>{
+            const bot=
+              (
+                item.snapshot.bots||
+                []
+              )
+              .find(
+                b=>b.cid===cid
+              );
 
-      })
+            return (
+              bot &&
+              Number.isFinite(
+                bot[sourceMetric]
+              )
+            )
+              ? bot[sourceMetric]
+              : null;
+          });
+      }
 
-      .filter(
-        value=>value!==null
-      );
+      let values=rawValues;
 
+      if(metric==='growth'){
+        const first=
+          rawValues.find(
+            value=>value!==null
+          );
 
-    if(!rawValues.length){
+        values=
+          rawValues.map(
+            value=>
+              value===null ||
+              first===undefined
+                ? null
+                : value-first
+          );
+      }
+
+      return {
+        label:
+          displayLabel(cid),
+        data:
+          values,
+        tension:
+          0.2,
+        spanGaps:
+          true
+      };
+    });
+
+  compareChart=
+    new Chart(
+      document.querySelector(
+        '#compareChart'
+      ),
+      {
+        type:'line',
+        data:{
+          labels,
+          datasets
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          interaction:{
+            intersect:false,
+            mode:'index'
+          },
+          plugins:{
+            zoom:{
+              pan:{
+                enabled:true,
+                mode:'x',
+                threshold:25
+              },
+              zoom:{
+                wheel:{
+                  enabled:true,
+                  speed:0.05
+                },
+                pinch:{
+                  enabled:true
+                },
+                mode:'x'
+              }
+            }
+          },
+          scales:{
+            y:{
+              ticks:{
+                callback:
+                  value=>
+                    fmt.format(
+                      value
+                    )
+              }
+            }
+          }
+        }
+      }
+    );
+
+  const compareData=
+    selected.map(cid=>{
+
+      let rawValues;
+
+      if(cid==='__total__'){
+        rawValues=
+          days.map(item=>
+            totalForSnapshot(
+              item.snapshot,
+              metric
+            )
+          );
+      }else{
+        const sourceMetric=
+          metric==='growth'
+            ? 'messages'
+            : metric;
+
+        rawValues=
+          days.map(item=>{
+            const bot=
+              (
+                item.snapshot.bots||
+                []
+              )
+              .find(
+                b=>b.cid===cid
+              );
+
+            return (
+              bot &&
+              Number.isFinite(
+                bot[sourceMetric]
+              )
+            )
+              ? bot[sourceMetric]
+              : null;
+          })
+          .filter(
+            value=>value!==null
+          );
+      }
+
+      if(!rawValues.length){
+        return {
+          cid,
+          start:null,
+          current:null,
+          growth:null
+        };
+      }
+
+      const first=
+        rawValues[0];
+
+      const last=
+        rawValues.at(-1);
+
+      if(metric==='growth'){
+        const growth=
+          last-first;
+
+        return {
+          cid,
+          start:0,
+          current:growth,
+          growth:growth
+        };
+      }
 
       return {
         cid,
-        start:null,
-        current:null,
-        growth:null
+        start:first,
+        current:last,
+        growth:last-first
       };
+    });
 
-    }
+  const realCompareData=
+    compareData.filter(
+      row=>row.cid!=='__total__'
+    );
 
+  const totalStart=
+    realCompareData.reduce(
+      (sum,row)=>
+        sum+(row.start??0),
+      0
+    );
 
-    const first=
-      rawValues[0];
+  const totalCurrent=
+    realCompareData.reduce(
+      (sum,row)=>
+        sum+(row.current??0),
+      0
+    );
 
-    const last=
-      rawValues.at(-1);
+  const totalGrowth=
+    realCompareData.reduce(
+      (sum,row)=>
+        sum+(row.growth??0),
+      0
+    );
 
+  const compareRowsHtml=
+    compareData.map(row=>{
 
-    if(metric==='growth'){
-
-      const growth=
-        last-first;
-
-      return {
-        cid,
-        start:0,
-        current:growth,
-        growth:growth
-      };
-
-    }
-
-
-    return {
-      cid,
-      start:first,
-      current:last,
-      growth:last-first
-    };
-
-  });
-
-
-const totalStart=
-  compareData.reduce(
-    (sum,row)=>
-      sum+(row.start??0),
-    0
-  );
-
-const totalCurrent=
-  compareData.reduce(
-    (sum,row)=>
-      sum+(row.current??0),
-    0
-  );
-
-const totalGrowth=
-  compareData.reduce(
-    (sum,row)=>
-      sum+(row.growth??0),
-    0
-  );
-
-
-const compareRowsHtml=
-
-  compareData.map(row=>{
-
-    if(
-      row.start===null ||
-      row.current===null
-    ){
+      if(
+        row.start===null ||
+        row.current===null
+      ){
+        return `
+          <tr>
+            <td>${displayLabel(row.cid)}</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        `;
+      }
 
       return `
-
         <tr>
-          <td>${displayLabel(row.cid)}</td>
-          <td>—</td>
-          <td>—</td>
-          <td>—</td>
-        </tr>
+          <td>
+            ${displayLabel(row.cid)}
+          </td>
 
-      `;
+          <td>
+            ${fmt.format(row.start)}
+          </td>
 
-    }
-
-
-    return `
-
-      <tr>
-
-        <td>
-          ${displayLabel(row.cid)}
-        </td>
-
-        <td>
-          ${fmt.format(row.start)}
-        </td>
-
-        <td>
-          ${
-            row.current>0 &&
-            metric==='growth'
-              ? '+'
-              : ''
-          }${fmt.format(row.current)}
-        </td>
-
-        <td
-          class="${
-            row.growth>0
-              ? 'positive'
-              : row.growth<0
-                ? 'negative'
+          <td>
+            ${
+              row.current>0 &&
+              metric==='growth'
+                ? '+'
                 : ''
-          }"
-        >
-          ${
-            row.growth>0
-              ? '+'
-              : ''
-          }${fmt.format(row.growth)}
-        </td>
+            }${fmt.format(row.current)}
+          </td>
 
-      </tr>
+          <td
+            class="${
+              row.growth>0
+                ? 'positive'
+                : row.growth<0
+                  ? 'negative'
+                  : ''
+            }"
+          >
+            ${
+              row.growth>0
+                ? '+'
+                : ''
+            }${fmt.format(row.growth)}
+          </td>
+        </tr>
+      `;
+    }).join('');
 
-    `;
+  const compareTotalHtml=
+    realCompareData.length>=2
+      ? `
+        <tr class="total-row">
+          <td>Selected total</td>
 
-  }).join('');
+          <td>
+            ${fmt.format(totalStart)}
+          </td>
 
+          <td>
+            ${
+              totalCurrent>0 &&
+              metric==='growth'
+                ? '+'
+                : ''
+            }${fmt.format(totalCurrent)}
+          </td>
 
-const compareTotalHtml=`
+          <td
+            class="${
+              totalGrowth>0
+                ? 'positive'
+                : totalGrowth<0
+                  ? 'negative'
+                  : ''
+            }"
+          >
+            ${
+              totalGrowth>0
+                ? '+'
+                : ''
+            }${fmt.format(totalGrowth)}
+          </td>
+        </tr>
+      `
+      : '';
 
-  <tr class="total-row">
-
-    <td>Total</td>
-
-    <td>
-      ${fmt.format(totalStart)}
-    </td>
-
-    <td>
-      ${
-        totalCurrent>0 &&
-        metric==='growth'
-          ? '+'
-          : ''
-      }${fmt.format(totalCurrent)}
-    </td>
-
-    <td
-      class="${
-        totalGrowth>0
-          ? 'positive'
-          : totalGrowth<0
-            ? 'negative'
-            : ''
-      }"
-    >
-      ${
-        totalGrowth>0
-          ? '+'
-          : ''
-      }${fmt.format(totalGrowth)}
-    </td>
-
-  </tr>
-
-`;
-
-
-document.querySelector(
-  '#compareRows'
-).innerHTML=
-  compareRowsHtml+
-  compareTotalHtml;
-
+  document.querySelector(
+    '#compareRows'
+  ).innerHTML=
+    compareRowsHtml+
+    compareTotalHtml;
 }
 
 
 document.querySelector('#compareMetric')
-.addEventListener(
-'change',
-drawCompareChart
-);
+  .addEventListener(
+    'change',
+    drawCompareChart
+  );
 
 
 document.querySelector('#comparePeriod')
-.addEventListener(
-'change',
-drawCompareChart
-);
+  .addEventListener(
+    'change',
+    drawCompareChart
+  );
 
 
 document.querySelector('#resetZoom')
-.addEventListener(
-'click',
-()=>{
-if(compareChart){
-compareChart.resetZoom();
-}
-}
-);
+  .addEventListener(
+    'click',
+    ()=>{
+      if(compareChart){
+        compareChart.resetZoom();
+      }
+    }
+  );
 
 
 document.querySelector('#compareBots')
-.addEventListener(
-'change',
-e=>{
+  .addEventListener(
+    'change',
+    e=>{
 
-if(
-e.target.id===
-'selectAllBots'
-){
+      if(
+        e.target.id===
+        'selectAllBots'
+      ){
+        document.querySelectorAll(
+          '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
+        )
+        .forEach(
+          cb=>
+            cb.checked=
+              e.target.checked
+        );
+      }
 
-document.querySelectorAll(
-'#compareBots input[type="checkbox"]:not(#selectAllBots)'
-)
-.forEach(
-cb=>
-cb.checked=
-e.target.checked
-);
-
-}
-
-drawCompareChart();
-
-}
-);
+      drawCompareChart();
+    }
+  );
 
 
 function updateDateSelection(){
+  const from=
+    document.querySelector(
+      '#fromDate'
+    ).value;
 
-const from=
-document.querySelector(
-'#fromDate'
-).value;
+  const to=
+    document.querySelector(
+      '#toDate'
+    ).value;
 
-const to=
-document.querySelector(
-'#toDate'
-).value;
+  if(
+    from &&
+    to &&
+    from>to
+  ){
+    document.querySelector(
+      '#toDate'
+    ).value=
+      from;
+  }
 
+  document.querySelector(
+    '#comparePeriod'
+  ).disabled=
+    Boolean(
+      document.querySelector(
+        '#fromDate'
+      ).value
+    );
 
-if(
-from &&
-to &&
-from>to
-){
-
-document.querySelector(
-'#toDate'
-).value=
-from;
-
-}
-
-
-document.querySelector(
-'#comparePeriod'
-).disabled=
-Boolean(
-document.querySelector(
-'#fromDate'
-).value
-);
-
-
-render();
-
-drawCompareChart();
-
+  render();
+  drawCompareChart();
 }
 
 
 document.querySelector('#fromDate')
-.addEventListener(
-'change',
-updateDateSelection
-);
+  .addEventListener(
+    'change',
+    updateDateSelection
+  );
 
 
 document.querySelector('#toDate')
-.addEventListener(
-'change',
-updateDateSelection
-);
+  .addEventListener(
+    'change',
+    updateDateSelection
+  );
 
 
 document.querySelector('#latestDate')
-.addEventListener(
-'click',
-()=>{
+  .addEventListener(
+    'click',
+    ()=>{
+      document.querySelector(
+        '#fromDate'
+      ).value='';
 
-document.querySelector(
-'#fromDate'
-).value='';
+      document.querySelector(
+        '#toDate'
+      ).value='';
 
-document.querySelector(
-'#toDate'
-).value='';
+      document.querySelector(
+        '#comparePeriod'
+      ).disabled=false;
 
-document.querySelector(
-'#comparePeriod'
-).disabled=false;
-
-render();
-
-drawCompareChart();
-
-}
-);
+      render();
+      drawCompareChart();
+    }
+  );
 
 
 document.querySelector('#displayMode')
-.addEventListener(
-'change',
-()=>{
+  .addEventListener(
+    'change',
+    ()=>{
+      document.querySelectorAll(
+        '#compareBots label'
+      )
+      .forEach(label=>{
+        const input=
+          label.querySelector(
+            'input[type="checkbox"]'
+          );
 
-document.querySelectorAll(
-'#compareBots label'
-)
-.forEach(label=>{
+        if(
+          input &&
+          input.id!==
+          'selectAllBots' &&
+          input.id!==
+          'totalProfile'
+        ){
+          const textNode=
+            [...label.childNodes]
+            .find(
+              node=>
+                node.nodeType===
+                Node.TEXT_NODE
+            );
 
-const input=
-label.querySelector(
-'input[type="checkbox"]'
-);
+          if(textNode){
+            textNode.textContent=
+              ' '+
+              displayLabel(
+                input.value
+              );
+          }
+        }
+      });
 
-
-if(
-input &&
-input.id!==
-'selectAllBots'
-){
-
-const textNode=
-[...label.childNodes]
-.find(
-node=>
-node.nodeType===
-Node.TEXT_NODE
-);
-
-
-if(textNode){
-
-textNode.textContent=
-' '+
-displayLabel(
-input.value
-);
-
-}
-
-}
-
-});
-
-
-render();
-
-drawCompareChart();
-
-}
-);
+      render();
+      drawCompareChart();
+    }
+  );
 
 </script>
 
