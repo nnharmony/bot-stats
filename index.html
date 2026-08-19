@@ -1951,39 +1951,16 @@ function setEventAuthUI(unlocked,message=''){
   const save=
     document.querySelector('#eventSave');
 
-  const unlock=
-    document.querySelector('#eventsUnlock');
+  if(save){
+    save.disabled=!unlocked;
+  }
 
-  const lock=
-    document.querySelector('#eventsLock');
+  const summary=
+    document.querySelector('#eventsSummary');
 
-  const status=
-    document.querySelector('#eventsAuthStatus');
-
-  save.disabled=!unlocked;
-  unlock.hidden=unlocked;
-  lock.hidden=!unlocked;
-
-  status.textContent=
-    unlocked
-      ? (message || 'unlocked')
-      : (message || 'locked');
-
-  status.className=
-    'events-status '+
-    (
-      unlocked
-        ? 'ok'
-        : message && message!=='locked'
-          ? 'error'
-          : ''
-    );
-
-  document.querySelector('#eventsSummary')
-    .textContent=
-      unlocked
-        ? 'events tracker'
-        : 'events tracker';
+  if(summary){
+    summary.textContent='events tracker';
+  }
 
   const privateContent=
     document.querySelector('#eventsPrivate');
@@ -2537,28 +2514,6 @@ function initEventsTracker(){
     .addEventListener(
       'change',
       loadEventForSelection
-    );
-
-  document.querySelector('#eventsUnlock')
-    .addEventListener(
-      'click',
-      unlockEvents
-    );
-
-  document.querySelector('#eventsPassword')
-    .addEventListener(
-      'keydown',
-      event=>{
-        if(event.key==='Enter'){
-          unlockEvents();
-        }
-      }
-    );
-
-  document.querySelector('#eventsLock')
-    .addEventListener(
-      'click',
-      lockEvents
     );
 
   document.querySelector('#eventSave')
