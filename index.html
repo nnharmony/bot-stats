@@ -168,6 +168,214 @@ th:first-child,td:first-child{text-align:left}
   .main-table{font-size:12px}
   .all-bots summary{font-size:13px}
 }
+
+.events-panel{
+  margin:20px 0;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+  color:#111;
+}
+
+.events-panel>summary{
+  cursor:pointer;
+  padding:12px 14px;
+  background:#1a1d23;
+  color:#fff;
+  border:1px solid #343945;
+  border-radius:10px;
+  font-size:13px;
+  list-style-position:inside;
+}
+
+.events-panel[open]>summary{
+  border-radius:10px 10px 0 0;
+}
+
+.events-content{
+  padding:14px;
+}
+
+.events-lock{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.events-lock input{
+  flex:1;
+  min-width:160px;
+}
+
+.events-status{
+  font-size:12px;
+  color:#666;
+}
+
+.events-status.ok{
+  color:#2da44e;
+  font-weight:700;
+}
+
+.events-status.error{
+  color:#cf222e;
+  font-weight:700;
+}
+
+.event-form{
+  display:grid;
+  grid-template-columns:1fr 1.35fr;
+  gap:10px;
+}
+
+.event-field{
+  min-width:0;
+}
+
+.event-field label{
+  display:block;
+  font-size:12px;
+  color:#555;
+  margin:0 0 4px 2px;
+}
+
+.event-field input,
+.event-field select,
+.event-field textarea{
+  width:100%;
+  box-sizing:border-box;
+}
+
+.event-field textarea{
+  min-height:70px;
+  resize:vertical;
+  font-family:inherit;
+  background:#1a1d23;
+  color:#fff;
+  border:1px solid #343945;
+  border-radius:10px;
+  padding:10px;
+}
+
+.event-tags-wrap{
+  grid-column:1/-1;
+}
+
+.event-tags{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+}
+
+.event-tag{
+  border:1px solid #c8ccd3;
+  background:#f4f5f7;
+  color:#222;
+  border-radius:999px;
+  padding:7px 10px;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.event-tag.active{
+  background:#1a1d23;
+  color:#fff;
+  border-color:#1a1d23;
+}
+
+.event-actions{
+  grid-column:1/-1;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.event-actions button{
+  min-width:90px;
+}
+
+#eventSaveStatus{
+  font-size:12px;
+  color:#666;
+}
+
+#eventSaveStatus.ok{
+  color:#2da44e;
+  font-weight:700;
+}
+
+#eventSaveStatus.error{
+  color:#cf222e;
+  font-weight:700;
+}
+
+.saved-events{
+  margin-top:18px;
+}
+
+.saved-events h3{
+  font-size:14px;
+  margin:0 0 8px;
+}
+
+.saved-events table{
+  font-size:12px;
+}
+
+.saved-events td,
+.saved-events th{
+  padding:8px 6px;
+  border-bottom:1px solid #ddd;
+}
+
+.saved-events .event-note{
+  text-align:left;
+  max-width:260px;
+  overflow-wrap:anywhere;
+}
+
+.saved-events .event-controls{
+  white-space:nowrap;
+}
+
+.saved-events .event-controls button{
+  padding:5px 7px;
+  margin-left:4px;
+  font-size:12px;
+}
+
+.tag-chip{
+  display:inline-block;
+  border-radius:999px;
+  padding:2px 6px;
+  margin:1px 2px 1px 0;
+  background:#eef0f3;
+  border:1px solid #d5d8de;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+@media(max-width:650px){
+  .event-form{
+    grid-template-columns:1fr;
+  }
+  .event-tags-wrap,
+  .event-actions{
+    grid-column:1;
+  }
+  .saved-events{
+    overflow-x:auto;
+  }
+  .saved-events table{
+    min-width:620px;
+  }
+  .events-panel>summary{
+    font-size:12px;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -280,6 +488,79 @@ th:first-child,td:first-child{text-align:left}
 
 </div>
 
+
+<details class="events-panel" id="eventsPanel">
+  <summary id="eventsSummary">Events tracker 🔒</summary>
+
+  <div class="events-content">
+
+    <div class="events-lock">
+      <input
+        id="eventsPassword"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Events password"
+      >
+      <button id="eventsUnlock">Unlock</button>
+      <button id="eventsLock" type="button" hidden>Lock</button>
+      <span id="eventsAuthStatus" class="events-status">Locked</span>
+    </div>
+
+    <div class="event-form">
+
+      <div class="event-field">
+        <label for="eventDate">Date</label>
+        <input id="eventDate" type="date">
+      </div>
+
+      <div class="event-field">
+        <label for="eventBot">Bot</label>
+        <select id="eventBot">
+          <option value="">Select bot</option>
+        </select>
+      </div>
+
+      <div class="event-field event-tags-wrap">
+        <label>Tags</label>
+        <div id="eventTags" class="event-tags"></div>
+      </div>
+
+      <div class="event-field event-tags-wrap">
+        <label for="eventNote">Note (optional)</label>
+        <textarea id="eventNote" placeholder="Add note..."></textarea>
+      </div>
+
+      <div class="event-actions">
+        <button id="eventSave" type="button" disabled>Save</button>
+        <button id="eventClear" type="button">Clear</button>
+        <span id="eventSaveStatus"></span>
+      </div>
+
+    </div>
+
+    <div class="saved-events">
+      <h3>Saved events</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Bot</th>
+            <th>Tags</th>
+            <th>Note</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="eventsRows">
+          <tr>
+            <td colspan="5">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</details>
+
 </main>
 
 <script>
@@ -297,6 +578,7 @@ let compareChart=null;
 
 function displayLabel(cid){
   if(cid==='__total__') return 'Total';
+  if(cid==='__profile__') return 'Profile';
 
   const bot=state.meta.get(cid);
   const mode=document.querySelector('#displayMode')?.value || 'cid';
@@ -657,6 +939,27 @@ Promise.all([
     `)
     .join('');
 
+
+  const eventBot=
+    document.querySelector('#eventBot');
+
+  if(eventBot){
+    eventBot.innerHTML=
+      '<option value="">Select bot</option>'+
+      '<option value="__profile__">Profile</option>'+
+      [...bots]
+        .sort(
+          (a,b)=>
+            (b.creation_order??9999)-
+            (a.creation_order??9999)
+        )
+        .map(
+          b=>`<option value="${b.cid}">${b.name || b.cid}</option>`
+        )
+        .join('');
+  }
+
+  initEventsTracker();
   render();
 
 }).catch(e=>{
@@ -1391,6 +1694,710 @@ document.querySelector('#displayMode')
       drawCompareChart();
     }
   );
+
+
+const EVENTS_API='https://bot-events.nnharmony.workers.dev';
+
+const EVENT_TAGS=[
+  {id:'new',label:'🆕 New'},
+  {id:'booster',label:'⬆️ Booster'},
+  {id:'edited',label:'✏️ Edited'},
+  {id:'avatar',label:'🖼️ Avatar'},
+  {id:'violation',label:'⚠️ Violation'},
+  {id:'shadow-ban',label:'🚫 Shadow ban'},
+  {id:'unbanned',label:'✅ Unbanned'},
+  {id:'moments',label:'✨ Moments'},
+  {id:'freeze',label:'🧊 Freeze'},
+  {id:'alert',label:'❗ Alert'}
+];
+
+const eventsState={
+  events:[],
+  key:'',
+  unlocked:false,
+  editingId:null
+};
+
+
+function eventBotLabel(cid){
+  if(cid==='__profile__') return 'Profile';
+
+  const bot=state.meta.get(cid);
+
+  return bot?.name || cid;
+}
+
+
+function eventTagLabel(tag){
+  return EVENT_TAGS.find(
+    item=>item.id===tag
+  )?.label || tag;
+}
+
+
+function selectedEventTags(){
+  return [
+    ...document.querySelectorAll(
+      '#eventTags .event-tag.active'
+    )
+  ].map(
+    button=>button.dataset.tag
+  );
+}
+
+
+function setSelectedEventTags(tags){
+  const selected=new Set(tags || []);
+
+  document.querySelectorAll(
+    '#eventTags .event-tag'
+  )
+  .forEach(button=>{
+    button.classList.toggle(
+      'active',
+      selected.has(button.dataset.tag)
+    );
+  });
+}
+
+
+function setEventAuthUI(unlocked,message=''){
+  eventsState.unlocked=unlocked;
+
+  const save=
+    document.querySelector('#eventSave');
+
+  const unlock=
+    document.querySelector('#eventsUnlock');
+
+  const lock=
+    document.querySelector('#eventsLock');
+
+  const status=
+    document.querySelector('#eventsAuthStatus');
+
+  save.disabled=!unlocked;
+  unlock.hidden=unlocked;
+  lock.hidden=!unlocked;
+
+  status.textContent=
+    unlocked
+      ? (message || 'Unlocked')
+      : (message || 'Locked');
+
+  status.className=
+    'events-status '+
+    (
+      unlocked
+        ? 'ok'
+        : message && message!=='Locked'
+          ? 'error'
+          : ''
+    );
+
+  document.querySelector('#eventsSummary')
+    .textContent=
+      unlocked
+        ? 'Events tracker 🔓'
+        : 'Events tracker 🔒';
+}
+
+
+async function eventsRequest(path,options={}){
+  const headers={
+    ...(options.headers || {})
+  };
+
+  if(eventsState.key){
+    headers['x-events-key']=eventsState.key;
+  }
+
+  if(options.body){
+    headers['content-type']='application/json';
+  }
+
+  const response=
+    await fetch(
+      EVENTS_API+path,
+      {
+        ...options,
+        headers,
+        cache:'no-store'
+      }
+    );
+
+  let data={};
+
+  try{
+    data=await response.json();
+  }catch{
+    data={};
+  }
+
+  if(!response.ok){
+    throw new Error(
+      data.error ||
+      'Request failed'
+    );
+  }
+
+  return data;
+}
+
+
+async function loadEvents(){
+  const rows=
+    document.querySelector('#eventsRows');
+
+  try{
+    const data=
+      await eventsRequest('/events');
+
+    eventsState.events=
+      Array.isArray(data.events)
+        ? data.events
+        : [];
+
+    renderEvents();
+    loadEventForSelection();
+
+  }catch(error){
+    rows.innerHTML=`
+      <tr>
+        <td colspan="5" class="error">
+          ${error.message}
+        </td>
+      </tr>
+    `;
+  }
+}
+
+
+function renderEvents(){
+  const rows=
+    document.querySelector('#eventsRows');
+
+  if(!eventsState.events.length){
+    rows.innerHTML=`
+      <tr>
+        <td colspan="5">No events yet</td>
+      </tr>
+    `;
+    return;
+  }
+
+  rows.innerHTML=
+    eventsState.events
+      .map(event=>{
+        const tags=
+          (event.tags || [])
+            .map(
+              tag=>
+                `<span class="tag-chip">${eventTagLabel(tag)}</span>`
+            )
+            .join('');
+
+        return `
+          <tr>
+            <td>${event.date || '—'}</td>
+            <td>${eventBotLabel(event.cid)}</td>
+            <td>${tags || '—'}</td>
+            <td class="event-note">${event.note || '—'}</td>
+            <td class="event-controls">
+              <button
+                type="button"
+                data-event-edit="${event.id}"
+              >Edit</button>
+              <button
+                type="button"
+                data-event-delete="${event.id}"
+              >Delete</button>
+            </td>
+          </tr>
+        `;
+      })
+      .join('');
+}
+
+
+function currentSelectionEvent(){
+  const date=
+    document.querySelector('#eventDate').value;
+
+  const cid=
+    document.querySelector('#eventBot').value;
+
+  if(!date || !cid){
+    return null;
+  }
+
+  return eventsState.events.find(
+    event=>
+      event.date===date &&
+      event.cid===cid
+  ) || null;
+}
+
+
+function loadEventForSelection(){
+  const event=
+    currentSelectionEvent();
+
+  eventsState.editingId=
+    event?.id || null;
+
+  setSelectedEventTags(
+    event?.tags || []
+  );
+
+  document.querySelector('#eventNote')
+    .value=
+      event?.note || '';
+
+  document.querySelector('#eventSave')
+    .textContent=
+      event
+        ? 'Update'
+        : 'Save';
+
+  const status=
+    document.querySelector('#eventSaveStatus');
+
+  status.textContent=
+    event
+      ? 'Existing event loaded'
+      : '';
+
+  status.className='';
+}
+
+
+function clearEventForm(){
+  eventsState.editingId=null;
+
+  setSelectedEventTags([]);
+
+  document.querySelector('#eventNote')
+    .value='';
+
+  document.querySelector('#eventSave')
+    .textContent='Save';
+
+  document.querySelector('#eventSaveStatus')
+    .textContent='';
+}
+
+
+async function unlockEvents(){
+  const password=
+    document.querySelector('#eventsPassword')
+      .value;
+
+  if(!password){
+    setEventAuthUI(
+      false,
+      'Enter password'
+    );
+    return;
+  }
+
+  eventsState.key=password;
+
+  try{
+    await eventsRequest(
+      '/unlock',
+      {method:'POST'}
+    );
+
+    sessionStorage.setItem(
+      'eventsKey',
+      password
+    );
+
+    document.querySelector('#eventsPassword')
+      .value='';
+
+    setEventAuthUI(
+      true,
+      'Unlocked'
+    );
+
+  }catch(error){
+    eventsState.key='';
+    sessionStorage.removeItem(
+      'eventsKey'
+    );
+
+    setEventAuthUI(
+      false,
+      error.message
+    );
+  }
+}
+
+
+function lockEvents(){
+  eventsState.key='';
+  sessionStorage.removeItem(
+    'eventsKey'
+  );
+
+  setEventAuthUI(
+    false,
+    'Locked'
+  );
+}
+
+
+async function saveEvent(){
+  const date=
+    document.querySelector('#eventDate').value;
+
+  const cid=
+    document.querySelector('#eventBot').value;
+
+  const tags=
+    selectedEventTags();
+
+  const note=
+    document.querySelector('#eventNote')
+      .value
+      .trim();
+
+  const status=
+    document.querySelector('#eventSaveStatus');
+
+  if(!eventsState.unlocked){
+    status.textContent='Unlock first';
+    status.className='error';
+    return;
+  }
+
+  if(!date || !cid){
+    status.textContent='Choose date and bot';
+    status.className='error';
+    return;
+  }
+
+  status.textContent='Saving…';
+  status.className='';
+
+  try{
+    const existing=
+      currentSelectionEvent();
+
+    if(
+      existing &&
+      tags.length===0 &&
+      note.length===0
+    ){
+      await eventsRequest(
+        '/events/'+
+        encodeURIComponent(existing.id),
+        {method:'DELETE'}
+      );
+
+      status.textContent='Removed ✓';
+      status.className='ok';
+
+    }else{
+      await eventsRequest(
+        '/events',
+        {
+          method:'POST',
+          body:JSON.stringify({
+            id:
+              existing?.id ||
+              eventsState.editingId ||
+              undefined,
+            date,
+            cid,
+            tags,
+            note
+          })
+        }
+      );
+
+      status.textContent='Saved ✓';
+      status.className='ok';
+    }
+
+    await loadEvents();
+
+  }catch(error){
+    if(
+      error.message==='Locked' ||
+      error.message==='Wrong password'
+    ){
+      lockEvents();
+    }
+
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+
+async function deleteEvent(id){
+  if(!eventsState.unlocked){
+    document.querySelector('#eventSaveStatus')
+      .textContent='Unlock first';
+    return;
+  }
+
+  if(!confirm('Delete this event?')){
+    return;
+  }
+
+  try{
+    await eventsRequest(
+      '/events/'+
+      encodeURIComponent(id),
+      {method:'DELETE'}
+    );
+
+    await loadEvents();
+
+    document.querySelector('#eventSaveStatus')
+      .textContent='Deleted ✓';
+
+    document.querySelector('#eventSaveStatus')
+      .className='ok';
+
+  }catch(error){
+    document.querySelector('#eventSaveStatus')
+      .textContent=error.message;
+
+    document.querySelector('#eventSaveStatus')
+      .className='error';
+  }
+}
+
+
+function editEvent(id){
+  const event=
+    eventsState.events.find(
+      item=>item.id===id
+    );
+
+  if(!event){
+    return;
+  }
+
+  document.querySelector('#eventDate')
+    .value=
+      event.date;
+
+  document.querySelector('#eventBot')
+    .value=
+      event.cid;
+
+  eventsState.editingId=
+    event.id;
+
+  setSelectedEventTags(
+    event.tags || []
+  );
+
+  document.querySelector('#eventNote')
+    .value=
+      event.note || '';
+
+  document.querySelector('#eventSave')
+    .textContent='Update';
+
+  document.querySelector('#eventsPanel')
+    .open=true;
+
+  document.querySelector('#eventSaveStatus')
+    .textContent='Editing event';
+
+  document.querySelector('#eventSaveStatus')
+    .className='';
+
+  document.querySelector('#eventDate')
+    .scrollIntoView({
+      behavior:'smooth',
+      block:'center'
+    });
+}
+
+
+async function restoreEventSession(){
+  const saved=
+    sessionStorage.getItem(
+      'eventsKey'
+    );
+
+  if(!saved){
+    setEventAuthUI(false,'Locked');
+    return;
+  }
+
+  eventsState.key=saved;
+
+  try{
+    await eventsRequest(
+      '/unlock',
+      {method:'POST'}
+    );
+
+    setEventAuthUI(
+      true,
+      'Unlocked'
+    );
+
+  }catch{
+    eventsState.key='';
+    sessionStorage.removeItem(
+      'eventsKey'
+    );
+
+    setEventAuthUI(
+      false,
+      'Locked'
+    );
+  }
+}
+
+
+function initEventsTracker(){
+  const tagBox=
+    document.querySelector('#eventTags');
+
+  if(!tagBox){
+    return;
+  }
+
+  tagBox.innerHTML=
+    EVENT_TAGS
+      .map(tag=>`
+        <button
+          class="event-tag"
+          type="button"
+          data-tag="${tag.id}"
+        >${tag.label}</button>
+      `)
+      .join('');
+
+  const today=
+    new Date()
+      .toLocaleDateString('sv-SE');
+
+  const latestDate=
+    getLatestEntry()?.date ||
+    today;
+
+  document.querySelector('#eventDate')
+    .value=
+      latestDate;
+
+  document.querySelector('#eventDate')
+    .min=
+      state.daily[0]?.date || '';
+
+  document.querySelector('#eventDate')
+    .max=
+      today;
+
+  tagBox.addEventListener(
+    'click',
+    event=>{
+      const button=
+        event.target.closest(
+          '.event-tag'
+        );
+
+      if(!button){
+        return;
+      }
+
+      button.classList.toggle(
+        'active'
+      );
+    }
+  );
+
+  document.querySelector('#eventDate')
+    .addEventListener(
+      'change',
+      loadEventForSelection
+    );
+
+  document.querySelector('#eventBot')
+    .addEventListener(
+      'change',
+      loadEventForSelection
+    );
+
+  document.querySelector('#eventsUnlock')
+    .addEventListener(
+      'click',
+      unlockEvents
+    );
+
+  document.querySelector('#eventsPassword')
+    .addEventListener(
+      'keydown',
+      event=>{
+        if(event.key==='Enter'){
+          unlockEvents();
+        }
+      }
+    );
+
+  document.querySelector('#eventsLock')
+    .addEventListener(
+      'click',
+      lockEvents
+    );
+
+  document.querySelector('#eventSave')
+    .addEventListener(
+      'click',
+      saveEvent
+    );
+
+  document.querySelector('#eventClear')
+    .addEventListener(
+      'click',
+      ()=>{
+        clearEventForm();
+        loadEventForSelection();
+      }
+    );
+
+  document.querySelector('#eventsRows')
+    .addEventListener(
+      'click',
+      event=>{
+        const edit=
+          event.target.closest(
+            '[data-event-edit]'
+          );
+
+        const del=
+          event.target.closest(
+            '[data-event-delete]'
+          );
+
+        if(edit){
+          editEvent(
+            edit.dataset.eventEdit
+          );
+        }
+
+        if(del){
+          deleteEvent(
+            del.dataset.eventDelete
+          );
+        }
+      }
+    );
+
+  restoreEventSession();
+  loadEvents();
+}
 
 </script>
 
