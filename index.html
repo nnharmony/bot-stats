@@ -380,6 +380,140 @@ th:first-child,td:first-child{text-align:left}
   }
 }
 
+
+#app[hidden]{
+  display:none !important;
+}
+
+.site-gate{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  box-sizing:border-box;
+}
+
+.site-gate-card{
+  width:min(440px,100%);
+  background:#fff;
+  color:#111;
+  border-radius:16px;
+  padding:20px;
+  box-sizing:border-box;
+}
+
+.site-gate-card h1{
+  color:#111;
+  font-size:34px;
+  margin:0 0 14px;
+  text-transform:lowercase;
+}
+
+.site-gate-row{
+  display:flex;
+  gap:8px;
+}
+
+.site-gate-row input{
+  flex:1;
+  min-width:0;
+}
+
+#siteGateStatus{
+  min-height:18px;
+  margin-top:8px;
+  font-size:12px;
+  color:#666;
+}
+
+#siteGateStatus.error{
+  color:#cf222e;
+  font-weight:700;
+}
+
+.app-head-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:22px;
+}
+
+.app-head-row .muted{
+  margin-bottom:0;
+  flex:1;
+}
+
+#siteLockButton{
+  padding:7px 10px;
+  font-size:12px;
+}
+
+.events-panel>summary,
+.events-content,
+.events-content label,
+.saved-events h3,
+.saved-events th,
+.event-tag,
+#eventSave,
+#eventClear{
+  text-transform:lowercase;
+}
+
+#eventDate{
+  width:170px !important;
+  max-width:170px;
+  height:38px;
+  padding:5px 8px;
+  font-size:12px !important;
+}
+
+.event-tags{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.event-tag{
+  width:100%;
+  min-width:0;
+  padding:8px 5px;
+  text-align:center;
+  white-space:nowrap;
+  font-size:12px;
+}
+
+@media(max-width:650px){
+  .site-gate{
+    padding:18px 14px;
+  }
+
+  .site-gate-card{
+    padding:16px;
+  }
+
+  .site-gate-card h1{
+    font-size:30px;
+  }
+
+  #eventDate{
+    width:150px !important;
+    max-width:150px;
+    height:36px;
+    font-size:11px !important;
+  }
+
+  .event-tags{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:7px;
+  }
+
+  .event-tag{
+    padding:8px 3px;
+    font-size:11px;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -388,10 +522,32 @@ th:first-child,td:first-child{text-align:left}
 </head>
 
 <body>
-<main>
+
+<div id="siteGate" class="site-gate">
+  <div class="site-gate-card">
+    <h1>stats 🔒</h1>
+
+    <div class="site-gate-row">
+      <input
+        id="sitePassword"
+        type="password"
+        autocomplete="current-password"
+        placeholder="password"
+      >
+      <button id="siteUnlockButton" type="button">unlock</button>
+    </div>
+
+    <div id="siteGateStatus"></div>
+  </div>
+</div>
+
+<main id="app" hidden>
 
 <h1>stats</h1>
-<div id="updated" class="muted">Loading…</div>
+<div class="app-head-row">
+  <div id="updated" class="muted">loading…</div>
+  <button id="siteLockButton" type="button">lock</button>
+</div>
 
 <details class="all-bots">
   <summary>All bots</summary>
@@ -413,7 +569,7 @@ th:first-child,td:first-child{text-align:left}
     <table class="main-table">
       <thead>
         <tr>
-          <th>Bot</th>
+          <th>bot</th>
           <th>Start</th>
           <th>Now</th>
           <th>Growth</th>
@@ -481,7 +637,7 @@ th:first-child,td:first-child{text-align:left}
   <table class="compare-table">
     <thead>
       <tr>
-        <th>Bot</th>
+        <th>bot</th>
         <th>Start</th>
         <th>Now</th>
         <th>Growth</th>
@@ -494,20 +650,20 @@ th:first-child,td:first-child{text-align:left}
 
 
 <details class="events-panel" id="eventsPanel">
-  <summary id="eventsSummary">Events tracker 🔒</summary>
+  <summary id="eventsSummary">events tracker</summary>
 
   <div class="events-content">
 
-    <div class="events-lock">
+    <div class="events-lock" hidden>
       <input
         id="eventsPassword"
         type="password"
         autocomplete="current-password"
-        placeholder="Events password"
+        placeholder="events password"
       >
-      <button id="eventsUnlock">Unlock</button>
-      <button id="eventsLock" type="button" hidden>Lock</button>
-      <span id="eventsAuthStatus" class="events-status">Locked</span>
+      <button id="eventsUnlock">unlock</button>
+      <button id="eventsLock" type="button" hidden>lock</button>
+      <span id="eventsAuthStatus" class="events-status">locked</span>
     </div>
 
     <div id="eventsPrivate" hidden>
@@ -515,44 +671,44 @@ th:first-child,td:first-child{text-align:left}
     <div class="event-form">
 
       <div class="event-field">
-        <label for="eventDate">Date</label>
+        <label for="eventDate">date</label>
         <input id="eventDate" type="date">
       </div>
 
       <div class="event-field">
-        <label for="eventBot">Bot</label>
+        <label for="eventBot">bot</label>
         <select id="eventBot">
-          <option value="">Select bot</option>
+          <option value="">select bot</option>
         </select>
       </div>
 
       <div class="event-field event-tags-wrap">
-        <label>Tags</label>
+        <label>tags</label>
         <div id="eventTags" class="event-tags"></div>
       </div>
 
       <div class="event-field event-tags-wrap">
-        <label for="eventNote">Note (optional)</label>
-        <textarea id="eventNote" placeholder="Add note..."></textarea>
+        <label for="eventNote">note (optional)</label>
+        <textarea id="eventNote" placeholder="add note..."></textarea>
       </div>
 
       <div class="event-actions">
-        <button id="eventSave" type="button" disabled>Save</button>
-        <button id="eventClear" type="button">Clear</button>
+        <button id="eventSave" type="button" disabled>save</button>
+        <button id="eventClear" type="button">clear</button>
         <span id="eventSaveStatus"></span>
       </div>
 
     </div>
 
     <div class="saved-events">
-      <h3>Saved events</h3>
+      <h3>saved events</h3>
       <table>
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Bot</th>
-            <th>Tags</th>
-            <th>Note</th>
+            <th>date</th>
+            <th>bot</th>
+            <th>tags</th>
+            <th>note</th>
             <th></th>
           </tr>
         </thead>
@@ -586,7 +742,7 @@ let compareChart=null;
 
 function displayLabel(cid){
   if(cid==='__total__') return 'Total';
-  if(cid==='__profile__') return 'Profile';
+  if(cid==='__profile__') return 'profile';
 
   const bot=state.meta.get(cid);
   const mode=document.querySelector('#displayMode')?.value || 'cid';
@@ -816,7 +972,13 @@ function totalForSnapshot(snapshot,metric){
 }
 
 
-Promise.all([
+let appLoaded=false;
+
+async function loadStatsData(){
+  if(appLoaded) return;
+  appLoaded=true;
+
+  return Promise.all([
   fetch(
     'bots.json',
     {cache:'no-store'}
@@ -953,8 +1115,8 @@ Promise.all([
 
   if(eventBot){
     eventBot.innerHTML=
-      '<option value="">Select bot</option>'+
-      '<option value="__profile__">Profile</option>'+
+      '<option value="">select bot</option>'+
+      '<option value="__profile__">profile</option>'+
       [...bots]
         .sort(
           (a,b)=>
@@ -975,6 +1137,8 @@ Promise.all([
     .textContent=
       'Error: '+e.message;
 });
+
+}
 
 
 function render(){
@@ -1707,16 +1871,18 @@ document.querySelector('#displayMode')
 const EVENTS_API='https://bot-events.nnharmony.workers.dev';
 
 const EVENT_TAGS=[
-  {id:'new',label:'🆕 New'},
-  {id:'booster',label:'⬆️ Booster'},
-  {id:'edited',label:'✏️ Edited'},
-  {id:'avatar',label:'🖼️ Avatar'},
-  {id:'violation',label:'⚠️ Violation'},
-  {id:'shadow-ban',label:'🚫 Shadow ban'},
-  {id:'unbanned',label:'✅ Unbanned'},
-  {id:'moments',label:'✨ Moments'},
-  {id:'freeze',label:'🧊 Freeze'},
-  {id:'alert',label:'❗ Alert'}
+  {id:'avatar',label:'👤 avatar'},
+  {id:'banned',label:'🚫 banned'},
+  {id:'freeze',label:'❄️ freeze'},
+  {id:'edited',label:'✏️ edited'},
+  {id:'unbanned',label:'🆗 unbanned'},
+  {id:'moments',label:'✨ moments'},
+  {id:'new',label:'🆕 new'},
+  {id:'violation',label:'🚨 violation'},
+  {id:'top-slot',label:'🔝 top slot'},
+  {id:'tagged',label:'⬆️ tagged'},
+  {id:'alert',label:'⚠️ alert'},
+  {id:'capped',label:'🔄 capped'}
 ];
 
 const eventsState={
@@ -1728,7 +1894,7 @@ const eventsState={
 
 
 function eventBotLabel(cid){
-  if(cid==='__profile__') return 'Profile';
+  if(cid==='__profile__') return 'profile';
 
   const bot=state.meta.get(cid);
 
@@ -1790,15 +1956,15 @@ function setEventAuthUI(unlocked,message=''){
 
   status.textContent=
     unlocked
-      ? (message || 'Unlocked')
-      : (message || 'Locked');
+      ? (message || 'unlocked')
+      : (message || 'locked');
 
   status.className=
     'events-status '+
     (
       unlocked
         ? 'ok'
-        : message && message!=='Locked'
+        : message && message!=='locked'
           ? 'error'
           : ''
     );
@@ -1806,8 +1972,8 @@ function setEventAuthUI(unlocked,message=''){
   document.querySelector('#eventsSummary')
     .textContent=
       unlocked
-        ? 'Events tracker 🔓'
-        : 'Events tracker 🔒';
+        ? 'events tracker'
+        : 'events tracker';
 
   const privateContent=
     document.querySelector('#eventsPrivate');
@@ -1972,15 +2138,15 @@ function loadEventForSelection(){
   document.querySelector('#eventSave')
     .textContent=
       event
-        ? 'Update'
-        : 'Save';
+        ? 'update'
+        : 'save';
 
   const status=
     document.querySelector('#eventSaveStatus');
 
   status.textContent=
     event
-      ? 'Existing event loaded'
+      ? 'existing event loaded'
       : '';
 
   status.className='';
@@ -1996,7 +2162,7 @@ function clearEventForm(){
     .value='';
 
   document.querySelector('#eventSave')
-    .textContent='Save';
+    .textContent='save';
 
   document.querySelector('#eventSaveStatus')
     .textContent='';
@@ -2011,7 +2177,7 @@ async function unlockEvents(){
   if(!password){
     setEventAuthUI(
       false,
-      'Enter password'
+      'enter password'
     );
     return;
   }
@@ -2034,7 +2200,7 @@ async function unlockEvents(){
 
     setEventAuthUI(
       true,
-      'Unlocked'
+      'unlocked'
     );
 
     await loadEvents();
@@ -2064,7 +2230,7 @@ function lockEvents(){
 
   setEventAuthUI(
     false,
-    'Locked'
+    'locked'
   );
 }
 
@@ -2088,18 +2254,18 @@ async function saveEvent(){
     document.querySelector('#eventSaveStatus');
 
   if(!eventsState.unlocked){
-    status.textContent='Unlock first';
+    status.textContent='unlock first';
     status.className='error';
     return;
   }
 
   if(!date || !cid){
-    status.textContent='Choose date and bot';
+    status.textContent='choose date and bot';
     status.className='error';
     return;
   }
 
-  status.textContent='Saving…';
+  status.textContent='saving…';
   status.className='';
 
   try{
@@ -2117,7 +2283,7 @@ async function saveEvent(){
         {method:'DELETE'}
       );
 
-      status.textContent='Removed ✓';
+      status.textContent='removed ✓';
       status.className='ok';
 
     }else{
@@ -2138,7 +2304,7 @@ async function saveEvent(){
         }
       );
 
-      status.textContent='Saved ✓';
+      status.textContent='saved ✓';
       status.className='ok';
     }
 
@@ -2146,8 +2312,8 @@ async function saveEvent(){
 
   }catch(error){
     if(
-      error.message==='Locked' ||
-      error.message==='Wrong password'
+      error.message==='locked' ||
+      error.message==='wrong password'
     ){
       lockEvents();
     }
@@ -2161,7 +2327,7 @@ async function saveEvent(){
 async function deleteEvent(id){
   if(!eventsState.unlocked){
     document.querySelector('#eventSaveStatus')
-      .textContent='Unlock first';
+      .textContent='unlock first';
     return;
   }
 
@@ -2179,7 +2345,7 @@ async function deleteEvent(id){
     await loadEvents();
 
     document.querySelector('#eventSaveStatus')
-      .textContent='Deleted ✓';
+      .textContent='deleted ✓';
 
     document.querySelector('#eventSaveStatus')
       .className='ok';
@@ -2224,13 +2390,13 @@ function editEvent(id){
       event.note || '';
 
   document.querySelector('#eventSave')
-    .textContent='Update';
+    .textContent='update';
 
   document.querySelector('#eventsPanel')
     .open=true;
 
   document.querySelector('#eventSaveStatus')
-    .textContent='Editing event';
+    .textContent='editing event';
 
   document.querySelector('#eventSaveStatus')
     .className='';
@@ -2250,7 +2416,7 @@ async function restoreEventSession(){
     );
 
   if(!saved){
-    setEventAuthUI(false,'Locked');
+    setEventAuthUI(false,'locked');
     return;
   }
 
@@ -2264,7 +2430,7 @@ async function restoreEventSession(){
 
     setEventAuthUI(
       true,
-      'Unlocked'
+      'unlocked'
     );
 
     await loadEvents();
@@ -2277,7 +2443,7 @@ async function restoreEventSession(){
 
     setEventAuthUI(
       false,
-      'Locked'
+      'locked'
     );
   }
 }
@@ -2417,8 +2583,129 @@ function initEventsTracker(){
       }
     );
 
-  restoreEventSession();
+  if(eventsState.unlocked){
+    loadEvents();
+  }
 }
+
+
+async function siteUnlock(){
+  const password=
+    document.querySelector('#sitePassword').value;
+
+  const status=
+    document.querySelector('#siteGateStatus');
+
+  if(!password){
+    status.textContent='enter password';
+    status.className='error';
+    return;
+  }
+
+  status.textContent='unlocking…';
+  status.className='';
+
+  try{
+    const response=
+      await fetch(
+        EVENTS_API+'/unlock',
+        {
+          method:'POST',
+          headers:{
+            'x-events-key':password
+          },
+          cache:'no-store'
+        }
+      );
+
+    const data=
+      await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        data.error || 'wrong password'
+      );
+    }
+
+    eventsState.key=password;
+    eventsState.unlocked=true;
+
+    sessionStorage.setItem(
+      'eventsKey',
+      password
+    );
+
+    document.querySelector('#siteGate').hidden=true;
+    document.querySelector('#app').hidden=false;
+
+    setEventAuthUI(true,'unlocked');
+
+    await loadStatsData();
+
+  }catch(error){
+    eventsState.key='';
+    eventsState.unlocked=false;
+
+    sessionStorage.removeItem('eventsKey');
+
+    status.textContent=
+      (error.message || 'unlock failed').toLowerCase();
+
+    status.className='error';
+  }
+}
+
+
+async function restoreSiteSession(){
+  const saved=
+    sessionStorage.getItem('eventsKey');
+
+  if(!saved){
+    return;
+  }
+
+  document.querySelector('#sitePassword').value=saved;
+  await siteUnlock();
+}
+
+
+function siteLock(){
+  eventsState.key='';
+  eventsState.unlocked=false;
+  eventsState.events=[];
+
+  sessionStorage.removeItem('eventsKey');
+
+  location.reload();
+}
+
+
+document.querySelector('#siteUnlockButton')
+  .addEventListener(
+    'click',
+    siteUnlock
+  );
+
+
+document.querySelector('#sitePassword')
+  .addEventListener(
+    'keydown',
+    event=>{
+      if(event.key==='Enter'){
+        siteUnlock();
+      }
+    }
+  );
+
+
+document.querySelector('#siteLockButton')
+  .addEventListener(
+    'click',
+    siteLock
+  );
+
+
+restoreSiteSession();
 
 </script>
 
