@@ -421,8 +421,10 @@ th:first-child,td:first-child{text-align:left}
 
 .site-gate-row input{
   min-width:0;
+  width:100%;
   height:38px;
   box-sizing:border-box;
+  font-size:16px;
 }
 
 .site-gate-row button{
@@ -471,6 +473,8 @@ th:first-child,td:first-child{text-align:left}
 }
 
 #eventDate{
+  text-align:left !important;
+  direction:ltr;
   width:170px !important;
   max-width:170px;
   height:38px;
@@ -507,9 +511,17 @@ th:first-child,td:first-child{text-align:left}
     margin-bottom:8px;
   }
 
+  .site-gate-row{
+    grid-template-columns:minmax(0,1fr) 92px;
+  }
+
   .site-gate-row input,
   .site-gate-row button{
-    height:36px;
+    height:38px;
+  }
+
+  .site-gate-row input{
+    font-size:16px;
   }
 
   #eventDate{
@@ -1880,17 +1892,17 @@ const EVENTS_PROFILE='main';
 
 const EVENT_TAGS=[
   {id:'created',label:'💟 created'},
+  {id:'alert',label:'⚠️ alert'},
+  {id:'new',label:'🆕 new'},
+  {id:'avatar',label:'👤 avatar'},
   {id:'banned',label:'🚫 banned'},
   {id:'tagged',label:'⬆️ tagged'},
   {id:'edit',label:'☑️ edit'},
-  {id:'unbanned',label:'🆗 unbanned'},
+  {id:'unbanned',label:'🔘 unbanned'},
   {id:'capped',label:'🔄 capped'},
-  {id:'avatar',label:'👤 avatar'},
-  {id:'violation',label:'🛑 violation'},
-  {id:'freeze',label:'*️⃣ freeze'},
-  {id:'new',label:'🆕 new'},
-  {id:'alert',label:'⚠️ alert'},
-  {id:'top',label:'🔝 top'}
+  {id:'top',label:'🔝 top'},
+  {id:'violation',label:'⛔️ violation'},
+  {id:'freeze',label:'*️⃣ freeze'}
 ];
 
 const PERSISTENT_TAGS=new Set(['banned','freeze']);
@@ -2128,6 +2140,35 @@ function persistentStateAtSelection(){
 }
 
 
+function persistentStateBeforeSelection(){
+  const date=document.querySelector('#eventDate').value;
+  const cid=document.querySelector('#eventBot').value;
+  const stateBefore={banned:false,freeze:false};
+
+  if(!date || !cid){
+    return stateBefore;
+  }
+
+  eventsState.events
+    .filter(event=>event.cid===cid && event.date<date)
+    .sort((a,b)=>
+      a.date.localeCompare(b.date) ||
+      String(a.updatedAt||'').localeCompare(String(b.updatedAt||''))
+    )
+    .forEach(event=>{
+      const status=event.status || {};
+
+      PERSISTENT_TAGS.forEach(tag=>{
+        if(typeof status[tag]==='boolean'){
+          stateBefore[tag]=status[tag];
+        }
+      });
+    });
+
+  return stateBefore;
+}
+
+
 function dayEventTags(event){
   return (event?.tags || []).filter(tag=>!PERSISTENT_TAGS.has(tag));
 }
@@ -2263,10 +2304,20 @@ async function saveEvent(){
   const cid=document.querySelector('#eventBot').value;
   const selected=selectedEventTags();
   const tags=selected.filter(tag=>!PERSISTENT_TAGS.has(tag));
-  const persistent={
+
+  const before=persistentStateBeforeSelection();
+  const current={
     banned:selected.includes('banned'),
     freeze:selected.includes('freeze')
   };
+
+  const persistent={};
+
+  PERSISTENT_TAGS.forEach(tag=>{
+    if(current[tag]!==before[tag]){
+      persistent[tag]=current[tag];
+    }
+  });
 
   const note=document.querySelector('#eventNote').value.trim();
   const status=document.querySelector('#eventSaveStatus');
