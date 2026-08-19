@@ -1886,21 +1886,24 @@ document.querySelector('#displayMode')
 
 
 const EVENTS_API='https://bot-events.nnharmony.workers.dev';
+const EVENTS_PROFILE='main';
 
 const EVENT_TAGS=[
-  {id:'avatar',label:'👤 avatar'},
+  {id:'created',label:'💟 created'},
   {id:'banned',label:'🚫 banned'},
-  {id:'freeze',label:'❄️ freeze'},
-  {id:'edited',label:'✏️ edited'},
-  {id:'unbanned',label:'🆗 unbanned'},
-  {id:'moments',label:'✨ moments'},
-  {id:'new',label:'🆕 new'},
-  {id:'violation',label:'🚨 violation'},
-  {id:'top-slot',label:'🔝 top slot'},
   {id:'tagged',label:'⬆️ tagged'},
+  {id:'edit',label:'☑️ edit'},
+  {id:'unbanned',label:'🆗 unbanned'},
+  {id:'capped',label:'🔄 capped'},
+  {id:'avatar',label:'👤 avatar'},
+  {id:'violation',label:'🛑 violation'},
+  {id:'freeze',label:'*️⃣ freeze'},
+  {id:'new',label:'🆕 new'},
   {id:'alert',label:'⚠️ alert'},
-  {id:'capped',label:'🔄 capped'}
+  {id:'top',label:'🔝 top'}
 ];
+
+const PERSISTENT_TAGS=new Set(['banned','freeze']);
 
 const eventsState={
   events:[],
@@ -2010,6 +2013,8 @@ async function eventsRequest(path,options={}){
     headers['x-events-key']=eventsState.key;
   }
 
+  headers['x-events-profile']=EVENTS_PROFILE;
+
   if(options.body){
     headers['content-type']='application/json';
   }
@@ -2087,13 +2092,20 @@ function renderEvents(){
   rows.innerHTML=
     eventsState.events
       .map(event=>{
-        const tags=
-          (event.tags || [])
-            .map(
-              tag=>
-                `<span class="tag-chip">${eventTagLabel(tag)}</span>`
-            )
-            .join('');
+        const visibleTags=[...(event.tags || [])];
+
+        if(event.status?.banned===true) visibleTags.push('banned');
+        if(event.status?.freeze===true) visibleTags.push('freeze');
+        if(event.status?.banned===false) visibleTags.push('__banned_off__');
+        if(event.status?.freeze===false) visibleTags.push('__freeze_off__');
+
+        const tags=visibleTags
+          .map(tag=>{
+            if(tag==='__banned_off__') return `<span class="tag-chip">🚫 banned off</span>`;
+            if(tag==='__freeze_off__') return `<span class="tag-chip">*️⃣ freeze off</span>`;
+            return `<span class="tag-chip">${eventTagLabel(tag)}</span>`;
+          })
+          .join('');
 
         return `
           <tr>
@@ -2118,6 +2130,42 @@ function renderEvents(){
 }
 
 
+function eventsForSelection(){
+  const date=document.querySelector('#eventDate').value;
+  const cid=document.querySelector('#eventBot').value;
+
+  if(!date || !cid) return [];
+
+  return eventsState.events
+    .filter(event=>event.cid===cid && event.date<=date)
+    .sort((a,b)=>
+      a.date.localeCompare(b.date) ||
+      String(a.updatedAt||'').localeCompare(String(b.updatedAt||''))
+    );
+}
+
+
+function persistentStateAtSelection(){
+  const stateNow={banned:false,freeze:false};
+
+  eventsForSelection().forEach(event=>{
+    const status=event.status || {};
+    PERSISTENT_TAGS.forEach(tag=>{
+      if(typeof status[tag]==='boolean'){
+        stateNow[tag]=status[tag];
+      }
+    });
+  });
+
+  return stateNow;
+}
+
+
+function dayEventTags(event){
+  return (event?.tags || []).filter(tag=>!PERSISTENT_TAGS.has(tag));
+}
+
+
 function currentSelectionEvent(){
   const date=
     document.querySelector('#eventDate').value;
@@ -2138,34 +2186,25 @@ function currentSelectionEvent(){
 
 
 function loadEventForSelection(){
-  const event=
-    currentSelectionEvent();
+  const event=currentSelectionEvent();
+  const persistent=persistentStateAtSelection();
 
-  eventsState.editingId=
-    event?.id || null;
+  eventsState.editingId=event?.id || null;
 
-  setSelectedEventTags(
-    event?.tags || []
-  );
+  const selected=[
+    ...dayEventTags(event),
+    ...[...PERSISTENT_TAGS].filter(tag=>persistent[tag])
+  ];
 
-  document.querySelector('#eventNote')
-    .value=
-      event?.note || '';
+  setSelectedEventTags(selected);
 
-  document.querySelector('#eventSave')
-    .textContent=
-      event
-        ? 'update'
-        : 'save';
+  document.querySelector('#eventNote').value=event?.note || '';
 
-  const status=
-    document.querySelector('#eventSaveStatus');
+  document.querySelector('#eventSave').textContent=
+    event ? 'update' : 'save';
 
-  status.textContent=
-    event
-      ? 'existing event loaded'
-      : '';
-
+  const status=document.querySelector('#eventSaveStatus');
+  status.textContent=event ? 'existing event loaded' : '';
   status.className='';
 }
 
@@ -2253,22 +2292,17 @@ function lockEvents(){
 
 
 async function saveEvent(){
-  const date=
-    document.querySelector('#eventDate').value;
+  const date=document.querySelector('#eventDate').value;
+  const cid=document.querySelector('#eventBot').value;
+  const selected=selectedEventTags();
+  const tags=selected.filter(tag=>!PERSISTENT_TAGS.has(tag));
+  const persistent={
+    banned:selected.includes('banned'),
+    freeze:selected.includes('freeze')
+  };
 
-  const cid=
-    document.querySelector('#eventBot').value;
-
-  const tags=
-    selectedEventTags();
-
-  const note=
-    document.querySelector('#eventNote')
-      .value
-      .trim();
-
-  const status=
-    document.querySelector('#eventSaveStatus');
+  const note=document.querySelector('#eventNote').value.trim();
+  const status=document.querySelector('#eventSaveStatus');
 
   if(!eventsState.unlocked){
     status.textContent='unlock first';
@@ -2286,52 +2320,30 @@ async function saveEvent(){
   status.className='';
 
   try{
-    const existing=
-      currentSelectionEvent();
+    const existing=currentSelectionEvent();
 
-    if(
-      existing &&
-      tags.length===0 &&
-      note.length===0
-    ){
-      await eventsRequest(
-        '/events/'+
-        encodeURIComponent(existing.id),
-        {method:'DELETE'}
-      );
+    await eventsRequest(
+      '/events',
+      {
+        method:'POST',
+        body:JSON.stringify({
+          id:existing?.id || eventsState.editingId || undefined,
+          date,
+          cid,
+          tags,
+          status:persistent,
+          note
+        })
+      }
+    );
 
-      status.textContent='removed ✓';
-      status.className='ok';
-
-    }else{
-      await eventsRequest(
-        '/events',
-        {
-          method:'POST',
-          body:JSON.stringify({
-            id:
-              existing?.id ||
-              eventsState.editingId ||
-              undefined,
-            date,
-            cid,
-            tags,
-            note
-          })
-        }
-      );
-
-      status.textContent='saved ✓';
-      status.className='ok';
-    }
+    status.textContent='saved ✓';
+    status.className='ok';
 
     await loadEvents();
 
   }catch(error){
-    if(
-      error.message==='locked' ||
-      error.message==='wrong password'
-    ){
+    if(error.message==='locked' || error.message==='wrong password'){
       lockEvents();
     }
 
@@ -2339,7 +2351,6 @@ async function saveEvent(){
     status.className='error';
   }
 }
-
 
 async function deleteEvent(id){
   if(!eventsState.unlocked){
@@ -2398,9 +2409,12 @@ function editEvent(id){
   eventsState.editingId=
     event.id;
 
-  setSelectedEventTags(
-    event.tags || []
-  );
+  const persistent=persistentStateAtSelection();
+
+  setSelectedEventTags([
+    ...dayEventTags(event),
+    ...[...PERSISTENT_TAGS].filter(tag=>persistent[tag])
+  ]);
 
   document.querySelector('#eventNote')
     .value=
@@ -2629,7 +2643,8 @@ async function siteUnlock(){
         {
           method:'POST',
           headers:{
-            'x-events-key':password
+            'x-events-key':password,
+            'x-events-profile':EVENTS_PROFILE
           },
           cache:'no-store'
         }
