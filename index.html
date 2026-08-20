@@ -1925,9 +1925,11 @@ function eventBotLabel(cid){
 
 
 function eventTagLabel(tag){
-  return EVENT_TAGS.find(
+  const label=EVENT_TAGS.find(
     item=>item.id===tag
   )?.label || tag;
+
+  return label.split('')[0]
 }
 
 
