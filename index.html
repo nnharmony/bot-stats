@@ -1925,11 +1925,22 @@ function eventBotLabel(cid){
 
 
 function eventTagLabel(tag){
-  const label=EVENT_TAGS.find(
-    item=>item.id===tag
-  )?.label || tag;
+  const icons = {
+    created: '💟',
+    alert: '⚠️',
+    new: '🆕',
+    avatar: '👤',
+    banned: '🚫',
+    tagged: '⬆️',
+    edit: '☑️',
+    unbanned: '🔘',
+    capped: '🔄',
+    top: '🔝',
+    violation: '⛔️',
+    freeze: '*️⃣'
+  };
 
-  return label.split('')[0]
+  return icons[tag] || tag;
 }
 
 
