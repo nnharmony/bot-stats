@@ -134,6 +134,15 @@ th:first-child,td:first-child{text-align:left}
   font-size:13px;
 }
 
+
+#capGroupButton{
+  width:100%;
+  text-align:left;
+  margin:3px 0;
+  padding:7px 8px;
+  font-size:13px;
+}
+
 .chart-area{
   height:340px;
   position:relative;
@@ -948,29 +957,29 @@ function getGraphDays(){
 
   if(period!=='all' && days.length){
 
-  if(period==='1'){
-    days=days.slice(-2);
-  }else{
-    const endTime=
-      new Date(
-        days.at(-1).snapshot.timestamp
-      ).getTime();
-
-    const cutoff=
-      endTime-
-      (
-        Number(period)*
-        24*60*60*1000
-      );
-
-    days=days.filter(
-      item=>
+    if(period==='1'){
+      days=days.slice(-2);
+    }else{
+      const endTime=
         new Date(
-          item.snapshot.timestamp
-        ).getTime()>=cutoff
-    );
+          days.at(-1).snapshot.timestamp
+        ).getTime();
+
+      const cutoff=
+        endTime-
+        (
+          Number(period)*
+          24*60*60*1000
+        );
+
+      days=days.filter(
+        item=>
+          new Date(
+            item.snapshot.timestamp
+          ).getTime()>=cutoff
+      );
+    }
   }
-}
 
   return days;
 }
@@ -1098,7 +1107,7 @@ async function loadStatsData(){
       '#compareBots'
     );
 
- compareBots.innerHTML=`
+  compareBots.innerHTML=`
     <label>
       <input
         type="checkbox"
@@ -1107,21 +1116,11 @@ async function loadStatsData(){
       Select all
     </label>
 
-    <label>
-      <input
-        type="checkbox"
-        id="selectCappedBots"
-      >
-      Capped
-    </label>
-
-    <label>
-      <input
-        type="checkbox"
-        id="selectUncappedBots"
-      >
-      Uncapped
-    </label>
+    <button
+      type="button"
+      id="capGroupButton"
+      data-mode="capped"
+    >Capped</button>
 
     <label>
       <input
@@ -1769,56 +1768,68 @@ document.querySelector('#resetZoom')
 
 
 document.querySelector('#compareBots')
-  .addEventListener('change',e=>{
+  .addEventListener(
+    'change',
+    e=>{
 
-    const botCheckboxes=[
-      ...document.querySelectorAll(
-        '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#selectCappedBots):not(#selectUncappedBots):not(#totalProfile)'
-      )
-    ];
-
-    const cappedCids=new Set(
-      eventsState.events
-        .filter(event=>
-          Array.isArray(event.tags) &&
-          event.tags.includes('capped')
+      if(e.target.id==='selectAllBots'){
+        document.querySelectorAll(
+          '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
         )
-        .map(event=>event.cid)
-    );
+        .forEach(cb=>{
+          cb.checked=e.target.checked;
+        });
+      }
 
-    if(e.target.id==='selectAllBots'){
-      botCheckboxes.forEach(cb=>{
-        cb.checked=e.target.checked;
-      });
-
-      document.querySelector('#selectCappedBots').checked=false;
-      document.querySelector('#selectUncappedBots').checked=false;
+      drawCompareChart();
     }
+  );
 
-    if(e.target.id==='selectCappedBots'){
-      botCheckboxes.forEach(cb=>{
+
+document.querySelector('#compareBots')
+  .addEventListener(
+    'click',
+    e=>{
+      const button=e.target.closest('#capGroupButton');
+
+      if(!button){
+        return;
+      }
+
+      const cappedCids=new Set(
+        eventsState.events
+          .filter(event=>
+            Array.isArray(event.tags) &&
+            event.tags.includes('capped')
+          )
+          .map(event=>event.cid)
+      );
+
+      const mode=button.dataset.mode || 'capped';
+
+      document.querySelectorAll(
+        '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
+      )
+      .forEach(cb=>{
         cb.checked=
-          e.target.checked &&
-          cappedCids.has(cb.value);
+          mode==='capped'
+            ? cappedCids.has(cb.value)
+            : !cappedCids.has(cb.value);
       });
 
       document.querySelector('#selectAllBots').checked=false;
-      document.querySelector('#selectUncappedBots').checked=false;
+
+      if(mode==='capped'){
+        button.dataset.mode='uncapped';
+        button.textContent='Uncapped';
+      }else{
+        button.dataset.mode='capped';
+        button.textContent='Capped';
+      }
+
+      drawCompareChart();
     }
-
-    if(e.target.id==='selectUncappedBots'){
-      botCheckboxes.forEach(cb=>{
-        cb.checked=
-          e.target.checked &&
-          !cappedCids.has(cb.value);
-      });
-
-      document.querySelector('#selectAllBots').checked=false;
-      document.querySelector('#selectCappedBots').checked=false;
-    }
-
-    drawCompareChart();
-  });
+  );
 
 
 function updateDateSelection(){
@@ -1975,22 +1986,9 @@ function eventBotLabel(cid){
 
 
 function eventTagLabel(tag){
-  const icons = {
-    created: '💟',
-    alert: '⚠️',
-    new: '🆕',
-    avatar: '👤',
-    banned: '🚫',
-    tagged: '⬆️',
-    edit: '☑️',
-    unbanned: '🔘',
-    capped: '🔄',
-    top: '🔝',
-    violation: '⛔️',
-    freeze: '*️⃣'
-  };
-
-  return icons[tag] || tag;
+  return EVENT_TAGS.find(
+    item=>item.id===tag
+  )?.label || tag;
 }
 
 
@@ -2778,22 +2776,68 @@ document.querySelector('#siteUnlockButton')
   );
 
 
-document.querySelector('#sitePassword')
+const sitePasswordInput=
+  document.querySelector('#sitePassword');
+
+let previousPasswordLength=0;
+let siteUnlockBusy=false;
+
+async function autoSiteUnlock(){
+  if(siteUnlockBusy){
+    return;
+  }
+
+  const password=sitePasswordInput.value;
+
+  if(!password){
+    return;
+  }
+
+  siteUnlockBusy=true;
+
+  try{
+    await siteUnlock();
+  }finally{
+    siteUnlockBusy=false;
+  }
+}
+
+sitePasswordInput
   .addEventListener(
     'keydown',
     event=>{
       if(event.key==='Enter'){
-        siteUnlock();
+        autoSiteUnlock();
       }
     }
   );
 
-document.querySelector('#sitePassword')
+sitePasswordInput
   .addEventListener(
     'input',
-    event=>{
-      if(event.inputType==='insertReplacementText'){
-        siteUnlock();
+    ()=>{
+      const currentLength=sitePasswordInput.value.length;
+
+      if(
+        previousPasswordLength===0 &&
+        currentLength>1
+      ){
+        setTimeout(
+          autoSiteUnlock,
+          100
+        );
+      }
+
+      previousPasswordLength=currentLength;
+    }
+  );
+
+sitePasswordInput
+  .addEventListener(
+    'change',
+    ()=>{
+      if(sitePasswordInput.value){
+        autoSiteUnlock();
       }
     }
   );
