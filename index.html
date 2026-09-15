@@ -1108,6 +1108,12 @@ async function loadStatsData(){
     );
 
   compareBots.innerHTML=`
+    <button
+      type="button"
+      id="capGroupButton"
+      data-mode="capped"
+    >Capped</button>
+    
     <label>
       <input
         type="checkbox"
@@ -1115,12 +1121,6 @@ async function loadStatsData(){
       >
       Select all
     </label>
-
-    <button
-      type="button"
-      id="capGroupButton"
-      data-mode="capped"
-    >Capped</button>
 
     <label>
       <input
