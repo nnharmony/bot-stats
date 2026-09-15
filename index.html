@@ -947,6 +947,10 @@ function getGraphDays(){
   }
 
   if(period!=='all' && days.length){
+
+  if(period==='1'){
+    days=days.slice(-2);
+  }else{
     const endTime=
       new Date(
         days.at(-1).snapshot.timestamp
@@ -966,6 +970,7 @@ function getGraphDays(){
         ).getTime()>=cutoff
     );
   }
+}
 
   return days;
 }
