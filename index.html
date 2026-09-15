@@ -2767,6 +2767,16 @@ document.querySelector('#sitePassword')
     }
   );
 
+document.querySelector('#sitePassword')
+  .addEventListener(
+    'input',
+    event=>{
+      if(event.inputType==='insertReplacementText'){
+        siteUnlock();
+      }
+    }
+  );
+
 
 document.querySelector('#siteLockButton')
   .addEventListener(
