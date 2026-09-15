@@ -1098,7 +1098,7 @@ async function loadStatsData(){
       '#compareBots'
     );
 
-  compareBots.innerHTML=`
+ compareBots.innerHTML=`
     <label>
       <input
         type="checkbox"
@@ -1108,11 +1108,19 @@ async function loadStatsData(){
     </label>
 
     <label>
-     <input
-      type="checkbox"
-      id="selectCappedBots"
-     >
-     Capped
+      <input
+        type="checkbox"
+        id="selectCappedBots"
+      >
+      Capped
+    </label>
+
+    <label>
+      <input
+        type="checkbox"
+        id="selectUncappedBots"
+      >
+      Uncapped
     </label>
 
     <label>
@@ -1765,9 +1773,18 @@ document.querySelector('#compareBots')
 
     const botCheckboxes=[
       ...document.querySelectorAll(
-        '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#selectCappedBots):not(#totalProfile)'
+        '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#selectCappedBots):not(#selectUncappedBots):not(#totalProfile)'
       )
     ];
+
+    const cappedCids=new Set(
+      eventsState.events
+        .filter(event=>
+          Array.isArray(event.tags) &&
+          event.tags.includes('capped')
+        )
+        .map(event=>event.cid)
+    );
 
     if(e.target.id==='selectAllBots'){
       botCheckboxes.forEach(cb=>{
@@ -1775,18 +1792,10 @@ document.querySelector('#compareBots')
       });
 
       document.querySelector('#selectCappedBots').checked=false;
+      document.querySelector('#selectUncappedBots').checked=false;
     }
 
     if(e.target.id==='selectCappedBots'){
-      const cappedCids=new Set(
-        eventsState.events
-          .filter(event=>
-            Array.isArray(event.tags) &&
-            event.tags.includes('capped')
-          )
-          .map(event=>event.cid)
-      );
-
       botCheckboxes.forEach(cb=>{
         cb.checked=
           e.target.checked &&
@@ -1794,6 +1803,18 @@ document.querySelector('#compareBots')
       });
 
       document.querySelector('#selectAllBots').checked=false;
+      document.querySelector('#selectUncappedBots').checked=false;
+    }
+
+    if(e.target.id==='selectUncappedBots'){
+      botCheckboxes.forEach(cb=>{
+        cb.checked=
+          e.target.checked &&
+          !cappedCids.has(cb.value);
+      });
+
+      document.querySelector('#selectAllBots').checked=false;
+      document.querySelector('#selectCappedBots').checked=false;
     }
 
     drawCompareChart();
