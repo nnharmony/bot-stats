@@ -1103,6 +1103,14 @@ async function loadStatsData(){
     </label>
 
     <label>
+     <input
+      type="checkbox"
+      id="selectCappedBots"
+     >
+     Capped
+    </label>
+
+    <label>
       <input
         type="checkbox"
         id="totalProfile"
@@ -1186,7 +1194,7 @@ function render(){
       );
 
   a.sort((x,y)=>
-    s==='growth'
+    s'growth'
       ? (y.growth??-Infinity)-
         (x.growth??-Infinity)
 
@@ -1748,27 +1756,43 @@ document.querySelector('#resetZoom')
 
 
 document.querySelector('#compareBots')
-  .addEventListener(
-    'change',
-    e=>{
+  .addEventListener('change',e=>{
 
-      if(
-        e.target.id===
-        'selectAllBots'
-      ){
-        document.querySelectorAll(
-          '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
-        )
-        .forEach(
-          cb=>
-            cb.checked=
-              e.target.checked
-        );
-      }
+    const botCheckboxes=[
+      ...document.querySelectorAll(
+        '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#selectCappedBots):not(#totalProfile)'
+      )
+    ];
 
-      drawCompareChart();
+    if(e.target.id==='selectAllBots'){
+      botCheckboxes.forEach(cb=>{
+        cb.checked=e.target.checked;
+      });
+
+      document.querySelector('#selectCappedBots').checked=false;
     }
-  );
+
+    if(e.target.id==='selectCappedBots'){
+      const cappedCids=new Set(
+        eventsState.events
+          .filter(event=>
+            Array.isArray(event.tags) &&
+            event.tags.includes('capped')
+          )
+          .map(event=>event.cid)
+      );
+
+      botCheckboxes.forEach(cb=>{
+        cb.checked=
+          e.target.checked &&
+          cappedCids.has(cb.value);
+      });
+
+      document.querySelector('#selectAllBots').checked=false;
+    }
+
+    drawCompareChart();
+  });
 
 
 function updateDateSelection(){
