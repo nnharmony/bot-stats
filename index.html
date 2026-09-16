@@ -1025,6 +1025,225 @@ h1{
   line-height:1.1 !important;
 }
 
+
+/* fullscreen toolbar: all six controls fit on one iPhone row */
+.graph-fs-toolbar{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:3px !important;
+  padding:4px !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+}
+
+#fsDisplayMode,
+#fsMetric,
+#fsPeriod,
+#fsBotsSummary,
+#fullscreenResetZoom,
+#closeGraphFullscreen{
+  box-sizing:border-box !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  line-height:26px !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 4px !important;
+  margin:0 !important;
+  border-radius:7px !important;
+  white-space:nowrap !important;
+}
+
+#fsDisplayMode{width:56px !important;min-width:56px !important;}
+#fsMetric{width:76px !important;min-width:76px !important;}
+#fsPeriod{width:48px !important;min-width:48px !important;}
+
+#fsBotsPanel{
+  width:58px !important;
+  min-width:58px !important;
+  flex:0 0 58px !important;
+}
+#fsBotsSummary{
+  width:58px !important;
+  min-width:58px !important;
+  max-width:58px !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+#fullscreenResetZoom{
+  width:56px !important;
+  min-width:56px !important;
+}
+
+#closeGraphFullscreen{
+  display:block !important;
+  visibility:visible !important;
+  flex:0 0 28px !important;
+  width:28px !important;
+  min-width:28px !important;
+  max-width:28px !important;
+  padding:0 !important;
+}
+
+/* dashboard text remains small; title is the only larger text */
+body,
+button,
+input,
+select,
+textarea,
+summary,
+table,
+.tag-chip,
+#siteGateStatus,
+#fullscreenEventsContent,
+.graph-fs-empty,
+.graph-fs-event,
+.graph-fs-note,
+.graph-fs-side-title{
+  font-size:12px !important;
+}
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary{
+  font-size:10px !important;
+}
+h1{
+  font-size:24px !important;
+}
+
+
+/* requested fullscreen order: zoom | bots | name | all | messages | × */
+.graph-fs-toolbar{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:3px !important;
+  padding:4px !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+}
+
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary{
+  box-sizing:border-box !important;
+  height:28px !important;
+  min-height:28px !important;
+  font-size:10px !important;
+  font-weight:400 !important;
+  line-height:26px !important;
+  padding:0 4px !important;
+  margin:0 !important;
+  border-radius:7px !important;
+  white-space:nowrap !important;
+}
+
+#fullscreenResetZoom{
+  flex:0 0 31px !important;
+  width:31px !important;
+  min-width:31px !important;
+  padding:0 !important;
+  font-size:12px !important;
+}
+
+#fsBotsPanel{
+  flex:0 0 61px !important;
+  width:61px !important;
+  min-width:61px !important;
+}
+#fsBotsSummary{
+  width:61px !important;
+  min-width:61px !important;
+  max-width:61px !important;
+  display:flex !important;
+  align-items:center !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+#fsDisplayMode{
+  flex:0 0 55px !important;
+  width:55px !important;
+  min-width:55px !important;
+}
+#fsPeriod{
+  flex:0 0 47px !important;
+  width:47px !important;
+  min-width:47px !important;
+}
+#fsMetric{
+  flex:0 0 75px !important;
+  width:75px !important;
+  min-width:75px !important;
+}
+#closeGraphFullscreen{
+  display:block !important;
+  visibility:visible !important;
+  flex:0 0 27px !important;
+  width:27px !important;
+  min-width:27px !important;
+  max-width:27px !important;
+  padding:0 !important;
+  font-size:14px !important;
+}
+
+
+/* zoom reset lives over the graph corner, not in the toolbar */
+.graph-fs-chart{
+  position:relative !important;
+}
+.graph-corner-zoom{
+  position:absolute !important;
+  top:7px !important;
+  right:7px !important;
+  z-index:12 !important;
+  width:28px !important;
+  min-width:28px !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+.magnifier-icon{
+  position:relative !important;
+  display:block !important;
+  width:14px !important;
+  height:14px !important;
+  border:2px solid #111 !important;
+  border-radius:50% !important;
+  box-sizing:border-box !important;
+}
+.magnifier-icon::after{
+  content:"" !important;
+  position:absolute !important;
+  width:8px !important;
+  height:2px !important;
+  background:#111 !important;
+  right:-6px !important;
+  bottom:-3px !important;
+  transform:rotate(45deg) !important;
+  transform-origin:left center !important;
+  border-radius:2px !important;
+}
+
+/* toolbar now only: bots | name | all | messages | × */
+.graph-fs-toolbar{
+  justify-content:flex-start !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1238,35 +1457,38 @@ h1{
 
 <div id="graphFullscreen" aria-hidden="true">
   <div class="graph-fs-toolbar">
-    <select id="fsDisplayMode" aria-label="Label mode">
+<details id="fsBotsPanel" class="graph-fs-bots">
+      <summary id="fsBotsSummary">bots</summary>
+      <div id="fsBotsList" class="graph-fs-bots-list"></div>
+    </details>
+
+    <select id="fsDisplayMode" aria-label="label mode">
       <option value="name">name</option>
       <option value="cid">cid</option>
     </select>
 
-    <select id="fsMetric" aria-label="Metric">
-      <option value="messages">messages</option>
-      <option value="growth">growth</option>
-      <option value="collectors">collectors</option>
-    </select>
-
-    <select id="fsPeriod" aria-label="Period">
+    <select id="fsPeriod" aria-label="period">
       <option value="all">all</option>
       <option value="30">30 day</option>
       <option value="7">7 day</option>
       <option value="1">1 day</option>
     </select>
 
-    <details id="fsBotsPanel" class="graph-fs-bots">
-      <summary id="fsBotsSummary">bots</summary>
-      <div id="fsBotsList" class="graph-fs-bots-list"></div>
-    </details>
+    <select id="fsMetric" aria-label="metric">
+      <option value="messages">messages</option>
+      <option value="growth">growth</option>
+      <option value="collectors">collectors</option>
+    </select>
 
-    <button type="button" id="fullscreenResetZoom">zoom 0</button>
-    <button type="button" id="closeGraphFullscreen">✕</button>
+    <button type="button" id="closeGraphFullscreen" aria-label="close">×</button>
   </div>
+
   <div class="graph-fs-body">
     <div class="graph-fs-chart">
-      <canvas id="fullscreenChart"></canvas>
+      <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">
+      <span class="magnifier-icon" aria-hidden="true"></span>
+    </button>
+    <canvas id="fullscreenChart"></canvas>
     </div>
     <aside id="fullscreenEvents" class="graph-fs-side">
       <div class="graph-fs-side-head">
