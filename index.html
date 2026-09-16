@@ -3461,6 +3461,7 @@ document.querySelector('#siteLockButton')
 
 
 let fullscreenChartInstance=null;
+let fullscreenCapGroupMode='capped';
 
 function snapshotBot(snapshot,cid){
   return (snapshot?.bots || []).find(bot=>bot.cid===cid) || null;
@@ -3585,7 +3586,7 @@ function renderFullscreenBots(){
   );
 
   list.innerHTML=`
-    <button type="button" id="fsCapGroup" data-mode="capped">capped</button>
+    <button type="button" id="fsCapGroup" data-mode="${fullscreenCapGroupMode}">${fullscreenCapGroupMode}</button>
     <label><input type="checkbox" id="fsSelectAll"> select all</label>
   `+
   mainInputs.map(input=>`
@@ -3605,8 +3606,8 @@ function renderFullscreenBots(){
 
   updateFullscreenBotsSummary();
 
-  document.querySelector('#fsCapGroup').addEventListener('click',e=>{
-    const mode=e.currentTarget.dataset.mode || 'capped';
+  document.querySelector('#fsCapGroup').addEventListener('click',()=>{
+    const mode=fullscreenCapGroupMode;
 
     real.forEach(input=>{
       input.checked=
@@ -3615,10 +3616,7 @@ function renderFullscreenBots(){
           : !cappedCids.has(input.value);
     });
 
-    e.currentTarget.dataset.mode=
-      mode==='capped'?'uncapped':'capped';
-
-    e.currentTarget.textContent=
+    fullscreenCapGroupMode=
       mode==='capped'?'uncapped':'capped';
 
     refreshFullscreenGraph();
