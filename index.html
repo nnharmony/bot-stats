@@ -1107,6 +1107,74 @@ main,
   </div>
 </details>
 
+<details class="events-panel" id="eventsPanel">
+  <summary id="eventsSummary">events tracker</summary>
+
+  <div class="events-content">
+
+    
+
+    <div id="eventsPrivate" hidden>
+
+    <div class="event-form">
+
+      <div class="event-field">
+        <label for="eventDate">date</label>
+        <input id="eventDate" type="date">
+      </div>
+
+      <div class="event-field">
+        <label for="eventBot">bot</label>
+        <select id="eventBot">
+          <option value="">select bot</option>
+        </select>
+      </div>
+
+      <div class="event-field event-tags-wrap">
+        <label>tags</label>
+        <div id="eventTags" class="event-tags"></div>
+      </div>
+
+      <div class="event-field event-tags-wrap">
+        <label for="eventNote">note (optional)</label>
+        <textarea id="eventNote" placeholder="add note..."></textarea>
+      </div>
+
+      <div class="event-actions">
+        <button id="eventSave" type="button" disabled>save</button>
+        <button id="eventClear" type="button">clear</button>
+        <span id="eventSaveStatus"></span>
+      </div>
+
+    </div>
+
+    <div class="saved-events">
+      <h3 id="savedEventsTitle">profile — events</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>date</th>
+            <th>bot</th>
+            <th>tags</th>
+            <th>note</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="eventsRows">
+          <tr>
+            <td colspan="5">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    </div>
+
+  </div>
+</details>
+
+
+
 <div class="comparebox">
 
   <div class="date-labels">
@@ -1177,71 +1245,7 @@ main,
 </div>
 
 
-<details class="events-panel" id="eventsPanel">
-  <summary id="eventsSummary">events tracker</summary>
 
-  <div class="events-content">
-
-    
-
-    <div id="eventsPrivate" hidden>
-
-    <div class="event-form">
-
-      <div class="event-field">
-        <label for="eventDate">date</label>
-        <input id="eventDate" type="date">
-      </div>
-
-      <div class="event-field">
-        <label for="eventBot">bot</label>
-        <select id="eventBot">
-          <option value="">select bot</option>
-        </select>
-      </div>
-
-      <div class="event-field event-tags-wrap">
-        <label>tags</label>
-        <div id="eventTags" class="event-tags"></div>
-      </div>
-
-      <div class="event-field event-tags-wrap">
-        <label for="eventNote">note (optional)</label>
-        <textarea id="eventNote" placeholder="add note..."></textarea>
-      </div>
-
-      <div class="event-actions">
-        <button id="eventSave" type="button" disabled>save</button>
-        <button id="eventClear" type="button">clear</button>
-        <span id="eventSaveStatus"></span>
-      </div>
-
-    </div>
-
-    <div class="saved-events">
-      <h3 id="savedEventsTitle">profile — events</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>date</th>
-            <th>bot</th>
-            <th>tags</th>
-            <th>note</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="eventsRows">
-          <tr>
-            <td colspan="5">Loading…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    </div>
-
-  </div>
-</details>
 
 </main>
 
