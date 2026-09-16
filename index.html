@@ -809,6 +809,76 @@ body.graph-fullscreen-open{overflow:hidden}
   font-size:inherit !important;
 }
 
+
+/* fullscreen controls use the same compact typography as the dashboard */
+#fsDisplayMode,
+#fsMetric,
+#fsPeriod,
+#fsBotsSummary,
+#fullscreenResetZoom,
+#closeGraphFullscreen,
+#toggleFullscreenEvents{
+  font-size:16px !important;
+  font-weight:400 !important;
+  line-height:1.2 !important;
+}
+#fullscreenEventsContent,
+.graph-fs-empty,
+.graph-fs-event,
+.graph-fs-note{
+  font-size:14px !important;
+  line-height:1.35 !important;
+}
+.graph-fs-side-title{
+  font-size:16px !important;
+}
+
+
+/* lowercase compact UI + one-line fullscreen toolbar */
+.graph-fs-toolbar{
+  flex-wrap:nowrap !important;
+  gap:5px !important;
+  padding:6px !important;
+  overflow:visible !important;
+}
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary{
+  font-size:13px !important;
+  min-height:36px !important;
+  height:36px !important;
+  padding:0 8px !important;
+  line-height:1 !important;
+  border-radius:10px !important;
+  flex:0 1 auto;
+}
+#fsDisplayMode{width:76px !important;min-width:0 !important}
+#fsMetric{width:100px !important;min-width:0 !important}
+#fsPeriod{width:72px !important;min-width:0 !important}
+#fsBotsPanel{min-width:0 !important}
+#fsBotsSummary{
+  min-width:76px !important;
+  max-width:105px !important;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+#fullscreenResetZoom{
+  width:74px !important;
+  min-width:0 !important;
+}
+#closeGraphFullscreen{
+  width:38px !important;
+  min-width:38px !important;
+  padding:0 !important;
+}
+.graph-fs-side-title,
+#fullscreenEventsContent,
+.graph-fs-empty,
+.graph-fs-event,
+.graph-fs-note{
+  text-transform:none !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -845,22 +915,22 @@ body.graph-fullscreen-open{overflow:hidden}
 </div>
 
 <details class="all-bots">
-  <summary>All bots</summary>
+  <summary>all bots</summary>
 
   <div class="all-bots-content">
 
     <div class="table-controls-row">
       <select id="sort" aria-label="Sort">
-        <option value="creation">Latest</option>
-        <option value="growth">Growth</option>
-        <option value="messages">Messages</option>
-        <option value="collectors">Collectors</option>
-        <option value="name">Name</option>
+        <option value="creation">latest</option>
+        <option value="growth">growth</option>
+        <option value="messages">messages</option>
+        <option value="collectors">collectors</option>
+        <option value="name">name</option>
       </select>
 
       <select id="tableDisplayMode" aria-label="Table display">
-        <option value="name">Name</option>
-        <option value="cid">CID</option>
+        <option value="name">name</option>
+        <option value="cid">cid</option>
       </select>
 
       <input id="search" placeholder="Search bot">
@@ -872,7 +942,7 @@ body.graph-fullscreen-open{overflow:hidden}
           <th>bot</th>
           <th>Start</th>
           <th>Now</th>
-          <th>Growth</th>
+          <th>growth</th>
           <th>C.</th>
         </tr>
       </thead>
@@ -899,39 +969,39 @@ body.graph-fullscreen-open{overflow:hidden}
       <input id="toDate" type="date">
     </div>
 
-    <button id="latestDate">Latest</button>
+    <button id="latestDate">latest</button>
   </div>
 
   <div class="compare-controls">
 
     <select id="displayMode">
-      <option value="name">Name</option>
-      <option value="cid">CID</option>
+      <option value="name">name</option>
+      <option value="cid">cid</option>
     </select>
 
     <select id="compareMetric">
-      <option value="messages">Messages</option>
-      <option value="growth">Growth</option>
-      <option value="collectors">Collectors</option>
+      <option value="messages">messages</option>
+      <option value="growth">growth</option>
+      <option value="collectors">collectors</option>
     </select>
 
     <select id="comparePeriod">
-      <option value="all">All</option>
+      <option value="all">all</option>
       <option value="30">30 day</option>
       <option value="7">7 day</option>
       <option value="1">1 day</option>
     </select>
 
-    <button id="openGraphFullscreen">Full</button>
+    <button id="openGraphFullscreen">full</button>
   </div>
 
   <details class="bot-picker">
-    <summary id="compareSummary">Bots</summary>
+    <summary id="compareSummary">bots</summary>
     <div id="compareBots"></div>
   </details>
 
   <details class="graph-panel" id="graphPanel">
-    <summary>Graph</summary>
+    <summary>graph</summary>
 <div class="chart-area">
       <canvas id="compareChart"></canvas>
     </div>
@@ -942,7 +1012,7 @@ body.graph-fullscreen-open{overflow:hidden}
           <th>bot</th>
           <th>Start</th>
           <th>Now</th>
-          <th>Growth</th>
+          <th>growth</th>
         </tr>
       </thead>
       <tbody id="compareRows"></tbody>
@@ -1023,29 +1093,29 @@ body.graph-fullscreen-open{overflow:hidden}
 <div id="graphFullscreen" aria-hidden="true">
   <div class="graph-fs-toolbar">
     <select id="fsDisplayMode" aria-label="Label mode">
-      <option value="name">Name</option>
-      <option value="cid">CID</option>
+      <option value="name">name</option>
+      <option value="cid">cid</option>
     </select>
 
     <select id="fsMetric" aria-label="Metric">
-      <option value="messages">Messages</option>
-      <option value="growth">Growth</option>
-      <option value="collectors">Collectors</option>
+      <option value="messages">messages</option>
+      <option value="growth">growth</option>
+      <option value="collectors">collectors</option>
     </select>
 
     <select id="fsPeriod" aria-label="Period">
-      <option value="all">All</option>
+      <option value="all">all</option>
       <option value="30">30 day</option>
       <option value="7">7 day</option>
       <option value="1">1 day</option>
     </select>
 
     <details id="fsBotsPanel" class="graph-fs-bots">
-      <summary id="fsBotsSummary">Bots</summary>
+      <summary id="fsBotsSummary">bots</summary>
       <div id="fsBotsList" class="graph-fs-bots-list"></div>
     </details>
 
-    <button type="button" id="fullscreenResetZoom">Zoom 0</button>
+    <button type="button" id="fullscreenResetZoom">zoom 0</button>
     <button type="button" id="closeGraphFullscreen">✕</button>
   </div>
   <div class="graph-fs-body">
@@ -1058,7 +1128,7 @@ body.graph-fullscreen-open{overflow:hidden}
         <div class="graph-fs-side-title">events</div>
       </div>
       <div id="fullscreenEventsContent" class="graph-fs-content">
-        <div class="graph-fs-empty">Tap a point in the graph.</div>
+        <div class="graph-fs-empty">tap a point in the graph.</div>
       </div>
     </aside>
   </div>
@@ -1079,7 +1149,7 @@ let compareChart=null;
 
 
 function displayLabel(cid){
-  if(cid==='__total__') return 'Total';
+  if(cid==='__total__') return 'total';
   if(cid==='__profile__') return 'profile';
 
   const bot=state.meta.get(cid);
@@ -1619,7 +1689,7 @@ function render(){
 
   const totalHtml=`
     <tr class="total-row">
-      <td>Total</td>
+      <td>total</td>
       <td>${fmt.format(totalStart)}</td>
       <td>${fmt.format(totalNow)}</td>
       <td class="${
@@ -1693,7 +1763,7 @@ function drawCompareChart(){
     '#compareSummary'
   ).textContent=
     selected.length===0
-      ? 'Bots'
+      ? 'bots'
       : totalSelected && realSelected.length===0
         ? 'Total selected'
         : totalSelected
@@ -2138,10 +2208,10 @@ document.querySelector('#compareBots')
 
       if(mode==='capped'){
         button.dataset.mode='uncapped';
-        button.textContent='Uncapped';
+        button.textContent='uncapped';
       }else{
         button.dataset.mode='capped';
-        button.textContent='Capped';
+        button.textContent='capped';
       }
 
       drawCompareChart();
@@ -3316,7 +3386,7 @@ function renderFullscreenDate(date,cid){
           ${event.note?`<div class="graph-fs-note">${event.note}</div>`:''}
         </div>
       `).join('')
-    : '<div class="graph-fs-empty">No saved events on this date.</div>';
+    : '<div class="graph-fs-empty">no saved events on this date.</div>';
 
   box.innerHTML=`
     <div class="graph-fs-date">${new Date(date+'T00:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
@@ -3333,11 +3403,11 @@ function updateFullscreenBotsSummary(){
 
   document.querySelector('#fsBotsSummary').textContent=
     bots===0 && !total
-      ? 'Bots'
+      ? 'bots'
       : total && bots===0
-        ? 'Total'
+        ? 'total'
         : total
-          ? `${bots} bots + Total`
+          ? `${bots} bots + total`
           : `${bots} bots`;
 }
 
@@ -3369,7 +3439,7 @@ function renderFullscreenBots(){
         data-fs-cid="${input.value}"
         ${input.checked?'checked':''}
       >
-      ${input.value==='__total__'?'Total':displayLabel(input.value)}
+      ${input.value==='__total__'?'total':displayLabel(input.value)}
     </label>
   `).join('');
 
@@ -3393,7 +3463,7 @@ function renderFullscreenBots(){
       mode==='capped'?'uncapped':'capped';
 
     e.currentTarget.textContent=
-      mode==='capped'?'Uncapped':'Capped';
+      mode==='capped'?'uncapped':'capped';
 
     refreshFullscreenGraph();
   });
@@ -3434,7 +3504,18 @@ function buildFullscreenChart(){
     fullscreenChartInstance=null;
   }
 
-  if(!canvas || !compareChart) return;
+  if(!canvas){
+    return;
+  }
+
+  /* Always rebuild the normal chart first so fullscreen uses the current selection. */
+  drawCompareChart();
+
+  if(!compareChart || !compareChart.data.datasets.length){
+    const ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    return;
+  }
 
   const days=getGraphDays();
   const selected=fullscreenSelectedCids();
@@ -3452,12 +3533,42 @@ function buildFullscreenChart(){
       datasets:clonedDatasets
     },
     options:{
-      ...compareChart.options,
       responsive:true,
       maintainAspectRatio:false,
+      animation:false,
       interaction:{
         intersect:false,
         mode:'nearest'
+      },
+      scales:{
+        x:{
+          ticks:{
+            maxRotation:50,
+            minRotation:50
+          }
+        },
+        y:{
+          beginAtZero:false
+        }
+      },
+      plugins:{
+        legend:{
+          display:true
+        },
+        tooltip:{
+          enabled:true
+        },
+        zoom:{
+          pan:{
+            enabled:true,
+            mode:'xy'
+          },
+          zoom:{
+            wheel:{enabled:true},
+            pinch:{enabled:true},
+            mode:'xy'
+          }
+        }
       },
       onClick:(event,elements)=>{
         if(!elements?.length) return;
@@ -3472,8 +3583,11 @@ function buildFullscreenChart(){
       }
     }
   });
-}
 
+  setTimeout(()=>{
+    fullscreenChartInstance?.resize();
+  },50);
+}
 function refreshFullscreenGraph(){
   drawCompareChart();
   renderFullscreenBots();
