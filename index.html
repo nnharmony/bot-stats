@@ -1001,6 +1001,39 @@ main,
   display:block !important;
 }
 
+
+/* fullscreen bot selector: full-width dropdown BELOW toolbar, never off-screen */
+#fsBotsList.graph-fs-bots-list{
+  position:fixed !important;
+  top:60px !important;
+  left:8px !important;
+  right:8px !important;
+  width:auto !important;
+  max-width:none !important;
+  max-height:58vh !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  z-index:2000 !important;
+  box-sizing:border-box !important;
+  border-radius:10px !important;
+}
+
+/* make every bot-menu row fit the dropdown */
+#fsBotsList label,
+#fsBotsList button{
+  max-width:100% !important;
+  box-sizing:border-box !important;
+}
+#fsBotsList label{
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  white-space:normal !important;
+}
+#fsBotsList button{
+  width:100% !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
