@@ -729,7 +729,7 @@ th:first-child,td:first-child{text-align:left}
     </div>
 
     <div class="saved-events">
-      <h3>saved events</h3>
+      <h3 id="savedEventsTitle">profile — events</h3>
       <table>
         <thead>
           <tr>
@@ -1113,7 +1113,7 @@ async function loadStatsData(){
       id="capGroupButton"
       data-mode="capped"
     >Capped</button>
-    
+
     <label>
       <input
         type="checkbox"
@@ -2120,17 +2120,36 @@ function renderEvents(){
   const rows=
     document.querySelector('#eventsRows');
 
-  if(!eventsState.events.length){
+  const selectedCid=
+    document.querySelector('#eventBot')?.value || '__profile__';
+
+  const title=
+    document.querySelector('#savedEventsTitle');
+
+  if(title){
+    title.textContent=
+      eventBotLabel(selectedCid)+
+      ' — events';
+  }
+
+  const visibleEvents=
+    eventsState.events.filter(
+      event=>event.cid===selectedCid
+    );
+
+  if(!visibleEvents.length){
     rows.innerHTML=`
       <tr>
-        <td colspan="5">No events yet</td>
+        <td colspan="5">
+          No events for ${eventBotLabel(selectedCid)}
+        </td>
       </tr>
     `;
     return;
   }
 
   rows.innerHTML=
-    eventsState.events
+    visibleEvents
       .map(event=>{
         const visibleTags=[...(event.tags || [])];
 
@@ -2168,7 +2187,6 @@ function renderEvents(){
       })
       .join('');
 }
-
 
 function eventsForSelection(){
   const date=document.querySelector('#eventDate').value;
@@ -2625,7 +2643,10 @@ function initEventsTracker(){
   document.querySelector('#eventBot')
     .addEventListener(
       'change',
-      loadEventForSelection
+      ()=>{
+        loadEventForSelection();
+        renderEvents();
+      }
     );
 
   document.querySelector('#eventSave')
