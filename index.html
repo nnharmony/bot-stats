@@ -795,6 +795,20 @@ body.graph-fullscreen-open{overflow:hidden}
   }
 }
 
+
+/* fullscreen typography: keep it compact and consistent */
+.graph-fs-bots>summary{
+  font-size:inherit !important;
+  font-weight:400 !important;
+}
+.graph-fs-empty{
+  font-size:inherit !important;
+  line-height:1.35 !important;
+}
+.graph-fs-side-title{
+  font-size:inherit !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -916,7 +930,7 @@ body.graph-fullscreen-open{overflow:hidden}
     <div id="compareBots"></div>
   </details>
 
-  <details class="graph-panel" id="graphPanel" open>
+  <details class="graph-panel" id="graphPanel">
     <summary>Graph</summary>
 <div class="chart-area">
       <canvas id="compareChart"></canvas>
