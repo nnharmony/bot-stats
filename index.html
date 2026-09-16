@@ -711,6 +711,90 @@ body.graph-fullscreen-open{overflow:hidden}
   .graph-fs-content{min-width:0}
 }
 
+
+/* compact controls + fullscreen analysis controls */
+.table-controls-row{
+  display:grid;
+  grid-template-columns:112px 94px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  margin-bottom:12px;
+}
+.table-controls-row select,
+.table-controls-row input{
+  width:100%;
+  min-width:0;
+}
+.graph-panel .chart-area.chart-empty{
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden;
+}
+.graph-panel .compare-table.graph-empty{display:none}
+
+.graph-fs-toolbar{
+  flex-wrap:wrap;
+  gap:6px;
+}
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary{
+  min-height:38px;
+}
+.graph-fs-bots{position:relative}
+.graph-fs-bots>summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  border:1px solid #59606d;
+  border-radius:12px;
+  background:#1b1e23;
+  color:#fff;
+  white-space:nowrap;
+}
+.graph-fs-bots>summary::-webkit-details-marker{display:none}
+.graph-fs-bots-list{
+  position:absolute;
+  z-index:20;
+  top:calc(100% + 6px);
+  right:0;
+  width:min(320px,82vw);
+  max-height:62vh;
+  overflow:auto;
+  padding:10px;
+  border:1px solid #59606d;
+  border-radius:12px;
+  background:#1b1e23;
+  color:#fff;
+  box-shadow:0 10px 30px rgba(0,0,0,.28);
+}
+.graph-fs-bots-list label{
+  display:block;
+  padding:7px 4px;
+}
+.graph-fs-bots-list button{
+  width:100%;
+  margin-bottom:7px;
+}
+@media(max-width:650px){
+  .table-controls-row{
+    grid-template-columns:100px 88px minmax(0,1fr);
+  }
+  .graph-fs-toolbar{
+    padding:6px;
+  }
+  .graph-fs-toolbar select{
+    max-width:105px;
+  }
+  .graph-fs-bots>summary{
+    padding:0 9px;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -751,23 +835,21 @@ body.graph-fullscreen-open{overflow:hidden}
 
   <div class="all-bots-content">
 
-    <div class="controls">
-      <input id="search" placeholder="Search bot">
-
-      <select id="sort">
+    <div class="table-controls-row">
+      <select id="sort" aria-label="Sort">
         <option value="creation">Latest</option>
         <option value="growth">Growth</option>
         <option value="messages">Messages</option>
         <option value="collectors">Collectors</option>
         <option value="name">Name</option>
       </select>
-    </div>
 
-    <div class="table-mode-row">
       <select id="tableDisplayMode" aria-label="Table display">
         <option value="name">Name</option>
         <option value="cid">CID</option>
       </select>
+
+      <input id="search" placeholder="Search bot">
     </div>
 
     <table class="main-table">
@@ -826,7 +908,7 @@ body.graph-fullscreen-open{overflow:hidden}
       <option value="1">1 day</option>
     </select>
 
-    <button id="resetZoom">Zoom 0</button>
+    <button id="openGraphFullscreen">Full</button>
   </div>
 
   <details class="bot-picker">
@@ -836,14 +918,7 @@ body.graph-fullscreen-open{overflow:hidden}
 
   <details class="graph-panel" id="graphPanel" open>
     <summary>Graph</summary>
-
-    <button
-      id="openGraphFullscreen"
-      class="graph-fullscreen-button"
-      type="button"
-    >Full screen</button>
-
-    <div class="chart-area">
+<div class="chart-area">
       <canvas id="compareChart"></canvas>
     </div>
 
@@ -933,7 +1008,29 @@ body.graph-fullscreen-open{overflow:hidden}
 
 <div id="graphFullscreen" aria-hidden="true">
   <div class="graph-fs-toolbar">
-    <div class="graph-fs-title">graph analysis</div>
+    <select id="fsDisplayMode" aria-label="Label mode">
+      <option value="name">Name</option>
+      <option value="cid">CID</option>
+    </select>
+
+    <select id="fsMetric" aria-label="Metric">
+      <option value="messages">Messages</option>
+      <option value="growth">Growth</option>
+      <option value="collectors">Collectors</option>
+    </select>
+
+    <select id="fsPeriod" aria-label="Period">
+      <option value="all">All</option>
+      <option value="30">30 day</option>
+      <option value="7">7 day</option>
+      <option value="1">1 day</option>
+    </select>
+
+    <details id="fsBotsPanel" class="graph-fs-bots">
+      <summary id="fsBotsSummary">Bots</summary>
+      <div id="fsBotsList" class="graph-fs-bots-list"></div>
+    </details>
+
     <button type="button" id="fullscreenResetZoom">Zoom 0</button>
     <button type="button" id="closeGraphFullscreen">✕</button>
   </div>
@@ -1602,8 +1699,13 @@ function drawCompareChart(){
     selected.length===0 ||
     !state.history
   ){
+    document.querySelector('.chart-area')?.classList.add('chart-empty');
+    document.querySelector('.compare-table')?.classList.add('graph-empty');
     return;
   }
+
+  document.querySelector('.chart-area')?.classList.remove('chart-empty');
+  document.querySelector('.compare-table')?.classList.remove('graph-empty');
 
   const days=
     getGraphDays();
@@ -1968,19 +2070,6 @@ document.querySelector('#comparePeriod')
     'change',
     drawCompareChart
   );
-
-
-document.querySelector('#resetZoom')
-  .addEventListener(
-    'click',
-    ()=>{
-      if(compareChart){
-        compareChart.resetZoom();
-      }
-    }
-  );
-
-
 document.querySelector('#compareBots')
   .addEventListener(
     'change',
@@ -3133,18 +3222,6 @@ document.querySelector('#siteLockButton')
 
 let fullscreenChartInstance=null;
 
-function fullscreenSelectedCids(){
-  return [...document.querySelectorAll(
-    '#compareBots input[type="checkbox"]:checked'
-  )]
-  .map(input=>input.value)
-  .filter(value=>
-    value &&
-    value!=='on' &&
-    value!=='__total__'
-  );
-}
-
 function snapshotBot(snapshot,cid){
   return (snapshot?.bots || []).find(bot=>bot.cid===cid) || null;
 }
@@ -3163,13 +3240,18 @@ function fullscreenEventTags(event){
   return [...new Set(tags)];
 }
 
+function fullscreenSelectedCids(){
+  return [...document.querySelectorAll(
+    '#compareBots input[type="checkbox"]:checked:not(#selectAllBots)'
+  )].map(input=>input.value);
+}
+
 function renderFullscreenDate(date,cid){
   const box=document.querySelector('#fullscreenEventsContent');
   if(!box) return;
 
   const day=state.daily.find(item=>item.date===date);
   const previous=previousGraphDay(date);
-
   let stats='';
 
   if(day && cid && cid!=='__total__'){
@@ -3178,16 +3260,12 @@ function renderFullscreenDate(date,cid){
 
     if(now){
       const growth=
-        before &&
-        Number.isFinite(now.messages) &&
-        Number.isFinite(before.messages)
+        before && Number.isFinite(now.messages) && Number.isFinite(before.messages)
           ? now.messages-before.messages
           : null;
 
       const collectorGrowth=
-        before &&
-        Number.isFinite(now.collectors) &&
-        Number.isFinite(before.collectors)
+        before && Number.isFinite(now.collectors) && Number.isFinite(before.collectors)
           ? now.collectors-before.collectors
           : null;
 
@@ -3200,7 +3278,7 @@ function renderFullscreenDate(date,cid){
     }
   }
 
-  const selected=fullscreenSelectedCids();
+  const selected=fullscreenSelectedCids().filter(cid=>cid!=='__total__');
 
   const events=(eventsState.events || []).filter(event=>{
     if(event.date!==date) return false;
@@ -3234,20 +3312,118 @@ function renderFullscreenDate(date,cid){
   `;
 }
 
+function updateFullscreenBotsSummary(){
+  const selected=fullscreenSelectedCids();
+  const total=selected.includes('__total__');
+  const bots=selected.filter(cid=>cid!=='__total__').length;
+
+  document.querySelector('#fsBotsSummary').textContent=
+    bots===0 && !total
+      ? 'Bots'
+      : total && bots===0
+        ? 'Total'
+        : total
+          ? `${bots} bots + Total`
+          : `${bots} bots`;
+}
+
+function renderFullscreenBots(){
+  const list=document.querySelector('#fsBotsList');
+  const mainInputs=[
+    ...document.querySelectorAll(
+      '#compareBots input[type="checkbox"]:not(#selectAllBots)'
+    )
+  ];
+
+  const cappedCids=new Set(
+    eventsState.events
+      .filter(event=>
+        Array.isArray(event.tags) &&
+        event.tags.includes('capped')
+      )
+      .map(event=>event.cid)
+  );
+
+  list.innerHTML=`
+    <button type="button" id="fsCapGroup" data-mode="capped">Capped</button>
+    <label><input type="checkbox" id="fsSelectAll"> Select all</label>
+  `+
+  mainInputs.map(input=>`
+    <label>
+      <input
+        type="checkbox"
+        data-fs-cid="${input.value}"
+        ${input.checked?'checked':''}
+      >
+      ${input.value==='__total__'?'Total':displayLabel(input.value)}
+    </label>
+  `).join('');
+
+  const real=mainInputs.filter(input=>input.value!=='__total__');
+  document.querySelector('#fsSelectAll').checked=
+    real.length>0 && real.every(input=>input.checked);
+
+  updateFullscreenBotsSummary();
+
+  document.querySelector('#fsCapGroup').addEventListener('click',e=>{
+    const mode=e.currentTarget.dataset.mode || 'capped';
+
+    real.forEach(input=>{
+      input.checked=
+        mode==='capped'
+          ? cappedCids.has(input.value)
+          : !cappedCids.has(input.value);
+    });
+
+    e.currentTarget.dataset.mode=
+      mode==='capped'?'uncapped':'capped';
+
+    e.currentTarget.textContent=
+      mode==='capped'?'Uncapped':'Capped';
+
+    refreshFullscreenGraph();
+  });
+
+  document.querySelector('#fsSelectAll').addEventListener('change',e=>{
+    real.forEach(input=>input.checked=e.target.checked);
+    refreshFullscreenGraph();
+  });
+
+  list.querySelectorAll('[data-fs-cid]').forEach(fsInput=>{
+    fsInput.addEventListener('change',()=>{
+      const cid=fsInput.dataset.fsCid;
+      const main=mainInputs.find(input=>input.value===cid);
+      if(main) main.checked=fsInput.checked;
+      refreshFullscreenGraph();
+    });
+  });
+}
+
+function syncFullscreenControlsFromMain(){
+  document.querySelector('#fsDisplayMode').value=
+    document.querySelector('#displayMode').value;
+
+  document.querySelector('#fsMetric').value=
+    document.querySelector('#compareMetric').value;
+
+  document.querySelector('#fsPeriod').value=
+    document.querySelector('#comparePeriod').value;
+
+  renderFullscreenBots();
+}
+
 function buildFullscreenChart(){
   const canvas=document.querySelector('#fullscreenChart');
-  if(!canvas || !compareChart) return;
 
   if(fullscreenChartInstance){
     fullscreenChartInstance.destroy();
+    fullscreenChartInstance=null;
   }
 
+  if(!canvas || !compareChart) return;
+
   const days=getGraphDays();
-  const selected=[
-    ...document.querySelectorAll(
-      '#compareBots input[type="checkbox"]:checked:not(#selectAllBots)'
-    )
-  ].map(input=>input.value);
+  const selected=fullscreenSelectedCids();
 
   const clonedDatasets=compareChart.data.datasets.map((dataset,index)=>({
     ...dataset,
@@ -3284,10 +3460,14 @@ function buildFullscreenChart(){
   });
 }
 
+function refreshFullscreenGraph(){
+  drawCompareChart();
+  renderFullscreenBots();
+  requestAnimationFrame(buildFullscreenChart);
+}
+
 function openGraphFullscreen(){
-  if(!compareChart){
-    drawCompareChart();
-  }
+  syncFullscreenControlsFromMain();
 
   const modal=document.querySelector('#graphFullscreen');
   modal.classList.add('open');
@@ -3324,9 +3504,7 @@ document.querySelector('#toggleFullscreenEvents')
     document.querySelector('#toggleFullscreenEvents').textContent=
       collapsed ? '◀' : '▶';
 
-    setTimeout(()=>{
-      fullscreenChartInstance?.resize();
-    },220);
+    setTimeout(()=>fullscreenChartInstance?.resize(),220);
   });
 
 document.querySelector('#fullscreenResetZoom')
@@ -3334,12 +3512,34 @@ document.querySelector('#fullscreenResetZoom')
     fullscreenChartInstance?.resetZoom?.();
   });
 
+document.querySelector('#fsDisplayMode')
+  .addEventListener('change',e=>{
+    document.querySelector('#displayMode').value=e.target.value;
+    document.querySelector('#displayMode').dispatchEvent(
+      new Event('change',{bubbles:true})
+    );
+    renderFullscreenBots();
+    requestAnimationFrame(buildFullscreenChart);
+  });
+
+document.querySelector('#fsMetric')
+  .addEventListener('change',e=>{
+    document.querySelector('#compareMetric').value=e.target.value;
+    drawCompareChart();
+    requestAnimationFrame(buildFullscreenChart);
+  });
+
+document.querySelector('#fsPeriod')
+  .addEventListener('change',e=>{
+    document.querySelector('#comparePeriod').value=e.target.value;
+    drawCompareChart();
+    requestAnimationFrame(buildFullscreenChart);
+  });
+
 document.querySelector('#graphPanel')
   .addEventListener('toggle',()=>{
     if(document.querySelector('#graphPanel').open){
-      setTimeout(()=>{
-        compareChart?.resize();
-      },30);
+      setTimeout(()=>compareChart?.resize(),30);
     }
   });
 
