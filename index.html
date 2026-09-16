@@ -879,6 +879,93 @@ body.graph-fullscreen-open{overflow:hidden}
   text-transform:none !important;
 }
 
+
+/* correction: genuinely small fullscreen controls */
+.graph-fs-toolbar{
+  gap:4px !important;
+  padding:5px !important;
+}
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary{
+  font-size:11px !important;
+  min-height:30px !important;
+  height:30px !important;
+  padding:0 6px !important;
+  border-radius:8px !important;
+}
+#fsDisplayMode{width:64px !important}
+#fsMetric{width:82px !important}
+#fsPeriod{width:58px !important}
+#fsBotsSummary{
+  min-width:62px !important;
+  max-width:88px !important;
+}
+#fullscreenResetZoom{
+  width:61px !important;
+}
+#closeGraphFullscreen{
+  width:30px !important;
+  min-width:30px !important;
+}
+#toggleFullscreenEvents{
+  width:30px !important;
+  min-width:30px !important;
+}
+.graph-fs-side-title{
+  font-size:12px !important;
+}
+#fullscreenEventsContent,
+.graph-fs-empty,
+.graph-fs-event,
+.graph-fs-note{
+  font-size:11px !important;
+}
+
+
+/* compact typography throughout */
+body,
+button,
+input,
+select,
+textarea,
+summary,
+table,
+.tag-chip,
+#siteGateStatus{
+  font-size:12px !important;
+}
+
+h1{
+  font-size:24px !important;
+  line-height:1.05 !important;
+  margin-bottom:14px !important;
+}
+
+h2,
+h3,
+.graph-panel>summary,
+.events-panel>summary,
+.all-bots>summary,
+.graph-fs-side-title{
+  font-size:12px !important;
+}
+
+#lastUpdated,
+.last-updated{
+  font-size:12px !important;
+}
+
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary,
+#fullscreenEventsContent,
+.graph-fs-empty,
+.graph-fs-event,
+.graph-fs-note{
+  font-size:12px !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -908,7 +995,7 @@ body.graph-fullscreen-open{overflow:hidden}
 
 <main id="app" hidden>
 
-<h1>stats</h1>
+<h1>characters♡</h1>
 <div class="app-head-row">
   <div id="updated" class="muted">loading…</div>
   <button id="siteLockButton" type="button">lock</button>
