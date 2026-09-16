@@ -796,134 +796,15 @@ body.graph-fullscreen-open{overflow:hidden}
 }
 
 
-/* fullscreen typography: keep it compact and consistent */
-.graph-fs-bots>summary{
-  font-size:inherit !important;
-  font-weight:400 !important;
-}
-.graph-fs-empty{
-  font-size:inherit !important;
-  line-height:1.35 !important;
-}
-.graph-fs-side-title{
-  font-size:inherit !important;
-}
 
+/* clean mobile layout — isolated ordinary page / fullscreen */
+html,body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+*{box-sizing:border-box}
 
-/* fullscreen controls use the same compact typography as the dashboard */
-#fsDisplayMode,
-#fsMetric,
-#fsPeriod,
-#fsBotsSummary,
-#fullscreenResetZoom,
-#closeGraphFullscreen,
-#toggleFullscreenEvents{
-  font-size:16px !important;
-  font-weight:400 !important;
-  line-height:1.2 !important;
-}
-#fullscreenEventsContent,
-.graph-fs-empty,
-.graph-fs-event,
-.graph-fs-note{
-  font-size:14px !important;
-  line-height:1.35 !important;
-}
-.graph-fs-side-title{
-  font-size:16px !important;
-}
-
-
-/* lowercase compact UI + one-line fullscreen toolbar */
-.graph-fs-toolbar{
-  flex-wrap:nowrap !important;
-  gap:5px !important;
-  padding:6px !important;
-  overflow:visible !important;
-}
-.graph-fs-toolbar select,
-.graph-fs-toolbar button,
-.graph-fs-bots>summary{
-  font-size:13px !important;
-  min-height:36px !important;
-  height:36px !important;
-  padding:0 8px !important;
-  line-height:1 !important;
-  border-radius:10px !important;
-  flex:0 1 auto;
-}
-#fsDisplayMode{width:76px !important;min-width:0 !important}
-#fsMetric{width:100px !important;min-width:0 !important}
-#fsPeriod{width:72px !important;min-width:0 !important}
-#fsBotsPanel{min-width:0 !important}
-#fsBotsSummary{
-  min-width:76px !important;
-  max-width:105px !important;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-#fullscreenResetZoom{
-  width:74px !important;
-  min-width:0 !important;
-}
-#closeGraphFullscreen{
-  width:38px !important;
-  min-width:38px !important;
-  padding:0 !important;
-}
-.graph-fs-side-title,
-#fullscreenEventsContent,
-.graph-fs-empty,
-.graph-fs-event,
-.graph-fs-note{
-  text-transform:none !important;
-}
-
-
-/* correction: genuinely small fullscreen controls */
-.graph-fs-toolbar{
-  gap:4px !important;
-  padding:5px !important;
-}
-.graph-fs-toolbar select,
-.graph-fs-toolbar button,
-.graph-fs-bots>summary{
-  font-size:11px !important;
-  min-height:30px !important;
-  height:30px !important;
-  padding:0 6px !important;
-  border-radius:8px !important;
-}
-#fsDisplayMode{width:64px !important}
-#fsMetric{width:82px !important}
-#fsPeriod{width:58px !important}
-#fsBotsSummary{
-  min-width:62px !important;
-  max-width:88px !important;
-}
-#fullscreenResetZoom{
-  width:61px !important;
-}
-#closeGraphFullscreen{
-  width:30px !important;
-  min-width:30px !important;
-}
-#toggleFullscreenEvents{
-  width:30px !important;
-  min-width:30px !important;
-}
-.graph-fs-side-title{
-  font-size:12px !important;
-}
-#fullscreenEventsContent,
-.graph-fs-empty,
-.graph-fs-event,
-.graph-fs-note{
-  font-size:11px !important;
-}
-
-
-/* compact typography throughout */
 body,
 button,
 input,
@@ -931,273 +812,91 @@ select,
 textarea,
 summary,
 table,
-.tag-chip,
-#siteGateStatus{
-  font-size:12px !important;
+.tag-chip{
+  font-size:12px;
 }
-
 h1{
-  font-size:24px !important;
-  line-height:1.05 !important;
-  margin-bottom:14px !important;
+  font-size:24px;
+  line-height:1.1;
+}
+main,
+.card,
+.graph-panel,
+.events-panel,
+.all-bots{
+  max-width:100%;
 }
 
-h2,
-h3,
-.graph-panel>summary,
-.events-panel>summary,
-.all-bots>summary,
-.graph-fs-side-title{
-  font-size:12px !important;
+/* ordinary graph card */
+.compare-controls{
+  min-width:0;
+}
+.compare-controls select,
+.compare-controls button,
+.compare-controls input{
+  min-width:0;
+  max-width:100%;
+}
+@media(max-width:650px){
+  .compare-controls{
+    overflow:hidden;
+  }
+  .compare-controls .control-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  }
 }
 
-#lastUpdated,
-.last-updated{
-  font-size:12px !important;
+/* all bots: latest | name | search */
+.table-controls-row{
+  display:grid;
+  grid-template-columns:100px 88px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  width:100%;
+}
+.table-controls-row select,
+.table-controls-row input{
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  margin:0;
 }
 
-.graph-fs-toolbar select,
-.graph-fs-toolbar button,
-.graph-fs-bots>summary,
-#fullscreenEventsContent,
-.graph-fs-empty,
-.graph-fs-event,
-.graph-fs-note{
-  font-size:12px !important;
-}
-
-
-/* FINAL fullscreen toolbar sizing */
+/* fullscreen only */
 .graph-fs-toolbar{
   display:flex !important;
   flex-wrap:nowrap !important;
   align-items:center !important;
   gap:4px !important;
-  padding:5px !important;
-  white-space:nowrap !important;
+  padding:5px 8px !important;
+  width:100% !important;
+  max-width:100% !important;
+  overflow:hidden !important;
 }
-
-#fsDisplayMode,
-#fsMetric,
-#fsPeriod,
-#fsBotsSummary,
-#fullscreenResetZoom,
-#closeGraphFullscreen{
-  box-sizing:border-box !important;
-  font-size:12px !important;
-  font-weight:400 !important;
-  line-height:28px !important;
+.graph-fs-toolbar select,
+.graph-fs-toolbar button,
+.graph-fs-bots>summary{
   height:30px !important;
   min-height:30px !important;
+  font-size:12px !important;
+  line-height:28px !important;
   padding:0 5px !important;
   margin:0 !important;
   border-radius:8px !important;
   white-space:nowrap !important;
-  overflow:visible !important;
-  text-overflow:clip !important;
 }
-
-#fsDisplayMode{width:70px !important;min-width:70px !important;}
-#fsMetric{width:92px !important;min-width:92px !important;}
-#fsPeriod{width:62px !important;min-width:62px !important;}
-#fsBotsPanel{width:74px !important;min-width:74px !important;flex:none !important;}
-#fsBotsSummary{
-  width:74px !important;
-  min-width:74px !important;
-  max-width:74px !important;
-  display:flex !important;
-  align-items:center !important;
-}
-#fullscreenResetZoom{width:66px !important;min-width:66px !important;}
-#closeGraphFullscreen{width:30px !important;min-width:30px !important;padding:0 !important;}
-
-.graph-fs-side-title,
-#fullscreenEventsContent,
-.graph-fs-empty,
-.graph-fs-event,
-.graph-fs-note{
-  font-size:12px !important;
-}
-
-/* only the page title is intentionally larger */
-h1{
-  font-size:24px !important;
-  line-height:1.1 !important;
-}
-
-
-/* fullscreen toolbar: all six controls fit on one iPhone row */
-.graph-fs-toolbar{
-  display:flex !important;
-  flex-wrap:nowrap !important;
-  align-items:center !important;
-  gap:3px !important;
-  padding:4px !important;
-  width:100% !important;
-  box-sizing:border-box !important;
-  overflow:visible !important;
-}
-
-#fsDisplayMode,
-#fsMetric,
-#fsPeriod,
-#fsBotsSummary,
-#fullscreenResetZoom,
+#fsMetric{flex:0 1 82px !important;width:82px !important;min-width:0 !important}
+#fsDisplayMode{flex:0 1 62px !important;width:62px !important;min-width:0 !important}
+#fsPeriod{flex:0 1 54px !important;width:54px !important;min-width:0 !important}
+#fsBotsPanel{flex:0 1 64px !important;width:64px !important;min-width:0 !important}
+#fsBotsSummary{width:100% !important;min-width:0 !important;max-width:none !important}
 #closeGraphFullscreen{
-  box-sizing:border-box !important;
-  font-size:10px !important;
-  font-weight:400 !important;
-  line-height:26px !important;
-  height:28px !important;
-  min-height:28px !important;
-  padding:0 4px !important;
-  margin:0 !important;
-  border-radius:7px !important;
-  white-space:nowrap !important;
-}
-
-#fsDisplayMode{width:56px !important;min-width:56px !important;}
-#fsMetric{width:76px !important;min-width:76px !important;}
-#fsPeriod{width:48px !important;min-width:48px !important;}
-
-#fsBotsPanel{
-  width:58px !important;
-  min-width:58px !important;
-  flex:0 0 58px !important;
-}
-#fsBotsSummary{
-  width:58px !important;
-  min-width:58px !important;
-  max-width:58px !important;
-  display:flex !important;
-  align-items:center !important;
-  overflow:hidden !important;
-  text-overflow:ellipsis !important;
-}
-
-#fullscreenResetZoom{
-  width:56px !important;
-  min-width:56px !important;
-}
-
-#closeGraphFullscreen{
-  display:block !important;
-  visibility:visible !important;
   flex:0 0 28px !important;
   width:28px !important;
   min-width:28px !important;
-  max-width:28px !important;
   padding:0 !important;
 }
-
-/* dashboard text remains small; title is the only larger text */
-body,
-button,
-input,
-select,
-textarea,
-summary,
-table,
-.tag-chip,
-#siteGateStatus,
-#fullscreenEventsContent,
-.graph-fs-empty,
-.graph-fs-event,
-.graph-fs-note,
-.graph-fs-side-title{
-  font-size:12px !important;
-}
-.graph-fs-toolbar select,
-.graph-fs-toolbar button,
-.graph-fs-bots>summary{
-  font-size:10px !important;
-}
-h1{
-  font-size:24px !important;
-}
-
-
-/* requested fullscreen order: zoom | bots | name | all | messages | × */
-.graph-fs-toolbar{
-  display:flex !important;
-  flex-wrap:nowrap !important;
-  align-items:center !important;
-  gap:3px !important;
-  padding:4px !important;
-  width:100% !important;
-  box-sizing:border-box !important;
-  overflow:visible !important;
-}
-
-.graph-fs-toolbar select,
-.graph-fs-toolbar button,
-.graph-fs-bots>summary{
-  box-sizing:border-box !important;
-  height:28px !important;
-  min-height:28px !important;
-  font-size:10px !important;
-  font-weight:400 !important;
-  line-height:26px !important;
-  padding:0 4px !important;
-  margin:0 !important;
-  border-radius:7px !important;
-  white-space:nowrap !important;
-}
-
-#fullscreenResetZoom{
-  flex:0 0 31px !important;
-  width:31px !important;
-  min-width:31px !important;
-  padding:0 !important;
-  font-size:12px !important;
-}
-
-#fsBotsPanel{
-  flex:0 0 61px !important;
-  width:61px !important;
-  min-width:61px !important;
-}
-#fsBotsSummary{
-  width:61px !important;
-  min-width:61px !important;
-  max-width:61px !important;
-  display:flex !important;
-  align-items:center !important;
-  overflow:hidden !important;
-  text-overflow:ellipsis !important;
-}
-
-#fsDisplayMode{
-  flex:0 0 55px !important;
-  width:55px !important;
-  min-width:55px !important;
-}
-#fsPeriod{
-  flex:0 0 47px !important;
-  width:47px !important;
-  min-width:47px !important;
-}
-#fsMetric{
-  flex:0 0 75px !important;
-  width:75px !important;
-  min-width:75px !important;
-}
-#closeGraphFullscreen{
-  display:block !important;
-  visibility:visible !important;
-  flex:0 0 27px !important;
-  width:27px !important;
-  min-width:27px !important;
-  max-width:27px !important;
-  padding:0 !important;
-  font-size:14px !important;
-}
-
-
-/* zoom reset lives over the graph corner, not in the toolbar */
-.graph-fs-chart{
-  position:relative !important;
-}
+.graph-fs-chart{position:relative !important}
 .graph-corner-zoom{
   position:absolute !important;
   top:7px !important;
@@ -1212,36 +911,25 @@ h1{
   border:0 !important;
   background:transparent !important;
   box-shadow:none !important;
-  border-radius:0 !important;
-  display:flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-}
-.magnifier-icon{
-  position:relative !important;
-  display:block !important;
-  width:14px !important;
-  height:14px !important;
-  border:2px solid #111 !important;
-  border-radius:50% !important;
-  box-sizing:border-box !important;
-}
-.magnifier-icon::after{
-  content:"" !important;
-  position:absolute !important;
-  width:8px !important;
-  height:2px !important;
-  background:#111 !important;
-  right:-6px !important;
-  bottom:-3px !important;
-  transform:rotate(45deg) !important;
-  transform-origin:left center !important;
-  border-radius:2px !important;
+  font-size:18px !important;
+  line-height:28px !important;
 }
 
-/* toolbar now only: bots | name | all | messages | × */
-.graph-fs-toolbar{
-  justify-content:flex-start !important;
+/* event list alignment */
+.events-panel h3,
+.events-panel .events-table-wrap,
+.events-panel table{
+  margin-left:0 !important;
+}
+.events-panel h3{
+  padding-left:0 !important;
+  font-size:12px !important;
+}
+#statsTable th,
+.compare-table th,
+.events-panel th{
+  text-transform:lowercase;
+  font-size:12px;
 }
 
 </style>
@@ -1298,15 +986,15 @@ h1{
         <option value="cid">cid</option>
       </select>
 
-      <input id="search" placeholder="Search bot">
+      <input id="search" placeholder="search bot">
     </div>
 
     <table class="main-table">
       <thead>
         <tr>
           <th>bot</th>
-          <th>Start</th>
-          <th>Now</th>
+          <th>start</th>
+          <th>now</th>
           <th>growth</th>
           <th>C.</th>
         </tr>
@@ -1375,8 +1063,8 @@ h1{
       <thead>
         <tr>
           <th>bot</th>
-          <th>Start</th>
-          <th>Now</th>
+          <th>start</th>
+          <th>now</th>
           <th>growth</th>
         </tr>
       </thead>
@@ -1457,10 +1145,11 @@ h1{
 
 <div id="graphFullscreen" aria-hidden="true">
   <div class="graph-fs-toolbar">
-<details id="fsBotsPanel" class="graph-fs-bots">
-      <summary id="fsBotsSummary">bots</summary>
-      <div id="fsBotsList" class="graph-fs-bots-list"></div>
-    </details>
+    <select id="fsMetric" aria-label="metric">
+      <option value="messages">messages</option>
+      <option value="growth">growth</option>
+      <option value="collectors">collectors</option>
+    </select>
 
     <select id="fsDisplayMode" aria-label="label mode">
       <option value="name">name</option>
@@ -1474,20 +1163,17 @@ h1{
       <option value="1">1 day</option>
     </select>
 
-    <select id="fsMetric" aria-label="metric">
-      <option value="messages">messages</option>
-      <option value="growth">growth</option>
-      <option value="collectors">collectors</option>
-    </select>
+    <details id="fsBotsPanel" class="graph-fs-bots">
+      <summary id="fsBotsSummary">bots</summary>
+      <div id="fsBotsList" class="graph-fs-bots-list"></div>
+    </details>
 
     <button type="button" id="closeGraphFullscreen" aria-label="close">×</button>
   </div>
 
   <div class="graph-fs-body">
     <div class="graph-fs-chart">
-      <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">
-      <span class="magnifier-icon" aria-hidden="true"></span>
-    </button>
+      <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
     <canvas id="fullscreenChart"></canvas>
     </div>
     <aside id="fullscreenEvents" class="graph-fs-side">
@@ -1829,7 +1515,7 @@ async function loadStatsData(){
   if(latest){
     document.querySelector('#updated')
       .textContent=
-        'Last updated: '+
+        'last updated: '+
         new Date(
           latest.timestamp
         ).toLocaleString('nl-NL');
