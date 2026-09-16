@@ -932,6 +932,75 @@ main,
   font-size:12px;
 }
 
+
+/* fullscreen bots menu + zoom position correction */
+.graph-fs-toolbar{
+  overflow:visible !important;
+  position:relative !important;
+  z-index:100 !important;
+}
+.graph-fs-bots{
+  position:relative !important;
+  z-index:120 !important;
+}
+.graph-fs-bots-list{
+  display:block;
+  position:absolute !important;
+  top:34px !important;
+  left:0 !important;
+  right:auto !important;
+  z-index:1000 !important;
+  width:min(280px,82vw) !important;
+  max-height:62vh !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+}
+
+.graph-fs-body{
+  position:relative !important;
+  z-index:1 !important;
+}
+.toolbar-zoom{
+  flex:0 0 28px !important;
+  width:28px !important;
+  min-width:28px !important;
+  height:30px !important;
+  min-height:30px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  font-size:17px !important;
+  line-height:30px !important;
+}
+
+
+/* fullscreen bots is a real JS button, not <details> */
+#fsBotsSummary{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:100% !important;
+  height:30px !important;
+  min-height:30px !important;
+  padding:0 5px !important;
+  margin:0 !important;
+  border:1px solid #59606d !important;
+  border-radius:8px !important;
+  background:#1b1e23 !important;
+  color:#fff !important;
+  font-size:12px !important;
+  line-height:28px !important;
+  cursor:pointer !important;
+}
+#fsBotsList[hidden]{
+  display:none !important;
+}
+#fsBotsList:not([hidden]){
+  display:block !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1163,18 +1232,18 @@ main,
       <option value="1">1 day</option>
     </select>
 
-    <details id="fsBotsPanel" class="graph-fs-bots">
-      <summary id="fsBotsSummary">bots</summary>
-      <div id="fsBotsList" class="graph-fs-bots-list"></div>
-    </details>
+    <div id="fsBotsPanel" class="graph-fs-bots">
+      <button type="button" id="fsBotsSummary" aria-expanded="false">bots</button>
+      <div id="fsBotsList" class="graph-fs-bots-list" hidden></div>
+    </div>
 
     <button type="button" id="closeGraphFullscreen" aria-label="close">×</button>
+    <button type="button" id="fullscreenResetZoom" class="toolbar-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
   </div>
 
   <div class="graph-fs-body">
     <div class="graph-fs-chart">
-      <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
-    <canvas id="fullscreenChart"></canvas>
+<canvas id="fullscreenChart"></canvas>
     </div>
     <aside id="fullscreenEvents" class="graph-fs-side">
       <div class="graph-fs-side-head">
@@ -1555,7 +1624,7 @@ async function loadStatsData(){
       type="button"
       id="capGroupButton"
       data-mode="capped"
-    >Capped</button>
+    >capped</button>
 
     <label>
       <input
@@ -3483,8 +3552,8 @@ function renderFullscreenBots(){
   );
 
   list.innerHTML=`
-    <button type="button" id="fsCapGroup" data-mode="capped">Capped</button>
-    <label><input type="checkbox" id="fsSelectAll"> Select all</label>
+    <button type="button" id="fsCapGroup" data-mode="capped">capped</button>
+    <label><input type="checkbox" id="fsSelectAll"> select all</label>
   `+
   mainInputs.map(input=>`
     <label>
@@ -3656,6 +3725,11 @@ function openGraphFullscreen(){
   modal.setAttribute('aria-hidden','false');
   document.body.classList.add('graph-fullscreen-open');
 
+  const fsBotsList=document.querySelector('#fsBotsList');
+  const fsBotsButton=document.querySelector('#fsBotsSummary');
+  fsBotsList.hidden=true;
+  fsBotsButton.setAttribute('aria-expanded','false');
+
   requestAnimationFrame(buildFullscreenChart);
 }
 
@@ -3676,6 +3750,17 @@ document.querySelector('#openGraphFullscreen')
 
 document.querySelector('#closeGraphFullscreen')
   .addEventListener('click',closeGraphFullscreen);
+
+document.querySelector('#fsBotsSummary')
+  .addEventListener('click',()=>{
+    const list=document.querySelector('#fsBotsList');
+    const button=document.querySelector('#fsBotsSummary');
+    const willOpen=list.hidden;
+
+    list.hidden=!willOpen;
+    button.setAttribute('aria-expanded',willOpen?'true':'false');
+  });
+
 
 document.querySelector('#toggleFullscreenEvents')
   .addEventListener('click',()=>{
