@@ -552,6 +552,165 @@ th:first-child,td:first-child{text-align:left}
   }
 }
 
+
+/* 2026-09-16 dashboard additions */
+.table-mode-row{
+  display:flex;
+  justify-content:flex-end;
+  margin:0 0 10px;
+}
+.table-mode-row select{
+  min-width:92px;
+}
+.graph-panel{
+  margin-top:10px;
+}
+.graph-panel>summary{
+  cursor:pointer;
+  font-weight:700;
+  padding:10px 0;
+}
+.graph-panel[open]>summary{
+  margin-bottom:6px;
+}
+.graph-fullscreen-button{
+  width:100%;
+  margin-top:8px;
+}
+#graphFullscreen{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:#fff;
+  color:#111;
+  display:none;
+  flex-direction:column;
+}
+#graphFullscreen.open{display:flex}
+.graph-fs-toolbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-bottom:1px solid #ddd;
+  flex:0 0 auto;
+}
+.graph-fs-title{
+  font-weight:800;
+  margin-right:auto;
+}
+.graph-fs-body{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+}
+.graph-fs-chart{
+  flex:1 1 auto;
+  min-width:0;
+  min-height:0;
+  padding:10px;
+  position:relative;
+}
+#fullscreenChart{
+  width:100% !important;
+  height:100% !important;
+}
+.graph-fs-side{
+  width:min(32vw,360px);
+  min-width:230px;
+  border-left:1px solid #ddd;
+  display:flex;
+  flex-direction:column;
+  transition:width .18s ease,min-width .18s ease;
+}
+.graph-fs-side.collapsed{
+  width:44px;
+  min-width:44px;
+}
+.graph-fs-side-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:44px;
+  padding:5px;
+  border-bottom:1px solid #eee;
+}
+.graph-fs-side-head button{
+  width:34px;
+  min-width:34px;
+  padding:0;
+  height:34px;
+}
+.graph-fs-side-title{font-weight:800}
+.graph-fs-side.collapsed .graph-fs-side-title,
+.graph-fs-side.collapsed .graph-fs-content{display:none}
+.graph-fs-content{
+  overflow:auto;
+  padding:12px;
+  min-width:230px;
+}
+.graph-fs-date{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.graph-fs-section{
+  margin:14px 0 6px;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  opacity:.65;
+}
+.graph-fs-event{
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+.graph-fs-event-bot{font-weight:800;margin-bottom:4px}
+.graph-fs-note{font-size:12px;opacity:.75;margin-top:4px;white-space:pre-wrap}
+.graph-fs-empty{opacity:.6}
+body.graph-fullscreen-open{overflow:hidden}
+
+/* login card at the bottom of the viewport */
+.site-gate{
+  position:fixed !important;
+  left:0;
+  right:0;
+  bottom:0;
+  top:auto !important;
+  z-index:100000;
+  max-width:1050px;
+  margin:0 auto !important;
+  padding:0 20px 18px !important;
+  box-sizing:border-box;
+}
+.site-gate-card{
+  box-shadow:0 -8px 28px rgba(0,0,0,.14);
+}
+
+@media(max-width:650px){
+  .site-gate{padding:0 14px 12px !important}
+}
+@media(orientation:portrait){
+  .graph-fs-body{flex-direction:column}
+  .graph-fs-side{
+    width:100%;
+    min-width:0;
+    height:min(34vh,300px);
+    min-height:150px;
+    border-left:0;
+    border-top:1px solid #ddd;
+    transition:height .18s ease,min-height .18s ease;
+  }
+  .graph-fs-side.collapsed{
+    width:100%;
+    min-width:0;
+    height:44px;
+    min-height:44px;
+  }
+  .graph-fs-content{min-width:0}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -604,6 +763,13 @@ th:first-child,td:first-child{text-align:left}
       </select>
     </div>
 
+    <div class="table-mode-row">
+      <select id="tableDisplayMode" aria-label="Table display">
+        <option value="name">Name</option>
+        <option value="cid">CID</option>
+      </select>
+    </div>
+
     <table class="main-table">
       <thead>
         <tr>
@@ -643,8 +809,8 @@ th:first-child,td:first-child{text-align:left}
   <div class="compare-controls">
 
     <select id="displayMode">
-      <option value="cid">CID</option>
       <option value="name">Name</option>
+      <option value="cid">CID</option>
     </select>
 
     <select id="compareMetric">
@@ -668,21 +834,31 @@ th:first-child,td:first-child{text-align:left}
     <div id="compareBots"></div>
   </details>
 
-  <div class="chart-area">
-    <canvas id="compareChart"></canvas>
-  </div>
+  <details class="graph-panel" id="graphPanel" open>
+    <summary>Graph</summary>
 
-  <table class="compare-table">
-    <thead>
-      <tr>
-        <th>bot</th>
-        <th>Start</th>
-        <th>Now</th>
-        <th>Growth</th>
-      </tr>
-    </thead>
-    <tbody id="compareRows"></tbody>
-  </table>
+    <button
+      id="openGraphFullscreen"
+      class="graph-fullscreen-button"
+      type="button"
+    >Full screen</button>
+
+    <div class="chart-area">
+      <canvas id="compareChart"></canvas>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>bot</th>
+          <th>Start</th>
+          <th>Now</th>
+          <th>Growth</th>
+        </tr>
+      </thead>
+      <tbody id="compareRows"></tbody>
+    </table>
+  </details>
 
 </div>
 
@@ -755,6 +931,29 @@ th:first-child,td:first-child{text-align:left}
 
 </main>
 
+<div id="graphFullscreen" aria-hidden="true">
+  <div class="graph-fs-toolbar">
+    <div class="graph-fs-title">graph analysis</div>
+    <button type="button" id="fullscreenResetZoom">Zoom 0</button>
+    <button type="button" id="closeGraphFullscreen">✕</button>
+  </div>
+  <div class="graph-fs-body">
+    <div class="graph-fs-chart">
+      <canvas id="fullscreenChart"></canvas>
+    </div>
+    <aside id="fullscreenEvents" class="graph-fs-side">
+      <div class="graph-fs-side-head">
+        <button type="button" id="toggleFullscreenEvents">▶</button>
+        <div class="graph-fs-side-title">events</div>
+      </div>
+      <div id="fullscreenEventsContent" class="graph-fs-content">
+        <div class="graph-fs-empty">Tap a point in the graph.</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+
 <script>
 const fmt=new Intl.NumberFormat('nl-NL');
 
@@ -773,11 +972,20 @@ function displayLabel(cid){
   if(cid==='__profile__') return 'profile';
 
   const bot=state.meta.get(cid);
-  const mode=document.querySelector('#displayMode')?.value || 'cid';
+  const mode=document.querySelector('#displayMode')?.value || 'name';
 
-  return mode==='name'
-    ? (bot?.name || cid)
-    : cid;
+  return mode==='cid'
+    ? cid
+    : (bot?.name || cid);
+}
+
+function tableDisplayLabel(cid){
+  const bot=state.meta.get(cid);
+  const mode=document.querySelector('#tableDisplayMode')?.value || 'name';
+
+  return mode==='cid'
+    ? cid
+    : (bot?.name || cid);
 }
 
 
@@ -1230,8 +1438,8 @@ function render(){
         <td>
           ${
             b.url
-              ? `<a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${displayLabel(b.cid)}</a>`
-              : displayLabel(b.cid)
+              ? `<a href="${b.url}" target="_blank" style="color:inherit;text-decoration:none">${tableDisplayLabel(b.cid)}</a>`
+              : tableDisplayLabel(b.cid)
           }
         </td>
 
@@ -1334,6 +1542,12 @@ document.querySelector('#search')
 
 
 document.querySelector('#sort')
+  .addEventListener(
+    'change',
+    render
+  );
+
+document.querySelector('#tableDisplayMode')
   .addEventListener(
     'change',
     render
@@ -1952,18 +2166,15 @@ const EVENTS_API='https://bot-events.nnharmony.workers.dev';
 const EVENTS_PROFILE='main';
 
 const EVENT_TAGS=[
-  {id:'created',label:'💟 created'},
-  {id:'alert',label:'⚠️ alert'},
-  {id:'new',label:'🆕 new'},
-  {id:'avatar',label:'👤 avatar'},
-  {id:'banned',label:'🚫 banned'},
-  {id:'tagged',label:'⬆️ tagged'},
-  {id:'edit',label:'☑️ edit'},
-  {id:'unbanned',label:'🔘 unbanned'},
+  {id:'new',label:'💟 new'},
   {id:'capped',label:'🔄 capped'},
-  {id:'top',label:'🔝 top'},
-  {id:'violation',label:'⛔️ violation'},
-  {id:'freeze',label:'*️⃣ freeze'}
+  {id:'alert',label:'⚠️ alert'},
+  {id:'avatar',label:'👤 avatar'},
+  {id:'freeze',label:'*️⃣ freeze'},
+  {id:'banned',label:'🚫 banned'},
+  {id:'edit',label:'☑️ edit'},
+  {id:'tagged',label:'⬆️ tagged'},
+  {id:'violation',label:'⛔️ violation'}
 ];
 
 const PERSISTENT_TAGS=new Set(['banned','freeze']);
@@ -1986,9 +2197,19 @@ function eventBotLabel(cid){
 
 
 function eventTagLabel(tag){
-  return EVENT_TAGS.find(
+  const current=EVENT_TAGS.find(
     item=>item.id===tag
-  )?.label || tag;
+  );
+
+  if(current) return current.label;
+
+  const legacy={
+    created:'💟 created',
+    unbanned:'🔘 unbanned',
+    top:'🔝 top'
+  };
+
+  return legacy[tag] || tag;
 }
 
 
@@ -2252,6 +2473,30 @@ function dayEventTags(event){
   return (event?.tags || []).filter(tag=>!PERSISTENT_TAGS.has(tag));
 }
 
+function newStatusActiveAtSelection(){
+  const date=document.querySelector('#eventDate').value;
+  const cid=document.querySelector('#eventBot').value;
+
+  if(!date || !cid) return false;
+
+  const latestNew=eventsState.events
+    .filter(event=>
+      event.cid===cid &&
+      event.date<=date &&
+      Array.isArray(event.tags) &&
+      event.tags.includes('new')
+    )
+    .sort((a,b)=>b.date.localeCompare(a.date))[0];
+
+  if(!latestNew) return false;
+
+  const start=new Date(latestNew.date+'T00:00:00');
+  const current=new Date(date+'T00:00:00');
+  const age=Math.floor((current-start)/(24*60*60*1000));
+
+  return age>=0 && age<7;
+}
+
 
 function currentSelectionEvent(){
   const date=
@@ -2282,6 +2527,10 @@ function loadEventForSelection(){
     ...dayEventTags(event),
     ...[...PERSISTENT_TAGS].filter(tag=>persistent[tag])
   ];
+
+  if(newStatusActiveAtSelection() && !selected.includes('new')){
+    selected.push('new');
+  }
 
   setSelectedEventTags(selected);
 
@@ -2382,7 +2631,17 @@ async function saveEvent(){
   const date=document.querySelector('#eventDate').value;
   const cid=document.querySelector('#eventBot').value;
   const selected=selectedEventTags();
-  const tags=selected.filter(tag=>!PERSISTENT_TAGS.has(tag));
+  let tags=selected.filter(tag=>!PERSISTENT_TAGS.has(tag));
+
+  const existingToday=currentSelectionEvent();
+  const inheritedNew=
+    selected.includes('new') &&
+    newStatusActiveAtSelection() &&
+    !(existingToday?.tags || []).includes('new');
+
+  if(inheritedNew){
+    tags=tags.filter(tag=>tag!=='new');
+  }
 
   const before=persistentStateBeforeSelection();
   const current={
@@ -2870,6 +3129,219 @@ document.querySelector('#siteLockButton')
     siteLock
   );
 
+
+
+let fullscreenChartInstance=null;
+
+function fullscreenSelectedCids(){
+  return [...document.querySelectorAll(
+    '#compareBots input[type="checkbox"]:checked'
+  )]
+  .map(input=>input.value)
+  .filter(value=>
+    value &&
+    value!=='on' &&
+    value!=='__total__'
+  );
+}
+
+function snapshotBot(snapshot,cid){
+  return (snapshot?.bots || []).find(bot=>bot.cid===cid) || null;
+}
+
+function previousGraphDay(date){
+  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
+  const index=days.findIndex(day=>day.date===date);
+  return index>0 ? days[index-1] : null;
+}
+
+function fullscreenEventTags(event){
+  const tags=[...(event.tags || [])];
+  if(event.status?.banned===true) tags.push('banned');
+  if(event.status?.freeze===true) tags.push('freeze');
+  if(event.status?.banned===false) tags.push('unbanned');
+  return [...new Set(tags)];
+}
+
+function renderFullscreenDate(date,cid){
+  const box=document.querySelector('#fullscreenEventsContent');
+  if(!box) return;
+
+  const day=state.daily.find(item=>item.date===date);
+  const previous=previousGraphDay(date);
+
+  let stats='';
+
+  if(day && cid && cid!=='__total__'){
+    const now=snapshotBot(day.snapshot,cid);
+    const before=snapshotBot(previous?.snapshot,cid);
+
+    if(now){
+      const growth=
+        before &&
+        Number.isFinite(now.messages) &&
+        Number.isFinite(before.messages)
+          ? now.messages-before.messages
+          : null;
+
+      const collectorGrowth=
+        before &&
+        Number.isFinite(now.collectors) &&
+        Number.isFinite(before.collectors)
+          ? now.collectors-before.collectors
+          : null;
+
+      stats=`
+        <div class="graph-fs-section">${eventBotLabel(cid)}</div>
+        <div>${Number.isFinite(now.messages)?fmt.format(now.messages):'—'} messages</div>
+        <div>${growth===null?'—':(growth>=0?'+':'')+fmt.format(growth)} growth</div>
+        <div>${Number.isFinite(now.collectors)?fmt.format(now.collectors):'—'} collectors${collectorGrowth===null?'':` (${collectorGrowth>=0?'+':''}${fmt.format(collectorGrowth)})`}</div>
+      `;
+    }
+  }
+
+  const selected=fullscreenSelectedCids();
+
+  const events=(eventsState.events || []).filter(event=>{
+    if(event.date!==date) return false;
+
+    if(cid && cid!=='__total__'){
+      return event.cid===cid || event.cid==='__profile__';
+    }
+
+    if(selected.length){
+      return event.cid==='__profile__' || selected.includes(event.cid);
+    }
+
+    return event.cid==='__profile__';
+  });
+
+  const eventsHtml=events.length
+    ? events.map(event=>`
+        <div class="graph-fs-event">
+          <div class="graph-fs-event-bot">${eventBotLabel(event.cid)}</div>
+          <div>${fullscreenEventTags(event).map(tag=>`<span class="tag-chip">${eventTagLabel(tag)}</span>`).join(' ') || '—'}</div>
+          ${event.note?`<div class="graph-fs-note">${event.note}</div>`:''}
+        </div>
+      `).join('')
+    : '<div class="graph-fs-empty">No saved events on this date.</div>';
+
+  box.innerHTML=`
+    <div class="graph-fs-date">${new Date(date+'T00:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
+    ${stats}
+    <div class="graph-fs-section">events</div>
+    ${eventsHtml}
+  `;
+}
+
+function buildFullscreenChart(){
+  const canvas=document.querySelector('#fullscreenChart');
+  if(!canvas || !compareChart) return;
+
+  if(fullscreenChartInstance){
+    fullscreenChartInstance.destroy();
+  }
+
+  const days=getGraphDays();
+  const selected=[
+    ...document.querySelectorAll(
+      '#compareBots input[type="checkbox"]:checked:not(#selectAllBots)'
+    )
+  ].map(input=>input.value);
+
+  const clonedDatasets=compareChart.data.datasets.map((dataset,index)=>({
+    ...dataset,
+    data:[...(dataset.data || [])],
+    _cid:selected[index] || null
+  }));
+
+  fullscreenChartInstance=new Chart(canvas,{
+    type:'line',
+    data:{
+      labels:[...(compareChart.data.labels || [])],
+      datasets:clonedDatasets
+    },
+    options:{
+      ...compareChart.options,
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{
+        intersect:false,
+        mode:'nearest'
+      },
+      onClick:(event,elements)=>{
+        if(!elements?.length) return;
+
+        const hit=elements[0];
+        const cid=clonedDatasets[hit.datasetIndex]?._cid || null;
+        const date=days[hit.index]?.date;
+
+        if(date){
+          renderFullscreenDate(date,cid);
+        }
+      }
+    }
+  });
+}
+
+function openGraphFullscreen(){
+  if(!compareChart){
+    drawCompareChart();
+  }
+
+  const modal=document.querySelector('#graphFullscreen');
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden','false');
+  document.body.classList.add('graph-fullscreen-open');
+
+  requestAnimationFrame(buildFullscreenChart);
+}
+
+function closeGraphFullscreen(){
+  const modal=document.querySelector('#graphFullscreen');
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('graph-fullscreen-open');
+
+  if(fullscreenChartInstance){
+    fullscreenChartInstance.destroy();
+    fullscreenChartInstance=null;
+  }
+}
+
+document.querySelector('#openGraphFullscreen')
+  .addEventListener('click',openGraphFullscreen);
+
+document.querySelector('#closeGraphFullscreen')
+  .addEventListener('click',closeGraphFullscreen);
+
+document.querySelector('#toggleFullscreenEvents')
+  .addEventListener('click',()=>{
+    const panel=document.querySelector('#fullscreenEvents');
+    panel.classList.toggle('collapsed');
+
+    const collapsed=panel.classList.contains('collapsed');
+    document.querySelector('#toggleFullscreenEvents').textContent=
+      collapsed ? '◀' : '▶';
+
+    setTimeout(()=>{
+      fullscreenChartInstance?.resize();
+    },220);
+  });
+
+document.querySelector('#fullscreenResetZoom')
+  .addEventListener('click',()=>{
+    fullscreenChartInstance?.resetZoom?.();
+  });
+
+document.querySelector('#graphPanel')
+  .addEventListener('toggle',()=>{
+    if(document.querySelector('#graphPanel').open){
+      setTimeout(()=>{
+        compareChart?.resize();
+      },30);
+    }
+  });
 
 restoreSiteSession();
 
