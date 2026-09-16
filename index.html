@@ -966,6 +966,65 @@ h3,
   font-size:12px !important;
 }
 
+
+/* FINAL fullscreen toolbar sizing */
+.graph-fs-toolbar{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:4px !important;
+  padding:5px !important;
+  white-space:nowrap !important;
+}
+
+#fsDisplayMode,
+#fsMetric,
+#fsPeriod,
+#fsBotsSummary,
+#fullscreenResetZoom,
+#closeGraphFullscreen{
+  box-sizing:border-box !important;
+  font-size:12px !important;
+  font-weight:400 !important;
+  line-height:28px !important;
+  height:30px !important;
+  min-height:30px !important;
+  padding:0 5px !important;
+  margin:0 !important;
+  border-radius:8px !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+
+#fsDisplayMode{width:70px !important;min-width:70px !important;}
+#fsMetric{width:92px !important;min-width:92px !important;}
+#fsPeriod{width:62px !important;min-width:62px !important;}
+#fsBotsPanel{width:74px !important;min-width:74px !important;flex:none !important;}
+#fsBotsSummary{
+  width:74px !important;
+  min-width:74px !important;
+  max-width:74px !important;
+  display:flex !important;
+  align-items:center !important;
+}
+#fullscreenResetZoom{width:66px !important;min-width:66px !important;}
+#closeGraphFullscreen{width:30px !important;min-width:30px !important;padding:0 !important;}
+
+.graph-fs-side-title,
+#fullscreenEventsContent,
+.graph-fs-empty,
+.graph-fs-event,
+.graph-fs-note{
+  font-size:12px !important;
+}
+
+/* only the page title is intentionally larger */
+h1{
+  font-size:24px !important;
+  line-height:1.1 !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
