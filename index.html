@@ -1034,6 +1034,166 @@ main,
   width:100% !important;
 }
 
+
+/* fullscreen working layout: events above, graph below */
+.graph-fs-body{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:0 !important;
+}
+.graph-fs-side{
+  order:1 !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:min(34vh,260px) !important;
+  min-height:110px !important;
+  flex:0 0 auto !important;
+  border-left:0 !important;
+  border-top:0 !important;
+  border-bottom:1px solid #ddd !important;
+  transition:height .18s ease,min-height .18s ease !important;
+}
+.graph-fs-side.collapsed{
+  width:100% !important;
+  min-width:0 !important;
+  height:0 !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  border-bottom:0 !important;
+}
+.graph-fs-side-head{
+  min-height:30px !important;
+  height:30px !important;
+  padding:4px 10px !important;
+}
+.graph-fs-side.collapsed .graph-fs-side-head,
+.graph-fs-side.collapsed .graph-fs-content{
+  display:none !important;
+}
+.graph-fs-content{
+  min-width:0 !important;
+  padding:8px 12px !important;
+  overflow:auto !important;
+}
+.graph-fs-chart{
+  order:2 !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  position:relative !important;
+}
+
+/* small events arrow at far right of toolbar */
+.toolbar-events-toggle{
+  flex:0 0 28px !important;
+  width:28px !important;
+  min-width:28px !important;
+  height:30px !important;
+  min-height:30px !important;
+  padding:0 !important;
+  margin:0 !important;
+  font-size:12px !important;
+  line-height:28px !important;
+}
+
+/* magnifying glass belongs inside graph top-right */
+.graph-corner-zoom{
+  position:absolute !important;
+  top:7px !important;
+  right:7px !important;
+  z-index:20 !important;
+  width:28px !important;
+  min-width:28px !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  font-size:18px !important;
+  line-height:28px !important;
+}
+
+
+/* fullscreen toolbar: fixed controls + bots fills every remaining pixel */
+.graph-fs-toolbar{
+  display:flex !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  gap:4px !important;
+  width:100% !important;
+  max-width:100% !important;
+  padding:5px 8px !important;
+  overflow:visible !important;
+}
+#fsMetric{
+  flex:0 0 82px !important;
+  width:82px !important;
+  min-width:82px !important;
+}
+#fsDisplayMode{
+  flex:0 0 62px !important;
+  width:62px !important;
+  min-width:62px !important;
+}
+#fsPeriod{
+  flex:0 0 54px !important;
+  width:54px !important;
+  min-width:54px !important;
+}
+#fsBotsPanel{
+  flex:1 1 auto !important;
+  width:auto !important;
+  min-width:42px !important;
+  max-width:none !important;
+}
+#fsBotsSummary{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+#closeGraphFullscreen,
+#toggleFullscreenEvents{
+  flex:0 0 28px !important;
+  width:28px !important;
+  min-width:28px !important;
+  max-width:28px !important;
+}
+
+/* on very narrow portrait screens, keep the fixed controls compact enough
+   that bots still receives usable remaining space */
+@media (max-width:430px){
+  #fsMetric{
+    flex-basis:82px !important;
+    width:82px !important;
+    min-width:82px !important;
+  }
+  #fsDisplayMode{
+    flex-basis:62px !important;
+    width:62px !important;
+    min-width:62px !important;
+  }
+  #fsPeriod{
+    flex-basis:54px !important;
+    width:54px !important;
+    min-width:54px !important;
+  }
+}
+
+
+.graph-fs-edit-link{
+  display:inline-block;
+  margin-top:8px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#666;
+  font:inherit;
+  font-size:12px;
+  text-decoration:underline;
+  cursor:pointer;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1275,22 +1435,23 @@ main,
     </div>
 
     <button type="button" id="closeGraphFullscreen" aria-label="close">×</button>
-    <button type="button" id="fullscreenResetZoom" class="toolbar-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
+    <button type="button" id="toggleFullscreenEvents" class="toolbar-events-toggle" aria-label="toggle events" title="events">◀</button>
   </div>
 
   <div class="graph-fs-body">
-    <div class="graph-fs-chart">
-<canvas id="fullscreenChart"></canvas>
-    </div>
     <aside id="fullscreenEvents" class="graph-fs-side">
       <div class="graph-fs-side-head">
-        <button type="button" id="toggleFullscreenEvents">▶</button>
         <div class="graph-fs-side-title">events</div>
       </div>
       <div id="fullscreenEventsContent" class="graph-fs-content">
         <div class="graph-fs-empty">tap a point in the graph.</div>
       </div>
     </aside>
+
+    <div class="graph-fs-chart">
+      <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
+      <canvas id="fullscreenChart"></canvas>
+    </div>
   </div>
 </div>
 
@@ -3554,6 +3715,9 @@ function renderFullscreenDate(date,cid){
     ${stats}
     <div class="graph-fs-section">events</div>
     ${eventsHtml}
+    ${cid && cid!=='__total__'
+      ? `<button type="button" class="graph-fs-edit-link" data-go-event-date="${date}" data-go-event-cid="${cid}">edit event →</button>`
+      : ''}
   `;
 }
 
@@ -3765,6 +3929,10 @@ function openGraphFullscreen(){
   fsBotsList.hidden=true;
   fsBotsButton.setAttribute('aria-expanded','false');
 
+  const fsEvents=document.querySelector('#fullscreenEvents');
+  fsEvents.classList.add('collapsed');
+  document.querySelector('#toggleFullscreenEvents').textContent='◀';
+
   requestAnimationFrame(buildFullscreenChart);
 }
 
@@ -3804,7 +3972,7 @@ document.querySelector('#toggleFullscreenEvents')
 
     const collapsed=panel.classList.contains('collapsed');
     document.querySelector('#toggleFullscreenEvents').textContent=
-      collapsed ? '◀' : '▶';
+      collapsed ? '◀' : '▼';
 
     setTimeout(()=>fullscreenChartInstance?.resize(),220);
   });
@@ -3812,6 +3980,38 @@ document.querySelector('#toggleFullscreenEvents')
 document.querySelector('#fullscreenResetZoom')
   .addEventListener('click',()=>{
     fullscreenChartInstance?.resetZoom?.();
+  });
+
+document.querySelector('#fullscreenEventsContent')
+  .addEventListener('click',event=>{
+    const link=event.target.closest('[data-go-event-date]');
+    if(!link) return;
+
+    const date=link.dataset.goEventDate;
+    const cid=link.dataset.goEventCid;
+
+    closeGraphFullscreen();
+
+    const panel=document.querySelector('#eventsPanel');
+    panel.open=true;
+
+    const dateInput=document.querySelector('#eventDate');
+    const botSelect=document.querySelector('#eventBot');
+
+    dateInput.value=date;
+
+    if([...botSelect.options].some(option=>option.value===cid)){
+      botSelect.value=cid;
+    }else{
+      botSelect.value='';
+    }
+
+    loadEventForSelection();
+    renderEvents();
+
+    requestAnimationFrame(()=>{
+      panel.scrollIntoView({behavior:'smooth',block:'start'});
+    });
   });
 
 document.querySelector('#fsDisplayMode')
