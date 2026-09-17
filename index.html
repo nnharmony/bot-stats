@@ -1194,6 +1194,33 @@ main,
   cursor:pointer;
 }
 
+
+.event-date-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+#eventDateAll{
+  width:auto;
+  min-width:52px;
+  height:42px;
+  padding:0 14px;
+  border-radius:12px;
+}
+#eventDateAll.active{
+  background:#dfe3e8;
+  color:#18191c;
+}
+.events-filter-mode #eventNote{
+  opacity:.45;
+  pointer-events:none;
+}
+.events-filter-mode #eventSave,
+.events-filter-mode #eventClear{
+  opacity:.45;
+  pointer-events:none;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1280,7 +1307,10 @@ main,
 
       <div class="event-field">
         <label for="eventDate">date</label>
-        <input id="eventDate" type="date">
+        <div class="event-date-row">
+          <input id="eventDate" type="date">
+          <button id="eventDateAll" type="button" aria-pressed="false">all</button>
+        </div>
       </div>
 
       <div class="event-field">
@@ -2677,7 +2707,8 @@ const eventsState={
   events:[],
   key:'',
   unlocked:false,
-  editingId:null
+  editingId:null,
+  filterAll:false
 };
 
 
@@ -2831,76 +2862,131 @@ async function loadEvents(){
 }
 
 
-function renderEvents(){
-  const rows=
-    document.querySelector('#eventsRows');
-
-  const selectedCid=
-    document.querySelector('#eventBot')?.value || '__profile__';
-
-  const title=
-    document.querySelector('#savedEventsTitle');
-
-  if(title){
-    title.textContent=
-      eventBotLabel(selectedCid)+
-      ' — events';
+function eventMatchesFilterTag(event,tag){
+  if(PERSISTENT_TAGS.has(tag)){
+    return Object.prototype.hasOwnProperty.call(event.status || {},tag);
   }
 
-  const visibleEvents=
-    eventsState.events.filter(
-      event=>event.cid===selectedCid
+  return Array.isArray(event.tags) && event.tags.includes(tag);
+}
+
+
+function setEventsFilterMode(enabled){
+  eventsState.filterAll=enabled;
+
+  const button=document.querySelector('#eventDateAll');
+  const form=document.querySelector('.event-form');
+
+  button?.classList.toggle('active',enabled);
+  button?.setAttribute('aria-pressed',enabled ? 'true' : 'false');
+  form?.classList.toggle('events-filter-mode',enabled);
+
+  const save=document.querySelector('#eventSave');
+  const clear=document.querySelector('#eventClear');
+  const note=document.querySelector('#eventNote');
+
+  if(enabled){
+    if(save) save.disabled=true;
+    if(clear) clear.disabled=true;
+    if(note) note.disabled=true;
+
+    eventsState.editingId=null;
+    document.querySelector('#eventSaveStatus').textContent='filter mode';
+  }else{
+    if(save) save.disabled=!eventsState.unlocked;
+    if(clear) clear.disabled=false;
+    if(note) note.disabled=false;
+
+    document.querySelector('#eventSaveStatus').textContent='';
+    loadEventForSelection();
+  }
+
+  renderEvents();
+}
+
+
+function renderEvents(){
+  const rows=document.querySelector('#eventsRows');
+  const selectedCid=document.querySelector('#eventBot')?.value || '';
+  const title=document.querySelector('#savedEventsTitle');
+
+  let visibleEvents=[...eventsState.events];
+
+  if(eventsState.filterAll){
+    if(selectedCid){
+      visibleEvents=visibleEvents.filter(event=>event.cid===selectedCid);
+    }
+
+    const selectedTags=selectedEventTags();
+
+    if(selectedTags.length){
+      visibleEvents=visibleEvents.filter(event=>
+        selectedTags.some(tag=>eventMatchesFilterTag(event,tag))
+      );
+    }
+
+    visibleEvents.sort((a,b)=>
+      String(b.date||'').localeCompare(String(a.date||'')) ||
+      String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))
     );
+
+    if(title){
+      const botPart=selectedCid ? eventBotLabel(selectedCid) : 'all bots';
+      const tagPart=selectedTags.length
+        ? ' — '+selectedTags.map(eventTagLabel).join(' + ')
+        : '';
+      title.textContent=botPart+' — all dates'+tagPart;
+    }
+  }else{
+    const normalCid=selectedCid || '__profile__';
+
+    visibleEvents=visibleEvents.filter(event=>event.cid===normalCid);
+
+    if(title){
+      title.textContent=eventBotLabel(normalCid)+' — events';
+    }
+  }
 
   if(!visibleEvents.length){
     rows.innerHTML=`
       <tr>
         <td colspan="5">
-          No events for ${eventBotLabel(selectedCid)}
+          no matching events
         </td>
       </tr>
     `;
     return;
   }
 
-  rows.innerHTML=
-    visibleEvents
-      .map(event=>{
-        const visibleTags=[...(event.tags || [])];
+  rows.innerHTML=visibleEvents.map(event=>{
+    const visibleTags=[...(event.tags || [])];
 
-        if(event.status?.banned===true) visibleTags.push('banned');
-        if(event.status?.freeze===true) visibleTags.push('freeze');
-        if(event.status?.banned===false) visibleTags.push('__banned_off__');
-        if(event.status?.freeze===false) visibleTags.push('__freeze_off__');
+    if(event.status?.banned===true) visibleTags.push('banned');
+    if(event.status?.freeze===true) visibleTags.push('freeze');
+    if(event.status?.banned===false) visibleTags.push('__banned_off__');
+    if(event.status?.freeze===false) visibleTags.push('__freeze_off__');
 
-        const tags=visibleTags
-          .map(tag=>{
-            if(tag==='__banned_off__') return `<span class="tag-chip">🚫 banned off</span>`;
-            if(tag==='__freeze_off__') return `<span class="tag-chip">*️⃣ freeze off</span>`;
-            return `<span class="tag-chip">${eventTagLabel(tag)}</span>`;
-          })
-          .join('');
-
-        return `
-          <tr>
-            <td>${event.date || '—'}</td>
-            <td>${eventBotLabel(event.cid)}</td>
-            <td>${tags || '—'}</td>
-            <td class="event-note">${event.note || '—'}</td>
-            <td class="event-controls">
-              <button
-                type="button"
-                data-event-edit="${event.id}"
-              >Edit</button>
-              <button
-                type="button"
-                data-event-delete="${event.id}"
-              >Delete</button>
-            </td>
-          </tr>
-        `;
+    const tags=visibleTags
+      .map(tag=>{
+        if(tag==='__banned_off__') return `<span class="tag-chip">🚫 banned off</span>`;
+        if(tag==='__freeze_off__') return `<span class="tag-chip">*️⃣ freeze off</span>`;
+        return `<span class="tag-chip">${eventTagLabel(tag)}</span>`;
       })
       .join('');
+
+    return `
+      <tr>
+        <td>${event.date || '—'}</td>
+        <td>${eventBotLabel(event.cid)}</td>
+        <td>${tags || '—'}</td>
+        <td class="event-note">${event.note || '—'}</td>
+        <td class="event-controls">
+          <button type="button" data-event-edit="${event.id}">edit</button>
+          <button type="button" data-event-delete="${event.id}">delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 function eventsForSelection(){
@@ -3012,6 +3098,11 @@ function currentSelectionEvent(){
 
 
 function loadEventForSelection(){
+  if(eventsState.filterAll){
+    renderEvents();
+    return;
+  }
+
   const event=currentSelectionEvent();
   const persistent=persistentStateAtSelection();
 
@@ -3122,6 +3213,10 @@ function lockEvents(){
 
 
 async function saveEvent(){
+  if(eventsState.filterAll){
+    return;
+  }
+
   const date=document.querySelector('#eventDate').value;
   const cid=document.querySelector('#eventBot').value;
   const selected=selectedEventTags();
@@ -3239,6 +3334,16 @@ async function deleteEvent(id){
 
 
 function editEvent(id){
+  if(eventsState.filterAll){
+    eventsState.filterAll=false;
+    document.querySelector('#eventDateAll')?.classList.remove('active');
+    document.querySelector('#eventDateAll')?.setAttribute('aria-pressed','false');
+    document.querySelector('.event-form')?.classList.remove('events-filter-mode');
+    document.querySelector('#eventSave').disabled=!eventsState.unlocked;
+    document.querySelector('#eventClear').disabled=false;
+    document.querySelector('#eventNote').disabled=false;
+  }
+
   const event=
     eventsState.events.find(
       item=>item.id===id
@@ -3384,21 +3489,48 @@ function initEventsTracker(){
       button.classList.toggle(
         'active'
       );
+
+      if(eventsState.filterAll){
+        renderEvents();
+      }
     }
   );
 
   document.querySelector('#eventDate')
     .addEventListener(
       'change',
-      loadEventForSelection
+      ()=>{
+        if(eventsState.filterAll){
+          setEventsFilterMode(false);
+        }else{
+          loadEventForSelection();
+        }
+      }
+    );
+
+  document.querySelector('#eventDateAll')
+    .addEventListener(
+      'click',
+      ()=>{
+        if(eventsState.filterAll){
+          setEventsFilterMode(false);
+        }else{
+          clearEventForm();
+          setEventsFilterMode(true);
+        }
+      }
     );
 
   document.querySelector('#eventBot')
     .addEventListener(
       'change',
       ()=>{
-        loadEventForSelection();
-        renderEvents();
+        if(eventsState.filterAll){
+          renderEvents();
+        }else{
+          loadEventForSelection();
+          renderEvents();
+        }
       }
     );
 
