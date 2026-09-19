@@ -1359,6 +1359,40 @@ h1{
 .freeze-bar{height:100%;border-radius:999px;background:var(--ui-accent-1);min-width:4px}
 .freeze-empty{font-size:12px;color:#b7bac3;padding:4px 0}
 
+
+.graph-event-filter[data-graph-tag="capped"].uncapped{
+  background:#18191c !important;
+  color:var(--ui-accent-1) !important;
+  border:2px solid var(--ui-accent-1) !important;
+}
+.freeze-overview{
+  display:block;
+  margin:12px 0 14px;
+  padding:12px;
+  border:1px solid #d9dce1;
+  border-radius:12px;
+  background:#f7f7f8;
+  color:#18191c;
+}
+.freeze-overview[hidden]{display:none !important}
+.freeze-overview-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+.freeze-overview-sub{font-size:11px;color:#666}
+.freeze-row{padding:8px 0;border-top:1px solid #e3e3e5}
+.freeze-row:first-of-type{border-top:0}
+.freeze-row-top{display:flex;justify-content:space-between;gap:10px}
+.freeze-name{font-weight:700}
+.freeze-days{font-weight:800;white-space:nowrap}
+.freeze-since{font-size:10px;color:#777;margin:2px 0 5px}
+.freeze-track{height:6px;border-radius:999px;background:#dedee2;overflow:hidden}
+.freeze-bar{height:100%;border-radius:999px;background:var(--ui-accent-1)}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2344,17 +2378,26 @@ function renderFreezeOverview(){
   const box=document.querySelector('#freezeOverview');
   if(!box) return;
 
-  const active=document.querySelector(
-    '#compareBots .event-filter-button[data-event-filter="freeze"].active'
+  const freezeButton=document.querySelector(
+    '#compareBots .graph-event-filter[data-graph-tag="freeze"]'
   );
+  const freezeActive=freezeButton?.classList.contains('active');
 
-  if(!active){
+  if(!freezeActive){
     box.hidden=true;
     box.innerHTML='';
     return;
   }
 
-  const infos=currentFreezeInfo();
+  const selected=new Set(
+    [...document.querySelectorAll(
+      '#compareBots input[type="checkbox"]:checked:not(#selectAllBots):not(#totalProfile)'
+    )].map(input=>input.value)
+  );
+
+  const infos=currentFreezeInfo()
+    .filter(item=>selected.has(item.cid));
+
   box.hidden=false;
 
   if(!infos.length){
@@ -2362,12 +2405,13 @@ function renderFreezeOverview(){
       <div class="freeze-overview-head">
         <span>*️⃣ active freezes</span>
       </div>
-      <div class="freeze-empty">no bots currently have consecutive 0-growth days.</div>
+      <div class="freeze-empty">no active freezes.</div>
     `;
     return;
   }
 
   const maxDays=Math.max(...infos.map(item=>item.days),1);
+
   box.innerHTML=`
     <div class="freeze-overview-head">
       <span>*️⃣ active freezes</span>
@@ -2375,14 +2419,18 @@ function renderFreezeOverview(){
     </div>
     ${infos.map(item=>{
       const width=Math.max(4,(item.days/maxDays)*100);
+      const since=new Date(item.since+'T00:00:00')
+        .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
       return `
         <div class="freeze-row">
           <div class="freeze-row-top">
             <span class="freeze-name">${item.name}</span>
             <span class="freeze-days">${item.days} ${item.days===1?'day':'days'}</span>
           </div>
-          <div class="freeze-since">since ${new Date(item.since+'T00:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'})}</div>
-          <div class="freeze-track"><div class="freeze-bar" style="width:${width}%"></div></div>
+          <div class="freeze-since">since ${since}</div>
+          <div class="freeze-track">
+            <div class="freeze-bar" style="width:${width}%"></div>
+          </div>
         </div>
       `;
     }).join('')}
@@ -2949,19 +2997,40 @@ function cidMatchesGraphTag(cid,tag){
 }
 
 function applyGraphEventFilters(){
-  const activeTags=[...document.querySelectorAll(
+  const buttons=[...document.querySelectorAll(
     '#compareBots .graph-event-filter.active'
-  )].map(button=>button.dataset.graphTag);
+  )];
 
-  if(!activeTags.length) return;
+  const activeTags=buttons
+    .map(button=>button.dataset.graphTag)
+    .filter(tag=>tag!=='capped');
 
-  document.querySelectorAll(
+  const cappedActive=buttons.some(button=>button.dataset.graphTag==='capped');
+
+  const allInputs=[...document.querySelectorAll(
     '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
-  ).forEach(cb=>{
-    cb.checked=activeTags.some(tag=>cidMatchesGraphTag(cb.value,tag));
+  )];
+
+  if(!activeTags.length && !cappedActive){
+    renderFreezeOverview();
+    drawCompareChart();
+    return;
+  }
+
+  allInputs.forEach(cb=>{
+    const ordinaryMatch=activeTags.some(tag=>cidMatchesGraphTag(cb.value,tag));
+
+    let capMatch=false;
+    if(cappedActive){
+      const isCapped=cidMatchesGraphTag(cb.value,'capped');
+      capMatch=cappedFilterMode==='uncapped' ? !isCapped : isCapped;
+    }
+
+    cb.checked=ordinaryMatch || capMatch;
   });
 
   document.querySelector('#selectAllBots').checked=false;
+  renderFreezeOverview();
   drawCompareChart();
 }
 
@@ -2970,8 +3039,33 @@ document.querySelector('#compareBots')
     const button=e.target.closest('.graph-event-filter');
     if(!button) return;
 
-    button.classList.toggle('active');
+    const tag=button.dataset.graphTag;
+
+    if(tag==='capped'){
+      // 🔄 cycles: off → capped → uncapped → off
+      if(cappedFilterMode==='off'){
+        cappedFilterMode='capped';
+        button.classList.add('active');
+        button.classList.remove('uncapped');
+        button.title='capped';
+        button.setAttribute('aria-label','capped');
+      }else if(cappedFilterMode==='capped'){
+        cappedFilterMode='uncapped';
+        button.classList.add('active','uncapped');
+        button.title='uncapped';
+        button.setAttribute('aria-label','uncapped');
+      }else{
+        cappedFilterMode='off';
+        button.classList.remove('active','uncapped');
+        button.title='capped';
+        button.setAttribute('aria-label','capped');
+      }
+    }else{
+      button.classList.toggle('active');
+    }
+
     applyGraphEventFilters();
+    renderFreezeOverview();
   });
 
 
@@ -4371,6 +4465,7 @@ document.querySelector('#siteLockButton')
 
 
 
+let cappedFilterMode='off';
 let fullscreenChartInstance=null;
 
 function snapshotBot(snapshot,cid){
