@@ -2537,8 +2537,8 @@ function formatEventTimestamp(event){
 
 function freezeThresholdForMessages(messages){
   if(!Number.isFinite(messages)) return Infinity;
-  if(messages < 7500) return 7;
-  if(messages <= 25000) return 2;
+  if(messages < 5000) return 7;
+  if(messages <= 20000) return 2;
   return 1;
 }
 function qualifiesFreezePeriod(period){
