@@ -1325,6 +1325,40 @@ h1{
   color:var(--ui-accent-2) !important;
 }
 
+
+/* active freeze overview */
+.freeze-overview{
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #343945;
+  border-radius:12px;
+  background:#18191c;
+  color:#f5f5f5;
+}
+.freeze-overview[hidden]{display:none !important}
+.freeze-overview-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-bottom:10px;
+  font-weight:700;
+}
+.freeze-overview-sub{font-size:11px;color:#b7bac3;font-weight:400}
+.freeze-row{margin:10px 0 14px}
+.freeze-row-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:baseline;
+}
+.freeze-name{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.freeze-days{font-weight:800;white-space:nowrap;color:var(--ui-accent-2)}
+.freeze-since{font-size:11px;color:#b7bac3;margin:2px 0 5px}
+.freeze-track{height:8px;border-radius:999px;background:#30343d;overflow:hidden}
+.freeze-bar{height:100%;border-radius:999px;background:var(--ui-accent-1);min-width:4px}
+.freeze-empty{font-size:12px;color:#b7bac3;padding:4px 0}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1516,6 +1550,8 @@ h1{
     <summary id="compareSummary">bots</summary>
     <div id="compareBots"></div>
   </details>
+
+  <div id="freezeOverview" class="freeze-overview" hidden></div>
 
   <details class="graph-panel" id="graphPanel">
     <summary>graph</summary>
@@ -2196,6 +2232,240 @@ document.querySelector('#tableDisplayMode')
   );
 
 
+
+function parseDay(date){
+  return new Date(String(date)+'T00:00:00');
+}
+
+function daysBetweenInclusive(startDate,endDate){
+  const ms=24*60*60*1000;
+  return Math.floor((parseDay(endDate)-parseDay(startDate))/ms)+1;
+}
+
+function currentPersistentStatus(cid,tag){
+  let active=false;
+  [...eventsState.events]
+    .filter(event=>
+      event.cid===cid &&
+      Object.prototype.hasOwnProperty.call(event.status || {},tag)
+    )
+    .sort((a,b)=>
+      String(a.date||'').localeCompare(String(b.date||'')) ||
+      String(a.updatedAt||'').localeCompare(String(b.updatedAt||''))
+    )
+    .forEach(event=>{
+      active=event.status?.[tag]===true;
+    });
+  return active;
+}
+
+function activeNewCids(){
+  const latestDate=getLatestEntry()?.date;
+  const result=new Set();
+  if(!latestDate) return result;
+
+  const latestNewByCid=new Map();
+  eventsState.events.forEach(event=>{
+    if(
+      event.cid &&
+      event.cid!=='__profile__' &&
+      Array.isArray(event.tags) &&
+      event.tags.includes('new') &&
+      String(event.date||'')<=latestDate
+    ){
+      const old=latestNewByCid.get(event.cid);
+      if(!old || String(event.date)>String(old.date)){
+        latestNewByCid.set(event.cid,event);
+      }
+    }
+  });
+
+  latestNewByCid.forEach((event,cid)=>{
+    const age=daysBetweenInclusive(event.date,latestDate);
+    if(age>=1 && age<=7) result.add(cid);
+  });
+
+  return result;
+}
+
+function currentFreezeInfo(){
+  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
+  if(days.length<2) return [];
+
+  const latest=days.at(-1);
+  const infos=[];
+
+  state.meta.forEach((meta,cid)=>{
+    let startIndex=null;
+
+    for(let i=days.length-1;i>=1;i--){
+      const now=snapshotBot(days[i].snapshot,cid);
+      const before=snapshotBot(days[i-1].snapshot,cid);
+
+      if(
+        !now || !before ||
+        !Number.isFinite(now.messages) ||
+        !Number.isFinite(before.messages)
+      ){
+        break;
+      }
+
+      const delta=now.messages-before.messages;
+
+      if(delta===0){
+        startIndex=i;
+      }else{
+        break;
+      }
+    }
+
+    if(startIndex!==null){
+      const since=days[startIndex].date;
+      infos.push({
+        cid,
+        name:meta?.name || cid,
+        since,
+        days:days.length-startIndex
+      });
+    }
+  });
+
+  return infos.sort((a,b)=>
+    b.days-a.days ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function currentFreezeCids(){
+  return new Set(currentFreezeInfo().map(item=>item.cid));
+}
+
+function renderFreezeOverview(){
+  const box=document.querySelector('#freezeOverview');
+  if(!box) return;
+
+  const active=document.querySelector(
+    '#compareBots .event-filter-button[data-event-filter="freeze"].active'
+  );
+
+  if(!active){
+    box.hidden=true;
+    box.innerHTML='';
+    return;
+  }
+
+  const infos=currentFreezeInfo();
+  box.hidden=false;
+
+  if(!infos.length){
+    box.innerHTML=`
+      <div class="freeze-overview-head">
+        <span>*️⃣ active freezes</span>
+      </div>
+      <div class="freeze-empty">no bots currently have consecutive 0-growth days.</div>
+    `;
+    return;
+  }
+
+  const maxDays=Math.max(...infos.map(item=>item.days),1);
+  box.innerHTML=`
+    <div class="freeze-overview-head">
+      <span>*️⃣ active freezes</span>
+      <span class="freeze-overview-sub">${infos.length} bots</span>
+    </div>
+    ${infos.map(item=>{
+      const width=Math.max(4,(item.days/maxDays)*100);
+      return `
+        <div class="freeze-row">
+          <div class="freeze-row-top">
+            <span class="freeze-name">${item.name}</span>
+            <span class="freeze-days">${item.days} ${item.days===1?'day':'days'}</span>
+          </div>
+          <div class="freeze-since">since ${new Date(item.since+'T00:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'})}</div>
+          <div class="freeze-track"><div class="freeze-bar" style="width:${width}%"></div></div>
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+
+function graphEventDateRange(){
+  const days=getGraphDays();
+  return {
+    from:days[0]?.date || '',
+    to:days.at(-1)?.date || ''
+  };
+}
+
+function eventFilterCids(tag){
+  if(tag==='freeze') return currentFreezeCids();
+  if(tag==='new') return activeNewCids();
+
+  if(tag==='banned'){
+    const set=new Set();
+    state.meta.forEach((meta,cid)=>{
+      if(currentPersistentStatus(cid,'banned')) set.add(cid);
+    });
+    return set;
+  }
+
+  if(tag==='capped'){
+    return new Set(
+      eventsState.events
+        .filter(event=>Array.isArray(event.tags) && event.tags.includes('capped'))
+        .map(event=>event.cid)
+    );
+  }
+
+  const {from,to}=graphEventDateRange();
+  return new Set(
+    eventsState.events
+      .filter(event=>
+        event.cid!=='__profile__' &&
+        (!from || String(event.date||'')>=from) &&
+        (!to || String(event.date||'')<=to) &&
+        Array.isArray(event.tags) &&
+        event.tags.includes(tag)
+      )
+      .map(event=>event.cid)
+  );
+}
+
+function applyGraphEventFilters(containerSelector){
+  const active=[
+    ...document.querySelectorAll(
+      `${containerSelector} .event-filter-button.active`
+    )
+  ].map(button=>button.dataset.eventFilter);
+
+  const main=[
+    ...document.querySelectorAll(
+      '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
+    )
+  ];
+
+  if(!active.length){
+    renderFreezeOverview();
+    return;
+  }
+
+  const matches=new Set();
+  active.forEach(tag=>{
+    eventFilterCids(tag).forEach(cid=>matches.add(cid));
+  });
+
+  main.forEach(input=>{
+    input.checked=matches.has(input.value);
+  });
+
+  const selectAll=document.querySelector('#selectAllBots');
+  if(selectAll) selectAll.checked=false;
+
+  renderFreezeOverview();
+  drawCompareChart();
+}
+
 function drawCompareChart(){
   const metric=
     document.querySelector(
@@ -2827,13 +3097,13 @@ const EVENTS_PROFILE='main';
 
 const EVENT_TAGS=[
   {id:'new',label:'💟 new'},
-  {id:'capped',label:'🔄 capped'},
-  {id:'alert',label:'⚠️ alert'},
-  {id:'avatar',label:'👤 avatar'},
-  {id:'freeze',label:'*️⃣ freeze'},
-  {id:'banned',label:'🚫 banned'},
   {id:'edit',label:'☑️ edit'},
+  {id:'avatar',label:'👤 avatar'},
+  {id:'capped',label:'🔄 capped'},
+  {id:'freeze',label:'*️⃣ freeze'},
   {id:'tagged',label:'⬆️ tagged'},
+  {id:'alert',label:'⚠️ alert'},
+  {id:'banned',label:'🚫 banned'},
   {id:'violation',label:'⛔️ violation'}
 ];
 
@@ -3077,6 +3347,56 @@ async function autoEndFreezesFromGrowth(){
 }
 
 
+
+async function syncAutomaticFreezeStatus(){
+  if(eventsState.autoFreezeBusy || !eventsState.unlocked) return false;
+
+  const latest=getLatestEntry();
+  if(!latest?.date || state.daily.length<2) return false;
+
+  const frozen=currentFreezeCids();
+  const changes=[];
+
+  for(const [cid] of state.meta){
+    const current=currentPersistentStatus(cid,'freeze');
+    const shouldFreeze=frozen.has(cid);
+
+    if(current!==shouldFreeze){
+      changes.push({cid,freeze:shouldFreeze});
+    }
+  }
+
+  if(!changes.length) return false;
+
+  eventsState.autoFreezeBusy=true;
+  try{
+    for(const change of changes){
+      const existing=eventsState.events.find(event=>
+        event.date===latest.date &&
+        event.cid===change.cid
+      );
+
+      await eventsRequest('/events',{
+        method:'POST',
+        body:JSON.stringify({
+          id:existing?.id || undefined,
+          date:latest.date,
+          cid:change.cid,
+          tags:[...(existing?.tags || [])],
+          status:{
+            ...(existing?.status || {}),
+            freeze:change.freeze
+          },
+          note:existing?.note || ''
+        })
+      });
+    }
+    return true;
+  }finally{
+    eventsState.autoFreezeBusy=false;
+  }
+}
+
 async function loadEvents(){
   const rows=
     document.querySelector('#eventsRows');
@@ -3090,7 +3410,7 @@ async function loadEvents(){
         ? data.events
         : [];
 
-    const autoChanged=await autoEndFreezesFromGrowth();
+    const autoChanged=await syncAutomaticFreezeStatus();
 
     if(autoChanged){
       const refreshed=await eventsRequest('/events');
