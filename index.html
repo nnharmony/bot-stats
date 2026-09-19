@@ -135,12 +135,30 @@ th:first-child,td:first-child{text-align:left}
 }
 
 
-#capGroupButton{
+
+.graph-event-filters{
+  display:grid;
+  grid-template-columns:repeat(9,minmax(0,1fr));
+  gap:5px;
   width:100%;
-  text-align:left;
-  margin:3px 0;
-  padding:7px 8px;
-  font-size:13px;
+  margin:3px 0 10px;
+}
+.graph-event-filter{
+  width:100%;
+  min-width:0;
+  height:34px;
+  padding:0 !important;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px !important;
+  line-height:1;
+  border-radius:9px;
+}
+.graph-event-filter.active{
+  background:var(--ui-accent-1) !important;
+  color:#18191c !important;
+  border-color:var(--ui-accent-1) !important;
 }
 
 .chart-area{
@@ -1934,11 +1952,17 @@ async function loadStatsData(){
     );
 
   compareBots.innerHTML=`
-    <button
-      type="button"
-      id="capGroupButton"
-      data-mode="capped"
-    >capped</button>
+    <div class="graph-event-filters" data-graph-event-filters>
+      <button type="button" class="graph-event-filter" data-graph-tag="new" title="new" aria-label="new">💟</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="edit" title="edit" aria-label="edit">☑️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="avatar" title="avatar" aria-label="avatar">👤</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="capped" title="capped" aria-label="capped">🔄</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="freeze" title="freeze" aria-label="freeze">*️⃣</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="tagged" title="tagged" aria-label="tagged">⬆️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="alert" title="alert" aria-label="alert">⚠️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="banned" title="banned" aria-label="banned">🚫</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="violation" title="violation" aria-label="violation">⛔️</button>
+    </div>
 
     <label>
       <input
@@ -2610,50 +2634,72 @@ document.querySelector('#compareBots')
   );
 
 
-document.querySelector('#compareBots')
-  .addEventListener(
-    'click',
-    e=>{
-      const button=e.target.closest('#capGroupButton');
+function persistentStatusNow(cid,tag){
+  let active=false;
+  [...eventsState.events]
+    .filter(event=>
+      event.cid===cid &&
+      Object.prototype.hasOwnProperty.call(event.status || {},tag)
+    )
+    .sort((a,b)=>
+      String(a.date||'').localeCompare(String(b.date||'')) ||
+      String(a.updatedAt||'').localeCompare(String(b.updatedAt||''))
+    )
+    .forEach(event=>{ active=event.status[tag]===true; });
+  return active;
+}
 
-      if(!button){
-        return;
-      }
+function graphPeriodDates(){
+  return new Set(getGraphDays().map(day=>day.date));
+}
 
-      const cappedCids=new Set(
-        eventsState.events
-          .filter(event=>
-            Array.isArray(event.tags) &&
-            event.tags.includes('capped')
-          )
-          .map(event=>event.cid)
-      );
+function cidMatchesGraphTag(cid,tag){
+  if(tag==='freeze' || tag==='banned'){
+    return persistentStatusNow(cid,tag);
+  }
 
-      const mode=button.dataset.mode || 'capped';
+  if(tag==='capped'){
+    return eventsState.events.some(event=>
+      event.cid===cid &&
+      Array.isArray(event.tags) &&
+      event.tags.includes('capped')
+    );
+  }
 
-      document.querySelectorAll(
-        '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
-      )
-      .forEach(cb=>{
-        cb.checked=
-          mode==='capped'
-            ? cappedCids.has(cb.value)
-            : !cappedCids.has(cb.value);
-      });
-
-      document.querySelector('#selectAllBots').checked=false;
-
-      if(mode==='capped'){
-        button.dataset.mode='uncapped';
-        button.textContent='uncapped';
-      }else{
-        button.dataset.mode='capped';
-        button.textContent='capped';
-      }
-
-      drawCompareChart();
-    }
+  const dates=graphPeriodDates();
+  return eventsState.events.some(event=>
+    event.cid===cid &&
+    dates.has(event.date) &&
+    Array.isArray(event.tags) &&
+    event.tags.includes(tag)
   );
+}
+
+function applyGraphEventFilters(){
+  const activeTags=[...document.querySelectorAll(
+    '#compareBots .graph-event-filter.active'
+  )].map(button=>button.dataset.graphTag);
+
+  if(!activeTags.length) return;
+
+  document.querySelectorAll(
+    '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
+  ).forEach(cb=>{
+    cb.checked=activeTags.some(tag=>cidMatchesGraphTag(cb.value,tag));
+  });
+
+  document.querySelector('#selectAllBots').checked=false;
+  drawCompareChart();
+}
+
+document.querySelector('#compareBots')
+  .addEventListener('click',e=>{
+    const button=e.target.closest('.graph-event-filter');
+    if(!button) return;
+
+    button.classList.toggle('active');
+    applyGraphEventFilters();
+  });
 
 
 function updateDateSelection(){
@@ -2688,7 +2734,11 @@ function updateDateSelection(){
     );
 
   render();
-  drawCompareChart();
+  if(document.querySelector('#compareBots .graph-event-filter.active')){
+    applyGraphEventFilters();
+  }else{
+    drawCompareChart();
+  }
 }
 
 
@@ -3999,7 +4049,6 @@ document.querySelector('#siteLockButton')
 
 
 let fullscreenChartInstance=null;
-let fullscreenCapGroupMode='capped';
 
 function snapshotBot(snapshot,cid){
   return (snapshot?.bots || []).find(bot=>bot.cid===cid) || null;
@@ -4117,17 +4166,19 @@ function renderFullscreenBots(){
     )
   ];
 
-  const cappedCids=new Set(
-    eventsState.events
-      .filter(event=>
-        Array.isArray(event.tags) &&
-        event.tags.includes('capped')
-      )
-      .map(event=>event.cid)
-  );
+  const activeTags=[...document.querySelectorAll(
+    '#compareBots .graph-event-filter.active'
+  )].map(button=>button.dataset.graphTag);
 
-  list.innerHTML=`
-    <button type="button" id="fsCapGroup" data-mode="${fullscreenCapGroupMode}">${fullscreenCapGroupMode}</button>
+  const filterButtons=`
+    <div class="graph-event-filters" data-fs-graph-event-filters>
+      ${[
+        ['new','💟'],['edit','☑️'],['avatar','👤'],['capped','🔄'],
+        ['freeze','*️⃣'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️']
+      ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${activeTags.includes(tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
+    </div>`;
+
+  list.innerHTML=filterButtons+`
     <label><input type="checkbox" id="fsSelectAll"> select all</label>
   `+
   mainInputs.map(input=>`
@@ -4147,20 +4198,14 @@ function renderFullscreenBots(){
 
   updateFullscreenBotsSummary();
 
-  document.querySelector('#fsCapGroup').addEventListener('click',()=>{
-    const mode=fullscreenCapGroupMode;
-
-    real.forEach(input=>{
-      input.checked=
-        mode==='capped'
-          ? cappedCids.has(input.value)
-          : !cappedCids.has(input.value);
+  list.querySelectorAll('[data-fs-graph-tag]').forEach(button=>{
+    button.addEventListener('click',()=>{
+      const tag=button.dataset.fsGraphTag;
+      const mainButton=document.querySelector(`#compareBots .graph-event-filter[data-graph-tag="${tag}"]`);
+      mainButton?.classList.toggle('active');
+      applyGraphEventFilters();
+      refreshFullscreenGraph();
     });
-
-    fullscreenCapGroupMode=
-      mode==='capped'?'uncapped':'capped';
-
-    refreshFullscreenGraph();
   });
 
   document.querySelector('#fsSelectAll').addEventListener('change',e=>{
