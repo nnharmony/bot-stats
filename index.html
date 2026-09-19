@@ -1393,6 +1393,65 @@ h1{
 .freeze-track{height:6px;border-radius:999px;background:#dedee2;overflow:hidden}
 .freeze-bar{height:100%;border-radius:999px;background:var(--ui-accent-1)}
 
+
+/* event analysis overview + graph event markers */
+.event-analysis-overview{
+  margin:12px 0 14px;
+  padding:12px;
+  border:1px solid #d9dce1;
+  border-radius:12px;
+  background:#f7f7f8;
+  color:#18191c;
+}
+.event-analysis-overview[hidden]{display:none !important}
+.event-analysis-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  font-weight:800;
+  margin-bottom:8px;
+}
+.event-analysis-sub{font-size:11px;color:#666;font-weight:400}
+.event-analysis-row{
+  padding:8px 0;
+  border-top:1px solid #e3e3e5;
+}
+.event-analysis-row:first-of-type{border-top:0}
+.event-analysis-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:baseline;
+}
+.event-analysis-name{font-weight:700}
+.event-analysis-time{font-size:10px;color:#777;white-space:nowrap}
+.event-analysis-note{font-size:11px;color:#555;margin-top:3px;white-space:pre-wrap}
+.freeze-history-title{
+  margin:16px 0 6px;
+  padding-top:12px;
+  border-top:1px solid #d9dce1;
+  font-weight:800;
+}
+.freeze-history-row{
+  padding:8px 0;
+  border-top:1px solid #e3e3e5;
+}
+.freeze-history-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.freeze-history-name{font-weight:700}
+.freeze-history-days{font-weight:800;white-space:nowrap}
+.freeze-history-dates{font-size:10px;color:#777;margin-top:2px}
+.graph-event-marker{
+  position:absolute;
+  pointer-events:none;
+  z-index:8;
+  border-left:1px dashed rgba(170,142,245,.9);
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1586,6 +1645,7 @@ h1{
   </details>
 
   <div id="freezeOverview" class="freeze-overview" hidden></div>
+  <div id="eventAnalysisOverview" class="event-analysis-overview" hidden></div>
 
   <details class="graph-panel" id="graphPanel">
     <summary>graph</summary>
@@ -1671,6 +1731,84 @@ const state={
 };
 
 let compareChart=null;
+
+const graphEventMarkerPlugin={
+  id:'graphEventMarkers',
+  afterDatasetsDraw(chart,args,options){
+    const markers=options?.markers || [];
+    if(!markers.length) return;
+
+    const {ctx,chartArea,scales}=chart;
+    if(!chartArea || !scales?.x) return;
+
+    ctx.save();
+    markers.forEach(marker=>{
+      const index=chart.data.labels.findIndex((label,i)=>marker.index===i);
+      if(index<0) return;
+
+      const x=scales.x.getPixelForValue(index);
+      if(!Number.isFinite(x)) return;
+
+      ctx.beginPath();
+      ctx.setLineDash([4,4]);
+      ctx.strokeStyle='rgba(170,142,245,.9)';
+      ctx.lineWidth=1;
+      ctx.moveTo(x,chartArea.top);
+      ctx.lineTo(x,chartArea.bottom);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.font='11px system-ui';
+      ctx.textAlign='center';
+      ctx.textBaseline='top';
+      ctx.fillStyle='rgba(24,25,28,.9)';
+      ctx.fillText(marker.icon || '•',x,chartArea.top+3);
+    });
+    ctx.restore();
+  }
+};
+
+Chart.register(graphEventMarkerPlugin);
+
+function graphMarkersForDays(days,selectedCids){
+  const activeTags=selectedGraphEventTags()
+    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
+
+  if(!activeTags.length) return [];
+
+  const selected=new Set(selectedCids.filter(cid=>cid!=='__total__'));
+  const dateIndex=new Map(days.map((day,index)=>[day.date,index]));
+  const markers=[];
+
+  (eventsState.events || []).forEach(event=>{
+    if(!selected.has(event.cid)) return;
+    const index=dateIndex.get(event.date);
+    if(index===undefined) return;
+
+    activeTags.forEach(tag=>{
+      const match=tag==='capped'
+        ? (
+            (Array.isArray(event.tags) && event.tags.includes('capped')) ||
+            Object.prototype.hasOwnProperty.call(event.status || {},'capped')
+          )
+        : Array.isArray(event.tags) && event.tags.includes(tag);
+
+      if(match){
+        markers.push({
+          index,
+          cid:event.cid,
+          tag,
+          icon:eventTagIcon(tag),
+          note:event.note || '',
+          timestamp:eventTimestamp(event)
+        });
+      }
+    });
+  });
+
+  return markers;
+}
+
 
 
 function displayLabel(cid){
@@ -2326,7 +2464,6 @@ function currentFreezeInfo(){
   const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
   if(days.length<2) return [];
 
-  const latest=days.at(-1);
   const infos=[];
 
   state.meta.forEach((meta,cid)=>{
@@ -2364,10 +2501,210 @@ function currentFreezeInfo(){
     }
   });
 
+  // newest freeze first; if same start date, longest/name as stable tie-breakers
   return infos.sort((a,b)=>
+    b.since.localeCompare(a.since) ||
     b.days-a.days ||
     a.name.localeCompare(b.name)
   );
+}
+
+
+function eventTimestamp(event){
+  return event?.timestamp || event?.createdAt || event?.updatedAt || event?.date || '';
+}
+
+function formatEventTimestamp(event){
+  const raw=eventTimestamp(event);
+  if(!raw) return '—';
+
+  if(/^\d{4}-\d{2}-\d{2}$/.test(raw)){
+    return new Date(raw+'T00:00:00').toLocaleDateString(
+      'nl-NL',{day:'numeric',month:'numeric',year:'2-digit'}
+    );
+  }
+
+  const d=new Date(raw);
+  if(Number.isNaN(d.getTime())) return String(raw);
+
+  return d.toLocaleString('nl-NL',{
+    day:'numeric',month:'numeric',year:'2-digit',
+    hour:'2-digit',minute:'2-digit'
+  });
+}
+
+function freezePeriodsForCid(cid){
+  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
+  const periods=[];
+  let startIndex=null;
+
+  for(let i=1;i<days.length;i++){
+    const now=snapshotBot(days[i].snapshot,cid);
+    const before=snapshotBot(days[i-1].snapshot,cid);
+
+    if(
+      !now || !before ||
+      !Number.isFinite(now.messages) ||
+      !Number.isFinite(before.messages)
+    ){
+      if(startIndex!==null){
+        periods.push({
+          cid,
+          start:days[startIndex].date,
+          end:days[i-1].date,
+          days:i-startIndex,
+          active:false
+        });
+        startIndex=null;
+      }
+      continue;
+    }
+
+    const delta=now.messages-before.messages;
+
+    if(delta===0){
+      if(startIndex===null) startIndex=i;
+    }else if(startIndex!==null){
+      periods.push({
+        cid,
+        start:days[startIndex].date,
+        end:days[i-1].date,
+        days:i-startIndex,
+        active:false
+      });
+      startIndex=null;
+    }
+  }
+
+  if(startIndex!==null){
+    periods.push({
+      cid,
+      start:days[startIndex].date,
+      end:days.at(-1).date,
+      days:days.length-startIndex,
+      active:true
+    });
+  }
+
+  return periods;
+}
+
+function freezeHistory(){
+  const result=[];
+  state.meta.forEach((meta,cid)=>{
+    freezePeriodsForCid(cid)
+      .filter(period=>!period.active)
+      .forEach(period=>result.push({
+        ...period,
+        name:meta?.name || cid
+      }));
+  });
+
+  return result.sort((a,b)=>
+    b.end.localeCompare(a.end) ||
+    b.start.localeCompare(a.start) ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function selectedGraphEventTags(){
+  return [...document.querySelectorAll(
+    '#compareBots .graph-event-filter.active'
+  )].map(button=>button.dataset.graphTag);
+}
+
+function renderEventAnalysisOverview(){
+  const box=document.querySelector('#eventAnalysisOverview');
+  if(!box) return;
+
+  const activeTags=selectedGraphEventTags()
+    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
+
+  if(!activeTags.length){
+    box.hidden=true;
+    box.innerHTML='';
+    return;
+  }
+
+  const selected=new Set(
+    [...document.querySelectorAll(
+      '#compareBots input[type="checkbox"]:checked:not(#selectAllBots):not(#totalProfile)'
+    )].map(input=>input.value)
+  );
+
+  const {from,to}=graphEventDateRange();
+
+  const rows=(eventsState.events || [])
+    .filter(event=>
+      selected.has(event.cid) &&
+      (!from || String(event.date||'')>=from) &&
+      (!to || String(event.date||'')<=to) &&
+      activeTags.some(tag=>
+        tag==='capped'
+          ? (
+              (Array.isArray(event.tags) && event.tags.includes('capped')) ||
+              Object.prototype.hasOwnProperty.call(event.status || {},'capped')
+            )
+          : Array.isArray(event.tags) && event.tags.includes(tag)
+      )
+    )
+    .sort((a,b)=>
+      String(eventTimestamp(b)).localeCompare(String(eventTimestamp(a)))
+    );
+
+  const label=activeTags.map(eventTagIcon).join(' ');
+
+  const cappedSummary=activeTags.includes('capped')
+    ? [...selected].map(cid=>{
+        const event=cappedSince(cid);
+        return event
+          ? `<div class="event-analysis-row"><div class="event-analysis-top"><span class="event-analysis-name">🔄 ${eventBotLabel(cid)}</span><span class="event-analysis-time">capped since ${formatEventTimestamp(event)}</span></div>${event.note?`<div class="event-analysis-note">${event.note}</div>`:''}</div>`
+          : '';
+      }).join('')
+    : '';
+
+  box.hidden=false;
+  box.innerHTML=`
+    <div class="event-analysis-head">
+      <span>${label} event timeline</span>
+      <span class="event-analysis-sub">${rows.length} events</span>
+    </div>
+    ${cappedSummary}
+    ${rows.length ? rows.map(event=>{
+      const tags=activeTags
+        .filter(tag=>
+          tag==='capped'
+            ? (
+                (Array.isArray(event.tags) && event.tags.includes('capped')) ||
+                Object.prototype.hasOwnProperty.call(event.status || {},'capped')
+              )
+            : Array.isArray(event.tags) && event.tags.includes(tag)
+        )
+        .map(eventTagIcon).join(' ');
+      return `
+        <div class="event-analysis-row">
+          <div class="event-analysis-top">
+            <span class="event-analysis-name">${tags} ${eventBotLabel(event.cid)}</span>
+            <span class="event-analysis-time">${formatEventTimestamp(event)}</span>
+          </div>
+          ${event.note?`<div class="event-analysis-note">${event.note}</div>`:''}
+        </div>
+      `;
+    }).join('') : '<div class="freeze-empty">no matching events in this graph period.</div>'}
+  `;
+}
+
+function cappedSince(cid){
+  const events=(eventsState.events || [])
+    .filter(event=>
+      event.cid===cid &&
+      (
+        (Array.isArray(event.tags) && event.tags.includes('capped')) ||
+        event.status?.capped===true
+      )
+    )
+    .sort((a,b)=>String(eventTimestamp(b)).localeCompare(String(eventTimestamp(a))));
+  return events[0] || null;
 }
 
 function currentFreezeCids(){
@@ -2398,42 +2735,58 @@ function renderFreezeOverview(){
   const infos=currentFreezeInfo()
     .filter(item=>selected.has(item.cid));
 
+  const history=freezeHistory();
+
   box.hidden=false;
 
-  if(!infos.length){
-    box.innerHTML=`
-      <div class="freeze-overview-head">
-        <span>*️⃣ active freezes</span>
-      </div>
-      <div class="freeze-empty">no active freezes.</div>
-    `;
-    return;
-  }
-
   const maxDays=Math.max(...infos.map(item=>item.days),1);
+
+  const activeHtml=infos.length
+    ? infos.map(item=>{
+        const width=Math.max(4,(item.days/maxDays)*100);
+        const since=new Date(item.since+'T00:00:00')
+          .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
+        return `
+          <div class="freeze-row">
+            <div class="freeze-row-top">
+              <span class="freeze-name">${item.name}</span>
+              <span class="freeze-days">${item.days} ${item.days===1?'day':'days'}</span>
+            </div>
+            <div class="freeze-since">since ${since}</div>
+            <div class="freeze-track">
+              <div class="freeze-bar" style="width:${width}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('')
+    : '<div class="freeze-empty">no active freezes.</div>';
+
+  const historyHtml=history.length
+    ? history.map(item=>{
+        const start=new Date(item.start+'T00:00:00')
+          .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
+        const end=new Date(item.end+'T00:00:00')
+          .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
+        return `
+          <div class="freeze-history-row">
+            <div class="freeze-history-top">
+              <span class="freeze-history-name">${item.name}</span>
+              <span class="freeze-history-days">${item.days} ${item.days===1?'day':'days'}</span>
+            </div>
+            <div class="freeze-history-dates">${start} → ${end}</div>
+          </div>
+        `;
+      }).join('')
+    : '<div class="freeze-empty">no completed freezes yet.</div>';
 
   box.innerHTML=`
     <div class="freeze-overview-head">
       <span>*️⃣ active freezes</span>
       <span class="freeze-overview-sub">${infos.length} bots</span>
     </div>
-    ${infos.map(item=>{
-      const width=Math.max(4,(item.days/maxDays)*100);
-      const since=new Date(item.since+'T00:00:00')
-        .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
-      return `
-        <div class="freeze-row">
-          <div class="freeze-row-top">
-            <span class="freeze-name">${item.name}</span>
-            <span class="freeze-days">${item.days} ${item.days===1?'day':'days'}</span>
-          </div>
-          <div class="freeze-since">since ${since}</div>
-          <div class="freeze-track">
-            <div class="freeze-bar" style="width:${width}%"></div>
-          </div>
-        </div>
-      `;
-    }).join('')}
+    ${activeHtml}
+    <div class="freeze-history-title">freeze history</div>
+    ${historyHtml}
   `;
 }
 
@@ -2516,6 +2869,7 @@ function applyGraphEventFilters(containerSelector){
 
 function drawCompareChart(){
   renderFreezeOverview();
+  renderEventAnalysisOverview();
   const metric=
     document.querySelector(
       '#compareMetric'
@@ -2683,6 +3037,9 @@ function drawCompareChart(){
             mode:'index'
           },
           plugins:{
+            graphEventMarkers:{
+              markers:graphMarkersForDays(days,selected)
+            },
             zoom:{
               pan:{
                 enabled:true,
@@ -4711,6 +5068,9 @@ function buildFullscreenChart(){
         }
       },
       plugins:{
+        graphEventMarkers:{
+          markers:graphMarkersForDays(days,selected)
+        },
         legend:{
           display:true
         },
