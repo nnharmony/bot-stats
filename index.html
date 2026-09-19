@@ -2467,6 +2467,7 @@ function applyGraphEventFilters(containerSelector){
 }
 
 function drawCompareChart(){
+  renderFreezeOverview();
   const metric=
     document.querySelector(
       '#compareMetric'
@@ -2654,6 +2655,8 @@ function drawCompareChart(){
           },
           scales:{
             y:{
+              min:0,
+              beginAtZero:true,
               ticks:{
                 callback:
                   value=>
@@ -4608,7 +4611,8 @@ function buildFullscreenChart(){
           }
         },
         y:{
-          beginAtZero:false
+          min:0,
+          beginAtZero:true
         }
       },
       plugins:{
@@ -4621,12 +4625,12 @@ function buildFullscreenChart(){
         zoom:{
           pan:{
             enabled:true,
-            mode:'xy'
+            mode:'x'
           },
           zoom:{
             wheel:{enabled:true},
             pinch:{enabled:true},
-            mode:'xy'
+            mode:'x'
           }
         }
       },
@@ -4782,6 +4786,11 @@ document.querySelector('#graphPanel')
       setTimeout(()=>compareChart?.resize(),30);
     }
   });
+
+// freezeOverviewRepair
+document.querySelector('#compareBots')?.addEventListener('click',()=>{
+  setTimeout(renderFreezeOverview,0);
+});
 
 restoreSiteSession();
 
