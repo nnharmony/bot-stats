@@ -3000,10 +3000,10 @@ async function autoEndFreezesFromGrowth(){
   if(!latest?.date || !previous) return false;
 
   const previousBots=new Map(
-    (previous.bots || []).map(bot=>[bot.cid,bot])
+    (previous.snapshot?.bots || []).map(bot=>[bot.cid,bot])
   );
 
-  const toEnd=(latest.bots || []).filter(bot=>{
+  const toEnd=(latest.snapshot?.bots || []).filter(bot=>{
     const before=previousBots.get(bot.cid);
 
     return (
