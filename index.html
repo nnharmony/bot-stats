@@ -1265,28 +1265,6 @@ h1{
   font-size:12px;
 }
 
-/* freeze start/off archive filters */
-.freeze-filter-modes{
-  display:flex;
-  gap:8px;
-  margin-top:8px;
-}
-.freeze-filter-modes[hidden]{
-  display:none !important;
-}
-.freeze-filter-modes button{
-  width:auto;
-  min-width:0;
-  height:30px;
-  padding:0 9px;
-  border-radius:9px;
-  font-size:11px;
-}
-.freeze-filter-modes button.active{
-  background:var(--ui-accent-1);
-  color:#18191c;
-}
-
 /* saved event log: one step smaller and much tighter */
 .saved-events,
 .saved-events table,
@@ -1431,10 +1409,6 @@ h1{
       <div class="event-field event-tags-wrap">
         <label>tags</label>
         <div id="eventTags" class="event-tags"></div>
-        <div id="freezeFilterModes" class="freeze-filter-modes" hidden>
-          <button type="button" data-freeze-filter="start">*️⃣ freeze start</button>
-          <button type="button" data-freeze-filter="off">*️⃣ freeze off</button>
-        </div>
       </div>
 
       <div class="event-field event-tags-wrap">
@@ -3110,15 +3084,9 @@ function setEventsFilterMode(enabled){
   button?.setAttribute('aria-pressed',enabled ? 'true' : 'false');
   form?.classList.toggle('events-filter-mode',enabled);
 
-  const freezeModes=document.querySelector('#freezeFilterModes');
-  if(freezeModes) freezeModes.hidden=!enabled;
-
   if(!enabled){
     eventsState.filterDate='';
     eventsState.freezeFilter='';
-    freezeModes?.querySelectorAll('button').forEach(
-      item=>item.classList.remove('active')
-    );
   }
 
   const save=document.querySelector('#eventSave');
@@ -3598,9 +3566,6 @@ function editEvent(id){
     eventsState.filterAll=false;
     eventsState.filterDate='';
     eventsState.freezeFilter='';
-    document.querySelector('#freezeFilterModes')?.setAttribute('hidden','');
-    document.querySelectorAll('#freezeFilterModes button')
-      .forEach(button=>button.classList.remove('active'));
     document.querySelector('#eventDateAll')?.classList.remove('active');
     document.querySelector('#eventDateAll')?.setAttribute('aria-pressed','false');
     document.querySelector('.event-form')?.classList.remove('events-filter-mode');
@@ -3794,27 +3759,6 @@ function initEventsTracker(){
         }else{
           setEventsFilterMode(false);
         }
-      }
-    );
-
-  document.querySelector('#freezeFilterModes')
-    .addEventListener(
-      'click',
-      event=>{
-        const button=event.target.closest('[data-freeze-filter]');
-        if(!button) return;
-
-        const mode=button.dataset.freezeFilter;
-        eventsState.freezeFilter=
-          eventsState.freezeFilter===mode ? '' : mode;
-
-        document.querySelectorAll('#freezeFilterModes button')
-          .forEach(item=>item.classList.toggle(
-            'active',
-            item.dataset.freezeFilter===eventsState.freezeFilter
-          ));
-
-        renderEvents();
       }
     );
 
