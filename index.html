@@ -1452,6 +1452,15 @@ h1{
   border-left:1px dashed rgba(170,142,245,.9);
 }
 
+
+.html-chart-legend{margin:0 0 4px}
+.chart-legend-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;
+ border:0;background:transparent;padding:4px 2px 6px;font:inherit;font-size:11px;color:#666}
+.chart-legend-list{display:flex;flex-wrap:wrap;justify-content:center;gap:7px 10px;padding:3px 0 9px}
+.chart-legend-list[hidden]{display:none!important}
+.chart-legend-item{display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;
+ padding:0;font:inherit;font-size:11px;color:#666}
+.chart-legend-swatch{width:25px;height:11px;border:3px solid currentColor;box-sizing:border-box}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1650,7 +1659,7 @@ h1{
   <details class="graph-panel" id="graphPanel">
     <summary>graph</summary>
 <div class="chart-area">
-      <canvas id="compareChart"></canvas>
+      <canvas id="compareChart"><div id="compareChartLegend" class="html-chart-legend"></div></canvas>
     </div>
 
     <table class="compare-table">
@@ -1714,7 +1723,7 @@ h1{
 
     <div class="graph-fs-chart">
       <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
-      <canvas id="fullscreenChart"></canvas>
+      <canvas id="fullscreenChart"><div id="fullscreenChartLegend" class="html-chart-legend"></div></canvas>
     </div>
   </div>
 </div>
@@ -1731,6 +1740,36 @@ const state={
 };
 
 let compareChart=null;
+
+
+const htmlLegendPlugin={
+  id:'htmlLegend',
+  afterUpdate(chart,args,opts){
+    const el=document.getElementById(opts.containerID);
+    if(!el) return;
+    let toggle=el.querySelector('.chart-legend-toggle');
+    let list=el.querySelector('.chart-legend-list');
+    if(!toggle){
+      toggle=document.createElement('button'); toggle.type='button'; toggle.className='chart-legend-toggle';
+      toggle.innerHTML='<span></span><span>▸</span>';
+      list=document.createElement('div'); list.className='chart-legend-list'; list.hidden=true;
+      toggle.onclick=()=>{list.hidden=!list.hidden;toggle.lastElementChild.textContent=list.hidden?'▸':'▾'};
+      el.replaceChildren(toggle,list);
+    }
+    toggle.firstElementChild.textContent=`legend — ${chart.data.datasets.length} ${chart.data.datasets.length===1?'bot':'bots'}`;
+    list.replaceChildren();
+    chart.data.datasets.forEach((ds,i)=>{
+      const b=document.createElement('button'); b.type='button'; b.className='chart-legend-item';
+      b.style.opacity=chart.isDatasetVisible(i)?'1':'.4';
+      const sw=document.createElement('span'); sw.className='chart-legend-swatch';
+      sw.style.color=ds.borderColor||'#888'; sw.style.background=ds.backgroundColor||'transparent';
+      const t=document.createElement('span'); t.textContent=ds.label||'';
+      b.append(sw,t); b.onclick=()=>{chart.setDatasetVisibility(i,!chart.isDatasetVisible(i));chart.update()};
+      list.appendChild(b);
+    });
+  }
+};
+Chart.register(htmlLegendPlugin);
 
 const graphEventMarkerPlugin={
   id:'graphEventMarkers',
@@ -2461,52 +2500,15 @@ function activeNewCids(){
 }
 
 function currentFreezeInfo(){
-  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
-  if(days.length<2) return [];
-
   const infos=[];
-
   state.meta.forEach((meta,cid)=>{
-    let startIndex=null;
-
-    for(let i=days.length-1;i>=1;i--){
-      const now=snapshotBot(days[i].snapshot,cid);
-      const before=snapshotBot(days[i-1].snapshot,cid);
-
-      if(
-        !now || !before ||
-        !Number.isFinite(now.messages) ||
-        !Number.isFinite(before.messages)
-      ){
-        break;
-      }
-
-      const delta=now.messages-before.messages;
-
-      if(delta===0){
-        startIndex=i;
-      }else{
-        break;
-      }
-    }
-
-    if(startIndex!==null){
-      const since=days[startIndex].date;
-      infos.push({
-        cid,
-        name:meta?.name || cid,
-        since,
-        days:days.length-startIndex
-      });
-    }
+    const p=freezePeriodsForCid(cid).find(p=>p.active && qualifiesFreezePeriod(p));
+    if(p) infos.push({
+      cid,name:meta?.name||cid,since:p.start,days:p.days,
+      threshold:p.threshold,startMessages:p.startMessages
+    });
   });
-
-  // newest freeze first; if same start date, longest/name as stable tie-breakers
-  return infos.sort((a,b)=>
-    b.since.localeCompare(a.since) ||
-    b.days-a.days ||
-    a.name.localeCompare(b.name)
-  );
+  return infos.sort((a,b)=>b.since.localeCompare(a.since)||a.name.localeCompare(b.name));
 }
 
 
@@ -2533,59 +2535,50 @@ function formatEventTimestamp(event){
   });
 }
 
+function freezeThresholdForMessages(messages){
+  if(!Number.isFinite(messages)) return Infinity;
+  if(messages < 10000) return 7;
+  if(messages <= 100000) return 2;
+  return 1;
+}
+function qualifiesFreezePeriod(period){
+  return !!period && period.days >= period.threshold;
+}
+
 function freezePeriodsForCid(cid){
   const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
   const periods=[];
-  let startIndex=null;
+  let startIndex=null, threshold=null, startMessages=null;
+
+  const closePeriod=(endIndex,active)=>{
+    if(startIndex===null) return;
+    periods.push({
+      cid,start:days[startIndex].date,end:days[endIndex].date,
+      days:endIndex-startIndex+1,active,threshold,startMessages
+    });
+    startIndex=null; threshold=null; startMessages=null;
+  };
 
   for(let i=1;i<days.length;i++){
     const now=snapshotBot(days[i].snapshot,cid);
     const before=snapshotBot(days[i-1].snapshot,cid);
-
-    if(
-      !now || !before ||
-      !Number.isFinite(now.messages) ||
-      !Number.isFinite(before.messages)
-    ){
-      if(startIndex!==null){
-        periods.push({
-          cid,
-          start:days[startIndex].date,
-          end:days[i-1].date,
-          days:i-startIndex,
-          active:false
-        });
-        startIndex=null;
-      }
+    if(!now || !before || !Number.isFinite(now.messages) || !Number.isFinite(before.messages)){
+      if(startIndex!==null) closePeriod(i-1,false);
       continue;
     }
-
     const delta=now.messages-before.messages;
-
     if(delta===0){
-      if(startIndex===null) startIndex=i;
-    }else if(startIndex!==null){
-      periods.push({
-        cid,
-        start:days[startIndex].date,
-        end:days[i-1].date,
-        days:i-startIndex,
-        active:false
-      });
-      startIndex=null;
+      if(startIndex===null){
+        startIndex=i;
+        startMessages=before.messages;
+        threshold=freezeThresholdForMessages(startMessages);
+      }
+    }else{
+      // Positive growth defrosts. Negative growth is a correction/unknown, not a freeze.
+      if(startIndex!==null) closePeriod(i-1,false);
     }
   }
-
-  if(startIndex!==null){
-    periods.push({
-      cid,
-      start:days[startIndex].date,
-      end:days.at(-1).date,
-      days:days.length-startIndex,
-      active:true
-    });
-  }
-
+  if(startIndex!==null) closePeriod(days.length-1,true);
   return periods;
 }
 
@@ -2593,17 +2586,11 @@ function freezeHistory(){
   const result=[];
   state.meta.forEach((meta,cid)=>{
     freezePeriodsForCid(cid)
-      .filter(period=>!period.active)
-      .forEach(period=>result.push({
-        ...period,
-        name:meta?.name || cid
-      }));
+      .filter(p=>!p.active && qualifiesFreezePeriod(p))
+      .forEach(p=>result.push({...p,name:meta?.name||cid}));
   });
-
   return result.sort((a,b)=>
-    b.end.localeCompare(a.end) ||
-    b.start.localeCompare(a.start) ||
-    a.name.localeCompare(b.name)
+    b.end.localeCompare(a.end)||b.start.localeCompare(a.start)||a.name.localeCompare(b.name)
   );
 }
 
@@ -2616,82 +2603,51 @@ function selectedGraphEventTags(){
 function renderEventAnalysisOverview(){
   const box=document.querySelector('#eventAnalysisOverview');
   if(!box) return;
+  const activeTags=selectedGraphEventTags().filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
+  if(!activeTags.length){ box.hidden=true; box.innerHTML=''; return; }
 
-  const activeTags=selectedGraphEventTags()
-    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
-
-  if(!activeTags.length){
-    box.hidden=true;
-    box.innerHTML='';
-    return;
-  }
-
-  const selected=new Set(
-    [...document.querySelectorAll(
-      '#compareBots input[type="checkbox"]:checked:not(#selectAllBots):not(#totalProfile)'
-    )].map(input=>input.value)
-  );
-
+  const selected=new Set([...document.querySelectorAll(
+    '#compareBots input[type="checkbox"]:checked:not(#selectAllBots):not(#totalProfile)'
+  )].map(input=>input.value));
   const {from,to}=graphEventDateRange();
 
-  const rows=(eventsState.events || [])
-    .filter(event=>
-      selected.has(event.cid) &&
-      (!from || String(event.date||'')>=from) &&
-      (!to || String(event.date||'')<=to) &&
-      activeTags.some(tag=>
-        tag==='capped'
-          ? (
-              (Array.isArray(event.tags) && event.tags.includes('capped')) ||
-              Object.prototype.hasOwnProperty.call(event.status || {},'capped')
-            )
-          : Array.isArray(event.tags) && event.tags.includes(tag)
-      )
-    )
-    .sort((a,b)=>
-      String(eventTimestamp(b)).localeCompare(String(eventTimestamp(a)))
-    );
+  const rows=(eventsState.events||[]).filter(event=>
+    selected.has(event.cid) &&
+    (!from||String(event.date||'')>=from) && (!to||String(event.date||'')<=to) &&
+    activeTags.some(tag=>tag==='capped'
+      ? ((Array.isArray(event.tags)&&event.tags.includes('capped')) ||
+         Object.prototype.hasOwnProperty.call(event.status||{},'capped'))
+      : Array.isArray(event.tags)&&event.tags.includes(tag))
+  ).sort((a,b)=>String(eventTimestamp(b)).localeCompare(String(eventTimestamp(a))));
 
-  const label=activeTags.map(eventTagIcon).join(' ');
-
-  const cappedSummary=activeTags.includes('capped')
-    ? [...selected].map(cid=>{
-        const event=cappedSince(cid);
-        return event
-          ? `<div class="event-analysis-row"><div class="event-analysis-top"><span class="event-analysis-name">🔄 ${eventBotLabel(cid)}</span><span class="event-analysis-time">capped since ${formatEventTimestamp(event)}</span></div>${event.note?`<div class="event-analysis-note">${event.note}</div>`:''}</div>`
-          : '';
-      }).join('')
-    : '';
+  const cappedSummary=activeTags.includes('capped')?[...selected].map(cid=>{
+    const event=cappedSince(cid);
+    return event?`<div class="event-analysis-row"><div class="event-analysis-top">
+      <span class="event-analysis-name">🔄 ${eventBotLabel(cid)}</span>
+      <span class="event-analysis-time">capped since ${formatEventTimestamp(event)}</span>
+    </div></div>`:'';
+  }).join(''):'';
 
   box.hidden=false;
-  box.innerHTML=`
-    <div class="event-analysis-head">
-      <span>${label} event timeline</span>
-      <span class="event-analysis-sub">${rows.length} events</span>
-    </div>
-    ${cappedSummary}
-    ${rows.length ? rows.map(event=>{
-      const tags=activeTags
-        .filter(tag=>
-          tag==='capped'
-            ? (
-                (Array.isArray(event.tags) && event.tags.includes('capped')) ||
-                Object.prototype.hasOwnProperty.call(event.status || {},'capped')
-              )
-            : Array.isArray(event.tags) && event.tags.includes(tag)
-        )
-        .map(eventTagIcon).join(' ');
-      return `
-        <div class="event-analysis-row">
-          <div class="event-analysis-top">
-            <span class="event-analysis-name">${tags} ${eventBotLabel(event.cid)}</span>
-            <span class="event-analysis-time">${formatEventTimestamp(event)}</span>
-          </div>
-          ${event.note?`<div class="event-analysis-note">${event.note}</div>`:''}
+  box.innerHTML=`<div class="event-analysis-head">
+    <span>${activeTags.map(eventTagIcon).join(' ')} event timeline</span>
+    <span class="event-analysis-sub">${rows.length} events</span>
+  </div>${cappedSummary}${
+    rows.length?rows.map(event=>{
+      const matching=activeTags.filter(tag=>tag==='capped'
+        ? ((Array.isArray(event.tags)&&event.tags.includes('capped')) ||
+           Object.prototype.hasOwnProperty.call(event.status||{},'capped'))
+        : Array.isArray(event.tags)&&event.tags.includes(tag));
+      const showNote=matching.some(tag=>tag==='tagged'||tag==='alert');
+      return `<div class="event-analysis-row">
+        <div class="event-analysis-top">
+          <span class="event-analysis-name">${matching.map(eventTagIcon).join(' ')} ${eventBotLabel(event.cid)}</span>
+          <span class="event-analysis-time">${formatEventTimestamp(event)}</span>
         </div>
-      `;
-    }).join('') : '<div class="freeze-empty">no matching events in this graph period.</div>'}
-  `;
+        ${showNote&&event.note?`<div class="event-analysis-note">${event.note}</div>`:''}
+      </div>`;
+    }).join(''):'<div class="freeze-empty">no matching events in this graph period.</div>'
+  }`;
 }
 
 function cappedSince(cid){
@@ -3037,6 +2993,8 @@ function drawCompareChart(){
             mode:'index'
           },
           plugins:{
+            htmlLegend:{containerID:'compareChartLegend'},
+            legend:{display:false},
             graphEventMarkers:{
               markers:graphMarkersForDays(days,selected)
             },
@@ -5068,10 +5026,12 @@ function buildFullscreenChart(){
         }
       },
       plugins:{
-        graphEventMarkers:{
+        htmlLegend:{containerID:'fullscreenChartLegend'},
+            legend:{display:false},
+            graphEventMarkers:{
           markers:graphMarkersForDays(days,selected)
         },
-        legend:{
+        legend:{display:false,
           display:true
         },
         tooltip:{
