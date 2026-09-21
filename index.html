@@ -2594,14 +2594,90 @@ function eventHasAnalysisTag(event,tag){
 function renderEventAnalysisOverview(){
   const box=document.querySelector('#eventAnalysisOverview');
   if(!box) return;
-  const activeTags=selectedGraphEventTags().filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
-  if(!activeTags.length){box.hidden=true;box.innerHTML='';return;}
-  const selected=new Set([...document.querySelectorAll('#compareBots input[type="checkbox"]:checked:not(#selectAllBots):not(#totalProfile)')].map(input=>input.value));
+
+  const activeTags=selectedGraphEventTags()
+    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
+
+  if(!activeTags.length){
+    box.hidden=true;
+    box.innerHTML='';
+    return;
+  }
+
+  const selected=new Set(
+    [...document.querySelectorAll(
+      '#compareBots input[type="checkbox"]:checked:not(#selectAllBots):not(#totalProfile)'
+    )].map(input=>input.value)
+  );
+
   const {from,to}=graphEventDateRange();
-  const rows=(eventsState.events||[]).filter(event=>selected.has(event.cid)&&(!from||String(event.date||'')>=from)&&(!to||String(event.date||'')<=to)&&activeTags.some(tag=>eventHasAnalysisTag(event,tag))).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
-  const cappedSummary=activeTags.includes('capped')?[...selected].map(cid=>{const event=cappedSince(cid);return event?`<div class="event-analysis-row"><div class="event-analysis-top"><span class="event-analysis-name">🔄 ${eventBotLabel(cid)}</span><span class="event-analysis-time">capped since ${formatEventTimestamp(event)}</span></div></div>`:'';}).join(''):'';
+
+  const rows=(eventsState.events||[])
+    .filter(event=>{
+      if((from && String(event.date||'')<from) || (to && String(event.date||'')>to)){
+        return false;
+      }
+
+      return activeTags.some(tag=>{
+        if(!eventHasAnalysisTag(event,tag)) return false;
+
+        // tagged is a history/status log:
+        // show tagged ON and OFF events even if that bot is not currently selected anymore.
+        if(tag==='tagged') return true;
+
+        // other analysis types still follow the current bot selection.
+        return selected.has(event.cid);
+      });
+    })
+    .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+
+  const cappedSummary=activeTags.includes('capped')
+    ? [...selected].map(cid=>{
+        const event=cappedSince(cid);
+        return event
+          ? `<div class="event-analysis-row"><div class="event-analysis-top"><span class="event-analysis-name">🔄 ${eventBotLabel(cid)}</span><span class="event-analysis-time">capped since ${formatEventTimestamp(event)}</span></div></div>`
+          : '';
+      }).join('')
+    : '';
+
   box.hidden=false;
-  box.innerHTML=`<div class="event-analysis-head"><span>${activeTags.map(eventTagIcon).join(' ')} event timeline</span><span class="event-analysis-sub">${rows.length} events</span></div>${cappedSummary}${rows.length?rows.map(event=>{const matching=activeTags.filter(tag=>eventHasAnalysisTag(event,tag));const showNote=matching.some(tag=>tag==='tagged'||tag==='alert');return `<div class="event-analysis-row"><div class="event-analysis-top"><span class="event-analysis-name">${matching.map(eventTagIcon).join(' ')} ${eventBotLabel(event.cid)}</span><span class="event-analysis-time">${formatEventTimestamp(event)}</span></div>${showNote&&event.note?`<div class="event-analysis-note">${event.note}</div>`:''}</div>`;}).join(''):'<div class="freeze-empty">no matching events in this graph period.</div>'}`;
+
+  box.innerHTML=`
+    <div class="event-analysis-head">
+      <span>${activeTags.map(eventTagIcon).join(' ')} event timeline</span>
+      <span class="event-analysis-sub">${rows.length} events</span>
+    </div>
+    ${cappedSummary}
+    ${
+      rows.length
+        ? rows.map(event=>{
+            const matching=activeTags.filter(tag=>{
+              if(!eventHasAnalysisTag(event,tag)) return false;
+              return tag==='tagged' || selected.has(event.cid);
+            });
+
+            const label=matching.map(tag=>{
+              if(tag==='tagged' && event.status?.tagged===false){
+                return '⬆️ off';
+              }
+              return eventTagIcon(tag);
+            }).join(' ');
+
+            const showNote=matching.some(tag=>tag==='tagged'||tag==='alert');
+
+            return `
+              <div class="event-analysis-row">
+                <div class="event-analysis-top">
+                  <span class="event-analysis-name">${label} ${eventBotLabel(event.cid)}</span>
+                  <span class="event-analysis-time">${formatEventTimestamp(event)}</span>
+                </div>
+                ${showNote&&event.note?`<div class="event-analysis-note">${event.note}</div>`:''}
+              </div>
+            `;
+          }).join('')
+        : '<div class="freeze-empty">no matching events in this graph period.</div>'
+    }
+  `;
 }
 
 function cappedSince(cid){
