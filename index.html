@@ -3219,15 +3219,19 @@ document.querySelector('#compareBots')
 function persistentStatusNow(cid,tag){
   let active=false;
   [...eventsState.events]
-    .filter(event=>
-      event.cid===cid &&
-      Object.prototype.hasOwnProperty.call(event.status || {},tag)
-    )
+    .filter(event=>event.cid===cid)
     .sort((a,b)=>
       String(a.date||'').localeCompare(String(b.date||'')) ||
       String(a.updatedAt||'').localeCompare(String(b.updatedAt||''))
     )
-    .forEach(event=>{ active=event.status[tag]===true; });
+    .forEach(event=>{
+      if(tag==='tagged' && Array.isArray(event.tags) && event.tags.includes('tagged')){
+        active=true;
+      }
+      if(Object.prototype.hasOwnProperty.call(event.status || {},tag)){
+        active=event.status[tag]===true;
+      }
+    });
   return active;
 }
 
@@ -3968,6 +3972,12 @@ function persistentStateAtSelection(){
 
   eventsForSelection().forEach(event=>{
     const status=event.status || {};
+
+    // Compatibility with tagged events saved before tagged became persistent.
+    if(Array.isArray(event.tags) && event.tags.includes('tagged')){
+      stateNow.tagged=true;
+    }
+
     PERSISTENT_TAGS.forEach(tag=>{
       if(typeof status[tag]==='boolean'){
         stateNow[tag]=status[tag];
@@ -3996,6 +4006,11 @@ function persistentStateBeforeSelection(){
     )
     .forEach(event=>{
       const status=event.status || {};
+
+      // Compatibility with tagged events saved before tagged became persistent.
+      if(Array.isArray(event.tags) && event.tags.includes('tagged')){
+        stateBefore.tagged=true;
+      }
 
       PERSISTENT_TAGS.forEach(tag=>{
         if(typeof status[tag]==='boolean'){
@@ -4428,9 +4443,7 @@ function initEventsTracker(){
     .value=
       latestDate;
 
-  document.querySelector('#eventDate')
-    .min=
-      state.daily[0]?.date || '';
+  document.querySelector('#eventDate').removeAttribute('min');
 
   document.querySelector('#eventDate')
     .max=
