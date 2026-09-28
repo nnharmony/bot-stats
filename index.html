@@ -1551,6 +1551,159 @@ h1{
 .new-overview-days{font-weight:800;white-space:nowrap;color:var(--ui-accent-2)}
 .new-overview-created{font-size:10px;color:#777;margin-top:2px}
 
+
+/* copy buttons */
+.table-controls-row{
+  grid-template-columns:100px 88px minmax(0,1fr) 52px !important;
+}
+.copy-table-button{
+  min-width:0 !important;
+  width:auto;
+  height:32px;
+  padding:0 8px !important;
+  font-size:11px !important;
+  line-height:30px !important;
+  white-space:nowrap;
+}
+.table-copy-row{
+  display:flex;
+  justify-content:flex-end;
+  margin:8px 0 3px;
+}
+.daily-growth-controls{
+  display:flex !important;
+  align-items:center;
+  gap:7px;
+}
+.daily-growth-controls #dailyGrowthBot{
+  flex:1 1 auto;
+  min-width:0;
+  max-width:none !important;
+}
+.daily-growth-controls .copy-table-button{
+  flex:0 0 auto;
+}
+
+/* legend gets real layout space rather than covering chart/table */
+#compareChartLegend{
+  margin:3px 0 7px;
+  width:100%;
+}
+#compareChartLegend .chart-legend-list{
+  max-height:150px;
+  overflow:auto;
+}
+.graph-fs-chart{
+  display:flex !important;
+  flex-direction:column !important;
+  overflow:hidden !important;
+}
+#fullscreenChartLegend{
+  flex:0 0 auto;
+  width:100%;
+  max-height:30vh;
+  overflow:auto;
+  margin:0 0 3px;
+  padding:0 2px;
+  box-sizing:border-box;
+}
+.graph-fs-canvas-wrap{
+  position:relative;
+  flex:1 1 auto;
+  min-height:0;
+  min-width:0;
+}
+.graph-fs-canvas-wrap #fullscreenChart{
+  width:100% !important;
+  height:100% !important;
+}
+
+/* fullscreen timeline dropdowns */
+.fs-timeline{
+  border-bottom:1px solid #e6e6e8;
+  padding:2px 0;
+}
+.fs-timeline>summary{
+  cursor:pointer;
+  list-style-position:inside;
+  padding:7px 0;
+  font-size:11px;
+  font-weight:800;
+}
+.fs-timeline-count{
+  float:right;
+  color:#777;
+  font-weight:400;
+}
+.fs-timeline-body{
+  padding:0 0 7px 12px;
+}
+.fs-timeline-filters{
+  display:flex;
+  gap:5px;
+  margin:0 0 6px;
+}
+.fs-timeline-filter{
+  min-width:34px !important;
+  width:auto !important;
+  height:27px !important;
+  min-height:27px !important;
+  padding:0 8px !important;
+  line-height:25px !important;
+  font-size:11px !important;
+  border-radius:8px !important;
+}
+.fs-timeline-filter.active{
+  background:var(--ui-accent-1) !important;
+  color:#18191c !important;
+  border-color:var(--ui-accent-1) !important;
+}
+.fs-timeline-row{
+  padding:6px 0;
+  border-top:1px solid #eee;
+  font-size:11px;
+}
+.fs-timeline-row:first-of-type{border-top:0}
+.fs-timeline-row-top{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:8px;
+}
+.fs-timeline-name{
+  min-width:0;
+  font-weight:700;
+  overflow-wrap:anywhere;
+}
+.fs-timeline-date{
+  flex:0 0 auto;
+  font-size:10px;
+  color:#777;
+  white-space:nowrap;
+}
+.fs-timeline-note{
+  margin-top:2px;
+  font-size:10px;
+  color:#666;
+  white-space:pre-wrap;
+}
+#fullscreenPointInfo{
+  padding-top:8px;
+  margin-top:8px;
+  border-top:1px solid #ddd;
+}
+
+@media(max-width:650px){
+  .table-controls-row{
+    grid-template-columns:86px 72px minmax(0,1fr) 46px !important;
+    gap:6px !important;
+  }
+  .copy-table-button{
+    padding:0 5px !important;
+    font-size:10px !important;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1606,6 +1759,7 @@ h1{
       </select>
 
       <input id="search" placeholder="search bot">
+      <button id="copyAllBots" class="copy-table-button" type="button">copy</button>
     </div>
 
     <table class="main-table">
@@ -1748,14 +1902,15 @@ h1{
     <summary>graph</summary>
 <div class="chart-area">
       <canvas id="compareChart"></canvas>
-      <div id="compareChartLegend" class="html-chart-legend"></div>
     </div>
+    <div id="compareChartLegend" class="html-chart-legend"></div>
 
 
     <details class="daily-growth-panel" id="dailyGrowthPanel" open>
       <summary>daily growth</summary>
       <div class="daily-growth-controls">
         <select id="dailyGrowthBot" aria-label="daily growth bot"></select>
+        <button id="copyDailyGrowth" class="copy-table-button" type="button">copy</button>
       </div>
       <div class="daily-growth-table-wrap">
         <table class="daily-growth-table">
@@ -1770,6 +1925,10 @@ h1{
         </table>
       </div>
     </details>
+
+    <div class="table-copy-row">
+      <button id="copyCompareTable" class="copy-table-button" type="button">copy</button>
+    </div>
 
     <table class="compare-table">
       <thead>
@@ -1831,14 +1990,19 @@ h1{
         <div class="graph-fs-side-title">events</div>
       </div>
       <div id="fullscreenEventsContent" class="graph-fs-content">
-        <div class="graph-fs-empty">tap a point in the graph.</div>
+        <div id="fullscreenTimelines"></div>
+        <div id="fullscreenPointInfo">
+          <div class="graph-fs-empty">tap a point in the graph.</div>
+        </div>
       </div>
     </aside>
 
     <div class="graph-fs-chart">
-      <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
-      <canvas id="fullscreenChart"></canvas>
       <div id="fullscreenChartLegend" class="html-chart-legend"></div>
+      <div class="graph-fs-canvas-wrap">
+        <button type="button" id="fullscreenResetZoom" class="graph-corner-zoom" aria-label="reset zoom" title="reset zoom">🔍</button>
+        <canvas id="fullscreenChart"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -2669,6 +2833,54 @@ document.querySelector('#tableDisplayMode')
   );
 
 
+
+
+async function copyVisibleTable(tableSelector,button){
+  const table=document.querySelector(tableSelector);
+  if(!table) return;
+
+  const lines=[...table.querySelectorAll('tr')]
+    .map(row=>[...row.querySelectorAll('th,td')]
+      .map(cell=>cell.innerText.replace(/\s+/g,' ').trim())
+      .join('\t'))
+    .filter(Boolean);
+
+  const value=lines.join('\n');
+  if(!value) return;
+
+  try{
+    if(navigator.clipboard?.writeText){
+      await navigator.clipboard.writeText(value);
+    }else{
+      throw new Error('clipboard fallback');
+    }
+  }catch{
+    const area=document.createElement('textarea');
+    area.value=value;
+    area.style.position='fixed';
+    area.style.opacity='0';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+
+  if(button){
+    const old=button.textContent;
+    button.textContent='copied';
+    setTimeout(()=>button.textContent=old,1100);
+  }
+}
+
+document.querySelector('#copyAllBots')?.addEventListener('click',event=>{
+  copyVisibleTable('.main-table',event.currentTarget);
+});
+document.querySelector('#copyCompareTable')?.addEventListener('click',event=>{
+  copyVisibleTable('.compare-table',event.currentTarget);
+});
+document.querySelector('#copyDailyGrowth')?.addEventListener('click',event=>{
+  copyVisibleTable('.daily-growth-table',event.currentTarget);
+});
 
 function parseDay(date){
   return new Date(String(date)+'T00:00:00');
@@ -5165,8 +5377,297 @@ function fullscreenSelectedCids(){
   )].map(input=>input.value);
 }
 
+
+const fullscreenTimelineModes={
+  freeze:'all',
+  tagged:'all',
+  banned:'all'
+};
+
+function fullscreenTimelineCids(){
+  const selected=fullscreenSelectedCids();
+  const real=selected.filter(cid=>cid!=='__total__');
+
+  if(real.length) return new Set(real);
+
+  if(selected.includes('__total__')){
+    return new Set([...state.meta.keys()]);
+  }
+
+  return new Set();
+}
+
+function timelineDateInRange(date){
+  if(!date) return false;
+  const {from,to}=graphEventDateRange();
+  if(from && date<from) return false;
+  if(to && date>to) return false;
+  return true;
+}
+
+function freezeOffDateForPeriod(cid,period){
+  if(period.active) return '';
+
+  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
+  const endIndex=days.findIndex(day=>day.date===period.end);
+  if(endIndex<0 || endIndex>=days.length-1) return '';
+
+  const before=snapshotBot(days[endIndex].snapshot,cid);
+  const next=snapshotBot(days[endIndex+1].snapshot,cid);
+
+  if(
+    Number.isFinite(before?.messages) &&
+    Number.isFinite(next?.messages) &&
+    next.messages>before.messages
+  ){
+    return days[endIndex+1].date;
+  }
+
+  return '';
+}
+
+function fullscreenFreezeTimelineEntries(cids){
+  const result=[];
+
+  cids.forEach(cid=>{
+    const name=eventBotLabel(cid);
+
+    freezePeriodsForCid(cid)
+      .filter(qualifiesFreezePeriod)
+      .forEach(period=>{
+        if(timelineDateInRange(period.start)){
+          result.push({
+            type:'on',
+            icon:'⏸️',
+            cid,
+            name,
+            date:period.start,
+            note:`${period.days} ${period.days===1?'day':'days'}`
+          });
+        }
+
+        const offDate=freezeOffDateForPeriod(cid,period);
+        if(offDate && timelineDateInRange(offDate)){
+          result.push({
+            type:'off',
+            icon:'▶️',
+            cid,
+            name,
+            date:offDate,
+            note:'freeze off'
+          });
+        }
+      });
+  });
+
+  return result.sort((a,b)=>
+    b.date.localeCompare(a.date) ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function fullscreenPersistentTimelineEntries(tag,cids){
+  const result=[];
+
+  (eventsState.events || []).forEach(event=>{
+    if(!cids.has(event.cid) || !timelineDateInRange(event.date)) return;
+
+    const status=event.status || {};
+    let type=null;
+
+    if(Object.prototype.hasOwnProperty.call(status,tag)){
+      type=status[tag]===true ? 'on' : 'off';
+    }else if(
+      Array.isArray(event.tags) &&
+      event.tags.includes(tag)
+    ){
+      // Compatibility with older saved tagged/banned events.
+      type='on';
+    }
+
+    if(!type) return;
+
+    const icons=tag==='tagged'
+      ? {on:'⬆️',off:'⬇️'}
+      : {on:'🚫',off:'📴'};
+
+    result.push({
+      type,
+      icon:icons[type],
+      cid:event.cid,
+      name:eventBotLabel(event.cid),
+      date:event.date,
+      note:tag==='tagged' ? (event.note || '') : ''
+    });
+  });
+
+  return result.sort((a,b)=>
+    b.date.localeCompare(a.date) ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function fullscreenSimpleTimelineEntries(tag,cids){
+  const result=[];
+
+  if(tag==='new'){
+    cids.forEach(cid=>{
+      const event=creationEventForCid(cid);
+      if(event?.date && timelineDateInRange(event.date)){
+        result.push({
+          type:'event',
+          icon:'💟',
+          cid,
+          name:eventBotLabel(cid),
+          date:event.date,
+          note:'created'
+        });
+      }
+    });
+  }else{
+    (eventsState.events || []).forEach(event=>{
+      if(!cids.has(event.cid) || !timelineDateInRange(event.date)) return;
+
+      let matches=false;
+      if(tag==='capped'){
+        matches=
+          (Array.isArray(event.tags) && event.tags.includes('capped')) ||
+          event.status?.capped===true;
+      }else{
+        matches=Array.isArray(event.tags) && event.tags.includes(tag);
+      }
+
+      if(!matches) return;
+
+      result.push({
+        type:'event',
+        icon:eventTagIcon(tag),
+        cid:event.cid,
+        name:eventBotLabel(event.cid),
+        date:event.date,
+        note:(tag==='alert') ? (event.note || '') : ''
+      });
+    });
+  }
+
+  return result.sort((a,b)=>
+    b.date.localeCompare(a.date) ||
+    a.name.localeCompare(b.name)
+  );
+}
+
+function fullscreenTimelineRows(entries){
+  if(!entries.length){
+    return '<div class="graph-fs-empty">no events in this graph period.</div>';
+  }
+
+  return entries.map(item=>`
+    <div class="fs-timeline-row">
+      <div class="fs-timeline-row-top">
+        <span class="fs-timeline-name">${item.icon} ${item.name}</span>
+        <span class="fs-timeline-date">${shortGraphDate(item.date)}</span>
+      </div>
+      ${item.note?`<div class="fs-timeline-note">${item.note}</div>`:''}
+    </div>
+  `).join('');
+}
+
+function fullscreenPersistentFilters(tag,onIcon,offIcon){
+  const mode=fullscreenTimelineModes[tag] || 'all';
+  return `
+    <div class="fs-timeline-filters" data-fs-timeline-filter="${tag}">
+      <button type="button" class="fs-timeline-filter ${mode==='all'?'active':''}" data-mode="all">all</button>
+      <button type="button" class="fs-timeline-filter ${mode==='on'?'active':''}" data-mode="on">${onIcon}</button>
+      <button type="button" class="fs-timeline-filter ${mode==='off'?'active':''}" data-mode="off">${offIcon}</button>
+    </div>
+  `;
+}
+
+function filterFullscreenTimeline(entries,tag){
+  const mode=fullscreenTimelineModes[tag] || 'all';
+  return mode==='all'
+    ? entries
+    : entries.filter(item=>item.type===mode);
+}
+
+function fullscreenTimelineDetails(title,entries,bodyExtra=''){
+  return `
+    <details class="fs-timeline">
+      <summary>${title}<span class="fs-timeline-count">${entries.length}</span></summary>
+      <div class="fs-timeline-body">
+        ${bodyExtra}
+        ${fullscreenTimelineRows(entries)}
+      </div>
+    </details>
+  `;
+}
+
+function renderFullscreenTimelines(){
+  const box=document.querySelector('#fullscreenTimelines');
+  if(!box) return;
+
+  const cids=fullscreenTimelineCids();
+
+  if(!cids.size){
+    box.innerHTML='<div class="graph-fs-empty">select a bot to view event timelines.</div>';
+    return;
+  }
+
+  const freezeAll=fullscreenFreezeTimelineEntries(cids);
+  const taggedAll=fullscreenPersistentTimelineEntries('tagged',cids);
+  const bannedAll=fullscreenPersistentTimelineEntries('banned',cids);
+
+  const freeze=filterFullscreenTimeline(freezeAll,'freeze');
+  const tagged=filterFullscreenTimeline(taggedAll,'tagged');
+  const banned=filterFullscreenTimeline(bannedAll,'banned');
+
+  const sections=[
+    fullscreenTimelineDetails(
+      '💟 new',
+      fullscreenSimpleTimelineEntries('new',cids)
+    ),
+    fullscreenTimelineDetails(
+      '☑️ edit',
+      fullscreenSimpleTimelineEntries('edit',cids)
+    ),
+    fullscreenTimelineDetails(
+      '👤 avatar',
+      fullscreenSimpleTimelineEntries('avatar',cids)
+    ),
+    fullscreenTimelineDetails(
+      '🔄 capped',
+      fullscreenSimpleTimelineEntries('capped',cids)
+    ),
+    fullscreenTimelineDetails(
+      '⏸️ freezes',
+      freeze,
+      fullscreenPersistentFilters('freeze','⏸️','▶️')
+    ),
+    fullscreenTimelineDetails(
+      '⬆️ tagged',
+      tagged,
+      fullscreenPersistentFilters('tagged','⬆️','⬇️')
+    ),
+    fullscreenTimelineDetails(
+      '⚠️ alert',
+      fullscreenSimpleTimelineEntries('alert',cids)
+    ),
+    fullscreenTimelineDetails(
+      '🚫 banned',
+      banned,
+      fullscreenPersistentFilters('banned','🚫','📴')
+    ),
+    fullscreenTimelineDetails(
+      '⛔️ violation',
+      fullscreenSimpleTimelineEntries('violation',cids)
+    )
+  ];
+
+  box.innerHTML=sections.join('');
+}
+
 function renderFullscreenDate(date,cid){
-  const box=document.querySelector('#fullscreenEventsContent');
+  const box=document.querySelector('#fullscreenPointInfo');
   if(!box) return;
 
   const day=state.daily.find(item=>item.date===date);
@@ -5226,7 +5727,7 @@ function renderFullscreenDate(date,cid){
   box.innerHTML=`
     <div class="graph-fs-date">${new Date(date+'T00:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div>
     ${stats}
-    <div class="graph-fs-section">events</div>
+    <div class="graph-fs-section">events on this date</div>
     ${eventsHtml}
     ${cid && cid!=='__total__'
       ? `<button type="button" class="graph-fs-edit-link" data-go-event-date="${date}" data-go-event-cid="${cid}">edit event →</button>`
@@ -5288,6 +5789,7 @@ function renderFullscreenBots(){
     real.length>0 && real.every(input=>input.checked);
 
   updateFullscreenBotsSummary();
+  renderFullscreenTimelines();
 
   list.querySelectorAll('[data-fs-graph-tag]').forEach(button=>{
     button.addEventListener('click',()=>{
@@ -5441,6 +5943,7 @@ function refreshFullscreenGraph(){
 
 function openGraphFullscreen(){
   syncFullscreenControlsFromMain();
+  renderFullscreenTimelines();
 
   const modal=document.querySelector('#graphFullscreen');
   modal.classList.add('open');
@@ -5503,6 +6006,25 @@ document.querySelector('#toggleFullscreenEvents')
 document.querySelector('#fullscreenResetZoom')
   .addEventListener('click',()=>{
     fullscreenChartInstance?.resetZoom?.();
+  });
+
+
+document.querySelector('#fullscreenTimelines')
+  ?.addEventListener('click',event=>{
+    const button=event.target.closest('.fs-timeline-filter');
+    if(!button) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const group=button.closest('[data-fs-timeline-filter]');
+    const tag=group?.dataset.fsTimelineFilter;
+    const mode=button.dataset.mode;
+
+    if(!tag || !mode) return;
+
+    fullscreenTimelineModes[tag]=mode;
+    renderFullscreenTimelines();
   });
 
 document.querySelector('#fullscreenEventsContent')
