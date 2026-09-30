@@ -1704,6 +1704,284 @@ h1{
   }
 }
 
+
+/* ===== creator value ===== */
+.cv-panel{
+  margin:20px 0;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+  color:#111;
+}
+.cv-panel>summary{
+  cursor:pointer;
+  padding:12px 14px;
+  background:#18191c;
+  color:var(--ui-accent-1);
+  border:1px solid #343945;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:800;
+  list-style-position:inside;
+  text-transform:lowercase;
+}
+.cv-panel[open]>summary{
+  border-radius:10px 10px 0 0;
+}
+.cv-content{
+  padding:14px;
+}
+.cv-hero{
+  padding:12px;
+  border:1px solid #dedee2;
+  border-radius:12px;
+  background:#f7f7f8;
+}
+.cv-kicker{
+  font-size:10px;
+  color:#777;
+  text-transform:lowercase;
+}
+.cv-current-line{
+  display:flex;
+  align-items:baseline;
+  gap:7px;
+  margin:3px 0 1px;
+}
+#cvCurrent{
+  font-size:28px;
+  line-height:1;
+  font-weight:900;
+  color:var(--ui-accent-1);
+}
+.cv-slash{
+  color:#777;
+  font-weight:700;
+}
+#cvNextLevelTarget{
+  width:88px;
+  min-width:0;
+  height:30px;
+  padding:0 7px;
+  font-size:13px;
+}
+.cv-to-next{
+  margin-top:4px;
+  font-size:12px;
+  font-weight:700;
+}
+.cv-progress-track{
+  height:7px;
+  margin-top:10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#dedee2;
+}
+.cv-progress-bar{
+  height:100%;
+  border-radius:999px;
+  background:var(--ui-accent-1);
+}
+.cv-summary-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+.cv-stat{
+  min-width:0;
+  padding:9px;
+  border:1px solid #e1e1e4;
+  border-radius:10px;
+  background:#fafafa;
+}
+.cv-stat span{
+  display:block;
+  margin-bottom:3px;
+  font-size:10px;
+  color:#777;
+}
+.cv-stat strong{
+  display:block;
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+.cv-formula{
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:9px;
+  background:#f2f0f8;
+  font-size:10px;
+  color:#555;
+}
+.cv-estimate-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:10px 0;
+}
+.cv-estimate-summary>div{
+  padding:9px;
+  border:1px solid #e1e1e4;
+  border-radius:10px;
+}
+.cv-estimate-summary span{
+  display:block;
+  font-size:10px;
+  color:#777;
+}
+.cv-estimate-summary strong{
+  display:block;
+  margin-top:3px;
+  font-size:13px;
+}
+.cv-bot-estimator,
+.cv-ledger{
+  margin-top:10px;
+  border-top:1px solid #ddd;
+  padding-top:8px;
+}
+.cv-bot-estimator>summary,
+.cv-ledger>summary{
+  cursor:pointer;
+  padding:5px 0 8px;
+  font-size:12px;
+  font-weight:800;
+}
+.cv-estimator-note,
+.cv-ledger-help{
+  margin-bottom:8px;
+  font-size:10px;
+  color:#777;
+}
+.cv-bot-estimator-row{
+  padding:8px 0;
+  border-top:1px solid #e7e7e9;
+}
+.cv-bot-estimator-row:first-child{
+  border-top:0;
+}
+.cv-bot-estimator-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:baseline;
+}
+.cv-bot-estimator-name{
+  font-weight:800;
+  overflow-wrap:anywhere;
+}
+.cv-bot-estimator-value{
+  white-space:nowrap;
+  font-weight:900;
+}
+.cv-bot-estimator-detail{
+  margin:2px 0 5px;
+  font-size:10px;
+  color:#777;
+}
+.cv-cap-track{
+  height:6px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#dedee2;
+}
+.cv-cap-bar{
+  height:100%;
+  border-radius:999px;
+  background:#9aa0aa;
+}
+.cv-bot-estimator-row.cv-near .cv-bot-estimator-value{color:#9b7400}
+.cv-bot-estimator-row.cv-near .cv-cap-bar{background:#d7af35}
+.cv-bot-estimator-row.cv-hot .cv-bot-estimator-value{color:#ad5c00}
+.cv-bot-estimator-row.cv-hot .cv-cap-bar{background:#df8a2e}
+.cv-bot-estimator-row.cv-critical .cv-bot-estimator-value{color:#b42d60}
+.cv-bot-estimator-row.cv-critical .cv-cap-bar{background:#d85d91}
+
+.cv-entry-form{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+}
+.cv-field{
+  min-width:0;
+}
+.cv-field label{
+  display:block;
+  margin:0 0 4px 2px;
+  font-size:10px;
+  color:#666;
+}
+.cv-field input,
+.cv-field select{
+  width:100%;
+  min-width:0;
+  height:34px;
+  box-sizing:border-box;
+  padding:0 7px;
+  font-size:11px;
+}
+.cv-note-field{
+  grid-column:1/-1;
+}
+.cv-entry-actions{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.cv-entry-actions button{
+  min-width:70px;
+  height:32px;
+  padding:0 9px;
+  font-size:11px;
+}
+#cvSaveStatus{
+  font-size:10px;
+  color:#666;
+}
+#cvSaveStatus.ok{color:#2da44e;font-weight:800}
+#cvSaveStatus.error{color:#cf222e;font-weight:800}
+.cv-ledger-table-wrap{
+  overflow-x:auto;
+}
+.cv-ledger-table{
+  min-width:720px;
+  width:100%;
+  font-size:10px;
+}
+.cv-ledger-table th,
+.cv-ledger-table td{
+  padding:6px 5px;
+  border-bottom:1px solid #e2e2e4;
+}
+.cv-ledger-table th:first-child,
+.cv-ledger-table td:first-child,
+.cv-ledger-table .cv-ledger-note{
+  text-align:left;
+}
+.cv-ledger-table button{
+  padding:4px 6px;
+  margin-left:3px;
+  font-size:9px;
+}
+.cv-ledger-positive{color:#2da44e;font-weight:800}
+.cv-ledger-negative{color:#cf222e;font-weight:800}
+
+@media(max-width:650px){
+  .cv-summary-grid,
+  .cv-estimate-summary{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .cv-entry-form{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .cv-note-field,
+  .cv-entry-actions{
+    grid-column:1/-1;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1774,6 +2052,159 @@ h1{
       </thead>
       <tbody id="rows"></tbody>
     </table>
+
+  </div>
+</details>
+
+
+<details class="cv-panel" id="cvPanel">
+  <summary>creator value</summary>
+
+  <div class="cv-content">
+
+    <div class="cv-hero">
+      <div>
+        <div class="cv-kicker">current creator value</div>
+        <div class="cv-current-line">
+          <span id="cvCurrent">—</span>
+          <span class="cv-slash">/</span>
+          <input id="cvNextLevelTarget" type="number" min="1" step="1" value="15000" aria-label="next level target">
+        </div>
+        <div id="cvToNext" class="cv-to-next">add your first CV update</div>
+      </div>
+
+      <div class="cv-progress-track" aria-hidden="true">
+        <div id="cvProgressBar" class="cv-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="cv-summary-grid">
+      <div class="cv-stat">
+        <span>net since settlement</span>
+        <strong id="cvEarnedMonth">—</strong>
+      </div>
+      <div class="cv-stat">
+        <span>next settlement</span>
+        <strong id="cvNextSettlement">—</strong>
+      </div>
+      <div class="cv-stat">
+        <span>estimated after settlement</span>
+        <strong id="cvSettlementEstimate">—</strong>
+      </div>
+      <div class="cv-stat">
+        <span>estimated settlement loss</span>
+        <strong id="cvSettlementLoss">—</strong>
+      </div>
+      <div class="cv-stat">
+        <span>≈ messages / UCU</span>
+        <strong id="cvMessagesPerUcu">—</strong>
+      </div>
+      <div class="cv-stat">
+        <span>calibration intervals</span>
+        <strong id="cvCalibrationCount">0</strong>
+      </div>
+    </div>
+
+    <div id="cvSettlementFormula" class="cv-formula">
+      add a settlement entry from the 1st to calculate the next settlement.
+    </div>
+
+    <div class="cv-estimate-summary">
+      <div>
+        <span>≈ uncapped CV</span>
+        <strong id="cvUncappedEstimated">—</strong>
+      </div>
+      <div>
+        <span>≈ remaining until caps</span>
+        <strong id="cvUncappedRemaining">—</strong>
+      </div>
+      <div>
+        <span>near cap</span>
+        <strong id="cvNearCapCount">—</strong>
+      </div>
+    </div>
+
+    <details class="cv-bot-estimator">
+      <summary>uncapped bot estimate</summary>
+      <div class="cv-estimator-note">
+        message CV is calculated from 1 CV / 400 messages. UCU CV is estimated from your own CV ledger and uncapped message growth. Character cap = 500.
+      </div>
+      <div id="cvBotEstimatorRows" class="cv-bot-estimator-rows"></div>
+    </details>
+
+    <details class="cv-ledger" open>
+      <summary>CV ledger</summary>
+
+      <div class="cv-entry-form">
+        <div class="cv-field">
+          <label for="cvDate">date</label>
+          <input id="cvDate" type="date">
+        </div>
+
+        <div class="cv-field">
+          <label for="cvTotal">CV total</label>
+          <input id="cvTotal" type="number" min="0" step="1" placeholder="7440">
+        </div>
+
+        <div class="cv-field">
+          <label for="cvType">type</label>
+          <select id="cvType">
+            <option value="update">CV update</option>
+            <option value="new">new character (+30)</option>
+            <option value="ban">ban (-20)</option>
+            <option value="settlement">settlement</option>
+            <option value="manual">manual adjustment</option>
+          </select>
+        </div>
+
+        <div class="cv-field">
+          <label for="cvBot">bot</label>
+          <select id="cvBot">
+            <option value="">profile / none</option>
+          </select>
+        </div>
+
+        <div class="cv-field">
+          <label for="cvAdjustment">known adjustment</label>
+          <input id="cvAdjustment" type="number" step="1" value="0">
+        </div>
+
+        <div class="cv-field cv-note-field">
+          <label for="cvNote">note (optional)</label>
+          <input id="cvNote" type="text" maxlength="2000" placeholder="daily update, review, correction...">
+        </div>
+
+        <div class="cv-entry-actions">
+          <button id="cvSave" type="button">save</button>
+          <button id="cvClear" type="button">clear</button>
+          <span id="cvSaveStatus"></span>
+        </div>
+      </div>
+
+      <div class="cv-ledger-help">
+        No event time is used. The selected date is the CV date. Multiple updates on the same date are kept in entry order.
+      </div>
+
+      <div class="cv-ledger-table-wrap">
+        <table class="cv-ledger-table">
+          <thead>
+            <tr>
+              <th>date</th>
+              <th>CV</th>
+              <th>Δ</th>
+              <th>type</th>
+              <th>bot</th>
+              <th>adj.</th>
+              <th>note</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="cvLedgerRows">
+            <tr><td colspan="8">no CV updates yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
 
   </div>
 </details>
@@ -2656,6 +3087,7 @@ async function loadStatsData(){
   }
 
   initEventsTracker();
+  initCvTracker();
   render();
 
 }).catch(e=>{
@@ -4097,6 +4529,791 @@ const eventsState={
 };
 
 
+const cvState={
+  entries:[],
+  settings:{
+    nextLevelTarget:15000
+  },
+  editingId:null,
+  loaded:false
+};
+
+function cvSortedEntriesAsc(){
+  return [...cvState.entries].sort((a,b)=>
+    String(a.date||'').localeCompare(String(b.date||'')) ||
+    String(a.createdAt||'').localeCompare(String(b.createdAt||''))
+  );
+}
+
+function cvSortedEntriesDesc(){
+  return cvSortedEntriesAsc().reverse();
+}
+
+function cvCurrentEntry(){
+  return cvSortedEntriesAsc().at(-1) || null;
+}
+
+function cvBotName(cid){
+  if(!cid) return '—';
+  return state.meta.get(cid)?.name || cid;
+}
+
+async function cvRequest(path,options={}){
+  const headers={
+    ...(options.headers || {}),
+    'x-events-profile':EVENTS_PROFILE
+  };
+
+  if(eventsState.key){
+    headers['x-events-key']=eventsState.key;
+  }
+
+  if(options.body){
+    headers['content-type']='application/json';
+  }
+
+  const response=await fetch(
+    EVENTS_API+path,
+    {
+      ...options,
+      headers,
+      cache:'no-store'
+    }
+  );
+
+  let data={};
+
+  try{
+    data=await response.json();
+  }catch{
+    data={};
+  }
+
+  if(!response.ok){
+    throw new Error(data.error || 'CV request failed');
+  }
+
+  return data;
+}
+
+function cvFormatSigned(value){
+  if(!Number.isFinite(value)) return '—';
+  return `${value>0?'+':''}${fmt.format(value)}`;
+}
+
+function cvTypeLabel(type){
+  const labels={
+    update:'update',
+    new:'new +30',
+    ban:'ban -20',
+    settlement:'settlement',
+    manual:'manual'
+  };
+  return labels[type] || type || 'update';
+}
+
+function cvDefaultAdjustment(type){
+  if(type==='new') return 30;
+  if(type==='ban') return -20;
+  return 0;
+}
+
+function cvNextSettlementDate(){
+  const today=new Date();
+  const todayKey=today.toLocaleDateString('sv-SE');
+
+  const settlementToday=cvState.entries.some(entry=>
+    entry.type==='settlement' &&
+    entry.date===todayKey
+  );
+
+  if(today.getDate()===1 && !settlementToday){
+    return new Date(today.getFullYear(),today.getMonth(),1);
+  }
+
+  return new Date(today.getFullYear(),today.getMonth()+1,1);
+}
+
+function cvLatestSettlementEntry(){
+  return cvSortedEntriesAsc()
+    .filter(entry=>entry.type==='settlement')
+    .at(-1) || null;
+}
+
+function cvSettlementForecast(){
+  const current=cvCurrentEntry();
+  const settlement=cvLatestSettlementEntry();
+
+  if(!current || !settlement){
+    return null;
+  }
+
+  if(String(settlement.date)>String(current.date)){
+    return null;
+  }
+
+  const base=Number(settlement.total);
+  const currentValue=Number(current.total);
+  const net=currentValue-base;
+  const loss=base*0.05;
+  const estimated=(base*0.95)+net;
+
+  return {
+    base,
+    net,
+    loss,
+    estimated,
+    settlement
+  };
+}
+
+function cvExactDailyEntry(date){
+  return state.daily.find(day=>day.date===date) || null;
+}
+
+function cvCappedDate(cid){
+  const events=(eventsState.events || [])
+    .filter(event=>
+      event.cid===cid &&
+      Array.isArray(event.tags) &&
+      event.tags.includes('capped')
+    )
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+
+  return events[0]?.date || '';
+}
+
+function cvIsCappedBy(cid,date){
+  const capped=cvCappedDate(cid);
+  return Boolean(capped && (!date || capped<=date));
+}
+
+function cvCapChangeInside(fromDate,toDate){
+  return (eventsState.events || []).some(event=>
+    Array.isArray(event.tags) &&
+    event.tags.includes('capped') &&
+    String(event.date||'')>fromDate &&
+    String(event.date||'')<=toDate
+  );
+}
+
+function cvCalibration(){
+  const entries=cvSortedEntriesAsc();
+  const points=[];
+
+  for(let i=1;i<entries.length;i++){
+    const beforeEntry=entries[i-1];
+    const afterEntry=entries[i];
+
+    if(!beforeEntry?.date || !afterEntry?.date) continue;
+    if(beforeEntry.date===afterEntry.date) continue;
+    if(afterEntry.type==='settlement') continue;
+
+    const beforeDay=cvExactDailyEntry(beforeEntry.date);
+    const afterDay=cvExactDailyEntry(afterEntry.date);
+
+    if(!beforeDay || !afterDay) continue;
+    if(cvCapChangeInside(beforeEntry.date,afterEntry.date)) continue;
+
+    const beforeMap=new Map(
+      (beforeDay.snapshot?.bots || []).map(bot=>[bot.cid,bot])
+    );
+    const afterMap=new Map(
+      (afterDay.snapshot?.bots || []).map(bot=>[bot.cid,bot])
+    );
+
+    let messageCv=0;
+    let messageGrowth=0;
+
+    for(const [cid,meta] of state.meta){
+      if(cvIsCappedBy(cid,afterEntry.date)) continue;
+
+      const beforeBot=beforeMap.get(cid);
+      const afterBot=afterMap.get(cid);
+
+      if(!afterBot || !Number.isFinite(afterBot.messages)) continue;
+
+      const startMessages=
+        beforeBot && Number.isFinite(beforeBot.messages)
+          ? beforeBot.messages
+          : 0;
+
+      const endMessages=afterBot.messages;
+
+      if(endMessages<startMessages) continue;
+
+      messageGrowth+=endMessages-startMessages;
+
+      messageCv+=Math.max(
+        0,
+        Math.floor(endMessages/400)-
+        Math.floor(startMessages/400)
+      );
+    }
+
+    const actualDelta=
+      Number(afterEntry.total)-
+      Number(beforeEntry.total);
+
+    const knownAdjustment=
+      Number(afterEntry.adjustment || 0);
+
+    const organicCv=
+      actualDelta-knownAdjustment;
+
+    const ucuCv=
+      organicCv-messageCv;
+
+    const estimatedUcu=
+      ucuCv*20;
+
+    if(
+      !Number.isFinite(estimatedUcu) ||
+      estimatedUcu<=0 ||
+      !Number.isFinite(messageGrowth) ||
+      messageGrowth<=0
+    ){
+      continue;
+    }
+
+    const messagesPerUcu=
+      messageGrowth/estimatedUcu;
+
+    if(
+      !Number.isFinite(messagesPerUcu) ||
+      messagesPerUcu<1 ||
+      messagesPerUcu>1000
+    ){
+      continue;
+    }
+
+    points.push({
+      from:beforeEntry.date,
+      to:afterEntry.date,
+      actualDelta,
+      knownAdjustment,
+      messageCv,
+      ucuCv,
+      estimatedUcu,
+      messageGrowth,
+      messagesPerUcu
+    });
+  }
+
+  const totalMessages=
+    points.reduce((sum,point)=>sum+point.messageGrowth,0);
+
+  const totalUcu=
+    points.reduce((sum,point)=>sum+point.estimatedUcu,0);
+
+  return {
+    points,
+    latest:points.at(-1)?.messagesPerUcu || null,
+    rolling:
+      totalMessages>0 && totalUcu>0
+        ? totalMessages/totalUcu
+        : null
+  };
+}
+
+function cvUncappedEstimator(){
+  const latest=getLatestEntry();
+  const ratio=cvCalibration().rolling;
+
+  if(!latest){
+    return {
+      ratio,
+      rows:[],
+      estimatedTotal:null,
+      remainingTotal:null,
+      nearCap:null
+    };
+  }
+
+  const rows=[];
+
+  for(const [cid,meta] of state.meta){
+    if(cvIsCappedBy(cid,latest.date)) continue;
+
+    const bot=snapshotBot(latest.snapshot,cid);
+
+    if(!bot || !Number.isFinite(bot.messages)) continue;
+
+    const messages=bot.messages;
+    const messageCv=Math.max(0,Math.floor(messages/400));
+
+    let estimatedUcu=null;
+    let ucuCv=null;
+    let estimatedCv=null;
+
+    if(Number.isFinite(ratio) && ratio>0){
+      estimatedUcu=messages/ratio;
+      ucuCv=Math.max(0,Math.floor(estimatedUcu/20));
+      estimatedCv=Math.min(500,messageCv+ucuCv);
+    }
+
+    rows.push({
+      cid,
+      name:meta?.name || cid,
+      messages,
+      messageCv,
+      estimatedUcu,
+      ucuCv,
+      estimatedCv,
+      remaining:
+        Number.isFinite(estimatedCv)
+          ? Math.max(0,500-estimatedCv)
+          : null
+    });
+  }
+
+  rows.sort((a,b)=>
+    (b.estimatedCv ?? b.messageCv)-
+    (a.estimatedCv ?? a.messageCv) ||
+    b.messages-a.messages
+  );
+
+  const usable=rows.filter(row=>Number.isFinite(row.estimatedCv));
+
+  return {
+    ratio,
+    rows,
+    estimatedTotal:
+      usable.length
+        ? usable.reduce((sum,row)=>sum+row.estimatedCv,0)
+        : null,
+    remainingTotal:
+      usable.length
+        ? usable.reduce((sum,row)=>sum+row.remaining,0)
+        : null,
+    nearCap:
+      usable.length
+        ? usable.filter(row=>row.estimatedCv>=400).length
+        : null
+  };
+}
+
+function cvCapClass(value){
+  if(!Number.isFinite(value)) return '';
+  if(value>=480) return 'cv-critical';
+  if(value>=450) return 'cv-hot';
+  if(value>=400) return 'cv-near';
+  return '';
+}
+
+function renderCvEstimator(){
+  const box=document.querySelector('#cvBotEstimatorRows');
+  if(!box) return;
+
+  const estimate=cvUncappedEstimator();
+
+  document.querySelector('#cvUncappedEstimated').textContent=
+    Number.isFinite(estimate.estimatedTotal)
+      ? `≈ ${fmt.format(Math.round(estimate.estimatedTotal))}`
+      : '—';
+
+  document.querySelector('#cvUncappedRemaining').textContent=
+    Number.isFinite(estimate.remainingTotal)
+      ? `≈ ${fmt.format(Math.round(estimate.remainingTotal))}`
+      : '—';
+
+  document.querySelector('#cvNearCapCount').textContent=
+    Number.isFinite(estimate.nearCap)
+      ? fmt.format(estimate.nearCap)
+      : '—';
+
+  if(!estimate.rows.length){
+    box.innerHTML='<div class="freeze-empty">no uncapped bots found.</div>';
+    return;
+  }
+
+  box.innerHTML=estimate.rows.map(row=>{
+    const known=Number.isFinite(row.estimatedCv);
+    const displayCv=known
+      ? `≈${fmt.format(row.estimatedCv)} / 500`
+      : `≥${fmt.format(row.messageCv)} / 500`;
+
+    const width=Math.max(
+      1,
+      Math.min(
+        100,
+        ((known ? row.estimatedCv : row.messageCv)/500)*100
+      )
+    );
+
+    const detail=known
+      ? `${compactAxisValue(row.messages)} msg · ${row.messageCv} message CV + ≈${row.ucuCv} UCU CV`
+      : `${compactAxisValue(row.messages)} msg · ${row.messageCv} message CV · UCU estimate needs calibration`;
+
+    return `
+      <div class="cv-bot-estimator-row ${cvCapClass(row.estimatedCv)}">
+        <div class="cv-bot-estimator-top">
+          <span class="cv-bot-estimator-name">${row.name}</span>
+          <span class="cv-bot-estimator-value">${displayCv}</span>
+        </div>
+        <div class="cv-bot-estimator-detail">${detail}</div>
+        <div class="cv-cap-track">
+          <div class="cv-cap-bar" style="width:${width}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderCvLedger(){
+  const rows=document.querySelector('#cvLedgerRows');
+  if(!rows) return;
+
+  const asc=cvSortedEntriesAsc();
+
+  if(!asc.length){
+    rows.innerHTML='<tr><td colspan="8">no CV updates yet</td></tr>';
+    return;
+  }
+
+  const previousById=new Map();
+  const orderById=new Map();
+  const dateCount=new Map();
+
+  asc.forEach((entry,index)=>{
+    previousById.set(entry.id,index>0 ? asc[index-1] : null);
+    const n=(dateCount.get(entry.date) || 0)+1;
+    dateCount.set(entry.date,n);
+    orderById.set(entry.id,n);
+  });
+
+  rows.innerHTML=[...asc].reverse().map(entry=>{
+    const previous=previousById.get(entry.id);
+    const delta=previous
+      ? Number(entry.total)-Number(previous.total)
+      : null;
+
+    const order=orderById.get(entry.id) || 1;
+    const count=dateCount.get(entry.date) || 1;
+
+    const dateLabel=
+      `${shortGraphDate(entry.date)}${count>1?` #${order}`:''}`;
+
+    return `
+      <tr>
+        <td>${dateLabel}</td>
+        <td><strong>${fmt.format(entry.total)}</strong></td>
+        <td class="${delta>0?'cv-ledger-positive':delta<0?'cv-ledger-negative':''}">
+          ${delta===null?'—':cvFormatSigned(delta)}
+        </td>
+        <td>${cvTypeLabel(entry.type)}</td>
+        <td>${cvBotName(entry.botCid)}</td>
+        <td>${entry.adjustment ? cvFormatSigned(entry.adjustment) : '—'}</td>
+        <td class="cv-ledger-note">${entry.note || '—'}</td>
+        <td>
+          <button type="button" data-cv-edit="${entry.id}">edit</button>
+          <button type="button" data-cv-delete="${entry.id}">delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderCvDashboard(){
+  const current=cvCurrentEntry();
+  const target=Number(cvState.settings.nextLevelTarget || 15000);
+  const currentValue=Number(current?.total);
+
+  document.querySelector('#cvNextLevelTarget').value=String(target);
+
+  if(Number.isFinite(currentValue)){
+    document.querySelector('#cvCurrent').textContent=fmt.format(currentValue);
+
+    const remaining=Math.max(0,target-currentValue);
+
+    document.querySelector('#cvToNext').textContent=
+      currentValue>=target
+        ? 'next level target reached'
+        : `${fmt.format(remaining)} creator value to next level`;
+
+    const progress=
+      target>0
+        ? Math.max(0,Math.min(100,(currentValue/target)*100))
+        : 0;
+
+    document.querySelector('#cvProgressBar').style.width=`${progress}%`;
+  }else{
+    document.querySelector('#cvCurrent').textContent='—';
+    document.querySelector('#cvToNext').textContent='add your first CV update';
+    document.querySelector('#cvProgressBar').style.width='0%';
+  }
+
+  const nextSettlement=cvNextSettlementDate();
+
+  document.querySelector('#cvNextSettlement').textContent=
+    nextSettlement.toLocaleDateString('nl-NL',{
+      day:'numeric',
+      month:'short'
+    });
+
+  const forecast=cvSettlementForecast();
+
+  if(forecast){
+    document.querySelector('#cvEarnedMonth').textContent=
+      cvFormatSigned(forecast.net);
+
+    document.querySelector('#cvSettlementEstimate').textContent=
+      `≈ ${fmt.format(Math.round(forecast.estimated))}`;
+
+    document.querySelector('#cvSettlementLoss').textContent=
+      `≈ -${fmt.format(Math.round(forecast.loss))}`;
+
+    document.querySelector('#cvSettlementFormula').textContent=
+      `≈ (${fmt.format(forecast.base)} × 95%) + ${cvFormatSigned(forecast.net)} net CV since settlement = ${fmt.format(Math.round(forecast.estimated))}`;
+  }else{
+    document.querySelector('#cvEarnedMonth').textContent='—';
+    document.querySelector('#cvSettlementEstimate').textContent='—';
+    document.querySelector('#cvSettlementLoss').textContent='—';
+    document.querySelector('#cvSettlementFormula').textContent=
+      'add an actual settlement entry from the 1st to calculate the next settlement correctly.';
+  }
+
+  const calibration=cvCalibration();
+
+  document.querySelector('#cvMessagesPerUcu').textContent=
+    Number.isFinite(calibration.rolling)
+      ? `≈ ${calibration.rolling.toFixed(1)}`
+      : '—';
+
+  document.querySelector('#cvCalibrationCount').textContent=
+    fmt.format(calibration.points.length);
+
+  renderCvEstimator();
+  renderCvLedger();
+}
+
+async function loadCv(){
+  if(!eventsState.unlocked) return;
+
+  try{
+    const data=await cvRequest('/cv');
+
+    cvState.entries=
+      Array.isArray(data.entries)
+        ? data.entries
+        : [];
+
+    cvState.settings={
+      nextLevelTarget:
+        Number(data?.settings?.nextLevelTarget) || 15000
+    };
+
+    cvState.loaded=true;
+    renderCvDashboard();
+  }catch(error){
+    const status=document.querySelector('#cvSaveStatus');
+    if(status){
+      status.textContent=error.message;
+      status.className='error';
+    }
+  }
+}
+
+function clearCvForm(){
+  cvState.editingId=null;
+
+  const today=new Date().toLocaleDateString('sv-SE');
+
+  document.querySelector('#cvDate').value=today;
+  document.querySelector('#cvTotal').value='';
+  document.querySelector('#cvType').value='update';
+  document.querySelector('#cvBot').value='';
+  document.querySelector('#cvAdjustment').value='0';
+  document.querySelector('#cvNote').value='';
+  document.querySelector('#cvSave').textContent='save';
+
+  const status=document.querySelector('#cvSaveStatus');
+  status.textContent='';
+  status.className='';
+}
+
+async function saveCvEntry(){
+  const status=document.querySelector('#cvSaveStatus');
+
+  if(!eventsState.unlocked){
+    status.textContent='unlock first';
+    status.className='error';
+    return;
+  }
+
+  const date=document.querySelector('#cvDate').value;
+  const total=Number(document.querySelector('#cvTotal').value);
+  const type=document.querySelector('#cvType').value;
+  const botCid=document.querySelector('#cvBot').value;
+  const adjustment=Number(document.querySelector('#cvAdjustment').value || 0);
+  const note=document.querySelector('#cvNote').value.trim();
+
+  if(!date || !Number.isFinite(total)){
+    status.textContent='choose date and CV total';
+    status.className='error';
+    return;
+  }
+
+  status.textContent='saving…';
+  status.className='';
+
+  try{
+    await cvRequest('/cv',{
+      method:'POST',
+      body:JSON.stringify({
+        id:cvState.editingId || undefined,
+        date,
+        total,
+        type,
+        botCid,
+        adjustment,
+        note
+      })
+    });
+
+    status.textContent='saved ✓';
+    status.className='ok';
+
+    await loadCv();
+    clearCvForm();
+  }catch(error){
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+function editCvEntry(id){
+  const entry=cvState.entries.find(item=>String(item.id)===String(id));
+  if(!entry) return;
+
+  cvState.editingId=entry.id;
+
+  document.querySelector('#cvDate').value=entry.date || '';
+  document.querySelector('#cvTotal').value=String(entry.total ?? '');
+  document.querySelector('#cvType').value=entry.type || 'update';
+  document.querySelector('#cvBot').value=entry.botCid || '';
+  document.querySelector('#cvAdjustment').value=String(entry.adjustment ?? 0);
+  document.querySelector('#cvNote').value=entry.note || '';
+  document.querySelector('#cvSave').textContent='update';
+
+  const panel=document.querySelector('#cvPanel');
+  panel.open=true;
+
+  panel.scrollIntoView({
+    behavior:'smooth',
+    block:'start'
+  });
+}
+
+async function deleteCvEntry(id){
+  if(!confirm('Delete this CV entry?')) return;
+
+  try{
+    await cvRequest(
+      '/cv/'+encodeURIComponent(id),
+      {method:'DELETE'}
+    );
+
+    await loadCv();
+
+    const status=document.querySelector('#cvSaveStatus');
+    status.textContent='deleted ✓';
+    status.className='ok';
+  }catch(error){
+    const status=document.querySelector('#cvSaveStatus');
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+async function saveCvSettings(){
+  const target=Number(document.querySelector('#cvNextLevelTarget').value);
+  if(!Number.isFinite(target) || target<=0) return;
+
+  try{
+    const data=await cvRequest('/cv',{
+      method:'POST',
+      body:JSON.stringify({
+        kind:'settings',
+        nextLevelTarget:target
+      })
+    });
+
+    cvState.settings.nextLevelTarget=
+      Number(data?.settings?.nextLevelTarget) || target;
+
+    renderCvDashboard();
+  }catch(error){
+    const status=document.querySelector('#cvSaveStatus');
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+function initCvTracker(){
+  const panel=document.querySelector('#cvPanel');
+  if(!panel || panel.dataset.ready==='1') return;
+
+  panel.dataset.ready='1';
+
+  const botSelect=document.querySelector('#cvBot');
+
+  botSelect.innerHTML=
+    '<option value="">profile / none</option>'+
+    [...state.meta.values()]
+      .sort((a,b)=>
+        (b.creation_order??9999)-
+        (a.creation_order??9999)
+      )
+      .map(bot=>
+        `<option value="${bot.cid}">${bot.name || bot.cid}</option>`
+      )
+      .join('');
+
+  clearCvForm();
+
+  document.querySelector('#cvType')
+    .addEventListener('change',event=>{
+      const type=event.target.value;
+
+      if(type==='new' || type==='ban' || type==='update' || type==='settlement'){
+        document.querySelector('#cvAdjustment').value=
+          String(cvDefaultAdjustment(type));
+      }
+
+      if(type==='settlement'){
+        const date=document.querySelector('#cvDate').value;
+        if(date && !date.endsWith('-01')){
+          document.querySelector('#cvSaveStatus').textContent=
+            'settlement normally happens on the 1st';
+        }
+      }
+    });
+
+  document.querySelector('#cvSave')
+    .addEventListener('click',saveCvEntry);
+
+  document.querySelector('#cvClear')
+    .addEventListener('click',clearCvForm);
+
+  document.querySelector('#cvNextLevelTarget')
+    .addEventListener('change',saveCvSettings);
+
+  document.querySelector('#cvLedgerRows')
+    .addEventListener('click',event=>{
+      const edit=event.target.closest('[data-cv-edit]');
+      const del=event.target.closest('[data-cv-delete]');
+
+      if(edit) editCvEntry(edit.dataset.cvEdit);
+      if(del) deleteCvEntry(del.dataset.cvDelete);
+    });
+
+  if(eventsState.unlocked){
+    loadCv();
+  }
+}
+
+
 function eventBotLabel(cid){
   if(cid==='__profile__') return 'profile';
 
@@ -4401,6 +5618,7 @@ async function loadEvents(){
 
     renderEvents();
     loadEventForSelection();
+    renderCvDashboard();
 
   }catch(error){
     rows.innerHTML=`
