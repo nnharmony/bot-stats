@@ -2270,6 +2270,59 @@ h1{
   }
 }
 
+
+/* subscriber counter is its own block */
+.subscriber-panel{
+  margin:20px 0;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+  color:#111;
+  border-top:0 !important;
+  padding-top:0 !important;
+}
+.subscriber-panel>summary{
+  cursor:pointer;
+  padding:12px 14px !important;
+  background:#18191c;
+  color:var(--ui-accent-1);
+  border:1px solid #343945;
+  border-radius:10px;
+  font-size:13px !important;
+  font-weight:800;
+  list-style-position:inside;
+  text-transform:lowercase;
+}
+.subscriber-panel[open]>summary{
+  border-radius:10px 10px 0 0;
+}
+.subscriber-panel>.subscriber-goal-edit,
+.subscriber-panel>.subscriber-form,
+.subscriber-panel>.subscriber-ledger-help,
+.subscriber-panel>.subscriber-table-wrap{
+  margin-left:14px;
+  margin-right:14px;
+}
+.subscriber-panel>.subscriber-goal-edit{
+  margin-top:14px;
+}
+.subscriber-panel>.subscriber-table-wrap{
+  margin-bottom:14px;
+}
+.subscriber-table-wrap{
+  max-height:380px;
+  overflow:auto !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-y pan-x;
+}
+.subscriber-table thead th{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#fff;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2356,6 +2409,7 @@ h1{
         <option value="today">today</option>
         <option value="7">7 days</option>
         <option value="30">30 days</option>
+        <option value="all">all</option>
         <option value="custom">custom</option>
       </select>
 
@@ -2444,7 +2498,12 @@ h1{
       </div>
     </details>
 
-    <details class="subscriber-ledger">
+    
+
+  </div>
+</details>
+
+<details class="subscriber-panel subscriber-ledger" id="subscriberPanel">
       <summary>subscriber counter</summary>
 
       <div class="subscriber-goal-edit">
@@ -2496,9 +2555,6 @@ h1{
         </table>
       </div>
     </details>
-
-  </div>
-</details>
 
 <details class="cv-panel" id="cvPanel">
   <summary>creator value</summary>
@@ -5067,8 +5123,41 @@ function analyticsDayAtOrBefore(date){
 }
 
 function analyticsLatestDate(){
-  return state.daily.at(-1)?.date || '';
+  const dates=[];
+
+  state.daily.forEach(day=>{
+    if(day?.date) dates.push(day.date);
+  });
+
+  analyticsSubscriberDaily().forEach(entry=>{
+    if(entry?.date) dates.push(entry.date);
+  });
+
+  analyticsCvEntriesAsc().forEach(entry=>{
+    if(entry?.date) dates.push(entry.date);
+  });
+
+  return dates.sort().at(-1) || '';
 }
+
+function analyticsEarliestDate(){
+  const dates=[];
+
+  state.daily.forEach(day=>{
+    if(day?.date) dates.push(day.date);
+  });
+
+  analyticsSubscriberDaily().forEach(entry=>{
+    if(entry?.date) dates.push(entry.date);
+  });
+
+  analyticsCvEntriesAsc().forEach(entry=>{
+    if(entry?.date) dates.push(entry.date);
+  });
+
+  return dates.sort()[0] || '';
+}
+
 
 function analyticsDateMinus(date,days){
   const d=parseDay(date);
@@ -5078,6 +5167,7 @@ function analyticsDateMinus(date,days){
 
 function analyticsRange(){
   const latest=analyticsLatestDate();
+  const earliest=analyticsEarliestDate();
 
   if(!latest){
     return {from:'',to:'',label:'—'};
@@ -5086,7 +5176,7 @@ function analyticsRange(){
   const period=document.querySelector('#analyticsPeriod')?.value || 'today';
 
   if(period==='custom'){
-    let from=document.querySelector('#analyticsFrom')?.value || latest;
+    let from=document.querySelector('#analyticsFrom')?.value || earliest || latest;
     let to=document.querySelector('#analyticsTo')?.value || latest;
 
     if(from>to){
@@ -5100,8 +5190,16 @@ function analyticsRange(){
     };
   }
 
+  if(period==='all'){
+    return {
+      from:earliest || latest,
+      to:latest,
+      label:`all · ${shortGraphDate(earliest || latest)} → ${shortGraphDate(latest)}`
+    };
+  }
+
   if(period==='today'){
-    const previous=state.daily.at(-2)?.date || latest;
+    const previous=state.daily.at(-2)?.date || analyticsDateMinus(latest,1);
 
     return {
       from:previous,
@@ -5111,12 +5209,22 @@ function analyticsRange(){
   }
 
   const days=Number(period);
+  const from=analyticsDateMinus(latest,days);
 
   return {
-    from:analyticsDateMinus(latest,days),
+    from,
     to:latest,
-    label:`${days} days · ${shortGraphDate(analyticsDateMinus(latest,days))} → ${shortGraphDate(latest)}`
+    label:`${days} days · ${shortGraphDate(from)} → ${shortGraphDate(latest)}`
   };
+}
+
+function analyticsDayBaselineForRange(fromDate,toDate){
+  const before=analyticsDayAtOrBefore(fromDate);
+  if(before) return before;
+
+  return [...state.daily]
+    .filter(day=>day.date>=fromDate && day.date<=toDate)
+    .sort((a,b)=>a.date.localeCompare(b.date))[0] || null;
 }
 
 function analyticsTotalAt(day,metric){
@@ -5220,8 +5328,18 @@ function analyticsCvEntriesAsc(){
 }
 
 function analyticsCurrentAndDelta(entries,fromDate,toDate,valueKey='total'){
-  const current=analyticsEntryAtOrBefore(entries,toDate);
-  const baseline=analyticsEntryAtOrBefore(entries,fromDate);
+  const sorted=[...entries].sort((a,b)=>
+    String(a.date||'').localeCompare(String(b.date||'')) ||
+    String(a.createdAt||'').localeCompare(String(b.createdAt||''))
+  );
+
+  const current=analyticsEntryAtOrBefore(sorted,toDate);
+  const baseline=
+    analyticsEntryAtOrBefore(sorted,fromDate) ||
+    sorted.find(entry=>
+      String(entry.date||'')>=fromDate &&
+      String(entry.date||'')<=toDate
+    ) || null;
 
   return {
     current:
@@ -5253,20 +5371,29 @@ function setAnalyticsGrowth(id,value){
 }
 
 function analyticsGraphDates(fromDate,toDate){
-  const result=[...state.daily]
-    .filter(day=>day.date>=fromDate && day.date<=toDate)
-    .sort((a,b)=>a.date.localeCompare(b.date));
+  const dates=new Set();
 
-  const baseline=analyticsDayAtOrBefore(fromDate);
+  state.daily.forEach(day=>{
+    if(day.date>=fromDate && day.date<=toDate){
+      dates.add(day.date);
+    }
+  });
 
-  if(
-    baseline &&
-    !result.some(day=>day.date===baseline.date)
-  ){
-    result.unshift(baseline);
-  }
+  analyticsSubscriberDaily().forEach(entry=>{
+    if(entry.date>=fromDate && entry.date<=toDate){
+      dates.add(entry.date);
+    }
+  });
 
-  return result;
+  analyticsCvEntriesAsc().forEach(entry=>{
+    if(entry.date>=fromDate && entry.date<=toDate){
+      dates.add(entry.date);
+    }
+  });
+
+  return [...dates]
+    .sort((a,b)=>a.localeCompare(b))
+    .map(date=>({date}));
 }
 
 function analyticsCarriedValue(entries,date){
@@ -5303,13 +5430,17 @@ function renderAnalyticsChart(){
   const subscriberDaily=analyticsSubscriberDaily();
   const cvEntries=analyticsCvEntriesAsc();
 
-  const rows=days.map(day=>({
-    date:day.date,
-    messages:analyticsTotalAt(day,'messages'),
-    collectors:analyticsTotalAt(day,'collectors'),
-    subscribers:analyticsCarriedValue(subscriberDaily,day.date),
-    cv:analyticsCarriedValue(cvEntries,day.date)
-  }));
+  const rows=days.map(item=>{
+    const day=analyticsDayAtOrBefore(item.date);
+
+    return {
+      date:item.date,
+      messages:day ? analyticsTotalAt(day,'messages') : null,
+      collectors:day ? analyticsTotalAt(day,'collectors') : null,
+      subscribers:analyticsCarriedValue(subscriberDaily,item.date),
+      cv:analyticsCarriedValue(cvEntries,item.date)
+    };
+  });
 
   const labels=rows.map(row=>shortGraphDate(row.date));
 
@@ -5466,23 +5597,20 @@ function renderAnalyticsDashboard(){
   if(!panel) return;
 
   const range=analyticsRange();
-  const fromDay=analyticsDayAtOrBefore(range.from);
+  const fromDay=analyticsDayBaselineForRange(range.from,range.to);
   const toDay=analyticsDayAtOrBefore(range.to);
 
   document.querySelector('#analyticsRangeLabel').textContent=range.label;
 
-  if(state.daily.length){
-    const minDate=state.daily[0].date;
-    const maxDate=state.daily.at(-1).date;
+  const analyticsMaxDate=analyticsLatestDate();
 
-    ['#analyticsFrom','#analyticsTo'].forEach(selector=>{
-      const input=document.querySelector(selector);
-      if(input){
-        input.min=minDate;
-        input.max=maxDate;
-      }
-    });
-  }
+  ['#analyticsFrom','#analyticsTo'].forEach(selector=>{
+    const input=document.querySelector(selector);
+    if(input){
+      input.removeAttribute('min');
+      if(analyticsMaxDate) input.max=analyticsMaxDate;
+    }
+  });
 
   const messageNow=analyticsTotalAt(toDay,'messages');
   const messageBefore=analyticsTotalAt(fromDay,'messages');
@@ -5682,8 +5810,7 @@ function editSubscriberEntry(id){
   document.querySelector('#subscriberNote').value=entry.note || '';
   document.querySelector('#subscriberSave').textContent='update';
 
-  document.querySelector('#analyticsPanel').open=true;
-  document.querySelector('.subscriber-ledger').open=true;
+  document.querySelector('#subscriberPanel').open=true;
 }
 
 async function deleteSubscriberEntry(id){
@@ -5742,10 +5869,11 @@ function initAnalytics(){
   clearSubscriberForm();
 
   const latest=analyticsLatestDate();
+  const earliest=analyticsEarliestDate();
 
   if(latest){
     document.querySelector('#analyticsFrom').value=
-      analyticsDateMinus(latest,7);
+      earliest || analyticsDateMinus(latest,7);
 
     document.querySelector('#analyticsTo').value=latest;
   }
