@@ -2003,6 +2003,273 @@ h1{
   }
 }
 
+
+/* ===== analytics ===== */
+.analytics-panel{
+  margin:20px 0;
+  border-radius:14px;
+  overflow:hidden;
+  background:#fff;
+  color:#111;
+}
+.analytics-panel>summary{
+  cursor:pointer;
+  padding:12px 14px;
+  background:#18191c;
+  color:var(--ui-accent-1);
+  border:1px solid #343945;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:800;
+  list-style-position:inside;
+  text-transform:lowercase;
+}
+.analytics-panel[open]>summary{
+  border-radius:10px 10px 0 0;
+}
+.analytics-content{
+  padding:14px;
+}
+.analytics-range-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:10px;
+}
+#analyticsPeriod{
+  width:105px;
+  height:32px;
+  font-size:11px;
+}
+.analytics-custom-dates{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.analytics-custom-dates input{
+  width:138px;
+  height:32px;
+  padding:0 6px;
+  font-size:10px;
+}
+.analytics-range-label{
+  margin-left:auto;
+  font-size:10px;
+  color:#777;
+}
+.analytics-cards{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+.analytics-card{
+  padding:10px;
+  border:1px solid #e1e1e4;
+  border-radius:11px;
+  background:#fafafa;
+  min-width:0;
+}
+.analytics-card span{
+  display:block;
+  color:#777;
+  font-size:10px;
+}
+.analytics-card strong{
+  display:block;
+  margin-top:3px;
+  font-size:17px;
+  overflow-wrap:anywhere;
+}
+.analytics-card em{
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  font-style:normal;
+  font-weight:800;
+  color:#666;
+}
+.analytics-card em.positive{color:#2da44e}
+.analytics-card em.negative{color:#cf222e}
+
+.analytics-subscriber-goal{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #e1e1e4;
+  border-radius:11px;
+}
+.analytics-subscriber-goal>div:first-child{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+.analytics-subscriber-goal span{
+  font-size:10px;
+  color:#777;
+}
+.analytics-goal-track{
+  height:7px;
+  margin:7px 0 5px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#dedee2;
+}
+.analytics-goal-bar{
+  height:100%;
+  border-radius:999px;
+  background:var(--ui-accent-1);
+}
+.analytics-goal-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.analytics-chart-panel,
+.subscriber-ledger{
+  margin-top:10px;
+  border-top:1px solid #ddd;
+  padding-top:8px;
+}
+.analytics-chart-panel>summary,
+.subscriber-ledger>summary{
+  cursor:pointer;
+  padding:5px 0 8px;
+  font-size:12px;
+  font-weight:800;
+}
+.analytics-chart-controls{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px 10px;
+  margin-bottom:7px;
+  font-size:10px;
+}
+.analytics-chart-controls select{
+  height:30px;
+  font-size:10px;
+}
+.analytics-chart-controls label{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.analytics-chart-wrap{
+  position:relative;
+  width:100%;
+  height:280px;
+}
+.analytics-chart-note{
+  margin-top:5px;
+  font-size:9px;
+  color:#777;
+}
+
+.subscriber-goal-edit{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:8px;
+}
+.subscriber-goal-edit label,
+.subscriber-form label{
+  display:block;
+  margin:0 0 4px 2px;
+  font-size:10px;
+  color:#666;
+}
+.subscriber-goal-edit input{
+  width:92px;
+  height:32px;
+  padding:0 7px;
+  font-size:11px;
+}
+.subscriber-form{
+  display:grid;
+  grid-template-columns:145px 120px minmax(0,1fr);
+  gap:8px;
+}
+.subscriber-form input{
+  width:100%;
+  min-width:0;
+  height:34px;
+  box-sizing:border-box;
+  padding:0 7px;
+  font-size:11px;
+}
+.subscriber-actions{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.subscriber-actions button{
+  min-width:70px;
+  height:32px;
+  padding:0 9px;
+  font-size:11px;
+}
+#subscriberStatus{
+  font-size:10px;
+  color:#666;
+}
+#subscriberStatus.ok{color:#2da44e;font-weight:800}
+#subscriberStatus.error{color:#cf222e;font-weight:800}
+.subscriber-ledger-help{
+  margin:7px 0;
+  font-size:9px;
+  color:#777;
+}
+.subscriber-table-wrap{
+  overflow-x:auto;
+}
+.subscriber-table{
+  width:100%;
+  min-width:520px;
+  font-size:10px;
+}
+.subscriber-table th,
+.subscriber-table td{
+  padding:6px 5px;
+  border-bottom:1px solid #e2e2e4;
+}
+.subscriber-table th:first-child,
+.subscriber-table td:first-child,
+.subscriber-table .subscriber-note{
+  text-align:left;
+}
+.subscriber-table button{
+  padding:4px 6px;
+  margin-left:3px;
+  font-size:9px;
+}
+
+@media(max-width:650px){
+  .analytics-cards{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .analytics-range-label{
+    width:100%;
+    margin-left:0;
+  }
+  .analytics-custom-dates{
+    width:100%;
+  }
+  .analytics-custom-dates input{
+    width:calc(50% - 14px);
+  }
+  .analytics-chart-wrap{
+    height:240px;
+  }
+  .subscriber-form{
+    grid-template-columns:145px minmax(0,1fr);
+  }
+  .subscriber-note-field{
+    grid-column:1/-1;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2077,6 +2344,161 @@ h1{
   </div>
 </details>
 
+
+
+<details class="analytics-panel" id="analyticsPanel" open>
+  <summary>analytics</summary>
+
+  <div class="analytics-content">
+
+    <div class="analytics-range-row">
+      <select id="analyticsPeriod" aria-label="analytics period">
+        <option value="today">today</option>
+        <option value="7">7 days</option>
+        <option value="30">30 days</option>
+        <option value="custom">custom</option>
+      </select>
+
+      <div id="analyticsCustomDates" class="analytics-custom-dates" hidden>
+        <input id="analyticsFrom" type="date" aria-label="analytics from">
+        <span>→</span>
+        <input id="analyticsTo" type="date" aria-label="analytics to">
+      </div>
+
+      <span id="analyticsRangeLabel" class="analytics-range-label">—</span>
+    </div>
+
+    <div class="analytics-cards">
+      <div class="analytics-card">
+        <span>messages</span>
+        <strong id="analyticsMessagesNow">—</strong>
+        <em id="analyticsMessagesGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>capped messages</span>
+        <strong id="analyticsCappedNow">—</strong>
+        <em id="analyticsCappedGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>uncapped messages</span>
+        <strong id="analyticsUncappedNow">—</strong>
+        <em id="analyticsUncappedGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>collectors</span>
+        <strong id="analyticsCollectorsNow">—</strong>
+        <em id="analyticsCollectorsGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>subscribers</span>
+        <strong id="analyticsSubscribersNow">—</strong>
+        <em id="analyticsSubscribersGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>creator value</span>
+        <strong id="analyticsCvNow">—</strong>
+        <em id="analyticsCvGrowth">—</em>
+      </div>
+    </div>
+
+    <div class="analytics-subscriber-goal">
+      <div>
+        <span>subscriber goal</span>
+        <strong id="analyticsSubscriberGoalText">—</strong>
+      </div>
+      <div class="analytics-goal-track">
+        <div id="analyticsSubscriberGoalBar" class="analytics-goal-bar" style="width:0%"></div>
+      </div>
+      <div class="analytics-goal-meta">
+        <span id="analyticsSubscribersToGoal">—</span>
+        <span id="analyticsSubscribersHighest">—</span>
+      </div>
+    </div>
+
+    <details class="analytics-chart-panel" open>
+      <summary>growth comparison</summary>
+
+      <div class="analytics-chart-controls">
+        <select id="analyticsChartMode" aria-label="analytics chart mode">
+          <option value="indexed">indexed growth</option>
+          <option value="absolute">absolute</option>
+        </select>
+
+        <label><input type="checkbox" data-analytics-series="messages" checked> messages</label>
+        <label><input type="checkbox" data-analytics-series="collectors" checked> collectors</label>
+        <label><input type="checkbox" data-analytics-series="subscribers" checked> subscribers</label>
+        <label><input type="checkbox" data-analytics-series="cv" checked> CV</label>
+      </div>
+
+      <div class="analytics-chart-wrap">
+        <canvas id="analyticsChart"></canvas>
+      </div>
+
+      <div class="analytics-chart-note">
+        indexed growth starts each selected series at 0%, so messages, collectors, subscribers and CV can be compared even though their absolute scales are very different.
+      </div>
+    </details>
+
+    <details class="subscriber-ledger">
+      <summary>subscriber counter</summary>
+
+      <div class="subscriber-goal-edit">
+        <label for="subscriberGoal">goal</label>
+        <input id="subscriberGoal" type="number" min="1" step="1" value="200">
+      </div>
+
+      <div class="subscriber-form">
+        <div>
+          <label for="subscriberDate">date</label>
+          <input id="subscriberDate" type="date">
+        </div>
+
+        <div>
+          <label for="subscriberTotal">subscribers</label>
+          <input id="subscriberTotal" type="number" min="0" step="1" placeholder="192">
+        </div>
+
+        <div class="subscriber-note-field">
+          <label for="subscriberNote">note (optional)</label>
+          <input id="subscriberNote" type="text" maxlength="1000" placeholder="profile count">
+        </div>
+
+        <div class="subscriber-actions">
+          <button id="subscriberSave" type="button">save</button>
+          <button id="subscriberClear" type="button">clear</button>
+          <span id="subscriberStatus"></span>
+        </div>
+      </div>
+
+      <div class="subscriber-ledger-help">
+        The selected date is the subscriber date. Multiple readings on the same day are allowed; the latest reading becomes that day's official value.
+      </div>
+
+      <div class="subscriber-table-wrap">
+        <table class="subscriber-table">
+          <thead>
+            <tr>
+              <th>date</th>
+              <th>subscribers</th>
+              <th>Δ</th>
+              <th>note</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="subscriberRows">
+            <tr><td colspan="5">no subscriber updates yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+  </div>
+</details>
 
 <details class="cv-panel" id="cvPanel">
   <summary>creator value</summary>
@@ -3113,7 +3535,9 @@ async function loadStatsData(){
 
   initEventsTracker();
   initCvTracker();
+  initAnalytics();
   render();
+  renderAnalyticsDashboard();
 
 }).catch(e=>{
   document.querySelector('#updated')
@@ -4554,6 +4978,833 @@ const eventsState={
 };
 
 
+const analyticsState={
+  subscribers:[],
+  settings:{
+    subscriberGoal:200
+  },
+  editingSubscriberId:null,
+  loaded:false
+};
+
+let analyticsChartInstance=null;
+
+async function analyticsRequest(path,options={}){
+  const headers={
+    ...(options.headers || {}),
+    'x-events-profile':EVENTS_PROFILE
+  };
+
+  if(eventsState.key){
+    headers['x-events-key']=eventsState.key;
+  }
+
+  if(options.body){
+    headers['content-type']='application/json';
+  }
+
+  const response=await fetch(
+    EVENTS_API+path,
+    {
+      ...options,
+      headers,
+      cache:'no-store'
+    }
+  );
+
+  let data={};
+
+  try{
+    data=await response.json();
+  }catch{
+    data={};
+  }
+
+  if(!response.ok){
+    throw new Error(data.error || 'analytics request failed');
+  }
+
+  return data;
+}
+
+function analyticsSubscriberEntriesAsc(){
+  return [...analyticsState.subscribers].sort((a,b)=>
+    String(a.date||'').localeCompare(String(b.date||'')) ||
+    String(a.createdAt||'').localeCompare(String(b.createdAt||''))
+  );
+}
+
+function analyticsLatestByDate(entries){
+  const byDate=new Map();
+
+  entries.forEach(entry=>{
+    byDate.set(entry.date,entry);
+  });
+
+  return [...byDate.values()]
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+}
+
+function analyticsSubscriberDaily(){
+  return analyticsLatestByDate(analyticsSubscriberEntriesAsc());
+}
+
+function analyticsEntryAtOrBefore(entries,date){
+  return [...entries]
+    .filter(entry=>String(entry.date||'')<=date)
+    .sort((a,b)=>
+      String(a.date||'').localeCompare(String(b.date||'')) ||
+      String(a.createdAt||'').localeCompare(String(b.createdAt||''))
+    )
+    .at(-1) || null;
+}
+
+function analyticsDayAtOrBefore(date){
+  return [...state.daily]
+    .filter(day=>day.date<=date)
+    .sort((a,b)=>a.date.localeCompare(b.date))
+    .at(-1) || null;
+}
+
+function analyticsLatestDate(){
+  return state.daily.at(-1)?.date || '';
+}
+
+function analyticsDateMinus(date,days){
+  const d=parseDay(date);
+  d.setDate(d.getDate()-days);
+  return d.toLocaleDateString('sv-SE');
+}
+
+function analyticsRange(){
+  const latest=analyticsLatestDate();
+
+  if(!latest){
+    return {from:'',to:'',label:'—'};
+  }
+
+  const period=document.querySelector('#analyticsPeriod')?.value || 'today';
+
+  if(period==='custom'){
+    let from=document.querySelector('#analyticsFrom')?.value || latest;
+    let to=document.querySelector('#analyticsTo')?.value || latest;
+
+    if(from>to){
+      [from,to]=[to,from];
+    }
+
+    return {
+      from,
+      to,
+      label:`${shortGraphDate(from)} → ${shortGraphDate(to)}`
+    };
+  }
+
+  if(period==='today'){
+    const previous=state.daily.at(-2)?.date || latest;
+
+    return {
+      from:previous,
+      to:latest,
+      label:shortGraphDate(latest)
+    };
+  }
+
+  const days=Number(period);
+
+  return {
+    from:analyticsDateMinus(latest,days),
+    to:latest,
+    label:`${days} days · ${shortGraphDate(analyticsDateMinus(latest,days))} → ${shortGraphDate(latest)}`
+  };
+}
+
+function analyticsTotalAt(day,metric){
+  if(!day?.snapshot) return null;
+  return totalForSnapshot(day.snapshot,metric);
+}
+
+function analyticsFirstCappedDate(cid){
+  return (eventsState.events || [])
+    .filter(event=>
+      event.cid===cid &&
+      Array.isArray(event.tags) &&
+      event.tags.includes('capped')
+    )
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))[0]?.date || '';
+}
+
+function analyticsIsCappedBy(cid,date){
+  const capped=analyticsFirstCappedDate(cid);
+  return Boolean(capped && capped<=date);
+}
+
+function analyticsCappedCurrentTotals(day){
+  if(!day?.snapshot){
+    return {capped:0,uncapped:0};
+  }
+
+  let capped=0;
+  let uncapped=0;
+
+  (day.snapshot.bots || []).forEach(bot=>{
+    const messages=Number.isFinite(bot.messages) ? bot.messages : 0;
+
+    if(analyticsIsCappedBy(bot.cid,day.date)){
+      capped+=messages;
+    }else{
+      uncapped+=messages;
+    }
+  });
+
+  return {capped,uncapped};
+}
+
+function analyticsCappedGrowth(fromDate,toDate){
+  const days=[...state.daily]
+    .filter(day=>day.date>=fromDate && day.date<=toDate)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+
+  const baseline=analyticsDayAtOrBefore(fromDate);
+
+  const sequence=[];
+
+  if(baseline){
+    sequence.push(baseline);
+  }
+
+  days.forEach(day=>{
+    if(!sequence.some(existing=>existing.date===day.date)){
+      sequence.push(day);
+    }
+  });
+
+  sequence.sort((a,b)=>a.date.localeCompare(b.date));
+
+  let capped=0;
+  let uncapped=0;
+
+  for(let i=1;i<sequence.length;i++){
+    const before=sequence[i-1];
+    const now=sequence[i];
+
+    const beforeMap=new Map(
+      (before.snapshot?.bots || []).map(bot=>[bot.cid,bot])
+    );
+
+    (now.snapshot?.bots || []).forEach(bot=>{
+      const previous=beforeMap.get(bot.cid);
+
+      if(
+        !Number.isFinite(bot.messages) ||
+        !Number.isFinite(previous?.messages)
+      ){
+        return;
+      }
+
+      const delta=bot.messages-previous.messages;
+
+      if(analyticsIsCappedBy(bot.cid,now.date)){
+        capped+=delta;
+      }else{
+        uncapped+=delta;
+      }
+    });
+  }
+
+  return {capped,uncapped};
+}
+
+function analyticsCvEntriesAsc(){
+  return cvSortedEntriesAsc();
+}
+
+function analyticsCurrentAndDelta(entries,fromDate,toDate,valueKey='total'){
+  const current=analyticsEntryAtOrBefore(entries,toDate);
+  const baseline=analyticsEntryAtOrBefore(entries,fromDate);
+
+  return {
+    current:
+      current && Number.isFinite(Number(current[valueKey]))
+        ? Number(current[valueKey])
+        : null,
+    delta:
+      current &&
+      baseline &&
+      Number.isFinite(Number(current[valueKey])) &&
+      Number.isFinite(Number(baseline[valueKey]))
+        ? Number(current[valueKey])-Number(baseline[valueKey])
+        : null
+  };
+}
+
+function analyticsSigned(value){
+  if(!Number.isFinite(value)) return '—';
+  return `${value>0?'+':''}${fmt.format(Math.round(value))}`;
+}
+
+function setAnalyticsGrowth(id,value){
+  const element=document.querySelector(id);
+  if(!element) return;
+
+  element.textContent=analyticsSigned(value);
+  element.classList.toggle('positive',Number.isFinite(value) && value>0);
+  element.classList.toggle('negative',Number.isFinite(value) && value<0);
+}
+
+function analyticsGraphDates(fromDate,toDate){
+  const result=[...state.daily]
+    .filter(day=>day.date>=fromDate && day.date<=toDate)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+
+  const baseline=analyticsDayAtOrBefore(fromDate);
+
+  if(
+    baseline &&
+    !result.some(day=>day.date===baseline.date)
+  ){
+    result.unshift(baseline);
+  }
+
+  return result;
+}
+
+function analyticsCarriedValue(entries,date){
+  const entry=analyticsEntryAtOrBefore(entries,date);
+
+  return entry && Number.isFinite(Number(entry.total))
+    ? Number(entry.total)
+    : null;
+}
+
+function analyticsSelectedSeries(){
+  return [...document.querySelectorAll('[data-analytics-series]:checked')]
+    .map(input=>input.dataset.analyticsSeries);
+}
+
+function renderAnalyticsChart(){
+  const canvas=document.querySelector('#analyticsChart');
+  if(!canvas) return;
+
+  if(analyticsChartInstance){
+    analyticsChartInstance.destroy();
+    analyticsChartInstance=null;
+  }
+
+  const {from,to}=analyticsRange();
+  const days=analyticsGraphDates(from,to);
+  const selected=analyticsSelectedSeries();
+  const mode=document.querySelector('#analyticsChartMode')?.value || 'indexed';
+
+  if(!days.length || !selected.length){
+    return;
+  }
+
+  const subscriberDaily=analyticsSubscriberDaily();
+  const cvEntries=analyticsCvEntriesAsc();
+
+  const rows=days.map(day=>({
+    date:day.date,
+    messages:analyticsTotalAt(day,'messages'),
+    collectors:analyticsTotalAt(day,'collectors'),
+    subscribers:analyticsCarriedValue(subscriberDaily,day.date),
+    cv:analyticsCarriedValue(cvEntries,day.date)
+  }));
+
+  const labels=rows.map(row=>shortGraphDate(row.date));
+
+  const names={
+    messages:'messages',
+    collectors:'collectors',
+    subscribers:'subscribers',
+    cv:'CV'
+  };
+
+  const datasets=selected.map(key=>{
+    const raw=rows.map(row=>row[key]);
+    const first=raw.find(value=>Number.isFinite(value));
+
+    const data=
+      mode==='indexed'
+        ? raw.map(value=>
+            Number.isFinite(value) &&
+            Number.isFinite(first) &&
+            first!==0
+              ? ((value-first)/first)*100
+              : null
+          )
+        : raw;
+
+    return {
+      label:names[key],
+      data,
+      tension:.2,
+      pointRadius:2,
+      pointHoverRadius:4,
+      spanGaps:true
+    };
+  });
+
+  analyticsChartInstance=new Chart(canvas,{
+    type:'line',
+    data:{
+      labels,
+      datasets
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      animation:false,
+      interaction:{
+        mode:'nearest',
+        intersect:false,
+        axis:'xy'
+      },
+      plugins:{
+        legend:{
+          display:true,
+          labels:{
+            font:{size:10},
+            boxWidth:14,
+            boxHeight:8
+          }
+        },
+        tooltip:{
+          mode:'nearest',
+          intersect:false,
+          titleFont:{size:10},
+          bodyFont:{size:10},
+          callbacks:{
+            label(context){
+              const label=context.dataset.label || '';
+              const value=context.parsed.y;
+
+              if(mode==='indexed'){
+                return `${label}: ${value>=0?'+':''}${value.toFixed(2)}%`;
+              }
+
+              return `${label}: ${fmt.format(Math.round(value))}`;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{
+          ticks:{
+            font:{size:10},
+            maxRotation:0,
+            autoSkip:true,
+            maxTicksLimit:8
+          }
+        },
+        y:{
+          ticks:{
+            font:{size:10},
+            callback:value=>
+              mode==='indexed'
+                ? `${Number(value).toFixed(1)}%`
+                : compactAxisValue(value)
+          }
+        }
+      }
+    }
+  });
+}
+
+function renderSubscriberLedger(){
+  const rows=document.querySelector('#subscriberRows');
+  if(!rows) return;
+
+  const asc=analyticsSubscriberEntriesAsc();
+
+  if(!asc.length){
+    rows.innerHTML='<tr><td colspan="5">no subscriber updates yet</td></tr>';
+    return;
+  }
+
+  const previousById=new Map();
+  const orderById=new Map();
+  const dateCount=new Map();
+
+  asc.forEach((entry,index)=>{
+    previousById.set(entry.id,index>0 ? asc[index-1] : null);
+
+    const order=(dateCount.get(entry.date) || 0)+1;
+    dateCount.set(entry.date,order);
+    orderById.set(entry.id,order);
+  });
+
+  rows.innerHTML=[...asc].reverse().map(entry=>{
+    const previous=previousById.get(entry.id);
+
+    const delta=previous
+      ? Number(entry.total)-Number(previous.total)
+      : null;
+
+    const count=dateCount.get(entry.date) || 1;
+    const order=orderById.get(entry.id) || 1;
+
+    return `
+      <tr>
+        <td>${shortGraphDate(entry.date)}${count>1?` #${order}`:''}</td>
+        <td><strong>${fmt.format(entry.total)}</strong></td>
+        <td class="${delta>0?'cv-ledger-positive':delta<0?'cv-ledger-negative':''}">
+          ${delta===null?'—':analyticsSigned(delta)}
+        </td>
+        <td class="subscriber-note">${entry.note || '—'}</td>
+        <td>
+          <button type="button" data-subscriber-edit="${entry.id}">edit</button>
+          <button type="button" data-subscriber-delete="${entry.id}">delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderAnalyticsDashboard(){
+  const panel=document.querySelector('#analyticsPanel');
+  if(!panel) return;
+
+  const range=analyticsRange();
+  const fromDay=analyticsDayAtOrBefore(range.from);
+  const toDay=analyticsDayAtOrBefore(range.to);
+
+  document.querySelector('#analyticsRangeLabel').textContent=range.label;
+
+  if(state.daily.length){
+    const minDate=state.daily[0].date;
+    const maxDate=state.daily.at(-1).date;
+
+    ['#analyticsFrom','#analyticsTo'].forEach(selector=>{
+      const input=document.querySelector(selector);
+      if(input){
+        input.min=minDate;
+        input.max=maxDate;
+      }
+    });
+  }
+
+  const messageNow=analyticsTotalAt(toDay,'messages');
+  const messageBefore=analyticsTotalAt(fromDay,'messages');
+  const messageGrowth=
+    Number.isFinite(messageNow) && Number.isFinite(messageBefore)
+      ? messageNow-messageBefore
+      : null;
+
+  const collectorNow=analyticsTotalAt(toDay,'collectors');
+  const collectorBefore=analyticsTotalAt(fromDay,'collectors');
+  const collectorGrowth=
+    Number.isFinite(collectorNow) && Number.isFinite(collectorBefore)
+      ? collectorNow-collectorBefore
+      : null;
+
+  const cappedNow=analyticsCappedCurrentTotals(toDay);
+  const cappedGrowth=analyticsCappedGrowth(range.from,range.to);
+
+  const subscriberStats=analyticsCurrentAndDelta(
+    analyticsSubscriberDaily(),
+    range.from,
+    range.to
+  );
+
+  const cvStats=analyticsCurrentAndDelta(
+    analyticsCvEntriesAsc(),
+    range.from,
+    range.to
+  );
+
+  document.querySelector('#analyticsMessagesNow').textContent=
+    Number.isFinite(messageNow) ? fmt.format(messageNow) : '—';
+  setAnalyticsGrowth('#analyticsMessagesGrowth',messageGrowth);
+
+  document.querySelector('#analyticsCappedNow').textContent=
+    fmt.format(Math.round(cappedNow.capped || 0));
+  setAnalyticsGrowth('#analyticsCappedGrowth',cappedGrowth.capped);
+
+  document.querySelector('#analyticsUncappedNow').textContent=
+    fmt.format(Math.round(cappedNow.uncapped || 0));
+  setAnalyticsGrowth('#analyticsUncappedGrowth',cappedGrowth.uncapped);
+
+  document.querySelector('#analyticsCollectorsNow').textContent=
+    Number.isFinite(collectorNow) ? fmt.format(collectorNow) : '—';
+  setAnalyticsGrowth('#analyticsCollectorsGrowth',collectorGrowth);
+
+  document.querySelector('#analyticsSubscribersNow').textContent=
+    Number.isFinite(subscriberStats.current)
+      ? fmt.format(subscriberStats.current)
+      : '—';
+  setAnalyticsGrowth('#analyticsSubscribersGrowth',subscriberStats.delta);
+
+  document.querySelector('#analyticsCvNow').textContent=
+    Number.isFinite(cvStats.current)
+      ? fmt.format(cvStats.current)
+      : '—';
+  setAnalyticsGrowth('#analyticsCvGrowth',cvStats.delta);
+
+  const subscriberDaily=analyticsSubscriberDaily();
+  const latestSubscriber=subscriberDaily.at(-1)?.total;
+  const goal=Number(analyticsState.settings.subscriberGoal || 200);
+  const highest=subscriberDaily.length
+    ? Math.max(...subscriberDaily.map(entry=>Number(entry.total)||0))
+    : null;
+
+  document.querySelector('#subscriberGoal').value=String(goal);
+
+  document.querySelector('#analyticsSubscriberGoalText').textContent=
+    Number.isFinite(Number(latestSubscriber))
+      ? `${fmt.format(latestSubscriber)} / ${fmt.format(goal)}`
+      : `— / ${fmt.format(goal)}`;
+
+  document.querySelector('#analyticsSubscribersToGoal').textContent=
+    Number.isFinite(Number(latestSubscriber))
+      ? (
+          Number(latestSubscriber)>=goal
+            ? 'goal reached'
+            : `${fmt.format(goal-Number(latestSubscriber))} to goal`
+        )
+      : 'add subscriber count';
+
+  document.querySelector('#analyticsSubscribersHighest').textContent=
+    Number.isFinite(highest)
+      ? `highest ${fmt.format(highest)}`
+      : 'highest —';
+
+  const progress=
+    Number.isFinite(Number(latestSubscriber)) && goal>0
+      ? Math.max(0,Math.min(100,(Number(latestSubscriber)/goal)*100))
+      : 0;
+
+  document.querySelector('#analyticsSubscriberGoalBar').style.width=
+    `${progress}%`;
+
+  renderSubscriberLedger();
+  renderAnalyticsChart();
+}
+
+async function loadAnalytics(){
+  if(!eventsState.unlocked) return;
+
+  try{
+    const data=await analyticsRequest('/analytics');
+
+    analyticsState.subscribers=
+      Array.isArray(data.subscribers)
+        ? data.subscribers
+        : [];
+
+    analyticsState.settings={
+      subscriberGoal:
+        Number(data?.settings?.subscriberGoal) || 200
+    };
+
+    analyticsState.loaded=true;
+    renderAnalyticsDashboard();
+  }catch(error){
+    const status=document.querySelector('#subscriberStatus');
+
+    if(status){
+      status.textContent=error.message;
+      status.className='error';
+    }
+  }
+}
+
+function clearSubscriberForm(){
+  analyticsState.editingSubscriberId=null;
+
+  document.querySelector('#subscriberDate').value=
+    new Date().toLocaleDateString('sv-SE');
+
+  document.querySelector('#subscriberTotal').value='';
+  document.querySelector('#subscriberNote').value='';
+  document.querySelector('#subscriberSave').textContent='save';
+
+  const status=document.querySelector('#subscriberStatus');
+  status.textContent='';
+  status.className='';
+}
+
+async function saveSubscriberEntry(){
+  const status=document.querySelector('#subscriberStatus');
+
+  if(!eventsState.unlocked){
+    status.textContent='unlock first';
+    status.className='error';
+    return;
+  }
+
+  const date=document.querySelector('#subscriberDate').value;
+  const total=Number(document.querySelector('#subscriberTotal').value);
+  const note=document.querySelector('#subscriberNote').value.trim();
+
+  if(!date || !Number.isFinite(total)){
+    status.textContent='choose date and subscriber total';
+    status.className='error';
+    return;
+  }
+
+  status.textContent='saving…';
+  status.className='';
+
+  try{
+    await analyticsRequest('/analytics',{
+      method:'POST',
+      body:JSON.stringify({
+        id:analyticsState.editingSubscriberId || undefined,
+        date,
+        total,
+        note
+      })
+    });
+
+    await loadAnalytics();
+    clearSubscriberForm();
+
+    status.textContent='saved ✓';
+    status.className='ok';
+  }catch(error){
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+function editSubscriberEntry(id){
+  const entry=analyticsState.subscribers.find(
+    item=>String(item.id)===String(id)
+  );
+
+  if(!entry) return;
+
+  analyticsState.editingSubscriberId=entry.id;
+
+  document.querySelector('#subscriberDate').value=entry.date || '';
+  document.querySelector('#subscriberTotal').value=String(entry.total ?? '');
+  document.querySelector('#subscriberNote').value=entry.note || '';
+  document.querySelector('#subscriberSave').textContent='update';
+
+  document.querySelector('#analyticsPanel').open=true;
+  document.querySelector('.subscriber-ledger').open=true;
+}
+
+async function deleteSubscriberEntry(id){
+  if(!confirm('Delete this subscriber entry?')) return;
+
+  try{
+    await analyticsRequest(
+      '/analytics/subscribers/'+encodeURIComponent(id),
+      {method:'DELETE'}
+    );
+
+    await loadAnalytics();
+
+    const status=document.querySelector('#subscriberStatus');
+    status.textContent='deleted ✓';
+    status.className='ok';
+  }catch(error){
+    const status=document.querySelector('#subscriberStatus');
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+async function saveSubscriberGoal(){
+  const goal=Number(document.querySelector('#subscriberGoal').value);
+
+  if(!Number.isFinite(goal) || goal<=0) return;
+
+  try{
+    const data=await analyticsRequest('/analytics',{
+      method:'POST',
+      body:JSON.stringify({
+        kind:'settings',
+        subscriberGoal:goal
+      })
+    });
+
+    analyticsState.settings.subscriberGoal=
+      Number(data?.settings?.subscriberGoal) || goal;
+
+    renderAnalyticsDashboard();
+  }catch(error){
+    const status=document.querySelector('#subscriberStatus');
+    status.textContent=error.message;
+    status.className='error';
+  }
+}
+
+function initAnalytics(){
+  const panel=document.querySelector('#analyticsPanel');
+
+  if(!panel || panel.dataset.ready==='1') return;
+
+  panel.dataset.ready='1';
+
+  clearSubscriberForm();
+
+  const latest=analyticsLatestDate();
+
+  if(latest){
+    document.querySelector('#analyticsFrom').value=
+      analyticsDateMinus(latest,7);
+
+    document.querySelector('#analyticsTo').value=latest;
+  }
+
+  document.querySelector('#analyticsPeriod')
+    .addEventListener('change',event=>{
+      document.querySelector('#analyticsCustomDates').hidden=
+        event.target.value!=='custom';
+
+      renderAnalyticsDashboard();
+    });
+
+  ['#analyticsFrom','#analyticsTo','#analyticsChartMode']
+    .forEach(selector=>{
+      document.querySelector(selector)
+        ?.addEventListener('change',renderAnalyticsDashboard);
+    });
+
+  document.querySelector('.analytics-chart-controls')
+    ?.addEventListener('change',event=>{
+      if(event.target.matches('[data-analytics-series]')){
+        renderAnalyticsChart();
+      }
+    });
+
+  document.querySelector('#subscriberSave')
+    .addEventListener('click',saveSubscriberEntry);
+
+  document.querySelector('#subscriberClear')
+    .addEventListener('click',clearSubscriberForm);
+
+  document.querySelector('#subscriberGoal')
+    .addEventListener('change',saveSubscriberGoal);
+
+  document.querySelector('#subscriberRows')
+    .addEventListener('click',event=>{
+      const edit=event.target.closest('[data-subscriber-edit]');
+      const del=event.target.closest('[data-subscriber-delete]');
+
+      if(edit) editSubscriberEntry(edit.dataset.subscriberEdit);
+      if(del) deleteSubscriberEntry(del.dataset.subscriberDelete);
+    });
+
+  document.querySelector('#analyticsPanel')
+    .addEventListener('toggle',()=>{
+      if(document.querySelector('#analyticsPanel').open){
+        setTimeout(()=>analyticsChartInstance?.resize(),30);
+      }
+    });
+
+  if(eventsState.unlocked){
+    loadAnalytics();
+  }else{
+    renderAnalyticsDashboard();
+  }
+}
+
+
+
 const cvState={
   entries:[],
   settings:{
@@ -4651,6 +5902,28 @@ function cvDefaultAdjustment(type){
   if(type==='ban' || type==='shadow_ban') return -20;
   if(type==='hard_ban_extra') return -10;
   return 0;
+}
+
+
+function suggestCvTotalFromAdjustment(type){
+  if(cvState.editingId) return;
+
+  const adjustment=cvDefaultAdjustment(type);
+  const current=cvCurrentEntry();
+  const input=document.querySelector('#cvTotal');
+
+  if(
+    current &&
+    Number.isFinite(Number(current.total)) &&
+    adjustment!==0
+  ){
+    input.value=String(
+      Math.max(
+        0,
+        Math.round(Number(current.total)+adjustment)
+      )
+    );
+  }
 }
 
 function cvNextSettlementDate(){
@@ -5120,6 +6393,10 @@ function renderCvDashboard(){
 
   renderCvEstimator();
   renderCvLedger();
+
+  if(document.querySelector('#analyticsPanel')){
+    renderAnalyticsDashboard();
+  }
 }
 
 async function loadCv(){
@@ -5320,6 +6597,8 @@ function initCvTracker(){
 
       document.querySelector('#cvAdjustment').value=
         String(cvDefaultAdjustment(type));
+
+      suggestCvTotalFromAdjustment(type);
 
       if(type==='settlement'){
         const date=document.querySelector('#cvDate').value;
@@ -5659,6 +6938,7 @@ async function loadEvents(){
     renderEvents();
     loadEventForSelection();
     renderCvDashboard();
+    renderAnalyticsDashboard();
 
   }catch(error){
     rows.innerHTML=`
