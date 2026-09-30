@@ -1982,6 +1982,27 @@ h1{
   }
 }
 
+
+/* compact CV date field */
+.cv-date-field{
+  width:160px;
+  max-width:160px;
+}
+#cvDate{
+  width:160px !important;
+  max-width:160px !important;
+}
+@media(max-width:650px){
+  .cv-date-field{
+    width:145px;
+    max-width:145px;
+  }
+  #cvDate{
+    width:145px !important;
+    max-width:145px !important;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2136,7 +2157,7 @@ h1{
       <summary>CV ledger</summary>
 
       <div class="cv-entry-form">
-        <div class="cv-field">
+        <div class="cv-field cv-date-field">
           <label for="cvDate">date</label>
           <input id="cvDate" type="date">
         </div>
@@ -2150,8 +2171,12 @@ h1{
           <label for="cvType">type</label>
           <select id="cvType">
             <option value="update">CV update</option>
-            <option value="new">new character (+30)</option>
-            <option value="ban">ban (-20)</option>
+            <option value="hq_new">HQ character (+30)</option>
+            <option value="unbanned">unbanned (+20)</option>
+            <option value="compliant_new">compliant character (+10)</option>
+            <option value="hard_ban">hard ban (-30)</option>
+            <option value="shadow_ban">shadow ban (-20)</option>
+            <option value="hard_ban_extra">hard ban extra (-10)</option>
             <option value="settlement">settlement</option>
             <option value="manual">manual adjustment</option>
           </select>
@@ -4604,8 +4629,14 @@ function cvFormatSigned(value){
 function cvTypeLabel(type){
   const labels={
     update:'update',
-    new:'new +30',
-    ban:'ban -20',
+    new:'HQ character +30',
+    ban:'shadow ban -20',
+    hq_new:'HQ character +30',
+    unbanned:'unbanned +20',
+    compliant_new:'compliant character +10',
+    hard_ban:'hard ban -30',
+    shadow_ban:'shadow ban -20',
+    hard_ban_extra:'hard ban extra -10',
     settlement:'settlement',
     manual:'manual'
   };
@@ -4613,8 +4644,12 @@ function cvTypeLabel(type){
 }
 
 function cvDefaultAdjustment(type){
-  if(type==='new') return 30;
-  if(type==='ban') return -20;
+  if(type==='new' || type==='hq_new') return 30;
+  if(type==='unbanned') return 20;
+  if(type==='compliant_new') return 10;
+  if(type==='hard_ban') return -30;
+  if(type==='ban' || type==='shadow_ban') return -20;
+  if(type==='hard_ban_extra') return -10;
   return 0;
 }
 
@@ -5190,7 +5225,14 @@ function editCvEntry(id){
 
   document.querySelector('#cvDate').value=entry.date || '';
   document.querySelector('#cvTotal').value=String(entry.total ?? '');
-  document.querySelector('#cvType').value=entry.type || 'update';
+  const editableType=
+    entry.type==='new'
+      ? 'hq_new'
+      : entry.type==='ban'
+        ? 'shadow_ban'
+        : (entry.type || 'update');
+
+  document.querySelector('#cvType').value=editableType;
   document.querySelector('#cvBot').value=entry.botCid || '';
   document.querySelector('#cvAdjustment').value=String(entry.adjustment ?? 0);
   document.querySelector('#cvNote').value=entry.note || '';
@@ -5276,10 +5318,8 @@ function initCvTracker(){
     .addEventListener('change',event=>{
       const type=event.target.value;
 
-      if(type==='new' || type==='ban' || type==='update' || type==='settlement'){
-        document.querySelector('#cvAdjustment').value=
-          String(cvDefaultAdjustment(type));
-      }
+      document.querySelector('#cvAdjustment').value=
+        String(cvDefaultAdjustment(type));
 
       if(type==='settlement'){
         const date=document.querySelector('#cvDate').value;
