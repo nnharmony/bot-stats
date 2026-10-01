@@ -3370,7 +3370,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     <section class="cv-day-estimate" id="cvDayEstimate">
       <div class="cv-day-head">
         <div>
-          <span>latest estimated organic CV</span>
+          <span>latest CV growth</span>
           <strong id="cvDayTotal">—</strong>
         </div>
         <small id="cvDayDate">—</small>
@@ -3379,7 +3379,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
         <div><span>message CV</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
         <div><span>UCU CV</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
         <div><span>known adjustments</span><strong id="cvDayAdjustments">—</strong><small>ledger entries</small></div>
-        <div><span>expected movement</span><strong id="cvDayExpected">—</strong><small>organic + adjustments</small></div>
+        <div><span>organic CV</span><strong id="cvDayExpected">—</strong><small>actual CV − adjustments</small></div>
       </div>
       <div id="cvDayFormula" class="cv-day-formula">—</div>
     </section>
@@ -7345,15 +7345,92 @@ function cvFormatEstimateSigned(value,digits=1){
   return `${value>0?'+':''}${cvFormatEstimate(value,digits)}`;
 }
 
-function cvDailyEstimate(date=''){
-  const days=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
-  if(days.length<2) return null;
+function cvDailyUpdateContext(date=''){
+  const entries=cvSortedEntriesAsc();
+  if(!entries.length) return null;
 
-  let index=date ? days.findIndex(day=>day.date===date) : days.length-1;
+  // The daily decomposition starts only after a real CV update has been entered.
+  // Settlement / HQ / ban entries can change the total, but they are not the
+  // daily CV reading that anchors this calculation.
+  const candidates=entries.filter(entry=>
+    entry.type==='update' &&
+    (!date || String(entry.date||'')===String(date))
+  );
+  const target=candidates.at(-1) || null;
+  if(!target) return null;
+
+  const targetIndex=entries.indexOf(target);
+  let baseline=null;
+  let baselineIndex=-1;
+
+  // A same-day settlement is the best baseline (e.g. the 1st of the month).
+  for(let i=targetIndex-1;i>=0;i--){
+    const entry=entries[i];
+    if(entry.type==='settlement' && entry.date===target.date){
+      baseline=entry;
+      baselineIndex=i;
+      break;
+    }
+  }
+
+  // Otherwise use the latest earlier daily CV update or settlement.
+  if(!baseline){
+    for(let i=targetIndex-1;i>=0;i--){
+      const entry=entries[i];
+      if(
+        String(entry.date||'')<String(target.date||'') &&
+        (entry.type==='update' || entry.type==='settlement')
+      ){
+        baseline=entry;
+        baselineIndex=i;
+        break;
+      }
+    }
+  }
+
+  if(!baseline) return {
+    target,
+    baseline:null,
+    actualDelta:null,
+    adjustments:0,
+    organicCv:null
+  };
+
+  const actualDelta=Number(target.total)-Number(baseline.total);
+
+  const adjustments=entries
+    .slice(baselineIndex+1,targetIndex+1)
+    .filter(entry=>entry.type!=='settlement')
+    .reduce((sum,entry)=>sum+(Number(entry.adjustment)||0),0);
+
+  return {
+    target,
+    baseline,
+    actualDelta,
+    adjustments,
+    organicCv:Number.isFinite(actualDelta)
+      ? actualDelta-adjustments
+      : null
+  };
+}
+
+function cvUncappedMessagesForDate(date,targetEntry=null){
+  const days=[...state.daily]
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  const index=days.findIndex(day=>String(day.date||'')===String(date||''));
   if(index<1) return null;
 
   const after=days[index];
   const before=days[index-1];
+
+  // When the CV reading was entered before today's stats import, keep using the
+  // estimated split until a newer message snapshot is actually loaded.
+  const snapshotTime=Date.parse(after.snapshot?.timestamp || '');
+  const cvTime=Date.parse(targetEntry?.createdAt || targetEntry?.updatedAt || '');
+  if(Number.isFinite(snapshotTime) && Number.isFinite(cvTime) && snapshotTime<=cvTime){
+    return null;
+  }
+
   const beforeMap=new Map((before.snapshot?.bots||[]).map(bot=>[bot.cid,bot]));
   const afterMap=new Map((after.snapshot?.bots||[]).map(bot=>[bot.cid,bot]));
 
@@ -7363,8 +7440,9 @@ function cvDailyEstimate(date=''){
   for(const [cid,afterBot] of afterMap){
     if(!Number.isFinite(afterBot?.messages)) continue;
 
-    // A bot already capped before this interval contributes 0 character CV.
-    // If it is marked capped on the current date, today's growth is still included.
+    // Already capped before this interval = no more character CV.
+    // A cap recorded on the current date still allows this interval's growth,
+    // because the exact intraday cap moment is not available in the daily snapshot.
     const cappedDate=cvCappedDate(cid);
     if(cappedDate && cappedDate<after.date) continue;
 
@@ -7377,28 +7455,92 @@ function cvDailyEstimate(date=''){
     bots++;
   }
 
-  const messageCv=uncappedMessages*CV_PER_MESSAGE;
-  const ratio=cvCalibration().rolling;
-  const estimatedUcu=Number.isFinite(ratio) && ratio>0 ? uncappedMessages/ratio : null;
-  const ucuCv=Number.isFinite(estimatedUcu) ? estimatedUcu*CV_PER_UCU : null;
-  const organicCv=Number.isFinite(ucuCv) ? messageCv+ucuCv : messageCv;
-
-  const adjustments=cvSortedEntriesAsc()
-    .filter(entry=>entry.date===after.date && entry.type!=='settlement')
-    .reduce((sum,entry)=>sum+(Number(entry.adjustment)||0),0);
-
   return {
     date:after.date,
     fromDate:before.date,
     uncappedMessages,
-    bots,
-    ratio,
-    messageCv,
-    estimatedUcu,
-    ucuCv,
-    organicCv,
-    adjustments,
-    expected:organicCv+adjustments
+    bots
+  };
+}
+
+function cvDailyEstimate(date=''){
+  const context=cvDailyUpdateContext(date);
+  if(!context || !Number.isFinite(context.actualDelta) || !Number.isFinite(context.organicCv)){
+    return null;
+  }
+
+  const ratio=cvCalibration().rolling;
+  const actualMessages=cvUncappedMessagesForDate(context.target.date,context.target);
+
+  // Once the message snapshot for this CV date is loaded, the message part is
+  // known. The remaining organic CV is therefore the UCU contribution.
+  if(actualMessages){
+    const messageCv=actualMessages.uncappedMessages*CV_PER_MESSAGE;
+    const ucuCv=context.organicCv-messageCv;
+    const ucu=ucuCv/CV_PER_UCU;
+
+    return {
+      mode:'exact',
+      date:context.target.date,
+      fromDate:actualMessages.fromDate,
+      actualDelta:context.actualDelta,
+      adjustments:context.adjustments,
+      organicCv:context.organicCv,
+      uncappedMessages:actualMessages.uncappedMessages,
+      bots:actualMessages.bots,
+      messageCv,
+      ucuCv,
+      estimatedUcu:ucu,
+      ratio
+    };
+  }
+
+  // CV arrived before the message snapshot. Keep the real organic CV total as
+  // the anchor and temporarily split it using the calibrated messages/UCU ratio.
+  if(Number.isFinite(ratio) && ratio>0 && context.organicCv>=0){
+    const cvPerMessageEquivalent=CV_PER_MESSAGE+(CV_PER_UCU/ratio);
+    const estimatedMessages=cvPerMessageEquivalent>0
+      ? context.organicCv/cvPerMessageEquivalent
+      : null;
+    const estimatedUcu=Number.isFinite(estimatedMessages)
+      ? estimatedMessages/ratio
+      : null;
+    const messageCv=Number.isFinite(estimatedMessages)
+      ? estimatedMessages*CV_PER_MESSAGE
+      : null;
+    const ucuCv=Number.isFinite(estimatedUcu)
+      ? estimatedUcu*CV_PER_UCU
+      : null;
+
+    return {
+      mode:'estimated',
+      date:context.target.date,
+      fromDate:context.baseline?.date || '',
+      actualDelta:context.actualDelta,
+      adjustments:context.adjustments,
+      organicCv:context.organicCv,
+      uncappedMessages:estimatedMessages,
+      bots:null,
+      messageCv,
+      ucuCv,
+      estimatedUcu,
+      ratio
+    };
+  }
+
+  return {
+    mode:'waiting-messages',
+    date:context.target.date,
+    fromDate:context.baseline?.date || '',
+    actualDelta:context.actualDelta,
+    adjustments:context.adjustments,
+    organicCv:context.organicCv,
+    uncappedMessages:null,
+    bots:null,
+    messageCv:null,
+    ucuCv:null,
+    estimatedUcu:null,
+    ratio
   };
 }
 
@@ -7407,27 +7549,58 @@ function renderCvDayEstimate(){
   const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
 
   if(!estimate){
-    ['#cvDayTotal','#cvDayDate','#cvDayMessageCv','#cvDayMessages','#cvDayUcuCv','#cvDayUcu','#cvDayAdjustments','#cvDayExpected','#cvDayFormula']
-      .forEach(id=>set(id,'—'));
+    set('#cvDayTotal','—');
+    set('#cvDayDate','waiting for CV update');
+    set('#cvDayMessageCv','—');
+    set('#cvDayMessages','—');
+    set('#cvDayUcuCv','—');
+    set('#cvDayUcu','—');
+    set('#cvDayAdjustments','—');
+    set('#cvDayExpected','—');
+    set('#cvDayFormula','enter a CV update first. The split is estimated until the matching message snapshot is loaded.');
     return;
   }
 
-  set('#cvDayTotal',`≈ ${cvFormatEstimateSigned(estimate.organicCv)}`);
-  set('#cvDayDate',shortGraphDate(estimate.date));
-  set('#cvDayMessageCv',cvFormatEstimateSigned(estimate.messageCv));
-  set('#cvDayMessages',`${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
-  set('#cvDayUcuCv',Number.isFinite(estimate.ucuCv)?cvFormatEstimateSigned(estimate.ucuCv):'—');
-  set('#cvDayUcu',Number.isFinite(estimate.estimatedUcu)?`≈ ${fmt.format(Math.round(estimate.estimatedUcu))} UCU`:'need CV calibration');
+  set('#cvDayTotal',cvFormatEstimateSigned(estimate.actualDelta));
   set('#cvDayAdjustments',cvFormatEstimateSigned(estimate.adjustments,0));
-  set('#cvDayExpected',`≈ ${cvFormatEstimateSigned(estimate.expected)}`);
+  set('#cvDayExpected',cvFormatEstimateSigned(estimate.organicCv));
 
-  const ucuPart=Number.isFinite(estimate.estimatedUcu)
-    ? `${fmt.format(Math.round(estimate.estimatedUcu))} UCU × ${String(CV_PER_UCU).replace('.',',')} = ${cvFormatEstimate(estimate.ucuCv)} CV`
-    : 'UCU estimate unavailable until there is enough CV calibration data';
+  if(estimate.mode==='exact'){
+    set('#cvDayDate',`${shortGraphDate(estimate.date)} · calculated`);
+    set('#cvDayMessageCv',cvFormatEstimateSigned(estimate.messageCv));
+    set('#cvDayMessages',`${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
+    set('#cvDayUcuCv',cvFormatEstimateSigned(estimate.ucuCv));
+    set('#cvDayUcu',`${estimate.estimatedUcu>=0?'≈ ':''}${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
 
-  set('#cvDayFormula',
-    `${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages × ${String(CV_PER_MESSAGE).replace('.',',')} = ${cvFormatEstimate(estimate.messageCv)} CV · ${ucuPart}`
-  );
+    const warning=estimate.ucuCv<0
+      ? ' · ⚠ message CV is higher than organic CV; check timing/cap data'
+      : '';
+
+    set('#cvDayFormula',
+      `${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages × ${String(CV_PER_MESSAGE).replace('.',',')} = ${cvFormatEstimate(estimate.messageCv)} CV · `+
+      `remaining ${cvFormatEstimate(estimate.ucuCv)} CV ÷ ${String(CV_PER_UCU).replace('.',',')} = ${cvFormatEstimate(estimate.estimatedUcu)} UCU${warning}`
+    );
+    return;
+  }
+
+  if(estimate.mode==='estimated'){
+    set('#cvDayDate',`${shortGraphDate(estimate.date)} · estimated split`);
+    set('#cvDayMessageCv',`≈ ${cvFormatEstimateSigned(estimate.messageCv)}`);
+    set('#cvDayMessages',`≈ ${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
+    set('#cvDayUcuCv',`≈ ${cvFormatEstimateSigned(estimate.ucuCv)}`);
+    set('#cvDayUcu',`≈ ${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
+    set('#cvDayFormula',
+      `actual organic CV ${cvFormatEstimateSigned(estimate.organicCv)} · temporary split uses ≈${cvFormatEstimate(estimate.ratio)} messages / UCU until the ${shortGraphDate(estimate.date)} message snapshot is loaded.`
+    );
+    return;
+  }
+
+  set('#cvDayDate',`${shortGraphDate(estimate.date)} · waiting for messages`);
+  set('#cvDayMessageCv','—');
+  set('#cvDayMessages','message snapshot not loaded');
+  set('#cvDayUcuCv','—');
+  set('#cvDayUcu','—');
+  set('#cvDayFormula','CV growth is known, but the message/UCU split needs either the matching message snapshot or enough calibration data.');
 }
 
 function renderCvDashboard(){
@@ -9990,7 +10163,7 @@ function renderDashboardArchive(){
       const msgDelta=prev?archiveSnapshotTotal(day,'messages')-archiveSnapshotTotal(prev,'messages'):null;
       const colDelta=prev?archiveSnapshotTotal(day,'collectors')-archiveSnapshotTotal(prev,'collectors'):null;
       const estimate=cvDailyEstimate(day.date);
-      return `<div class="archive-daily-row"><span>${shortGraphDate(day.date)}</span><span>${Number.isFinite(msgDelta)?dashboardSigned(msgDelta):'—'}</span><span>${Number.isFinite(colDelta)?dashboardSigned(colDelta):'—'}</span><span>${estimate?`≈ ${cvFormatEstimateSigned(estimate.organicCv)}`:'—'}</span></div>`;
+      return `<div class="archive-daily-row"><span>${shortGraphDate(day.date)}</span><span>${Number.isFinite(msgDelta)?dashboardSigned(msgDelta):'—'}</span><span>${Number.isFinite(colDelta)?dashboardSigned(colDelta):'—'}</span><span>${estimate?`${cvFormatEstimateSigned(estimate.actualDelta)} CV`:'—'}</span></div>`;
     }).reverse().join('') : '<div class="dashboard-empty">no daily snapshots for this month.</div>';
   }
 
@@ -10047,7 +10220,7 @@ function dashboardRefresh(){
   try{
     const dayCv=cvDailyEstimate();
     setText('#dashboardCvMeta',dayCv
-      ? `≈ ${cvFormatEstimateSigned(dayCv.organicCv)} today · ${cvFormatEstimate(dayCv.messageCv)} msg · ${Number.isFinite(dayCv.ucuCv)?cvFormatEstimate(dayCv.ucuCv):'—'} UCU`
+      ? `${cvFormatEstimateSigned(dayCv.actualDelta)} today · ${dayCv.mode==='exact'?'calc':'est'} ${Number.isFinite(dayCv.messageCv)?cvFormatEstimate(dayCv.messageCv):'—'} msg · ${Number.isFinite(dayCv.ucuCv)?cvFormatEstimate(dayCv.ucuCv):'—'} UCU`
       : 'current');
   }catch(_){setText('#dashboardCvMeta','current')}
 
