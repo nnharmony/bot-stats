@@ -2419,13 +2419,13 @@ body.dashboard-shell #siteLockButton{
   padding:11px 8px !important;
   display:flex;
   flex-direction:column;
-  align-items:flex-start;
+  align-items:center;
   justify-content:space-between;
   border:1px solid var(--dash-border) !important;
   border-radius:14px !important;
   background:var(--dash-panel-2) !important;
   color:var(--dash-text) !important;
-  text-align:left;
+  text-align:center;
 }
 .dashboard-tile:active{transform:scale(.985)}
 .dashboard-tile-icon{
@@ -2795,7 +2795,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 
 <main id="app" hidden>
 
-<h1>♡characters</h1>
+<h1>💟 my profile</h1>
 <div class="app-head-row">
   <div id="updated" class="muted">loading…</div>
   <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
@@ -2804,6 +2804,30 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 <button id="dashboardBack" type="button" hidden>← home</button>
 
 <section id="dashboardHome" class="dashboard-home" data-dashboard-view="home">
+  <div class="dashboard-section-title">performance</div>
+  <div class="dashboard-performance">
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
+      <span>messages</span>
+      <strong id="dashboardMessages">—</strong>
+      <em id="dashboardMessagesDelta">—</em>
+    </button>
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
+      <span>collectors</span>
+      <strong id="dashboardCollectors">—</strong>
+      <em id="dashboardCollectorsDelta">—</em>
+    </button>
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="cv">
+      <span>creator value</span>
+      <strong id="dashboardCv">—</strong>
+      <em id="dashboardCvMeta">current</em>
+    </button>
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="subscribers">
+      <span>subscribers</span>
+      <strong id="dashboardSubscribers">—</strong>
+      <em id="dashboardSubscribersMeta">current</em>
+    </button>
+  </div>
+
   <div class="dashboard-overview-grid">
     <button class="dashboard-tile" type="button" data-open-dashboard-view="cv">
       <span class="dashboard-tile-icon">◇</span>
@@ -2831,30 +2855,6 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     </div>
     <div id="dashboardTopBots"><div class="dashboard-empty">loading…</div></div>
   </section>
-
-  <div class="dashboard-section-title">performance</div>
-  <div class="dashboard-performance">
-    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
-      <span>messages</span>
-      <strong id="dashboardMessages">—</strong>
-      <em id="dashboardMessagesDelta">—</em>
-    </button>
-    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
-      <span>collectors</span>
-      <strong id="dashboardCollectors">—</strong>
-      <em id="dashboardCollectorsDelta">—</em>
-    </button>
-    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="cv">
-      <span>creator value</span>
-      <strong id="dashboardCv">—</strong>
-      <em id="dashboardCvMeta">current</em>
-    </button>
-    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="subscribers">
-      <span>subscribers</span>
-      <strong id="dashboardSubscribers">—</strong>
-      <em id="dashboardSubscribersMeta">current</em>
-    </button>
-  </div>
 
   <div class="dashboard-section-title">active freezes</div>
   <section class="dashboard-card">
@@ -9357,10 +9357,14 @@ function dashboardSigned(n){
 
 function dashboardLevelForCv(value){
   if(!Number.isFinite(value)) return 'creator level —';
+  if(value>=80000) return 'creator level · LV 7';
   if(value>=15000) return 'creator level · LV 6';
   if(value>=3000) return 'creator level · LV 5';
   if(value>=800) return 'creator level · LV 4';
-  return 'creator level · LV 3';
+  if(value>=200) return 'creator level · LV 3';
+  if(value>=50) return 'creator level · LV 2';
+  if(value>=10) return 'creator level · LV 1';
+  return 'creator level · —';
 }
 
 function dashboardLatestCollectorDelta(){
