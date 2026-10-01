@@ -2323,6 +2323,449 @@ h1{
   background:#fff;
 }
 
+
+
+/* ===== 2026-10 mobile dashboard shell ===== */
+:root{
+  --dash-bg:#121116;
+  --dash-panel:#1b191f;
+  --dash-panel-2:#211e26;
+  --dash-panel-3:#29252e;
+  --dash-border:#37313d;
+  --dash-text:#f4f0f5;
+  --dash-muted:#aaa2ae;
+  --dash-accent:#b79fc7;
+  --dash-accent-2:#c9adc9;
+  --dash-accent-soft:rgba(183,159,199,.18);
+  --dash-accent-soft-2:rgba(201,173,201,.13);
+}
+
+body.dashboard-shell{
+  background:var(--dash-bg) !important;
+  color:var(--dash-text) !important;
+}
+body.dashboard-shell main#app{
+  max-width:620px;
+  padding:18px 14px 96px;
+}
+body.dashboard-shell h1{
+  margin:0 0 8px !important;
+  font-size:27px !important;
+  color:var(--dash-text) !important;
+  letter-spacing:-.03em;
+}
+body.dashboard-shell .app-head-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:7px;
+  margin-bottom:16px;
+}
+body.dashboard-shell .app-head-row .muted{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--dash-muted);
+  font-size:11px;
+}
+.dashboard-level-pill,
+#dashboardBack{
+  height:30px;
+  border:1px solid var(--dash-border);
+  border-radius:10px;
+  background:var(--dash-accent-soft) !important;
+  color:var(--dash-text) !important;
+  padding:0 10px !important;
+  font-size:11px !important;
+  font-weight:800;
+  line-height:28px;
+  white-space:nowrap;
+}
+#dashboardBack{background:var(--dash-panel-2) !important}
+body.dashboard-shell #siteLockButton{
+  height:30px;
+  border-radius:10px;
+  border-color:var(--dash-border);
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-muted) !important;
+  padding:0 9px !important;
+  font-size:11px !important;
+}
+
+.dashboard-home,
+.dashboard-more{
+  display:block;
+}
+.dashboard-home[hidden],
+.dashboard-more[hidden],
+[data-dashboard-view][hidden]{
+  display:none !important;
+}
+.dashboard-section-title{
+  margin:18px 2px 8px;
+  font-size:12px;
+  font-weight:850;
+  letter-spacing:.01em;
+  color:var(--dash-text);
+}
+.dashboard-overview-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+.dashboard-tile{
+  min-width:0;
+  min-height:80px;
+  padding:11px 8px !important;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:space-between;
+  border:1px solid var(--dash-border) !important;
+  border-radius:14px !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+  text-align:left;
+}
+.dashboard-tile:active{transform:scale(.985)}
+.dashboard-tile-icon{
+  display:grid;
+  place-items:center;
+  width:29px;
+  height:29px;
+  border-radius:9px;
+  background:var(--dash-accent-soft);
+  color:var(--dash-accent-2);
+  font-size:15px;
+}
+.dashboard-tile-label{
+  width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:10px;
+  font-weight:750;
+  color:#ddd6df;
+}
+.dashboard-card{
+  border:1px solid var(--dash-border);
+  border-radius:16px;
+  background:var(--dash-panel);
+  overflow:hidden;
+}
+.dashboard-card-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 12px 7px;
+}
+.dashboard-card-head strong{
+  font-size:12px;
+  text-transform:lowercase;
+}
+.dashboard-card-head button{
+  border:0 !important;
+  background:transparent !important;
+  color:var(--dash-accent-2) !important;
+  padding:4px !important;
+  font-size:10px !important;
+}
+.dashboard-bot-row{
+  display:grid;
+  grid-template-columns:25px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  padding:9px 12px;
+  border-top:1px solid rgba(255,255,255,.055);
+}
+.dashboard-rank{
+  display:grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  background:var(--dash-accent-soft);
+  color:var(--dash-accent-2);
+  font-size:10px;
+  font-weight:900;
+}
+.dashboard-bot-name{
+  font-size:12px;
+  font-weight:800;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.dashboard-bot-meta{
+  margin-top:2px;
+  color:var(--dash-muted);
+  font-size:9px;
+}
+.dashboard-bot-growth{
+  color:var(--dash-accent-2);
+  font-size:11px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.dashboard-empty{
+  padding:14px 12px;
+  color:var(--dash-muted);
+  font-size:10px;
+}
+.dashboard-performance{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.dashboard-stat-card{
+  padding:12px;
+  border:1px solid var(--dash-border);
+  border-radius:14px;
+  background:var(--dash-panel-2);
+}
+.dashboard-stat-card span{
+  display:block;
+  color:var(--dash-muted);
+  font-size:9px;
+  text-transform:lowercase;
+}
+.dashboard-stat-card strong{
+  display:block;
+  margin-top:4px;
+  font-size:20px;
+  line-height:1;
+  color:var(--dash-text);
+}
+.dashboard-stat-card em{
+  display:block;
+  margin-top:5px;
+  font-size:9px;
+  font-style:normal;
+  color:var(--dash-accent-2);
+}
+.dashboard-freeze-row{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  padding:10px 12px;
+  border-top:1px solid rgba(255,255,255,.055);
+}
+.dashboard-freeze-icon{
+  display:grid;
+  place-items:center;
+  width:27px;
+  height:27px;
+  border-radius:9px;
+  background:var(--dash-accent-soft);
+  color:var(--dash-accent-2);
+  font-size:13px;
+}
+.dashboard-freeze-name{font-size:11px;font-weight:800}
+.dashboard-freeze-since{margin-top:2px;color:var(--dash-muted);font-size:9px}
+.dashboard-freeze-days{color:var(--dash-accent-2);font-size:10px;font-weight:850;white-space:nowrap}
+.dashboard-shortcuts{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.dashboard-shortcut{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:49px;
+  padding:9px 11px !important;
+  border:1px solid var(--dash-border) !important;
+  border-radius:14px !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+  text-align:left;
+}
+.dashboard-shortcut b{display:block;font-size:10px}
+.dashboard-shortcut small{display:block;margin-top:2px;color:var(--dash-muted);font-size:8px}
+.dashboard-shortcut-icon{
+  flex:0 0 auto;
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:var(--dash-accent-soft);
+  color:var(--dash-accent-2);
+}
+.dashboard-more-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+}
+.dashboard-more .dashboard-shortcut{min-height:58px}
+
+.dashboard-bottom-nav{
+  position:fixed;
+  z-index:9000;
+  left:50%;
+  bottom:max(10px,env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  width:min(590px,calc(100vw - 20px));
+  height:62px;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:3px;
+  padding:6px;
+  border:1px solid var(--dash-border);
+  border-radius:18px;
+  background:rgba(27,25,31,.96);
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+  backdrop-filter:blur(14px);
+}
+.dashboard-nav-button{
+  height:48px;
+  padding:4px 2px !important;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  border:0 !important;
+  border-radius:12px !important;
+  background:transparent !important;
+  color:#8f8794 !important;
+  font-size:9px !important;
+}
+.dashboard-nav-button .nav-icon{font-size:16px;line-height:1}
+.dashboard-nav-button.active{
+  background:var(--dash-accent-soft) !important;
+  color:var(--dash-accent-2) !important;
+}
+
+/* detailed tracker screens — same engine, cleaner mobile skin */
+body.dashboard-shell .all-bots,
+body.dashboard-shell #analyticsPanel,
+body.dashboard-shell #subscriberPanel,
+body.dashboard-shell #cvPanel,
+body.dashboard-shell #eventsPanel,
+body.dashboard-shell .comparebox{
+  margin:0 !important;
+  border:1px solid var(--dash-border) !important;
+  border-radius:16px !important;
+  background:var(--dash-panel) !important;
+  color:var(--dash-text) !important;
+  overflow:hidden;
+}
+body.dashboard-shell .all-bots>summary,
+body.dashboard-shell #analyticsPanel>summary,
+body.dashboard-shell #subscriberPanel>summary,
+body.dashboard-shell #cvPanel>summary,
+body.dashboard-shell #eventsPanel>summary{
+  padding:13px 14px !important;
+  border:0 !important;
+  border-bottom:1px solid var(--dash-border) !important;
+  border-radius:0 !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+  font-size:12px !important;
+}
+body.dashboard-shell .analytics-content,
+body.dashboard-shell .cv-content,
+body.dashboard-shell .events-content,
+body.dashboard-shell .all-bots-content{
+  background:var(--dash-panel) !important;
+  color:var(--dash-text) !important;
+}
+body.dashboard-shell .analytics-card,
+body.dashboard-shell .analytics-subscriber-goal,
+body.dashboard-shell .analytics-chart-panel,
+body.dashboard-shell .cv-hero,
+body.dashboard-shell .cv-stat,
+body.dashboard-shell .cv-estimate-summary>div,
+body.dashboard-shell .freeze-overview,
+body.dashboard-shell .event-analysis-overview,
+body.dashboard-shell .new-overview{
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+  border-color:var(--dash-border) !important;
+}
+body.dashboard-shell .analytics-card span,
+body.dashboard-shell .analytics-card em,
+body.dashboard-shell .cv-kicker,
+body.dashboard-shell .cv-stat span,
+body.dashboard-shell .cv-estimate-summary span,
+body.dashboard-shell .cv-estimator-note,
+body.dashboard-shell .cv-ledger-help,
+body.dashboard-shell .subscriber-ledger-help,
+body.dashboard-shell .event-field label,
+body.dashboard-shell .freeze-overview-sub,
+body.dashboard-shell .freeze-since,
+body.dashboard-shell .event-analysis-sub,
+body.dashboard-shell .event-analysis-note,
+body.dashboard-shell .new-overview-sub,
+body.dashboard-shell .new-overview-created{
+  color:var(--dash-muted) !important;
+}
+body.dashboard-shell .cv-formula{
+  background:var(--dash-accent-soft-2) !important;
+  color:#c9c1cb !important;
+}
+body.dashboard-shell .cv-progress-track,
+body.dashboard-shell .analytics-goal-track,
+body.dashboard-shell .freeze-track{
+  background:#38333d !important;
+}
+body.dashboard-shell .cv-progress-bar,
+body.dashboard-shell .analytics-goal-bar,
+body.dashboard-shell .freeze-bar{
+  background:var(--dash-accent) !important;
+}
+body.dashboard-shell #cvCurrent,
+body.dashboard-shell .new-overview-days,
+body.dashboard-shell .freeze-days{
+  color:var(--dash-accent-2) !important;
+}
+body.dashboard-shell table{color:var(--dash-text)}
+body.dashboard-shell th,
+body.dashboard-shell td{
+  border-bottom-color:var(--dash-border) !important;
+}
+body.dashboard-shell th{color:#c7beca}
+body.dashboard-shell .subscriber-table thead th{
+  background:var(--dash-panel-2) !important;
+}
+body.dashboard-shell .comparebox{
+  padding:12px !important;
+}
+body.dashboard-shell .date-labels,
+body.dashboard-shell .chart-legend-toggle,
+body.dashboard-shell .chart-legend-item{
+  color:var(--dash-muted) !important;
+}
+body.dashboard-shell .graph-panel,
+body.dashboard-shell .bot-picker{
+  border-color:var(--dash-border) !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+}
+body.dashboard-shell .graph-panel>summary,
+body.dashboard-shell .bot-picker>summary{
+  color:var(--dash-text) !important;
+}
+body.dashboard-shell input,
+body.dashboard-shell select,
+body.dashboard-shell textarea,
+body.dashboard-shell button:not(.dashboard-tile):not(.dashboard-shortcut):not(.dashboard-nav-button):not(.dashboard-card-head button){
+  border-color:#4a4350;
+}
+body.dashboard-shell .positive{color:#d4b8d2 !important}
+body.dashboard-shell .stale{color:#c4aecb !important}
+
+@media(max-width:430px){
+  body.dashboard-shell main#app{padding-left:12px;padding-right:12px}
+  .dashboard-overview-grid{gap:6px}
+  .dashboard-tile{min-height:75px;padding:9px 7px !important}
+  .dashboard-tile-label{font-size:9px}
+  .dashboard-bottom-nav{width:calc(100vw - 16px)}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2355,8 +2798,94 @@ h1{
 <h1>♡characters</h1>
 <div class="app-head-row">
   <div id="updated" class="muted">loading…</div>
+  <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
   <button id="siteLockButton" type="button">lock</button>
 </div>
+<button id="dashboardBack" type="button" hidden>← home</button>
+
+<section id="dashboardHome" class="dashboard-home" data-dashboard-view="home">
+  <div class="dashboard-overview-grid">
+    <button class="dashboard-tile" type="button" data-open-dashboard-view="cv">
+      <span class="dashboard-tile-icon">◇</span>
+      <span class="dashboard-tile-label">creator value</span>
+    </button>
+    <button class="dashboard-tile" type="button" data-open-dashboard-view="subscribers">
+      <span class="dashboard-tile-icon">♡</span>
+      <span class="dashboard-tile-label">subscribers</span>
+    </button>
+    <button class="dashboard-tile" type="button" data-open-dashboard-view="analytics">
+      <span class="dashboard-tile-icon">▥</span>
+      <span class="dashboard-tile-label">analytics</span>
+    </button>
+    <button class="dashboard-tile" type="button" data-open-dashboard-view="events">
+      <span class="dashboard-tile-icon">✦</span>
+      <span class="dashboard-tile-label">events</span>
+    </button>
+  </div>
+
+  <div class="dashboard-section-title">top bots</div>
+  <section class="dashboard-card">
+    <div class="dashboard-card-head">
+      <strong>daily growth</strong>
+      <button type="button" data-open-dashboard-view="bots">view all</button>
+    </div>
+    <div id="dashboardTopBots"><div class="dashboard-empty">loading…</div></div>
+  </section>
+
+  <div class="dashboard-section-title">performance</div>
+  <div class="dashboard-performance">
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
+      <span>messages</span>
+      <strong id="dashboardMessages">—</strong>
+      <em id="dashboardMessagesDelta">—</em>
+    </button>
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
+      <span>collectors</span>
+      <strong id="dashboardCollectors">—</strong>
+      <em id="dashboardCollectorsDelta">—</em>
+    </button>
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="cv">
+      <span>creator value</span>
+      <strong id="dashboardCv">—</strong>
+      <em id="dashboardCvMeta">current</em>
+    </button>
+    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="subscribers">
+      <span>subscribers</span>
+      <strong id="dashboardSubscribers">—</strong>
+      <em id="dashboardSubscribersMeta">current</em>
+    </button>
+  </div>
+
+  <div class="dashboard-section-title">active freezes</div>
+  <section class="dashboard-card">
+    <div class="dashboard-card-head">
+      <strong>⏸️ freezes</strong>
+      <button type="button" data-open-dashboard-view="chart">analyse</button>
+    </div>
+    <div id="dashboardFreezes"><div class="dashboard-empty">loading…</div></div>
+  </section>
+
+  <div class="dashboard-section-title">shortcuts</div>
+  <div class="dashboard-shortcuts">
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="bots">
+      <span class="dashboard-shortcut-icon">♡</span>
+      <span><b>all bots</b><small>search & sort</small></span>
+    </button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="chart">
+      <span class="dashboard-shortcut-icon">⌁</span>
+      <span><b>graph</b><small>growth & freezes</small></span>
+    </button>
+  </div>
+</section>
+
+<section id="dashboardMore" class="dashboard-more" data-dashboard-view="more" hidden>
+  <div class="dashboard-section-title" style="margin-top:0">tracker tools</div>
+  <div class="dashboard-more-grid">
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="analytics"><span class="dashboard-shortcut-icon">▥</span><span><b>analytics</b><small>messages · collectors · subscribers · CV</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
+  </div>
+</section>
 
 <details class="all-bots">
   <summary>all bots</summary>
@@ -2885,7 +3414,13 @@ h1{
 </div>
 
 
-
+<nav class="dashboard-bottom-nav" id="dashboardBottomNav" aria-label="tracker navigation">
+  <button class="dashboard-nav-button active" type="button" data-dashboard-nav="home"><span class="nav-icon">⌂</span><span>home</span></button>
+  <button class="dashboard-nav-button" type="button" data-dashboard-nav="bots"><span class="nav-icon">♡</span><span>bots</span></button>
+  <button class="dashboard-nav-button" type="button" data-dashboard-nav="chart"><span class="nav-icon">⌁</span><span>chart</span></button>
+  <button class="dashboard-nav-button" type="button" data-dashboard-nav="events"><span class="nav-icon">✦</span><span>events</span></button>
+  <button class="dashboard-nav-button" type="button" data-dashboard-nav="more"><span class="nav-icon">•••</span><span>more</span></button>
+</nav>
 
 </main>
 
@@ -8760,6 +9295,180 @@ document.querySelector('#graphPanel')
 document.querySelector('#compareBots')?.addEventListener('click',()=>{
   setTimeout(renderFreezeOverview,0);
 });
+
+
+/* ===== dashboard shell controller ===== */
+let dashboardCurrentView='home';
+
+function dashboardTargets(){
+  return {
+    home:document.querySelector('#dashboardHome'),
+    more:document.querySelector('#dashboardMore'),
+    bots:document.querySelector('.all-bots'),
+    analytics:document.querySelector('#analyticsPanel'),
+    subscribers:document.querySelector('#subscriberPanel'),
+    cv:document.querySelector('#cvPanel'),
+    events:document.querySelector('#eventsPanel'),
+    chart:document.querySelector('.comparebox')
+  };
+}
+
+function dashboardNavGroup(view){
+  if(['analytics','subscribers','cv','more'].includes(view)) return 'more';
+  return view;
+}
+
+function dashboardShowView(view,{scroll=true}={}){
+  const targets=dashboardTargets();
+  if(!targets[view]) view='home';
+  dashboardCurrentView=view;
+
+  Object.entries(targets).forEach(([key,el])=>{
+    if(!el) return;
+    el.dataset.dashboardView=key;
+    el.hidden=key!==view;
+  });
+
+  const current=targets[view];
+  if(current?.tagName==='DETAILS') current.open=true;
+
+  document.querySelectorAll('[data-dashboard-nav]').forEach(button=>{
+    button.classList.toggle('active',button.dataset.dashboardNav===dashboardNavGroup(view));
+  });
+
+  const back=document.querySelector('#dashboardBack');
+  if(back) back.hidden=view==='home';
+
+  if(view==='chart'){
+    const graph=document.querySelector('#graphPanel');
+    if(graph) graph.open=true;
+    setTimeout(()=>compareChart?.resize?.(),40);
+  }
+
+  if(view==='analytics') setTimeout(()=>analyticsChart?.resize?.(),40);
+  if(scroll) window.scrollTo({top:0,behavior:'smooth'});
+  dashboardRefresh();
+}
+
+function dashboardSigned(n){
+  if(!Number.isFinite(n)) return '—';
+  return `${n>0?'+':''}${fmt.format(Math.round(n))}`;
+}
+
+function dashboardLevelForCv(value){
+  if(!Number.isFinite(value)) return 'creator level —';
+  if(value>=15000) return 'creator level · LV 6';
+  if(value>=3000) return 'creator level · LV 5';
+  if(value>=800) return 'creator level · LV 4';
+  return 'creator level · LV 3';
+}
+
+function dashboardLatestCollectorDelta(){
+  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
+  if(days.length<2) return null;
+  const total=day=>(day?.snapshot?.bots||[]).reduce((sum,b)=>sum+(Number.isFinite(b.collectors)?b.collectors:0),0);
+  return total(days.at(-1))-total(days.at(-2));
+}
+
+function dashboardCurrentSubscribers(){
+  try{
+    const entry=analyticsSubscriberEntriesAsc().at(-1);
+    return Number.isFinite(Number(entry?.total))?Number(entry.total):null;
+  }catch(_){return null}
+}
+
+function dashboardRefresh(){
+  const topBox=document.querySelector('#dashboardTopBots');
+  if(topBox){
+    const top=[...state.bots]
+      .filter(bot=>Number.isFinite(bot.growth))
+      .sort((a,b)=>(b.growth??-Infinity)-(a.growth??-Infinity))
+      .slice(0,4);
+
+    topBox.innerHTML=top.length ? top.map((bot,index)=>`\n      <div class="dashboard-bot-row">\n        <span class="dashboard-rank">${index+1}</span>\n        <div>\n          <div class="dashboard-bot-name">${bot.name||bot.cid}</div>\n          <div class="dashboard-bot-meta">${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>\n        </div>\n        <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>\n      </div>\n    `).join('') : '<div class="dashboard-empty">no growth data yet.</div>';
+  }
+
+  const totalMessages=state.bots.reduce((sum,b)=>sum+(Number.isFinite(b.messages)?b.messages:0),0);
+  const totalCollectors=state.bots.reduce((sum,b)=>sum+(Number.isFinite(b.collectors)?b.collectors:0),0);
+  const dailyMessages=state.bots.reduce((sum,b)=>sum+(Number.isFinite(b.growth)?b.growth:0),0);
+  const collectorDelta=dashboardLatestCollectorDelta();
+
+  const setText=(selector,value)=>{const el=document.querySelector(selector);if(el)el.textContent=value};
+  setText('#dashboardMessages',state.bots.length?fmt.format(totalMessages):'—');
+  setText('#dashboardMessagesDelta',state.bots.length?`${dashboardSigned(dailyMessages)} latest update`:'—');
+  setText('#dashboardCollectors',state.bots.length?fmt.format(totalCollectors):'—');
+  setText('#dashboardCollectorsDelta',Number.isFinite(collectorDelta)?`${dashboardSigned(collectorDelta)} latest update`:'—');
+
+  let cvValue=null;
+  try{cvValue=Number(cvCurrentEntry()?.total)}catch(_){}
+  setText('#dashboardCv',Number.isFinite(cvValue)?fmt.format(cvValue):'—');
+  setText('#dashboardCreatorLevel',dashboardLevelForCv(cvValue));
+
+  const subs=dashboardCurrentSubscribers();
+  setText('#dashboardSubscribers',Number.isFinite(subs)?fmt.format(subs):'—');
+
+  const freezeBox=document.querySelector('#dashboardFreezes');
+  if(freezeBox){
+    let infos=[];
+    try{infos=currentFreezeInfo()}catch(_){}
+    freezeBox.innerHTML=infos.length ? infos.slice(0,5).map(item=>`\n      <div class="dashboard-freeze-row">\n        <span class="dashboard-freeze-icon">⏸️</span>\n        <div>\n          <div class="dashboard-freeze-name">${item.name}</div>\n          <div class="dashboard-freeze-since">since ${shortGraphDate(item.since)}</div>\n        </div>\n        <span class="dashboard-freeze-days">${item.days} ${item.days===1?'day':'days'}</span>\n      </div>\n    `).join('') : '<div class="dashboard-empty">no active freezes.</div>';
+  }
+}
+
+function dashboardInit(){
+  document.body.classList.add('dashboard-shell');
+
+  const targets=dashboardTargets();
+  Object.entries(targets).forEach(([key,el])=>{if(el)el.dataset.dashboardView=key});
+
+  document.addEventListener('click',event=>{
+    const opener=event.target.closest('[data-open-dashboard-view]');
+    if(opener){
+      dashboardShowView(opener.dataset.openDashboardView);
+      return;
+    }
+    const nav=event.target.closest('[data-dashboard-nav]');
+    if(nav){
+      dashboardShowView(nav.dataset.dashboardNav);
+      return;
+    }
+  });
+
+  document.querySelector('#dashboardBack')?.addEventListener('click',()=>dashboardShowView('home'));
+
+  document.querySelector('#fullscreenEventsContent')?.addEventListener('click',event=>{
+    if(event.target.closest('[data-go-event-date]')) dashboardShowView('events',{scroll:false});
+  },true);
+
+  dashboardShowView('home',{scroll:false});
+
+  const originalRender=render;
+  render=function(){
+    const result=originalRender.apply(this,arguments);
+    setTimeout(dashboardRefresh,0);
+    return result;
+  };
+
+  const originalCv=renderCvDashboard;
+  renderCvDashboard=function(){
+    const result=originalCv.apply(this,arguments);
+    setTimeout(dashboardRefresh,0);
+    return result;
+  };
+
+  const originalSubs=renderSubscriberLedger;
+  renderSubscriberLedger=function(){
+    const result=originalSubs.apply(this,arguments);
+    setTimeout(dashboardRefresh,0);
+    return result;
+  };
+
+  const updated=document.querySelector('#updated');
+  if(updated) new MutationObserver(()=>dashboardRefresh()).observe(updated,{childList:true,subtree:true,characterData:true});
+  setTimeout(dashboardRefresh,150);
+}
+
+dashboardInit();
 
 restoreSiteSession();
 
