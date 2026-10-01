@@ -2263,7 +2263,8 @@ h1{
     height:240px;
   }
   .subscriber-form{
-    grid-template-columns:145px minmax(0,1fr);
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:12px;
   }
   .subscriber-note-field{
     grid-column:1/-1;
@@ -2349,15 +2350,20 @@ body.dashboard-shell main#app{
   padding:18px 14px 96px;
 }
 body.dashboard-shell h1{
-  margin:0 0 8px !important;
+  margin:0 !important;
   font-size:27px !important;
   color:var(--dash-text) !important;
   letter-spacing:-.03em;
 }
-body.dashboard-shell .app-head-row{
+.dashboard-title-row{
   display:grid;
   grid-template-columns:minmax(0,1fr) auto auto;
   gap:7px;
+  align-items:center;
+  margin-bottom:6px;
+}
+body.dashboard-shell .app-head-row{
+  display:block;
   margin-bottom:16px;
 }
 body.dashboard-shell .app-head-row .muted{
@@ -2381,7 +2387,10 @@ body.dashboard-shell .app-head-row .muted{
   line-height:28px;
   white-space:nowrap;
 }
-#dashboardBack{background:var(--dash-panel-2) !important}
+#dashboardBack{
+  background:var(--dash-panel-2) !important;
+  margin:0 0 8px !important;
+}
 body.dashboard-shell #siteLockButton{
   height:30px;
   border-radius:10px;
@@ -2732,6 +2741,46 @@ body.dashboard-shell th{color:#c7beca}
 body.dashboard-shell .subscriber-table thead th{
   background:var(--dash-panel-2) !important;
 }
+body.dashboard-shell .all-bots-table-wrap{
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x pan-y;
+}
+body.dashboard-shell .all-bots-table-wrap .main-table{
+  min-width:610px;
+}
+body.dashboard-shell .subscriber-form{
+  gap:12px !important;
+}
+body.dashboard-shell #subscriberDate{
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+}
+.subscriber-total-stepper{
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) 30px;
+  gap:5px;
+  align-items:center;
+}
+.subscriber-total-stepper #subscriberTotal{
+  width:100%;
+  min-width:0;
+}
+.subscriber-step-button{
+  width:30px !important;
+  min-width:30px !important;
+  height:34px !important;
+  padding:0 !important;
+  display:grid !important;
+  place-items:center;
+  font-size:18px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+}
 body.dashboard-shell .comparebox{
   padding:12px !important;
 }
@@ -2761,6 +2810,9 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 
 @media(max-width:430px){
   body.dashboard-shell main#app{padding-left:12px;padding-right:12px}
+  .dashboard-title-row{gap:5px}
+  body.dashboard-shell h1{font-size:24px !important}
+  .dashboard-level-pill{padding:0 8px !important;font-size:10px !important}
   .dashboard-overview-grid{gap:6px}
   .dashboard-tile{min-height:75px;padding:9px 7px !important}
   .dashboard-tile-label{font-size:9px}
@@ -2796,11 +2848,13 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 
 <main id="app" hidden>
 
-<h1>💟 my profile</h1>
-<div class="app-head-row">
-  <div id="updated" class="muted">loading…</div>
+<div class="dashboard-title-row">
+  <h1>💟 my profile</h1>
   <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
   <button id="siteLockButton" type="button">lock</button>
+</div>
+<div class="app-head-row">
+  <div id="updated" class="muted">loading…</div>
 </div>
 <button id="dashboardBack" type="button" hidden>← home</button>
 
@@ -2885,6 +2939,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="analytics"><span class="dashboard-shortcut-icon">▥</span><span><b>analytics</b><small>messages · collectors · subscribers · CV</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
+    <button class="dashboard-shortcut" id="dashboardGithubShortcut" type="button"><span class="dashboard-shortcut-icon">↗</span><span><b>github</b><small>open your GitHub</small></span></button>
   </div>
 </section>
 
@@ -2911,6 +2966,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
       <button id="copyAllBots" class="copy-table-button" type="button">copy</button>
     </div>
 
+    <div class="all-bots-table-wrap">
     <table class="main-table">
       <thead>
         <tr>
@@ -2923,6 +2979,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
       </thead>
       <tbody id="rows"></tbody>
     </table>
+    </div>
 
   </div>
 </details>
@@ -3047,9 +3104,13 @@ body.dashboard-shell .stale{color:#c4aecb !important}
           <input id="subscriberDate" type="date">
         </div>
 
-        <div>
+        <div class="subscriber-total-field">
           <label for="subscriberTotal">subscribers</label>
-          <input id="subscriberTotal" type="number" min="0" step="1" placeholder="192">
+          <div class="subscriber-total-stepper">
+            <button id="subscriberMinus" class="subscriber-step-button" type="button" aria-label="subtract one subscriber">−</button>
+            <input id="subscriberTotal" type="number" min="0" step="1" placeholder="192">
+            <button id="subscriberPlus" class="subscriber-step-button" type="button" aria-label="add one subscriber">+</button>
+          </div>
         </div>
 
         <div class="subscriber-note-field">
@@ -3156,7 +3217,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     <details class="cv-bot-estimator">
       <summary>uncapped bot estimate</summary>
       <div class="cv-estimator-note">
-        message CV is calculated from 1 CV / 400 messages. UCU CV is estimated from your own CV ledger and uncapped message growth. Character cap = 500.
+        message CV = 0.0025 per message. UCU CV = 0.05 per UCU. The creation bonus (+30 HQ / +10 compliant) is included in the 500 character cap.
       </div>
       <div id="cvBotEstimatorRows" class="cv-bot-estimator-rows"></div>
     </details>
@@ -6288,6 +6349,69 @@ function clearSubscriberForm(){
   status.className='';
 }
 
+let subscriberQuickSaving=false;
+
+function subscriberLatestTotal(){
+  try{
+    const latest=analyticsSubscriberEntriesAsc().at(-1);
+    const total=Number(latest?.total);
+    if(Number.isFinite(total)) return total;
+  }catch(_){}
+
+  const typed=Number(document.querySelector('#subscriberTotal')?.value);
+  return Number.isFinite(typed) ? typed : null;
+}
+
+async function quickAdjustSubscriber(delta){
+  const status=document.querySelector('#subscriberStatus');
+  if(subscriberQuickSaving) return;
+
+  if(!eventsState.unlocked){
+    status.textContent='unlock first';
+    status.className='error';
+    return;
+  }
+
+  const current=subscriberLatestTotal();
+  if(!Number.isFinite(current)){
+    status.textContent='add a subscriber total first';
+    status.className='error';
+    return;
+  }
+
+  const total=Math.max(0,current+delta);
+  const date=new Date().toLocaleDateString('sv-SE');
+  const minus=document.querySelector('#subscriberMinus');
+  const plus=document.querySelector('#subscriberPlus');
+
+  subscriberQuickSaving=true;
+  if(minus) minus.disabled=true;
+  if(plus) plus.disabled=true;
+  status.textContent=`${total} saving…`;
+  status.className='';
+
+  try{
+    await analyticsRequest('/analytics',{
+      method:'POST',
+      body:JSON.stringify({date,total,note:''})
+    });
+
+    await loadAnalytics();
+    clearSubscriberForm();
+
+    status.textContent=`${total} saved ✓`;
+    status.className='ok';
+    dashboardRefresh?.();
+  }catch(error){
+    status.textContent=error.message;
+    status.className='error';
+  }finally{
+    subscriberQuickSaving=false;
+    if(minus) minus.disabled=false;
+    if(plus) plus.disabled=false;
+  }
+}
+
 async function saveSubscriberEntry(){
   const status=document.querySelector('#subscriberStatus');
 
@@ -6441,6 +6565,12 @@ function initAnalytics(){
   document.querySelector('#subscriberClear')
     .addEventListener('click',clearSubscriberForm);
 
+  document.querySelector('#subscriberMinus')
+    ?.addEventListener('click',()=>quickAdjustSubscriber(-1));
+
+  document.querySelector('#subscriberPlus')
+    ?.addEventListener('click',()=>quickAdjustSubscriber(1));
+
   document.querySelector('#subscriberGoal')
     .addEventListener('change',saveSubscriberGoal);
 
@@ -6468,6 +6598,9 @@ function initAnalytics(){
 }
 
 
+
+const CV_PER_MESSAGE=0.0025;
+const CV_PER_UCU=0.05;
 
 const cvState={
   entries:[],
@@ -6718,8 +6851,7 @@ function cvCalibration(){
 
       messageCv+=Math.max(
         0,
-        Math.floor(endMessages/400)-
-        Math.floor(startMessages/400)
+        (endMessages-startMessages)*CV_PER_MESSAGE
       );
     }
 
@@ -6737,7 +6869,7 @@ function cvCalibration(){
       organicCv-messageCv;
 
     const estimatedUcu=
-      ucuCv*20;
+      ucuCv/CV_PER_UCU;
 
     if(
       !Number.isFinite(estimatedUcu) ||
@@ -6788,6 +6920,23 @@ function cvCalibration(){
   };
 }
 
+function cvCreationBonusForCid(cid,throughDate=''){
+  let bonus=0;
+
+  cvSortedEntriesAsc().forEach(entry=>{
+    if(String(entry.botCid||'')!==String(cid)) return;
+    if(throughDate && String(entry.date||'')>throughDate) return;
+
+    if(entry.type==='compliant_new'){
+      bonus=Math.max(bonus,10);
+    }else if(entry.type==='new' || entry.type==='hq_new'){
+      bonus=Math.max(bonus,30);
+    }
+  });
+
+  return bonus;
+}
+
 function cvUncappedEstimator(){
   const latest=getLatestEntry();
   const ratio=cvCalibration().rolling;
@@ -6812,7 +6961,9 @@ function cvUncappedEstimator(){
     if(!bot || !Number.isFinite(bot.messages)) continue;
 
     const messages=bot.messages;
-    const messageCv=Math.max(0,Math.floor(messages/400));
+    const creationCv=cvCreationBonusForCid(cid,latest.date);
+    const messageCv=Math.max(0,messages*CV_PER_MESSAGE);
+    const minimumCv=Math.min(500,creationCv+messageCv);
 
     let estimatedUcu=null;
     let ucuCv=null;
@@ -6820,15 +6971,17 @@ function cvUncappedEstimator(){
 
     if(Number.isFinite(ratio) && ratio>0){
       estimatedUcu=messages/ratio;
-      ucuCv=Math.max(0,Math.floor(estimatedUcu/20));
-      estimatedCv=Math.min(500,messageCv+ucuCv);
+      ucuCv=Math.max(0,estimatedUcu*CV_PER_UCU);
+      estimatedCv=Math.min(500,creationCv+messageCv+ucuCv);
     }
 
     rows.push({
       cid,
       name:meta?.name || cid,
       messages,
+      creationCv,
       messageCv,
+      minimumCv,
       estimatedUcu,
       ucuCv,
       estimatedCv,
@@ -6840,8 +6993,8 @@ function cvUncappedEstimator(){
   }
 
   rows.sort((a,b)=>
-    (b.estimatedCv ?? b.messageCv)-
-    (a.estimatedCv ?? a.messageCv) ||
+    (b.estimatedCv ?? b.minimumCv)-
+    (a.estimatedCv ?? a.minimumCv) ||
     b.messages-a.messages
   );
 
@@ -6903,19 +7056,23 @@ function renderCvEstimator(){
     const known=Number.isFinite(row.estimatedCv);
     const displayCv=known
       ? `≈${fmt.format(row.estimatedCv)} / 500`
-      : `≥${fmt.format(row.messageCv)} / 500`;
+      : `≥${fmt.format(row.minimumCv)} / 500`;
 
     const width=Math.max(
       1,
       Math.min(
         100,
-        ((known ? row.estimatedCv : row.messageCv)/500)*100
+        ((known ? row.estimatedCv : row.minimumCv)/500)*100
       )
     );
 
+    const creationPart=row.creationCv>0
+      ? `${fmt.format(row.creationCv)} creation CV + `
+      : '';
+
     const detail=known
-      ? `${compactAxisValue(row.messages)} msg · ${row.messageCv} message CV + ≈${row.ucuCv} UCU CV`
-      : `${compactAxisValue(row.messages)} msg · ${row.messageCv} message CV · UCU estimate needs calibration`;
+      ? `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message CV + ≈${fmt.format(row.ucuCv)} UCU CV`
+      : `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message CV · UCU estimate needs calibration`;
 
     return `
       <div class="cv-bot-estimator-row ${cvCapClass(row.estimatedCv)}">
@@ -9420,6 +9577,31 @@ function dashboardRefresh(){
   }
 }
 
+function dashboardOpenGithub(){
+  let url='';
+
+  try{
+    url=localStorage.getItem('statsTrackerGithubUrl') || '';
+  }catch(_){}
+
+  if(!url){
+    url=window.prompt('Paste your GitHub URL');
+    if(!url) return;
+    url=url.trim();
+    if(!/^https?:\/\//i.test(url)) url='https://'+url;
+
+    try{
+      new URL(url);
+      localStorage.setItem('statsTrackerGithubUrl',url);
+    }catch(_){
+      window.alert('That does not look like a valid URL.');
+      return;
+    }
+  }
+
+  window.open(url,'_blank','noopener');
+}
+
 function dashboardInit(){
   document.body.classList.add('dashboard-shell');
 
@@ -9440,6 +9622,7 @@ function dashboardInit(){
   });
 
   document.querySelector('#dashboardBack')?.addEventListener('click',()=>dashboardShowView('home'));
+  document.querySelector('#dashboardGithubShortcut')?.addEventListener('click',dashboardOpenGithub);
 
   document.querySelector('#fullscreenEventsContent')?.addEventListener('click',event=>{
     if(event.target.closest('[data-go-event-date]')) dashboardShowView('events',{scroll:false});
