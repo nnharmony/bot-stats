@@ -2819,6 +2819,129 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   .dashboard-bottom-nav{width:calc(100vw - 16px)}
 }
 
+
+
+/* ===== consolidated dashboard upgrades: archive, mobile bot rows, daily CV, profile shortcut ===== */
+.dashboard-title-row h1{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+}
+.dashboard-profile-shortcut{
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  flex:0 0 auto;
+  width:auto !important;
+  min-width:0 !important;
+  height:auto !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:9px !important;
+  background:transparent !important;
+  color:inherit !important;
+  font:inherit !important;
+  font-size:1em !important;
+  line-height:1 !important;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.dashboard-profile-shortcut:active{transform:scale(.95)}
+
+.dashboard-setting-card{
+  padding:12px;
+  border:1px solid var(--dash-border);
+  border-radius:14px;
+  background:var(--dash-panel-2);
+}
+.dashboard-setting-card label{display:block;margin-bottom:6px;color:var(--dash-muted);font-size:9px}
+.dashboard-setting-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}
+.dashboard-setting-row input{width:100%;min-width:0}
+.dashboard-setting-row button{min-width:58px}
+.dashboard-setting-card small{display:block;margin-top:7px;color:var(--dash-muted);font-size:8px;line-height:1.35}
+.dashboard-setting-status{min-height:14px;margin-top:5px;color:var(--dash-accent-2);font-size:9px}
+
+.cv-day-estimate{
+  margin-top:10px;
+  padding:11px;
+  border:1px solid var(--dash-border,#ddd);
+  border-radius:12px;
+  background:var(--dash-panel-2,#f7f7f8);
+}
+.cv-day-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.cv-day-head span{display:block;color:var(--dash-muted,#777);font-size:9px}
+.cv-day-head strong{display:block;margin-top:2px;color:var(--dash-accent-2,#aa8ef5);font-size:22px;line-height:1}
+.cv-day-head small{color:var(--dash-muted,#777);font-size:9px;white-space:nowrap}
+.cv-day-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.cv-day-grid>div{padding:8px;border:1px solid var(--dash-border,#e1e1e4);border-radius:10px;background:rgba(255,255,255,.025)}
+.cv-day-grid span{display:block;color:var(--dash-muted,#777);font-size:8px}
+.cv-day-grid strong{display:block;margin-top:2px;font-size:13px}
+.cv-day-grid small{display:block;margin-top:2px;color:var(--dash-muted,#777);font-size:8px}
+.cv-day-formula{margin-top:8px;color:var(--dash-muted,#777);font-size:8px;line-height:1.4}
+
+.dashboard-archive{display:block}
+.dashboard-archive[hidden]{display:none !important}
+.archive-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.archive-subtitle{color:var(--dash-muted);font-size:9px}
+#archiveMonth{width:auto;max-width:160px;height:34px;padding:0 8px;font-size:10px}
+.archive-range{margin:0 0 10px;color:var(--dash-muted);font-size:9px}
+.archive-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.archive-stat{padding:11px;border:1px solid var(--dash-border);border-radius:14px;background:var(--dash-panel-2)}
+.archive-stat span{display:block;color:var(--dash-muted);font-size:8px}
+.archive-stat strong{display:block;margin-top:3px;font-size:16px}
+.archive-stat em{display:block;margin-top:4px;color:var(--dash-accent-2);font-size:8px;font-style:normal}
+.archive-card-meta{color:var(--dash-muted);font-size:8px}
+.archive-table-card{border:1px solid var(--dash-border);border-radius:14px;background:var(--dash-panel);overflow:hidden}
+.archive-table-head,.archive-daily-row{display:grid;grid-template-columns:58px minmax(0,1fr) minmax(0,.8fr) minmax(0,.8fr);gap:5px;align-items:center}
+.archive-table-head{padding:8px 10px;background:var(--dash-panel-2);color:var(--dash-muted);font-size:8px;font-weight:800}
+.archive-daily-row{padding:9px 10px;border-top:1px solid rgba(255,255,255,.055);font-size:9px}
+.archive-daily-row span:not(:first-child){text-align:right}
+.archive-event-row,.archive-freeze-row{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;padding:9px 12px;border-top:1px solid rgba(255,255,255,.055)}
+.archive-event-row:first-child,.archive-freeze-row:first-child{border-top:0}
+.archive-event-date,.archive-freeze-date{color:var(--dash-muted);font-size:8px}
+.archive-event-main,.archive-freeze-main{min-width:0;font-size:9px}
+.archive-event-main b,.archive-freeze-main b{font-size:10px}
+.archive-event-main small,.archive-freeze-main small{display:block;margin-top:2px;color:var(--dash-muted);font-size:8px;overflow-wrap:anywhere}
+
+/* subscriber fields need a real gutter on iPhone */
+@media(max-width:650px){
+  body.dashboard-shell .subscriber-form{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    column-gap:16px !important;
+    row-gap:12px !important;
+  }
+  body.dashboard-shell .subscriber-form>div{min-width:0 !important}
+  body.dashboard-shell #subscriberDate{display:block !important;width:100% !important;min-width:0 !important;max-width:100% !important;box-sizing:border-box !important}
+  body.dashboard-shell .subscriber-total-stepper{width:100% !important;min-width:0 !important}
+
+  /* all bots: keep bot name + growth in the same shot instead of horizontal scrolling */
+  body.dashboard-shell .all-bots-table-wrap{overflow:visible !important;width:100% !important;max-width:100% !important}
+  body.dashboard-shell .all-bots-table-wrap .main-table{display:block !important;width:100% !important;min-width:0 !important}
+  body.dashboard-shell .main-table thead{display:none !important}
+  body.dashboard-shell .main-table tbody{display:block !important;width:100% !important}
+  body.dashboard-shell .main-table tr{
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto !important;
+    gap:4px 10px !important;
+    width:100% !important;
+    padding:11px 2px !important;
+    border-bottom:1px solid var(--dash-border) !important;
+  }
+  body.dashboard-shell .main-table td{display:block !important;border:0 !important;padding:0 !important;min-width:0 !important}
+  body.dashboard-shell .main-table td:nth-child(1){grid-column:1/3;grid-row:1;text-align:left !important;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(4){grid-column:3;grid-row:1;text-align:right !important;font-size:12px;font-weight:850;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(2){grid-column:1;grid-row:2;text-align:left !important;color:var(--dash-muted);font-size:8px;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(3){grid-column:2;grid-row:2;text-align:left !important;color:var(--dash-muted);font-size:8px;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(5){grid-column:3;grid-row:2;text-align:right !important;color:var(--dash-muted);font-size:8px;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(2)::before{content:'start ';opacity:.7}
+  body.dashboard-shell .main-table td:nth-child(3)::before{content:'now ';opacity:.7}
+  body.dashboard-shell .main-table td:nth-child(5)::before{content:'C. ';opacity:.7}
+  body.dashboard-shell .main-table tr.total-row{border-top:1px solid var(--dash-accent-2) !important;margin-top:3px}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -2849,7 +2972,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 <main id="app" hidden>
 
 <div class="dashboard-title-row">
-  <h1>💟 my profile</h1>
+  <h1><button id="dashboardProfileShortcut" class="dashboard-profile-shortcut" type="button" aria-label="open my PolyBuzz profile">💟</button><span>my profile</span></h1>
   <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
   <button id="siteLockButton" type="button">lock</button>
 </div>
@@ -2939,8 +3062,57 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="analytics"><span class="dashboard-shortcut-icon">▥</span><span><b>analytics</b><small>messages · collectors · subscribers · CV</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
-    <button class="dashboard-shortcut" id="dashboardGithubShortcut" type="button"><span class="dashboard-shortcut-icon">↗</span><span><b>github</b><small>open your GitHub</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="archive"><span class="dashboard-shortcut-icon">▤</span><span><b>archive</b><small>monthly profile history</small></span></button>
+    <button class="dashboard-shortcut" id="dashboardGithubShortcut" type="button"><span class="dashboard-shortcut-icon">↗</span><span><b>github</b><small>open Update characters</small></span></button>
   </div>
+
+  <div class="dashboard-section-title">profile shortcut</div>
+  <section class="dashboard-setting-card">
+    <label for="dashboardProfileUrl">PolyBuzz profile / share link</label>
+    <div class="dashboard-setting-row">
+      <input id="dashboardProfileUrl" type="url" inputmode="url" placeholder="https://...">
+      <button id="dashboardProfileSave" type="button">save</button>
+    </div>
+    <small>used only when you tap 💟 — it does not contact PolyBuzz in the background.</small>
+    <div id="dashboardProfileStatus" class="dashboard-setting-status"></div>
+  </section>
+</section>
+
+<section id="dashboardArchive" class="dashboard-archive" data-dashboard-view="archive" hidden>
+  <div class="archive-head">
+    <div>
+      <div class="dashboard-section-title" style="margin:0 0 3px">archive</div>
+      <div class="archive-subtitle">monthly profile history</div>
+    </div>
+    <select id="archiveMonth" aria-label="archive month"></select>
+  </div>
+
+  <div id="archiveRange" class="archive-range">—</div>
+
+  <div class="archive-summary-grid">
+    <div class="archive-stat"><span>messages</span><strong id="archiveMessages">—</strong><em id="archiveMessagesDelta">—</em></div>
+    <div class="archive-stat"><span>collectors</span><strong id="archiveCollectors">—</strong><em id="archiveCollectorsDelta">—</em></div>
+    <div class="archive-stat"><span>subscribers</span><strong id="archiveSubscribers">—</strong><em id="archiveSubscribersDelta">—</em></div>
+    <div class="archive-stat"><span>creator value</span><strong id="archiveCv">—</strong><em id="archiveCvDelta">—</em></div>
+  </div>
+
+  <div class="dashboard-section-title">top bots</div>
+  <section class="dashboard-card">
+    <div class="dashboard-card-head"><strong>monthly growth</strong><span id="archiveTopBotsMeta" class="archive-card-meta">—</span></div>
+    <div id="archiveTopBots"><div class="dashboard-empty">no data.</div></div>
+  </section>
+
+  <div class="dashboard-section-title">daily data</div>
+  <section class="archive-table-card">
+    <div class="archive-table-head"><span>date</span><span>messages</span><span>collectors</span><span>est. CV</span></div>
+    <div id="archiveDailyRows" class="archive-table-body"><div class="dashboard-empty">no data.</div></div>
+  </section>
+
+  <div class="dashboard-section-title">freezes</div>
+  <section class="dashboard-card"><div id="archiveFreezes"><div class="dashboard-empty">no freezes.</div></div></section>
+
+  <div class="dashboard-section-title">events</div>
+  <section class="dashboard-card"><div id="archiveEvents"><div class="dashboard-empty">no events.</div></div></section>
 </section>
 
 <details class="all-bots">
@@ -3194,6 +3366,23 @@ body.dashboard-shell .stale{color:#c4aecb !important}
         <strong id="cvCalibrationCount">0</strong>
       </div>
     </div>
+
+    <section class="cv-day-estimate" id="cvDayEstimate">
+      <div class="cv-day-head">
+        <div>
+          <span>latest estimated organic CV</span>
+          <strong id="cvDayTotal">—</strong>
+        </div>
+        <small id="cvDayDate">—</small>
+      </div>
+      <div class="cv-day-grid">
+        <div><span>message CV</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
+        <div><span>UCU CV</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
+        <div><span>known adjustments</span><strong id="cvDayAdjustments">—</strong><small>ledger entries</small></div>
+        <div><span>expected movement</span><strong id="cvDayExpected">—</strong><small>organic + adjustments</small></div>
+      </div>
+      <div id="cvDayFormula" class="cv-day-formula">—</div>
+    </section>
 
     <div id="cvSettlementFormula" class="cv-formula">
       add a settlement entry from the 1st to calculate the next settlement.
@@ -7143,7 +7332,106 @@ function renderCvLedger(){
   }).join('');
 }
 
+function cvFormatEstimate(value,digits=1){
+  if(!Number.isFinite(value)) return '—';
+  return new Intl.NumberFormat('nl-NL',{
+    minimumFractionDigits:digits,
+    maximumFractionDigits:digits
+  }).format(value);
+}
+
+function cvFormatEstimateSigned(value,digits=1){
+  if(!Number.isFinite(value)) return '—';
+  return `${value>0?'+':''}${cvFormatEstimate(value,digits)}`;
+}
+
+function cvDailyEstimate(date=''){
+  const days=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  if(days.length<2) return null;
+
+  let index=date ? days.findIndex(day=>day.date===date) : days.length-1;
+  if(index<1) return null;
+
+  const after=days[index];
+  const before=days[index-1];
+  const beforeMap=new Map((before.snapshot?.bots||[]).map(bot=>[bot.cid,bot]));
+  const afterMap=new Map((after.snapshot?.bots||[]).map(bot=>[bot.cid,bot]));
+
+  let uncappedMessages=0;
+  let bots=0;
+
+  for(const [cid,afterBot] of afterMap){
+    if(!Number.isFinite(afterBot?.messages)) continue;
+
+    // A bot already capped before this interval contributes 0 character CV.
+    // If it is marked capped on the current date, today's growth is still included.
+    const cappedDate=cvCappedDate(cid);
+    if(cappedDate && cappedDate<after.date) continue;
+
+    const beforeBot=beforeMap.get(cid);
+    const start=Number.isFinite(beforeBot?.messages) ? beforeBot.messages : 0;
+    const delta=afterBot.messages-start;
+    if(!Number.isFinite(delta) || delta<=0) continue;
+
+    uncappedMessages+=delta;
+    bots++;
+  }
+
+  const messageCv=uncappedMessages*CV_PER_MESSAGE;
+  const ratio=cvCalibration().rolling;
+  const estimatedUcu=Number.isFinite(ratio) && ratio>0 ? uncappedMessages/ratio : null;
+  const ucuCv=Number.isFinite(estimatedUcu) ? estimatedUcu*CV_PER_UCU : null;
+  const organicCv=Number.isFinite(ucuCv) ? messageCv+ucuCv : messageCv;
+
+  const adjustments=cvSortedEntriesAsc()
+    .filter(entry=>entry.date===after.date && entry.type!=='settlement')
+    .reduce((sum,entry)=>sum+(Number(entry.adjustment)||0),0);
+
+  return {
+    date:after.date,
+    fromDate:before.date,
+    uncappedMessages,
+    bots,
+    ratio,
+    messageCv,
+    estimatedUcu,
+    ucuCv,
+    organicCv,
+    adjustments,
+    expected:organicCv+adjustments
+  };
+}
+
+function renderCvDayEstimate(){
+  const estimate=cvDailyEstimate();
+  const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
+
+  if(!estimate){
+    ['#cvDayTotal','#cvDayDate','#cvDayMessageCv','#cvDayMessages','#cvDayUcuCv','#cvDayUcu','#cvDayAdjustments','#cvDayExpected','#cvDayFormula']
+      .forEach(id=>set(id,'—'));
+    return;
+  }
+
+  set('#cvDayTotal',`≈ ${cvFormatEstimateSigned(estimate.organicCv)}`);
+  set('#cvDayDate',shortGraphDate(estimate.date));
+  set('#cvDayMessageCv',cvFormatEstimateSigned(estimate.messageCv));
+  set('#cvDayMessages',`${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
+  set('#cvDayUcuCv',Number.isFinite(estimate.ucuCv)?cvFormatEstimateSigned(estimate.ucuCv):'—');
+  set('#cvDayUcu',Number.isFinite(estimate.estimatedUcu)?`≈ ${fmt.format(Math.round(estimate.estimatedUcu))} UCU`:'need CV calibration');
+  set('#cvDayAdjustments',cvFormatEstimateSigned(estimate.adjustments,0));
+  set('#cvDayExpected',`≈ ${cvFormatEstimateSigned(estimate.expected)}`);
+
+  const ucuPart=Number.isFinite(estimate.estimatedUcu)
+    ? `${fmt.format(Math.round(estimate.estimatedUcu))} UCU × ${String(CV_PER_UCU).replace('.',',')} = ${cvFormatEstimate(estimate.ucuCv)} CV`
+    : 'UCU estimate unavailable until there is enough CV calibration data';
+
+  set('#cvDayFormula',
+    `${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages × ${String(CV_PER_MESSAGE).replace('.',',')} = ${cvFormatEstimate(estimate.messageCv)} CV · ${ucuPart}`
+  );
+}
+
 function renderCvDashboard(){
+  renderCvDayEstimate();
   const current=cvCurrentEntry();
   const target=Number(cvState.settings.nextLevelTarget || 15000);
   const currentValue=Number(current?.total);
@@ -9462,6 +9750,7 @@ function dashboardTargets(){
   return {
     home:document.querySelector('#dashboardHome'),
     more:document.querySelector('#dashboardMore'),
+    archive:document.querySelector('#dashboardArchive'),
     bots:document.querySelector('.all-bots'),
     analytics:document.querySelector('#analyticsPanel'),
     subscribers:document.querySelector('#subscriberPanel'),
@@ -9472,7 +9761,7 @@ function dashboardTargets(){
 }
 
 function dashboardNavGroup(view){
-  if(['analytics','subscribers','cv','more'].includes(view)) return 'more';
+  if(['analytics','subscribers','cv','archive','more'].includes(view)) return 'more';
   return view;
 }
 
@@ -9504,6 +9793,7 @@ function dashboardShowView(view,{scroll=true}={}){
   }
 
   if(view==='analytics') setTimeout(()=>analyticsChart?.resize?.(),40);
+  if(view==='archive') setTimeout(renderDashboardArchive,0);
   if(scroll) window.scrollTo({top:0,behavior:'smooth'});
   dashboardRefresh();
 }
@@ -9539,6 +9829,195 @@ function dashboardCurrentSubscribers(){
   }catch(_){return null}
 }
 
+function dashboardProfileStorageKey(){
+  const profile=(typeof EVENTS_PROFILE!=='undefined' && EVENTS_PROFILE) ? EVENTS_PROFILE : 'main';
+  return `statsTrackerPolyBuzzProfileUrl:${profile}`;
+}
+
+function dashboardGetProfileUrl(){
+  try{return localStorage.getItem(dashboardProfileStorageKey()) || ''}catch(_){return ''}
+}
+
+function dashboardNormalizeUrl(value){
+  let url=String(value||'').trim();
+  if(!url) return '';
+  if(!/^https?:\/\//i.test(url)) url='https://'+url;
+  try{return new URL(url).href}catch(_){return ''}
+}
+
+function dashboardSaveProfileUrl(){
+  const input=document.querySelector('#dashboardProfileUrl');
+  const status=document.querySelector('#dashboardProfileStatus');
+  if(!input) return;
+  const url=dashboardNormalizeUrl(input.value);
+  if(!url){
+    if(status) status.textContent='enter a valid profile/share link';
+    return;
+  }
+  try{localStorage.setItem(dashboardProfileStorageKey(),url)}catch(_){}
+  input.value=url;
+  if(status) status.textContent='saved ✓';
+}
+
+function dashboardOpenProfile(){
+  const url=dashboardGetProfileUrl();
+  if(url){
+    window.open(url,'_blank','noopener');
+    return;
+  }
+  dashboardShowView('more');
+  setTimeout(()=>{
+    const input=document.querySelector('#dashboardProfileUrl');
+    const status=document.querySelector('#dashboardProfileStatus');
+    if(status) status.textContent='add your PolyBuzz profile/share link first';
+    input?.focus();
+  },80);
+}
+
+function archiveMonthKeys(){
+  const months=new Set();
+  state.daily.forEach(day=>{if(/^\d{4}-\d{2}/.test(day.date||'')) months.add(day.date.slice(0,7))});
+  try{analyticsSubscriberEntriesAsc().forEach(entry=>{if(/^\d{4}-\d{2}/.test(entry.date||'')) months.add(entry.date.slice(0,7))})}catch(_){}
+  try{cvSortedEntriesAsc().forEach(entry=>{if(/^\d{4}-\d{2}/.test(entry.date||'')) months.add(entry.date.slice(0,7))})}catch(_){}
+  (eventsState.events||[]).forEach(event=>{if(/^\d{4}-\d{2}/.test(event.date||'')) months.add(event.date.slice(0,7))});
+  return [...months].sort().reverse();
+}
+
+function archiveMonthLabel(key){
+  if(!/^\d{4}-\d{2}$/.test(key||'')) return key||'—';
+  const [year,month]=key.split('-').map(Number);
+  return new Date(year,month-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+}
+
+function archiveMonthBounds(key){
+  if(!/^\d{4}-\d{2}$/.test(key||'')) return {from:'',to:''};
+  const [year,month]=key.split('-').map(Number);
+  const last=new Date(year,month,0).getDate();
+  return {from:`${key}-01`,to:`${key}-${String(last).padStart(2,'0')}`};
+}
+
+function archiveSnapshotTotal(day,metric){
+  return (day?.snapshot?.bots||[]).reduce((sum,bot)=>sum+(Number.isFinite(bot?.[metric])?bot[metric]:0),0);
+}
+
+function archiveEntryBaseline(entries,from){
+  const sorted=[...entries].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.createdAt||'').localeCompare(String(b.createdAt||'')));
+  return [...sorted].reverse().find(entry=>String(entry.date||'')<from) || sorted.find(entry=>String(entry.date||'')>=from) || null;
+}
+
+function archiveEntryEnd(entries,to){
+  return [...entries].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.createdAt||'').localeCompare(String(b.createdAt||'')))
+    .filter(entry=>String(entry.date||'')<=to).at(-1) || null;
+}
+
+function archiveEscape(value){
+  return String(value??'').replace(/[&<>'\"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+
+function renderDashboardArchive(){
+  const select=document.querySelector('#archiveMonth');
+  if(!select) return;
+
+  const months=archiveMonthKeys();
+  const previous=select.value;
+  select.innerHTML=months.length
+    ? months.map(key=>`<option value="${key}">${archiveMonthLabel(key)}</option>`).join('')
+    : '<option value="">no data</option>';
+  if(previous && months.includes(previous)) select.value=previous;
+  else if(months.length) select.value=months[0];
+
+  const key=select.value;
+  const {from,to}=archiveMonthBounds(key);
+  const daily=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  const monthDays=daily.filter(day=>day.date>=from && day.date<=to);
+  const firstMonthDay=monthDays[0] || null;
+  const endDay=monthDays.at(-1) || null;
+  const firstIndex=firstMonthDay ? daily.findIndex(day=>day===firstMonthDay) : -1;
+  const baselineDay=firstIndex>0 ? daily[firstIndex-1] : firstMonthDay;
+
+  const rangeEl=document.querySelector('#archiveRange');
+  if(rangeEl){
+    rangeEl.textContent=endDay
+      ? `${baselineDay?shortGraphDate(baselineDay.date):'—'} → ${shortGraphDate(endDay.date)}`
+      : 'no daily snapshot data for this month';
+  }
+
+  const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
+  const metric=(id,idDelta,kind)=>{
+    const start=baselineDay?archiveSnapshotTotal(baselineDay,kind):null;
+    const end=endDay?archiveSnapshotTotal(endDay,kind):null;
+    set(id,Number.isFinite(end)?fmt.format(end):'—');
+    set(idDelta,Number.isFinite(start)&&Number.isFinite(end)?`${dashboardSigned(end-start)} · from ${fmt.format(start)}`:'—');
+  };
+  metric('#archiveMessages','#archiveMessagesDelta','messages');
+  metric('#archiveCollectors','#archiveCollectorsDelta','collectors');
+
+  let subEntries=[]; try{subEntries=analyticsSubscriberEntriesAsc()}catch(_){}
+  const subStart=archiveEntryBaseline(subEntries,from);
+  const subEnd=archiveEntryEnd(subEntries,to);
+  const subStartVal=Number(subStart?.total), subEndVal=Number(subEnd?.total);
+  set('#archiveSubscribers',Number.isFinite(subEndVal)?fmt.format(subEndVal):'—');
+  set('#archiveSubscribersDelta',Number.isFinite(subStartVal)&&Number.isFinite(subEndVal)?`${dashboardSigned(subEndVal-subStartVal)} · from ${fmt.format(subStartVal)}`:'—');
+
+  let cvEntries=[]; try{cvEntries=cvSortedEntriesAsc()}catch(_){}
+  const cvStart=archiveEntryBaseline(cvEntries,from);
+  const cvEnd=archiveEntryEnd(cvEntries,to);
+  const cvStartVal=Number(cvStart?.total), cvEndVal=Number(cvEnd?.total);
+  set('#archiveCv',Number.isFinite(cvEndVal)?fmt.format(cvEndVal):'—');
+  set('#archiveCvDelta',Number.isFinite(cvStartVal)&&Number.isFinite(cvEndVal)?`${dashboardSigned(cvEndVal-cvStartVal)} · from ${fmt.format(cvStartVal)}`:'—');
+
+  const topBox=document.querySelector('#archiveTopBots');
+  const baseMap=new Map((baselineDay?.snapshot?.bots||[]).map(bot=>[bot.cid,bot]));
+  const endMap=new Map((endDay?.snapshot?.bots||[]).map(bot=>[bot.cid,bot]));
+  const cids=new Set([...baseMap.keys(),...endMap.keys()]);
+  const top=[...cids].map(cid=>{
+    const before=baseMap.get(cid), after=endMap.get(cid);
+    const start=Number.isFinite(before?.messages)?before.messages:0;
+    const end=Number.isFinite(after?.messages)?after.messages:0;
+    return {cid,name:state.meta.get(cid)?.name||cid,start,end,growth:end-start,collectors:Number.isFinite(after?.collectors)?after.collectors:null};
+  }).filter(row=>Number.isFinite(row.growth)).sort((a,b)=>b.growth-a.growth).slice(0,8);
+
+  if(topBox){
+    topBox.innerHTML=top.length ? top.map((row,index)=>`\n      <div class="dashboard-bot-row">\n        <span class="dashboard-rank">${index+1}</span>\n        <div><div class="dashboard-bot-name">${archiveEscape(row.name)}</div><div class="dashboard-bot-meta">${fmt.format(row.end)} messages${Number.isFinite(row.collectors)?` · ${fmt.format(row.collectors)} collectors`:''}</div></div>\n        <span class="dashboard-bot-growth">${dashboardSigned(row.growth)}</span>\n      </div>`).join('') : '<div class="dashboard-empty">no bot data for this month.</div>';
+  }
+  set('#archiveTopBotsMeta',top.length?`${top.length} shown`:'—');
+
+  const dailyBox=document.querySelector('#archiveDailyRows');
+  if(dailyBox){
+    dailyBox.innerHTML=monthDays.length ? monthDays.map(day=>{
+      const i=daily.findIndex(item=>item===day);
+      const prev=i>0?daily[i-1]:null;
+      const msgDelta=prev?archiveSnapshotTotal(day,'messages')-archiveSnapshotTotal(prev,'messages'):null;
+      const colDelta=prev?archiveSnapshotTotal(day,'collectors')-archiveSnapshotTotal(prev,'collectors'):null;
+      const estimate=cvDailyEstimate(day.date);
+      return `<div class="archive-daily-row"><span>${shortGraphDate(day.date)}</span><span>${Number.isFinite(msgDelta)?dashboardSigned(msgDelta):'—'}</span><span>${Number.isFinite(colDelta)?dashboardSigned(colDelta):'—'}</span><span>${estimate?`≈ ${cvFormatEstimateSigned(estimate.organicCv)}`:'—'}</span></div>`;
+    }).reverse().join('') : '<div class="dashboard-empty">no daily snapshots for this month.</div>';
+  }
+
+  const freezeBox=document.querySelector('#archiveFreezes');
+  if(freezeBox){
+    const freezes=[];
+    state.meta.forEach((meta,cid)=>{
+      freezePeriodsForCid(cid).filter(period=>period.start<=to && (period.active || period.end>=from)).forEach(period=>freezes.push({...period,name:meta?.name||cid}));
+    });
+    freezes.sort((a,b)=>String(b.start).localeCompare(String(a.start)));
+    freezeBox.innerHTML=freezes.length ? freezes.map(item=>`<div class="archive-freeze-row"><div class="archive-freeze-date">${shortGraphDate(item.start)}</div><div class="archive-freeze-main"><b>⏸️ ${archiveEscape(item.name)}</b><small>${item.days} ${item.days===1?'day':'days'}${item.active?' · active':` · to ${shortGraphDate(item.end)}`}</small></div></div>`).join('') : '<div class="dashboard-empty">no freezes overlapping this month.</div>';
+  }
+
+  const eventsBox=document.querySelector('#archiveEvents');
+  if(eventsBox){
+    const events=(eventsState.events||[]).filter(event=>String(event.date||'')>=from && String(event.date||'')<=to).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    eventsBox.innerHTML=events.length ? events.map(event=>{
+      const tags=Array.isArray(event.tags)?event.tags:[];
+      const status=event.status||{};
+      const statusTags=Object.keys(status).filter(key=>status[key]===true);
+      const label=[...new Set([...tags,...statusTags])].join(' · ') || 'event';
+      const bot=event.cid ? eventBotLabel(event.cid) : 'profile';
+      return `<div class="archive-event-row"><div class="archive-event-date">${shortGraphDate(event.date)}</div><div class="archive-event-main"><b>${archiveEscape(bot)} · ${archiveEscape(label)}</b><small>${archiveEscape(event.note||'')}</small></div></div>`;
+    }).join('') : '<div class="dashboard-empty">no saved events this month.</div>';
+  }
+}
+
 function dashboardRefresh(){
   const topBox=document.querySelector('#dashboardTopBots');
   if(topBox){
@@ -9565,9 +10044,19 @@ function dashboardRefresh(){
   try{cvValue=Number(cvCurrentEntry()?.total)}catch(_){}
   setText('#dashboardCv',Number.isFinite(cvValue)?fmt.format(cvValue):'—');
   setText('#dashboardCreatorLevel',dashboardLevelForCv(cvValue));
+  try{
+    const dayCv=cvDailyEstimate();
+    setText('#dashboardCvMeta',dayCv
+      ? `≈ ${cvFormatEstimateSigned(dayCv.organicCv)} today · ${cvFormatEstimate(dayCv.messageCv)} msg · ${Number.isFinite(dayCv.ucuCv)?cvFormatEstimate(dayCv.ucuCv):'—'} UCU`
+      : 'current');
+  }catch(_){setText('#dashboardCvMeta','current')}
 
   const subs=dashboardCurrentSubscribers();
   setText('#dashboardSubscribers',Number.isFinite(subs)?fmt.format(subs):'—');
+
+  if(dashboardCurrentView==='archive'){
+    try{renderDashboardArchive()}catch(_){}
+  }
 
   const freezeBox=document.querySelector('#dashboardFreezes');
   if(freezeBox){
@@ -9578,27 +10067,8 @@ function dashboardRefresh(){
 }
 
 function dashboardOpenGithub(){
-  let url='';
-
-  try{
-    url=localStorage.getItem('statsTrackerGithubUrl') || '';
-  }catch(_){}
-
-  if(!url){
-    url=window.prompt('Paste your GitHub URL');
-    if(!url) return;
-    url=url.trim();
-    if(!/^https?:\/\//i.test(url)) url='https://'+url;
-
-    try{
-      new URL(url);
-      localStorage.setItem('statsTrackerGithubUrl',url);
-    }catch(_){
-      window.alert('That does not look like a valid URL.');
-      return;
-    }
-  }
-
+  let url='https://github.com/nnharmony/bot-stats/actions/workflows/daily-update.yml';
+  try{url=localStorage.getItem('statsTrackerGithubUrl') || url}catch(_){}
   window.open(url,'_blank','noopener');
 }
 
@@ -9623,6 +10093,13 @@ function dashboardInit(){
 
   document.querySelector('#dashboardBack')?.addEventListener('click',()=>dashboardShowView('home'));
   document.querySelector('#dashboardGithubShortcut')?.addEventListener('click',dashboardOpenGithub);
+  document.querySelector('#dashboardProfileShortcut')?.addEventListener('click',dashboardOpenProfile);
+  document.querySelector('#dashboardProfileSave')?.addEventListener('click',dashboardSaveProfileUrl);
+  document.querySelector('#dashboardProfileUrl')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardSaveProfileUrl()});
+  document.querySelector('#archiveMonth')?.addEventListener('change',renderDashboardArchive);
+
+  const profileInput=document.querySelector('#dashboardProfileUrl');
+  if(profileInput) profileInput.value=dashboardGetProfileUrl();
 
   document.querySelector('#fullscreenEventsContent')?.addEventListener('click',event=>{
     if(event.target.closest('[data-go-event-date]')) dashboardShowView('events',{scroll:false});
