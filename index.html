@@ -2966,6 +2966,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   color:var(--dash-text) !important;
 }
 .dashboard-top-list{max-height:390px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+#dashboardFreezes{max-height:390px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .dashboard-slot-movement{color:var(--dash-muted);font-size:8px;font-weight:750;white-space:nowrap}
 .dashboard-slot-movement.up,.dashboard-slot-movement.new{color:var(--dash-accent-2)}
 .dashboard-slot-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:54px}
@@ -10438,7 +10439,7 @@ function topSlotsRenderHome(){
     const top=[...state.bots]
       .filter(bot=>Number.isFinite(bot.growth))
       .sort((a,b)=>(b.growth??-Infinity)-(a.growth??-Infinity))
-      .slice(0,4);
+      .slice(0,10);
     box.innerHTML=top.length ? top.map((bot,index)=>`
       <div class="dashboard-bot-row">
         <span class="dashboard-rank">${index+1}</span>
@@ -10791,7 +10792,7 @@ function freezePatternRenderHome(){
     box.innerHTML='<div class="dashboard-empty">no freeze patterns detected.</div>';
     return;
   }
-  box.innerHTML=items.slice(0,7).map(item=>{
+  box.innerHTML=items.map(item=>{
     const icon=item.status==='confirmed'?'⏸️':item.status==='watching'?'👁':'⚠️';
     const label=item.status==='confirmed'?'confirmed freeze':item.status==='high'?'high suspicion':item.status;
     const baseline=Number.isFinite(item.baseline)?`7d median ${freezePatternCompact(item.baseline)}`:'';
