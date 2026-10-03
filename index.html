@@ -2355,16 +2355,58 @@ body.dashboard-shell h1{
   color:var(--dash-text) !important;
   letter-spacing:-.03em;
 }
-.dashboard-title-row{
+.dashboard-header{
   display:grid;
-  grid-template-columns:minmax(0,1fr) auto auto;
-  gap:7px;
-  align-items:center;
-  margin-bottom:6px;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;
+  align-items:start;
+  margin-bottom:16px;
 }
+.dashboard-header-left{
+  min-width:0;
+}
+.dashboard-title-row{
+  display:flex;
+  align-items:center;
+  min-width:0;
+}
+.dashboard-header-right{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:7px;
+}
+.dashboard-header-actions,
+.dashboard-header-status{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:6px;
+}
+.dashboard-header-action{
+  display:grid !important;
+  place-items:center !important;
+  width:32px !important;
+  min-width:32px !important;
+  height:32px !important;
+  min-height:32px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:1px solid var(--dash-border) !important;
+  border-radius:10px !important;
+  background:var(--dash-panel-2) !important;
+  color:#d7cfda !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.dashboard-header-action:active{transform:scale(.96)}
+.dashboard-header-action.github-action{font-size:10px !important;letter-spacing:-.02em}
 body.dashboard-shell .app-head-row{
   display:block;
-  margin-bottom:16px;
+  margin:8px 0 0;
 }
 body.dashboard-shell .app-head-row .muted{
   min-width:0;
@@ -2377,7 +2419,7 @@ body.dashboard-shell .app-head-row .muted{
 .dashboard-level-pill,
 #dashboardBack{
   height:30px;
-  border:1px solid var(--dash-border);
+  border:1px solid var(--level-border,var(--dash-border));
   border-radius:10px;
   background:var(--dash-accent-soft) !important;
   color:var(--dash-text) !important;
@@ -2388,6 +2430,7 @@ body.dashboard-shell .app-head-row .muted{
   white-space:nowrap;
 }
 #dashboardBack{
+  border-color:var(--dash-border);
   background:var(--dash-panel-2) !important;
   margin:0 0 8px !important;
 }
@@ -2810,7 +2853,11 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 
 @media(max-width:430px){
   body.dashboard-shell main#app{padding-left:12px;padding-right:12px}
+  .dashboard-header{gap:7px}
   .dashboard-title-row{gap:5px}
+  .dashboard-header-right{gap:6px}
+  .dashboard-header-actions,.dashboard-header-status{gap:5px}
+  .dashboard-header-action{width:30px !important;min-width:30px !important;height:30px !important;min-height:30px !important}
   body.dashboard-shell h1{font-size:24px !important}
   .dashboard-level-pill{padding:0 8px !important;font-size:10px !important}
   .dashboard-overview-grid{gap:6px}
@@ -2828,28 +2875,10 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   gap:6px;
   min-width:0;
 }
-.dashboard-profile-shortcut{
-  appearance:none !important;
-  -webkit-appearance:none !important;
-  display:inline-grid !important;
-  place-items:center !important;
+.dashboard-title-heart{
   flex:0 0 auto;
-  width:auto !important;
-  min-width:0 !important;
-  height:auto !important;
-  padding:0 !important;
-  margin:0 !important;
-  border:0 !important;
-  border-radius:9px !important;
-  background:transparent !important;
-  color:inherit !important;
-  font:inherit !important;
-  font-size:1em !important;
-  line-height:1 !important;
-  cursor:pointer;
-  -webkit-tap-highlight-color:transparent;
+  line-height:1;
 }
-.dashboard-profile-shortcut:active{transform:scale(.95)}
 
 .dashboard-setting-card{
   padding:12px;
@@ -2971,13 +3000,28 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 
 <main id="app" hidden>
 
-<div class="dashboard-title-row">
-  <h1><button id="dashboardProfileShortcut" class="dashboard-profile-shortcut" type="button" aria-label="open my PolyBuzz profile">💟</button><span>my profile</span></h1>
-  <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
-  <button id="siteLockButton" type="button">lock</button>
-</div>
-<div class="app-head-row">
-  <div id="updated" class="muted">loading…</div>
+<div class="dashboard-header">
+  <div class="dashboard-header-left">
+    <div class="dashboard-title-row">
+      <h1><span class="dashboard-title-heart">💟</span><span>my profile</span></h1>
+    </div>
+    <div class="app-head-row">
+      <div id="updated" class="muted">loading…</div>
+    </div>
+  </div>
+
+  <div class="dashboard-header-right">
+    <div class="dashboard-header-actions" aria-label="profile shortcuts">
+      <button id="dashboardShareShortcut" class="dashboard-header-action" type="button" aria-label="open PolyBuzz share link" title="share link">🔗</button>
+      <button id="dashboardProfileShortcut" class="dashboard-header-action" type="button" aria-label="open PolyBuzz profile" title="profile link">♙</button>
+      <button id="dashboardGithubShortcut" class="dashboard-header-action github-action" type="button" aria-label="open GitHub Update characters" title="GitHub">GH</button>
+      <button id="dashboardRefreshButton" class="dashboard-header-action" type="button" aria-label="refresh page" title="refresh">↻</button>
+    </div>
+    <div class="dashboard-header-status">
+      <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
+      <button id="siteLockButton" type="button">lock</button>
+    </div>
+  </div>
 </div>
 <button id="dashboardBack" type="button" hidden>← home</button>
 
@@ -3063,18 +3107,25 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="archive"><span class="dashboard-shortcut-icon">▤</span><span><b>archive</b><small>monthly profile history</small></span></button>
-    <button class="dashboard-shortcut" id="dashboardGithubShortcut" type="button"><span class="dashboard-shortcut-icon">↗</span><span><b>github</b><small>open Update characters</small></span></button>
   </div>
 
-  <div class="dashboard-section-title">profile shortcut</div>
+  <div class="dashboard-section-title">PolyBuzz shortcuts</div>
   <section class="dashboard-setting-card">
-    <label for="dashboardProfileUrl">PolyBuzz profile / share link</label>
+    <label for="dashboardProfileUrl">profile link</label>
     <div class="dashboard-setting-row">
       <input id="dashboardProfileUrl" type="url" inputmode="url" placeholder="https://...">
       <button id="dashboardProfileSave" type="button">save</button>
     </div>
-    <small>used only when you tap 💟 — it does not contact PolyBuzz in the background.</small>
     <div id="dashboardProfileStatus" class="dashboard-setting-status"></div>
+
+    <label for="dashboardShareUrl" style="margin-top:10px">share link</label>
+    <div class="dashboard-setting-row">
+      <input id="dashboardShareUrl" type="url" inputmode="url" placeholder="https://...">
+      <button id="dashboardShareSave" type="button">save</button>
+    </div>
+    <div id="dashboardShareStatus" class="dashboard-setting-status"></div>
+
+    <small>these links are only opened when you tap a shortcut; nothing is requested from PolyBuzz in the background.</small>
   </section>
 </section>
 
@@ -4273,7 +4324,7 @@ async function loadStatsData(){
   if(latest){
     document.querySelector('#updated')
       .textContent=
-        'last updated: '+
+        'updated: '+
         new Date(
           latest.timestamp
         ).toLocaleString('nl-NL');
@@ -9976,16 +10027,45 @@ function dashboardSigned(n){
   return `${n>0?'+':''}${fmt.format(Math.round(n))}`;
 }
 
+const DASHBOARD_LEVEL_COLORS={
+  1:'#7893a6',
+  2:'#4f9bd3',
+  3:'#5158c8',
+  4:'#df7664',
+  5:'#f2ad47',
+  6:'#8b5cf6',
+  7:'#d851c7'
+};
+
+function dashboardLevelNumber(value){
+  if(!Number.isFinite(value)) return null;
+  if(value>=80000) return 7;
+  if(value>=15000) return 6;
+  if(value>=3000) return 5;
+  if(value>=800) return 4;
+  if(value>=200) return 3;
+  if(value>=50) return 2;
+  if(value>=10) return 1;
+  return null;
+}
+
 function dashboardLevelForCv(value){
-  if(!Number.isFinite(value)) return 'creator level —';
-  if(value>=80000) return 'creator level · LV 7';
-  if(value>=15000) return 'creator level · LV 6';
-  if(value>=3000) return 'creator level · LV 5';
-  if(value>=800) return 'creator level · LV 4';
-  if(value>=200) return 'creator level · LV 3';
-  if(value>=50) return 'creator level · LV 2';
-  if(value>=10) return 'creator level · LV 1';
-  return 'creator level · —';
+  const level=dashboardLevelNumber(value);
+  return level ? `creator level · LV ${level}` : 'creator level · —';
+}
+
+function dashboardApplyLevelBorder(value){
+  const el=document.querySelector('#dashboardCreatorLevel');
+  if(!el) return;
+  const level=dashboardLevelNumber(value);
+  const color=level ? DASHBOARD_LEVEL_COLORS[level] : '';
+  if(color){
+    el.style.setProperty('--level-border',color);
+    el.dataset.level=String(level);
+  }else{
+    el.style.removeProperty('--level-border');
+    delete el.dataset.level;
+  }
 }
 
 function dashboardLatestCollectorDelta(){
@@ -10042,7 +10122,45 @@ function dashboardOpenProfile(){
   setTimeout(()=>{
     const input=document.querySelector('#dashboardProfileUrl');
     const status=document.querySelector('#dashboardProfileStatus');
-    if(status) status.textContent='add your PolyBuzz profile/share link first';
+    if(status) status.textContent='add your PolyBuzz profile link first';
+    input?.focus();
+  },80);
+}
+
+function dashboardShareStorageKey(){
+  const profile=(typeof EVENTS_PROFILE!=='undefined' && EVENTS_PROFILE) ? EVENTS_PROFILE : 'main';
+  return `statsTrackerPolyBuzzShareUrl:${profile}`;
+}
+
+function dashboardGetShareUrl(){
+  try{return localStorage.getItem(dashboardShareStorageKey()) || ''}catch(_){return ''}
+}
+
+function dashboardSaveShareUrl(){
+  const input=document.querySelector('#dashboardShareUrl');
+  const status=document.querySelector('#dashboardShareStatus');
+  if(!input) return;
+  const url=dashboardNormalizeUrl(input.value);
+  if(!url){
+    if(status) status.textContent='enter a valid share link';
+    return;
+  }
+  try{localStorage.setItem(dashboardShareStorageKey(),url)}catch(_){}
+  input.value=url;
+  if(status) status.textContent='saved ✓';
+}
+
+function dashboardOpenShare(){
+  const url=dashboardGetShareUrl();
+  if(url){
+    window.open(url,'_blank','noopener');
+    return;
+  }
+  dashboardShowView('more');
+  setTimeout(()=>{
+    const input=document.querySelector('#dashboardShareUrl');
+    const status=document.querySelector('#dashboardShareStatus');
+    if(status) status.textContent='add your PolyBuzz share link first';
     input?.focus();
   },80);
 }
@@ -10217,6 +10335,7 @@ function dashboardRefresh(){
   try{cvValue=Number(cvCurrentEntry()?.total)}catch(_){}
   setText('#dashboardCv',Number.isFinite(cvValue)?fmt.format(cvValue):'—');
   setText('#dashboardCreatorLevel',dashboardLevelForCv(cvValue));
+  dashboardApplyLevelBorder(cvValue);
   try{
     const dayCv=cvDailyEstimate();
     setText('#dashboardCvMeta',dayCv
@@ -10267,12 +10386,18 @@ function dashboardInit(){
   document.querySelector('#dashboardBack')?.addEventListener('click',()=>dashboardShowView('home'));
   document.querySelector('#dashboardGithubShortcut')?.addEventListener('click',dashboardOpenGithub);
   document.querySelector('#dashboardProfileShortcut')?.addEventListener('click',dashboardOpenProfile);
+  document.querySelector('#dashboardShareShortcut')?.addEventListener('click',dashboardOpenShare);
+  document.querySelector('#dashboardRefreshButton')?.addEventListener('click',()=>window.location.reload());
   document.querySelector('#dashboardProfileSave')?.addEventListener('click',dashboardSaveProfileUrl);
   document.querySelector('#dashboardProfileUrl')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardSaveProfileUrl()});
+  document.querySelector('#dashboardShareSave')?.addEventListener('click',dashboardSaveShareUrl);
+  document.querySelector('#dashboardShareUrl')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardSaveShareUrl()});
   document.querySelector('#archiveMonth')?.addEventListener('change',renderDashboardArchive);
 
   const profileInput=document.querySelector('#dashboardProfileUrl');
   if(profileInput) profileInput.value=dashboardGetProfileUrl();
+  const shareInput=document.querySelector('#dashboardShareUrl');
+  if(shareInput) shareInput.value=dashboardGetShareUrl();
 
   document.querySelector('#fullscreenEventsContent')?.addEventListener('click',event=>{
     if(event.target.closest('[data-go-event-date]')) dashboardShowView('events',{scroll:false});
