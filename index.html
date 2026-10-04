@@ -3551,7 +3551,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
       <button id="backfillDeleteDay" type="button">delete date</button>
     </div>
     <div class="backfill-editor-note">
-      Values start from the last known historical stand so you only need to change what changed. Saving confirms the non-blank values for this date. Blank means unknown — never 0. Exact values like <b>802</b> stay exact; values like <b>1.5K</b> stay approximate. Bots are hidden before their known creation date. Use <b>show later / unknown</b> when you need to correct a creation date.
+      Values start from the last known historical stand so you only need to change what changed. Saving confirms the non-blank values for this date. Blank means unknown — never 0. Exact values like <b>802</b> stay exact. On mobile, decimal message input like <b>1,8</b> is read as ≈1.8K, or automatically as ≈1.8M when K would be lower than that bot’s last known count. Collectors stay whole numbers. Tap a value to select it and type straight over it. Bots are hidden before their known creation date. Use <b>show later / unknown</b> when you need to correct a creation date.
     </div>
     <div id="backfillSaveStatus" class="backfill-status" style="padding:0 12px 12px"></div>
   </section>
@@ -11500,24 +11500,79 @@ function backfillAddDays(date,amount){
   return parsed.toISOString().slice(0,10);
 }
 
-function backfillParseValue(raw){
+function backfillParseValue(raw,{field='messages',cid='',date='',previous=null}={}){
   const original=String(raw??'').trim();
   if(!original) return {empty:true,valid:true,raw:''};
+
+  const isCollectors=field==='collectors';
   let value=original.replace(/messages?|collectors?/ig,'').trim();
   let approximate=/^[≈~]/.test(value);
   value=value.replace(/^[≈~]\s*/,'').replace(/\s+/g,'');
+
   const suffix=value.match(/^([0-9]+(?:[.,][0-9]+)?)([kKmM])$/);
   if(suffix){
+    if(isCollectors) return {empty:false,valid:false,raw:original,error:'collectors must be a whole number'};
     const numeric=Number(suffix[1].replace(',','.'));
     if(!Number.isFinite(numeric)) return {empty:false,valid:false,raw:original,error:'invalid'};
-    const multiplier=suffix[2].toLowerCase()==='m' ? 1000000 : 1000;
-    return {empty:false,valid:true,raw:original,value:Math.round(numeric*multiplier),approximate:true};
+    const unit=suffix[2].toLowerCase()==='m' ? 'M' : 'K';
+    const multiplier=unit==='M' ? 1000000 : 1000;
+    return {
+      empty:false,
+      valid:true,
+      raw:original,
+      value:Math.round(numeric*multiplier),
+      approximate:true,
+      interpretedUnit:unit
+    };
   }
-  if(/^\d+$/.test(value)) return {empty:false,valid:true,raw:original,value:Number(value),approximate};
+
+  if(/^\d+$/.test(value)){
+    return {empty:false,valid:true,raw:original,value:Number(value),approximate};
+  }
+
+  // Keep explicit thousands notation such as 1.800 / 12,000 exact.
   if(/^\d{1,3}(?:[.,]\d{3})+$/.test(value)){
     return {empty:false,valid:true,raw:original,value:Number(value.replace(/[.,]/g,'')),approximate};
   }
-  return {empty:false,valid:false,raw:original,error:'use 802 or 1.5K'};
+
+  // Mobile shortcut for PolyBuzz rounded message labels:
+  // 1,8 => ≈1.8K unless that would move backwards from the bot's last known
+  // message total; then interpret it as ≈1.8M instead.
+  const decimal=value.match(/^([0-9]+)[.,]([0-9]+)$/);
+  if(decimal){
+    if(isCollectors) return {empty:false,valid:false,raw:original,error:'collectors must be a whole number'};
+    const numeric=Number(`${decimal[1]}.${decimal[2]}`);
+    if(!Number.isFinite(numeric)) return {empty:false,valid:false,raw:original,error:'invalid'};
+
+    let previousValue=Number(previous?.value);
+    if(!Number.isFinite(previousValue) && cid && date){
+      const previousObserved=backfillPreviousObservedField(String(cid),String(date),'messages');
+      if(previousObserved && Number.isFinite(Number(previousObserved.value))) previousValue=Number(previousObserved.value);
+    }
+
+    const candidateK=Math.round(numeric*1000);
+    const candidateM=Math.round(numeric*1000000);
+    const useMillions=Number.isFinite(previousValue) && candidateK<previousValue;
+    const unit=useMillions ? 'M' : 'K';
+
+    return {
+      empty:false,
+      valid:true,
+      raw:original,
+      value:useMillions ? candidateM : candidateK,
+      approximate:true,
+      interpretedUnit:unit,
+      mobileDecimal:true,
+      previousValue:Number.isFinite(previousValue)?previousValue:null
+    };
+  }
+
+  return {
+    empty:false,
+    valid:false,
+    raw:original,
+    error:isCollectors ? 'use a whole number' : 'use 802, 1,8 or 1.5K'
+  };
 }
 
 function backfillSavedDates(){
@@ -11686,7 +11741,13 @@ function backfillCreationLabel(cid,date){
 
 function backfillFormatFieldStatus(parsed,{inferred=null,carried=null}={}){
   if(parsed && !parsed.valid) return {text:parsed.error || 'invalid',className:'invalid'};
-  if(parsed && !parsed.empty) return {text:parsed.approximate ? `≈ ${fmt.format(parsed.value)}` : `exact ${fmt.format(parsed.value)}`,className:parsed.approximate?'approx':''};
+  if(parsed && !parsed.empty){
+    if(parsed.approximate){
+      const unit=parsed.interpretedUnit ? ` · ${parsed.interpretedUnit}` : '';
+      return {text:`≈ ${fmt.format(parsed.value)}${unit}`,className:'approx'};
+    }
+    return {text:`exact ${fmt.format(parsed.value)}`,className:''};
+  }
   if(inferred) return {text:`inferred ${fmt.format(inferred.value)}`,className:'inferred'};
   if(carried) return {text:`last ${carried.approximate?'≈ ':''}${fmt.format(carried.value)} · ${shortGraphDate(carried.date)}`,className:'carried'};
   return {text:'unknown',className:''};
@@ -11704,7 +11765,7 @@ function backfillEditorBots(){
       const creation=backfillEffectiveCreationDate(id);
       const record=observed[id] || null;
       const messageDisplay=backfillFieldDisplay(id,date,'messages',record);
-      const messageParsed=messageDisplay?.raw ? backfillParseValue(messageDisplay.raw) : null;
+      const messageParsed=messageDisplay?.parsed || null;
       const messages=(messageParsed?.valid && !messageParsed.empty)
         ? Number(messageParsed.value)
         : (Number.isFinite(Number(messageDisplay?.inferred?.value)) ? Number(messageDisplay.inferred.value) : null);
@@ -11742,15 +11803,39 @@ function backfillEditorBots(){
 }
 
 function backfillFieldDisplay(cid,date,field,record){
-  const {key,rawKey}=backfillFieldKeys(field);
+  const {key,rawKey,approxKey}=backfillFieldKeys(field);
   if(record && Number.isFinite(Number(record[key]))){
     const raw=String(record[rawKey] || record[key]);
-    return {raw,parsed:backfillParseValue(raw),carried:null,inferred:null,observed:true};
+    return {
+      raw,
+      parsed:{
+        empty:false,
+        valid:true,
+        raw,
+        value:Number(record[key]),
+        approximate:Boolean(record[approxKey])
+      },
+      carried:null,
+      inferred:null,
+      observed:true
+    };
   }
 
   const carried=backfillPreviousObservedField(cid,date,field);
   if(carried){
-    return {raw:carried.raw,parsed:backfillParseValue(carried.raw),carried,inferred:null,observed:false};
+    return {
+      raw:carried.raw,
+      parsed:{
+        empty:false,
+        valid:true,
+        raw:carried.raw,
+        value:Number(carried.value),
+        approximate:Boolean(carried.approximate)
+      },
+      carried,
+      inferred:null,
+      observed:false
+    };
   }
 
   const inferred=backfillInferredField(cid,date,field);
@@ -11828,7 +11913,9 @@ function backfillUpdateFieldStatus(input){
   const field=input.dataset.backfillField;
   const small=input.parentElement?.querySelector('small');
   if(!small) return;
-  const parsed=backfillParseValue(input.value);
+  const date=backfillState.editDate || backfillDefaultDate();
+  const previous=field==='messages' ? backfillPreviousObservedField(cid,date,'messages') : null;
+  const parsed=backfillParseValue(input.value,{field,cid,date,previous});
   const status=backfillFormatFieldStatus(parsed,{});
   small.textContent=status.text;
   small.className=status.className;
@@ -11836,7 +11923,6 @@ function backfillUpdateFieldStatus(input){
   // If a screenshot proves the bot already existed before its current creation date,
   // move the local creation date back automatically.
   if(parsed.valid && !parsed.empty){
-    const date=backfillState.editDate || backfillDefaultDate();
     const current=backfillEffectiveCreationDate(cid);
     if(!current || String(date)<String(current)) backfillSetCreationDate(cid,date,{silent:true});
   }
@@ -11858,8 +11944,9 @@ function backfillSaveDate(){
     const cid=String(row.dataset.backfillCid || '');
     const msgInput=row.querySelector('[data-backfill-field="messages"]');
     const colInput=row.querySelector('[data-backfill-field="collectors"]');
-    const msg=backfillParseValue(msgInput?.value || '');
-    const col=backfillParseValue(colInput?.value || '');
+    const previousMessages=backfillPreviousObservedField(cid,date,'messages');
+    const msg=backfillParseValue(msgInput?.value || '',{field:'messages',cid,date,previous:previousMessages});
+    const col=backfillParseValue(colInput?.value || '',{field:'collectors',cid,date});
 
     if(!msg.valid && !invalidInput) invalidInput=msgInput;
     if(!col.valid && !invalidInput) invalidInput=colInput;
@@ -11886,7 +11973,7 @@ function backfillSaveDate(){
   });
 
   if(invalidInput){
-    if(status){status.textContent='one or more values are invalid. use values like 802 or 1.5K.';status.className='backfill-status error'}
+    if(status){status.textContent='one or more values are invalid. messages: use 802, 1,8 or 1.5K. collectors: whole numbers only.';status.className='backfill-status error'}
     invalidInput.focus();
     invalidInput.scrollIntoView?.({behavior:'smooth',block:'center'});
     return;
@@ -11974,6 +12061,14 @@ function backfillInit(){
   document.querySelector('#backfillSearch')?.addEventListener('input',event=>{backfillState.search=event.target.value || '';backfillRenderEditor()});
   document.querySelector('#backfillSort')?.addEventListener('change',event=>{backfillState.sort=event.target.value==='messages'?'messages':'latest';backfillRenderEditor()});
   document.querySelector('#backfillShowAll')?.addEventListener('click',()=>{backfillState.showAll=!backfillState.showAll;backfillRenderEditor()});
+
+  document.querySelector('#backfillEditorRows')?.addEventListener('focusin',event=>{
+    const input=event.target.closest('input[data-backfill-field]');
+    if(!input) return;
+    requestAnimationFrame(()=>{
+      try{input.select()}catch(_){ }
+    });
+  });
 
   document.querySelector('#backfillEditorRows')?.addEventListener('input',event=>{
     const input=event.target.closest('input[data-backfill-field]');
