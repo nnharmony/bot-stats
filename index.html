@@ -3141,6 +3141,182 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   body.dashboard-shell .main-table tr.total-row{border-top:1px solid var(--dash-accent-2) !important;margin-top:3px}
 }
 
+
+/* manual historical history editor */
+.backfill-editor-card{
+  margin-top:10px;
+  border:1px solid var(--dash-border);
+  border-radius:16px;
+  background:var(--dash-panel);
+  overflow:hidden;
+}
+.backfill-editor-toolbar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  padding:12px;
+  border-bottom:1px solid var(--dash-border);
+}
+.backfill-editor-toolbar input{
+  width:100%;
+  min-width:0;
+  height:38px;
+  font-size:10px;
+}
+.backfill-editor-summary{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:92px;
+  padding:0 10px;
+  border:1px solid var(--dash-border);
+  border-radius:10px;
+  color:var(--dash-muted);
+  background:var(--dash-panel-2);
+  font-size:9px;
+  white-space:nowrap;
+}
+.backfill-editor-head,
+.backfill-editor-row{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(88px,.7fr) minmax(78px,.58fr);
+  gap:8px;
+  align-items:start;
+}
+.backfill-editor-head{
+  padding:8px 12px;
+  color:var(--dash-muted);
+  font-size:8px;
+  font-weight:800;
+  text-transform:lowercase;
+  border-bottom:1px solid var(--dash-border);
+}
+.backfill-editor-list{
+  max-height:min(58vh,560px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+.backfill-editor-row{
+  padding:11px 12px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+.backfill-editor-row:last-child{border-bottom:0}
+.backfill-editor-name{
+  min-width:0;
+  padding-top:8px;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.2;
+  overflow-wrap:anywhere;
+}
+.backfill-editor-field input{
+  width:100%;
+  min-width:0;
+  height:36px;
+  box-sizing:border-box;
+  font-size:10px;
+  text-align:right;
+  padding:0 9px !important;
+}
+.backfill-editor-field small{
+  display:block;
+  min-height:12px;
+  margin-top:3px;
+  text-align:right;
+  font-size:7.5px;
+  line-height:1.2;
+  color:var(--dash-muted);
+}
+.backfill-editor-field small.approx{color:var(--dash-accent-2)}
+.backfill-editor-field small.invalid{color:#d7a1b9}
+.backfill-editor-field small.inferred{color:#b8a6c1}
+.backfill-editor-field small.carried{color:#9d91a4}
+.backfill-editor-name small{
+  display:block;
+  margin-top:4px;
+  color:var(--dash-muted);
+  font-size:7.5px;
+  font-weight:600;
+  line-height:1.35;
+}
+.backfill-editor-name .created-line{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.backfill-created-chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:20px;
+  padding:0 6px;
+  border:1px solid var(--dash-border);
+  border-radius:8px;
+  background:rgba(255,255,255,.025);
+  color:var(--dash-muted);
+  font-size:7.5px;
+  font-weight:700;
+}
+.backfill-set-created{
+  border:0 !important;
+  background:transparent !important;
+  color:var(--dash-accent-2) !important;
+  padding:0 !important;
+  min-height:20px !important;
+  font-size:7.5px !important;
+  font-weight:800 !important;
+}
+.backfill-editor-row.future-bot{opacity:.52}
+.backfill-editor-row.unknown-created{opacity:.78}
+.backfill-editor-toolbar-actions{display:flex;gap:7px;align-items:center}
+.backfill-editor-toggle{
+  min-height:38px !important;
+  border:1px solid var(--dash-border) !important;
+  border-radius:10px !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-muted) !important;
+  padding:0 10px !important;
+  font-size:8.5px !important;
+  font-weight:800 !important;
+  white-space:nowrap;
+}
+.backfill-editor-toggle.active{
+  background:var(--dash-accent-soft) !important;
+  color:var(--dash-text) !important;
+}
+.backfill-editor-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:12px;
+  border-top:1px solid var(--dash-border);
+}
+.backfill-editor-actions button{
+  min-height:38px !important;
+  border:1px solid var(--dash-border) !important;
+  border-radius:10px !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+  font-size:10px !important;
+  padding:0 13px !important;
+}
+.backfill-editor-actions button.primary{
+  background:var(--dash-accent-soft) !important;
+  border-color:#5d5264 !important;
+  font-weight:850;
+}
+.backfill-editor-note{
+  padding:0 12px 12px;
+  color:var(--dash-muted);
+  font-size:8px;
+  line-height:1.45;
+}
+@media(max-width:430px){
+  .backfill-editor-head,
+  .backfill-editor-row{
+    grid-template-columns:minmax(0,1.15fr) minmax(80px,.72fr) minmax(70px,.6fr);
+    gap:6px;
+  }
+  .backfill-editor-name{font-size:10.5px}
+  .backfill-editor-field input{font-size:9.5px;padding:0 7px !important}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -3324,7 +3500,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   <div class="backfill-head">
     <div>
       <h2>historical backfill</h2>
-      <small>temporary import tool · cid-based · partial snapshots</small>
+      <small>temporary manual history editor · cid-based · partial snapshots</small>
     </div>
   </div>
 
@@ -3335,59 +3511,34 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   </div>
   <div id="backfillDateStatus" class="backfill-status"></div>
 
-  <section class="backfill-card">
-    <div class="backfill-card-head"><strong>bulk import</strong><small>name | messagecount</small></div>
-    <textarea id="backfillBulkInput" spellcheck="false" placeholder="Your Military Boyfriend | 18.4K
-Vadim | 241.7K
-Ren | 638.2K
-David | 1200"></textarea>
-    <input id="backfillScreenshotInput" class="backfill-hidden-input" type="file" accept="image/*" multiple>
-    <div class="backfill-toolbar">
-      <button id="backfillPickScreenshots" class="backfill-button" type="button">+ add screenshots</button>
-      <button id="backfillPreviewButton" class="backfill-button primary" type="button">preview import</button>
-      <button id="backfillClearButton" class="backfill-button" type="button">clear</button>
-    </div>
-    <div id="backfillOcrStatus" class="backfill-status">select screenshots to extract names and messagecounts automatically.</div>
-    <div id="backfillOcrFiles" class="backfill-ocr-files"></div>
-    <div class="backfill-help">K/M values are stored as approximate. Plain integer values are exact. Missing bots remain unknown — never 0. If the same bot has two equal exact values on different dates, the days between them are automatically treated as inferred exact plateau values. Screenshot OCR never saves directly — it always goes through preview first.</div>
-    <div class="backfill-manual-row">
-      <input id="backfillManualName" type="text" placeholder="historical bot name">
-      <input id="backfillManualValue" type="text" inputmode="decimal" placeholder="e.g. 1.5K">
-      <button id="backfillManualAdd" class="backfill-button" type="button">+ add line</button>
-    </div>
-
-  </section>
-
-  <section class="backfill-card">
-    <div class="backfill-card-head"><strong>preview & matching</strong><small id="backfillPreviewMeta">nothing to preview</small></div>
-    <div id="backfillPreviewRows" class="backfill-preview"><div class="dashboard-empty">paste data and tap preview.</div></div>
-    <div class="backfill-save-row">
-      <button id="backfillSaveButton" class="backfill-button primary" type="button">save imported values</button>
-      <button id="backfillLoadSavedButton" class="backfill-button" type="button">load saved</button>
-    </div>
-    <div id="backfillSaveStatus" class="backfill-status"></div>
-  </section>
-
-  <section class="backfill-card">
-    <div class="backfill-card-head"><strong>saved for this date</strong><small id="backfillSavedMeta">0 values</small></div>
-    <div id="backfillSavedRows" class="backfill-saved-list"><div class="dashboard-empty">no historical values saved.</div></div>
-    <div class="backfill-toolbar">
-      <button id="backfillDeleteDay" class="backfill-button" type="button">delete this date</button>
-    </div>
-  </section>
-
-  <section class="backfill-card">
-    <div class="backfill-card-head"><strong>aliases</strong><small>historical names → cid</small></div>
-    <div class="backfill-alias-edit">
-      <div>
-        <select id="backfillAliasBot" aria-label="bot for alias editing"></select>
-        <div id="backfillAliasCurrent" class="backfill-alias-current"></div>
-        <textarea id="backfillAliasInput" spellcheck="false" placeholder="one historical alias per line"></textarea>
+  <section class="backfill-editor-card">
+    <div class="backfill-editor-toolbar">
+      <input id="backfillSearch" type="search" placeholder="search bot">
+      <div class="backfill-editor-toolbar-actions">
+        <button id="backfillShowAll" class="backfill-editor-toggle" type="button">show later / unknown</button>
+        <div id="backfillEditorSummary" class="backfill-editor-summary">0 saved</div>
       </div>
-      <button id="backfillAliasSave" class="backfill-button primary" type="button">save aliases</button>
     </div>
-    <div class="backfill-help">Exact alias matches are remembered. If a historical name matches multiple characters, the importer will never guess.</div>
-    <div id="backfillAliasList" class="backfill-alias-list" style="margin-top:10px"><div class="dashboard-empty">loading bots…</div></div>
+
+    <div class="backfill-editor-head">
+      <span>bot</span>
+      <span>messages</span>
+      <span>collectors</span>
+    </div>
+
+    <div id="backfillEditorRows" class="backfill-editor-list">
+      <div class="dashboard-empty">loading bots…</div>
+    </div>
+
+    <div class="backfill-editor-actions">
+      <button id="backfillSaveDate" class="primary" type="button">save date</button>
+      <button id="backfillClearForm" type="button">clear form</button>
+      <button id="backfillDeleteDay" type="button">delete date</button>
+    </div>
+    <div class="backfill-editor-note">
+      Values start from the last known historical stand so you only need to change what changed. Saving confirms the non-blank values for this date. Blank means unknown — never 0. Exact values like <b>802</b> stay exact; values like <b>1.5K</b> stay approximate. Bots are hidden before their known creation date. Use <b>show later / unknown</b> when you need to correct a creation date.
+    </div>
+    <div id="backfillSaveStatus" class="backfill-status" style="padding:0 12px 12px"></div>
   </section>
 </section>
 
@@ -3398,7 +3549,7 @@ David | 1200"></textarea>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="slots"><span class="dashboard-shortcut-icon">#</span><span><b>top slots</b><small>daily ranking · historical edits</small></span></button>
-    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="backfill" data-backfill-feature><span class="dashboard-shortcut-icon">↶</span><span><b>historical backfill</b><small>old messagecounts · aliases</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="backfill" data-backfill-feature><span class="dashboard-shortcut-icon">↶</span><span><b>historical backfill</b><small>messages · collectors · manual history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="archive"><span class="dashboard-shortcut-icon">▤</span><span><b>archive</b><small>monthly profile history</small></span></button>
   </div>
 
@@ -7469,20 +7620,21 @@ function cvCreationBonusForCid(cid,throughDate=''){
   const id=String(cid||'');
   if(!id) return 0;
 
-  // Character estimator rule for this profile:
-  // every character counts as HQ (+30) from the moment it exists.
-  // Settlements remain profile-level ledger adjustments and do not reduce
-  // the character's displayed creation CV.
-  if(!throughDate){
-    return state.meta.has(id) ? 30 : 0;
-  }
+  // Character estimator rule: every character is HQ (+30) from its creation date.
+  // Historical backfill can refine that creation date without changing profile-level
+  // settlement history or duplicating ledger adjustments.
+  if(!throughDate) return state.meta.has(id) ? 30 : 0;
+
+  try{
+    const creationDate=backfillEffectiveCreationDate(id);
+    if(creationDate) return String(throughDate)>=String(creationDate) ? 30 : 0;
+  }catch(_){ }
 
   const existedByDate=state.daily.some(day=>
     String(day.date||'')<=String(throughDate) && !!snapshotBot(day.snapshot,id)
   );
   if(existedByDate) return 30;
 
-  // Fallback for a creation/unban event that predates the available snapshots.
   const hasKnownCharacterEvent=cvSortedEntriesAsc().some(entry=>
     String(entry.botCid||'')===id &&
     String(entry.date||'')<=String(throughDate) &&
@@ -11235,55 +11387,86 @@ function dashboardOpenGithub(){
   window.open(url,'_blank','noopener');
 }
 
-/* ===== historical message backfill ===== */
+/* ===== historical manual backfill ===== */
 const ENABLE_HISTORICAL_BACKFILL=true;
 const backfillState={
   loaded:false,
   snapshots:{},
-  aliases:{},
-  preview:[],
+  creationDates:{},
   editDate:'',
-  aliasCid:'',
-  ocrPromise:null,
-  ocrFiles:[]
+  search:'',
+  showAll:false
 };
 
 function backfillStorageKey(){
   const profile=(typeof EVENTS_PROFILE!=='undefined' && EVENTS_PROFILE) ? EVENTS_PROFILE : 'main';
+  return `statsTrackerHistoricalLedgerV2:${profile}`;
+}
+
+function backfillLegacyStorageKey(){
+  const profile=(typeof EVENTS_PROFILE!=='undefined' && EVENTS_PROFILE) ? EVENTS_PROFILE : 'main';
   return `statsTrackerHistoricalBackfill:${profile}`;
+}
+
+function backfillNormalizeRecord(record){
+  if(!record || typeof record!=='object') return null;
+  const out={
+    messages:null,
+    messagesRaw:'',
+    messagesApproximate:false,
+    collectors:null,
+    collectorsRaw:'',
+    collectorsApproximate:false,
+    savedAt:String(record.savedAt || '')
+  };
+  if(Number.isFinite(Number(record.messages))){
+    out.messages=Math.max(0,Math.round(Number(record.messages)));
+    out.messagesRaw=String(record.messagesRaw ?? record.messages);
+    out.messagesApproximate=Boolean(record.messagesApproximate);
+  }
+  if(Number.isFinite(Number(record.collectors))){
+    out.collectors=Math.max(0,Math.round(Number(record.collectors)));
+    out.collectorsRaw=String(record.collectorsRaw ?? record.collectors);
+    out.collectorsApproximate=Boolean(record.collectorsApproximate);
+  }
+  if(!Number.isFinite(out.messages) && !Number.isFinite(out.collectors)) return null;
+  return out;
 }
 
 function backfillLoad(){
   if(backfillState.loaded) return;
   backfillState.loaded=true;
+
+  // Clean slate: ignore/remove the earlier OCR / alias / bulk-import store.
+  try{localStorage.removeItem(backfillLegacyStorageKey())}catch(_){ }
+
   try{
     const raw=JSON.parse(localStorage.getItem(backfillStorageKey()) || '{}');
     const snapshots=(raw && raw.snapshots && typeof raw.snapshots==='object') ? raw.snapshots : {};
-    const aliases=(raw && raw.aliases && typeof raw.aliases==='object') ? raw.aliases : {};
+    const creationDates=(raw && raw.creationDates && typeof raw.creationDates==='object') ? raw.creationDates : {};
+
     Object.entries(snapshots).forEach(([date,records])=>{
       if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !records || typeof records!=='object') return;
-      backfillState.snapshots[date]={};
+      const normalized={};
       Object.entries(records).forEach(([cid,record])=>{
-        if(!record || !Number.isFinite(Number(record.messages))) return;
-        backfillState.snapshots[date][String(cid)]={
-          raw:String(record.raw ?? record.messages),
-          messages:Math.max(0,Math.round(Number(record.messages))),
-          approximate:Boolean(record.approximate),
-          historicalName:String(record.historicalName || ''),
-          savedAt:String(record.savedAt || '')
-        };
+        const clean=backfillNormalizeRecord(record);
+        if(clean) normalized[String(cid)]=clean;
       });
+      if(Object.keys(normalized).length) backfillState.snapshots[date]=normalized;
     });
-    Object.entries(aliases).forEach(([cid,list])=>{
-      if(!Array.isArray(list)) return;
-      backfillState.aliases[String(cid)]=[...new Set(list.map(v=>String(v).trim()).filter(Boolean))];
+
+    Object.entries(creationDates).forEach(([cid,date])=>{
+      if(/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))) backfillState.creationDates[String(cid)]=String(date);
     });
   }catch(_){ }
 }
 
 function backfillPersist(){
   try{
-    localStorage.setItem(backfillStorageKey(),JSON.stringify({version:1,snapshots:backfillState.snapshots,aliases:backfillState.aliases}));
+    localStorage.setItem(
+      backfillStorageKey(),
+      JSON.stringify({version:4,snapshots:backfillState.snapshots,creationDates:backfillState.creationDates})
+    );
   }catch(error){
     const status=document.querySelector('#backfillSaveStatus');
     if(status){status.textContent=`could not save locally: ${error.message}`;status.className='backfill-status error'}
@@ -11291,407 +11474,34 @@ function backfillPersist(){
 }
 
 function backfillDefaultDate(){
-  const latest=state.daily.at(-1)?.date;
-  if(/^\d{4}-\d{2}-\d{2}$/.test(latest||'')) return latest;
-  const d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return getLatestEntry()?.date || new Date().toISOString().slice(0,10);
 }
 
 function backfillAddDays(date,amount){
-  const match=String(date||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if(!match) return backfillDefaultDate();
-  const d=new Date(Number(match[1]),Number(match[2])-1,Number(match[3])+amount);
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const parsed=new Date(`${date}T12:00:00`);
+  if(Number.isNaN(parsed.getTime())) return date;
+  parsed.setDate(parsed.getDate()+amount);
+  return parsed.toISOString().slice(0,10);
 }
 
-function backfillNormalizeName(value){
-  return String(value||'')
-    .normalize('NFKC')
-    .toLowerCase()
-    .replace(/[–—−]/g,'-')
-    .replace(/\s*-\s*/g,' - ')
-    .replace(/\s+/g,' ')
-    .trim();
-}
-
-function backfillCurrentName(cid){
-  return state.meta.get(String(cid))?.name || String(cid);
-}
-
-function backfillAliases(cid){
-  backfillLoad();
-  return Array.isArray(backfillState.aliases[String(cid)]) ? backfillState.aliases[String(cid)] : [];
-}
-
-function backfillAddAlias(cid,name,{persist=false}={}){
-  cid=String(cid||''); name=String(name||'').trim();
-  if(!cid || !name) return false;
-  const list=backfillAliases(cid);
-  const normalized=backfillNormalizeName(name);
-  if(list.some(item=>backfillNormalizeName(item)===normalized)) return false;
-  backfillState.aliases[cid]=[...list,name];
-  if(persist) backfillPersist();
-  return true;
-}
-
-function backfillCaptureCurrentNames(){
-  let changed=false;
-  state.meta.forEach((meta,cid)=>{
-    if(meta?.name) changed=backfillAddAlias(cid,meta.name) || changed;
-  });
-  if(changed) backfillPersist();
-}
-
-function backfillCandidates(name){
-  const needle=backfillNormalizeName(name);
-  if(!needle) return [];
-  const matches=[];
-  state.meta.forEach((meta,cid)=>{
-    const names=[meta?.name,...backfillAliases(cid)].filter(Boolean);
-    if(names.some(value=>backfillNormalizeName(value)===needle)) matches.push(String(cid));
-  });
-  return [...new Set(matches)];
-}
-
-function backfillParseMessageValue(raw){
+function backfillParseValue(raw){
   const original=String(raw??'').trim();
-  if(!original) return {valid:false,raw:original,error:'missing value'};
-  let value=original.replace(/messages?/ig,'').trim();
+  if(!original) return {empty:true,valid:true,raw:''};
+  let value=original.replace(/messages?|collectors?/ig,'').trim();
   let approximate=/^[≈~]/.test(value);
   value=value.replace(/^[≈~]\s*/,'').replace(/\s+/g,'');
   const suffix=value.match(/^([0-9]+(?:[.,][0-9]+)?)([kKmM])$/);
   if(suffix){
     const numeric=Number(suffix[1].replace(',','.'));
-    if(!Number.isFinite(numeric)) return {valid:false,raw:original,error:'invalid value'};
+    if(!Number.isFinite(numeric)) return {empty:false,valid:false,raw:original,error:'invalid'};
     const multiplier=suffix[2].toLowerCase()==='m' ? 1000000 : 1000;
-    return {valid:true,raw:original,messages:Math.round(numeric*multiplier),approximate:true};
+    return {empty:false,valid:true,raw:original,value:Math.round(numeric*multiplier),approximate:true};
   }
-  if(/^\d+$/.test(value)){
-    return {valid:true,raw:original,messages:Number(value),approximate};
-  }
+  if(/^\d+$/.test(value)) return {empty:false,valid:true,raw:original,value:Number(value),approximate};
   if(/^\d{1,3}(?:[.,]\d{3})+$/.test(value)){
-    return {valid:true,raw:original,messages:Number(value.replace(/[.,]/g,'')),approximate};
+    return {empty:false,valid:true,raw:original,value:Number(value.replace(/[.,]/g,'')),approximate};
   }
-  return {valid:false,raw:original,error:'use an integer or K/M value'};
-}
-
-function backfillSplitLine(line){
-  const clean=String(line||'').trim();
-  if(!clean) return null;
-  if(clean.includes('|')){
-    const index=clean.lastIndexOf('|');
-    return {name:clean.slice(0,index).trim(),value:clean.slice(index+1).trim()};
-  }
-  if(clean.includes('\t')){
-    const parts=clean.split(/\t+/);
-    return {name:parts.slice(0,-1).join(' ').trim(),value:parts.at(-1).trim()};
-  }
-  const match=clean.match(/^(.*?)\s+([≈~]?\d[\d.,\s]*[kKmM]?)$/);
-  return match ? {name:match[1].trim(),value:match[2].trim()} : null;
-}
-
-function backfillParseBulk(text){
-  return String(text||'').split(/\r?\n/).map((line,index)=>({line,index:index+1})).filter(item=>item.line.trim()).map(item=>{
-    const parts=backfillSplitLine(item.line);
-    if(!parts || !parts.name){
-      return {line:item.index,historicalName:item.line.trim(),raw:'',valid:false,error:'could not split name and value',cid:'',candidateCids:[],rememberAlias:true};
-    }
-    const parsed=backfillParseMessageValue(parts.value);
-    const candidateCids=backfillCandidates(parts.name);
-    return {
-      line:item.index,
-      historicalName:parts.name,
-      raw:parts.value,
-      valid:parsed.valid,
-      error:parsed.error || '',
-      messages:parsed.messages,
-      approximate:Boolean(parsed.approximate),
-      candidateCids,
-      cid:candidateCids.length===1 ? candidateCids[0] : '',
-      matchStatus:candidateCids.length===1 ? 'matched' : (candidateCids.length>1 ? 'ambiguous' : 'unknown'),
-      rememberAlias:true
-    };
-  });
-}
-
-function backfillBotOptions(selected=''){
-  return [...state.meta.entries()].map(([cid,meta])=>{
-    const live=state.bots.find(bot=>String(bot.cid)===String(cid));
-    const detail=Number.isFinite(live?.messages) ? ` · ${fmt.format(live.messages)} msg` : '';
-    return {cid:String(cid),label:`${meta?.name || cid}${detail}`};
-  }).sort((a,b)=>a.label.localeCompare(b.label,undefined,{sensitivity:'base'})).map(item=>`<option value="${archiveEscape(item.cid)}"${item.cid===String(selected)?' selected':''}>${archiveEscape(item.label)}</option>`).join('');
-}
-
-function backfillPreview(){
-  backfillCaptureCurrentNames();
-  const input=document.querySelector('#backfillBulkInput');
-  backfillState.preview=backfillParseBulk(input?.value || '');
-  backfillRenderPreview();
-  const status=document.querySelector('#backfillSaveStatus');
-  if(status){status.textContent='';status.className='backfill-status'}
-}
-
-function backfillRenderPreview(){
-  const box=document.querySelector('#backfillPreviewRows');
-  const meta=document.querySelector('#backfillPreviewMeta');
-  if(!box || !meta) return;
-  const rows=backfillState.preview || [];
-  if(!rows.length){
-    meta.textContent='nothing to preview';
-    box.innerHTML='<div class="dashboard-empty">paste data and tap preview.</div>';
-    return;
-  }
-  const unresolved=rows.filter(row=>!row.valid || !row.cid).length;
-  meta.textContent=`${rows.length} ${rows.length===1?'row':'rows'} · ${unresolved?`${unresolved} need attention`:'ready'}`;
-  box.innerHTML=rows.map((row,index)=>{
-    const numeric=row.valid ? `${row.approximate?'≈ ':''}${fmt.format(row.messages)}` : 'invalid';
-    const badge=!row.valid ? '<span class="backfill-badge warn">invalid</span>' : row.cid ? '<span class="backfill-badge ok">matched</span>' : `<span class="backfill-badge warn">${row.matchStatus==='ambiguous'?'ambiguous':'choose bot'}</span>`;
-    const current=row.cid ? backfillCurrentName(row.cid) : '';
-    return `<div class="backfill-preview-row" data-backfill-preview-row="${index}">
-      <div class="backfill-preview-top">
-        <div class="backfill-preview-name">${archiveEscape(row.historicalName)}${badge}</div>
-        <div class="backfill-preview-value">${archiveEscape(numeric)}</div>
-      </div>
-      <div class="backfill-preview-meta">line ${row.line} · raw: ${archiveEscape(row.raw || '—')}${row.valid?` · ${row.approximate?'approximate':'exact'}`:` · ${archiveEscape(row.error||'invalid')}`}${current?` · → ${archiveEscape(current)}`:''}</div>
-      <div class="backfill-preview-controls">
-        <select data-backfill-cid="${index}" ${row.valid?'':'disabled'}>
-          <option value="">${row.matchStatus==='ambiguous'?'choose the correct character…':'choose character…'}</option>
-          ${backfillBotOptions(row.cid)}
-        </select>
-        <label><input type="checkbox" data-backfill-remember="${index}" ${row.rememberAlias?'checked':''} ${row.valid?'':'disabled'}> remember alias</label>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function backfillPreviewDuplicateCid(){
-  const seen=new Set();
-  for(const row of backfillState.preview){
-    if(!row.valid || !row.cid) continue;
-    if(seen.has(row.cid)) return row.cid;
-    seen.add(row.cid);
-  }
-  return '';
-}
-
-function backfillSavePreview(){
-  const status=document.querySelector('#backfillSaveStatus');
-  const date=backfillState.editDate || document.querySelector('#backfillDate')?.value;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')){
-    if(status){status.textContent='choose a valid date first.';status.className='backfill-status error'}
-    return;
-  }
-  const rows=backfillState.preview || [];
-  if(!rows.length){
-    if(status){status.textContent='nothing to save — create a preview first.';status.className='backfill-status error'}
-    return;
-  }
-  const bad=rows.find(row=>!row.valid || !row.cid);
-  if(bad){
-    if(status){status.textContent='resolve every invalid or unknown row before saving.';status.className='backfill-status error'}
-    return;
-  }
-  const duplicateCid=backfillPreviewDuplicateCid();
-  if(duplicateCid){
-    if(status){status.textContent=`${backfillCurrentName(duplicateCid)} appears more than once in this import.`;status.className='backfill-status error'}
-    return;
-  }
-  if(!backfillState.snapshots[date]) backfillState.snapshots[date]={};
-  rows.forEach(row=>{
-    backfillState.snapshots[date][row.cid]={
-      raw:row.raw,
-      messages:row.messages,
-      approximate:Boolean(row.approximate),
-      historicalName:row.historicalName,
-      savedAt:new Date().toISOString()
-    };
-    if(row.rememberAlias) backfillAddAlias(row.cid,row.historicalName);
-  });
-  backfillPersist();
-  backfillRenderSaved();
-  backfillRenderAliasEditor();
-  backfillRenderAliasList();
-  if(status){status.textContent=`saved ${rows.length} historical ${rows.length===1?'value':'values'} for ${shortGraphDate(date)}.`;status.className='backfill-status ok'}
-  try{renderDashboardArchive()}catch(_){}
-}
-
-function backfillRenderOcrFiles(){
-  const box=document.querySelector('#backfillOcrFiles');
-  if(!box) return;
-  const files=Array.isArray(backfillState.ocrFiles)?backfillState.ocrFiles:[];
-  box.innerHTML=files.length ? files.map(file=>`<div class="backfill-ocr-file"><div><b>${archiveEscape(file.name || 'screenshot')}</b><small>${archiveEscape(file.status || 'pending')}</small></div><span>${Number.isFinite(file.extracted) ? `${file.extracted} lines` : ''}</span></div>`).join('') : '';
-}
-
-function backfillSetOcrStatus(message,type=''){
-  const status=document.querySelector('#backfillOcrStatus');
-  if(!status) return;
-  status.textContent=message || '';
-  status.className=`backfill-status${type?` ${type}`:''}`;
-}
-
-function backfillEnsureOcr(){
-  if(window.Tesseract) return Promise.resolve(window.Tesseract);
-  if(backfillState.ocrPromise) return backfillState.ocrPromise;
-  backfillState.ocrPromise=new Promise((resolve,reject)=>{
-    const script=document.createElement('script');
-    script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-    script.async=true;
-    script.onload=()=>window.Tesseract ? resolve(window.Tesseract) : reject(new Error('OCR library loaded incorrectly.'));
-    script.onerror=()=>reject(new Error('Could not load OCR library.'));
-    document.head.appendChild(script);
-  });
-  return backfillState.ocrPromise;
-}
-
-function backfillCleanOcrLine(line){
-  return String(line||'')
-    .replace(/[•·▪▫◦]/g,' ')
-    .replace(/[|]+/g,' ')
-    .replace(/[_]{2,}/g,' ')
-    .replace(/\s+/g,' ')
-    .trim();
-}
-
-function backfillIsIgnorableOcrLine(line){
-  const clean=backfillCleanOcrLine(line);
-  if(!clean) return true;
-  const tests=[
-    /^messages?$/i,/^messagecounts?$/i,/^created$/i,/^scenario$/i,/^search( by name)?$/i,/^share$/i,
-    /^all$/i,/^following$/i,/^latest$/i,/^popular$/i,/^filter/i,/^sort/i,/^tags?$/i,/^male$/i,/^female$/i,
-    /^characters?$/i,/^bots?$/i,/^public$/i,/^private$/i,/^new$/i,/^edit$/i,/^save$/i,/^view all$/i,/^top (growth|slots)$/i,
-    /^home$/i,/^more$/i,/^archive$/i,/^analytics$/i,/^subscribers?$/i,/^creator value$/i,/^events$/i,
-    /^search$/i,/^cancel$/i,/^done$/i,/^copy$/i,/^import$/i,/^preview$/i,/^updated:?/i
-  ];
-  if(tests.some(re=>re.test(clean))) return true;
-  if(/^\d{1,2}:\d{2}$/.test(clean)) return true;
-  if(/^(AM|PM)$/i.test(clean)) return true;
-  if(clean.length<=1 && !/\d/.test(clean)) return true;
-  return false;
-}
-
-function backfillNormalizeHistoricalName(name){
-  return backfillCleanOcrLine(name)
-    .replace(/\b(messages?|created|scenario)\b/ig,' ')
-    .replace(/\s{2,}/g,' ')
-    .trim();
-}
-
-function backfillExtractFromOcrText(text){
-  const rawLines=String(text||'').split(/\r?\n+/).map(backfillCleanOcrLine).filter(Boolean);
-  const extracted=[];
-  let nameBuffer=[];
-
-  const pushExtracted=(name,parsed)=>{
-    const historicalName=backfillNormalizeHistoricalName(name);
-    if(!historicalName || !parsed?.valid) return;
-    extracted.push({historicalName,raw:parsed.raw,messages:parsed.messages,approximate:Boolean(parsed.approximate)});
-  };
-
-  for(const rawLine of rawLines){
-    const line=backfillCleanOcrLine(rawLine);
-    if(!line) continue;
-
-    const direct=backfillSplitLine(line);
-    if(direct){
-      const parsed=backfillParseMessageValue(direct.value);
-      if(parsed.valid && backfillNormalizeHistoricalName(direct.name)){
-        pushExtracted(direct.name,parsed);
-        nameBuffer=[];
-        continue;
-      }
-    }
-
-    const justValue=backfillParseMessageValue(line);
-    if(justValue.valid){
-      const name=nameBuffer.join(' ').trim();
-      if(name) pushExtracted(name,justValue);
-      nameBuffer=[];
-      continue;
-    }
-
-    const inlineMatch=line.match(/^(.*?)([≈~]?\d[\d.,\s]*[kKmM]?)\s*messages?$/i);
-    if(inlineMatch){
-      const parsed=backfillParseMessageValue(inlineMatch[2]);
-      if(parsed.valid){
-        const name=backfillNormalizeHistoricalName(inlineMatch[1]) || nameBuffer.join(' ').trim();
-        if(name) pushExtracted(name,parsed);
-        nameBuffer=[];
-        continue;
-      }
-    }
-
-    if(backfillIsIgnorableOcrLine(line)) continue;
-
-    nameBuffer.push(line);
-    if(nameBuffer.length>2) nameBuffer=nameBuffer.slice(-2);
-  }
-
-  const seen=new Set();
-  return extracted.filter(row=>{
-    const key=`${row.historicalName.toLowerCase()}|${String(row.raw).toLowerCase()}`;
-    if(seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
-async function backfillImportScreenshots(files){
-  const picked=[...(files||[])].filter(file=>/^image\//i.test(file.type||'') || /\.(png|jpe?g|webp|heic|heif)$/i.test(file.name||''));
-  if(!picked.length){
-    backfillSetOcrStatus('no image files selected.','error');
-    return;
-  }
-  backfillState.ocrFiles=picked.map(file=>({name:file.name,status:'queued',extracted:null}));
-  backfillRenderOcrFiles();
-  backfillSetOcrStatus(`loading OCR for ${picked.length} screenshot${picked.length===1?'':'s'}…`);
-
-  let TesseractLib;
-  try{
-    TesseractLib=await backfillEnsureOcr();
-  }catch(error){
-    backfillSetOcrStatus(error.message || 'could not load OCR.','error');
-    backfillState.ocrFiles=backfillState.ocrFiles.map(file=>({...file,status:'failed'}));
-    backfillRenderOcrFiles();
-    return;
-  }
-
-  const allRows=[];
-  for(let i=0;i<picked.length;i++){
-    const file=picked[i];
-    backfillState.ocrFiles[i].status='reading…';
-    backfillRenderOcrFiles();
-    backfillSetOcrStatus(`reading screenshot ${i+1}/${picked.length}…`);
-    try{
-      const result=await TesseractLib.recognize(file,'eng');
-      const rows=backfillExtractFromOcrText(result?.data?.text || '');
-      allRows.push(...rows);
-      backfillState.ocrFiles[i].status=rows.length ? 'ready' : 'no rows found';
-      backfillState.ocrFiles[i].extracted=rows.length;
-      backfillRenderOcrFiles();
-    }catch(error){
-      backfillState.ocrFiles[i].status='failed';
-      backfillState.ocrFiles[i].extracted=0;
-      backfillRenderOcrFiles();
-    }
-  }
-
-  const input=document.querySelector('#backfillBulkInput');
-  if(input){
-    const existingLines=input.value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
-    const incomingLines=allRows.map(row=>`${row.historicalName} | ${row.raw}`);
-    const merged=[];
-    const seen=new Set();
-    for(const line of [...existingLines,...incomingLines]){
-      const key=line.toLowerCase();
-      if(seen.has(key)) continue;
-      seen.add(key);
-      merged.push(line);
-    }
-    input.value=merged.join('\n');
-  }
-
-  backfillPreview();
-  backfillSetOcrStatus(allRows.length ? `ready — extracted ${allRows.length} line${allRows.length===1?'':'s'} from ${picked.length} screenshot${picked.length===1?'':'s'}. check preview before saving.` : 'OCR finished, but no usable name/message lines were found.','ok');
+  return {empty:false,valid:false,raw:original,error:'use 802 or 1.5K'};
 }
 
 function backfillSavedDates(){
@@ -11704,238 +11514,410 @@ function backfillSnapshot(date){
   return backfillState.snapshots[String(date)] || {};
 }
 
-function backfillObservedSeriesForCid(cid){
-  backfillLoad();
-  cid=String(cid||'');
-  if(!cid) return [];
-  return backfillSavedDates().map(date=>{
-    const record=backfillState.snapshots[date]?.[cid] || null;
-    return record ? {date,record} : null;
-  }).filter(Boolean);
-}
-
-function backfillInferredRecord(cid,date){
-  backfillLoad();
-  cid=String(cid||'');
-  date=String(date||'');
-  if(!cid || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
-  if(backfillSnapshot(date)[cid]) return null;
-
-  const series=backfillObservedSeriesForCid(cid);
-  let before=null;
-  let after=null;
-
-  for(const point of series){
-    if(point.date<date){
-      before=point;
-      continue;
-    }
-    if(point.date>date){
-      after=point;
-      break;
-    }
-  }
-
-  if(!before || !after) return null;
-  if(before.record.approximate || after.record.approximate) return null;
-  if(!Number.isFinite(Number(before.record.messages)) || !Number.isFinite(Number(after.record.messages))) return null;
-  if(Number(before.record.messages)!==Number(after.record.messages)) return null;
-
+function backfillFieldKeys(field){
+  const key=field==='collectors'?'collectors':'messages';
   return {
-    raw:String(before.record.messages),
-    messages:Number(before.record.messages),
-    approximate:false,
-    historicalName:String(before.record.historicalName || after.record.historicalName || backfillCurrentName(cid)),
-    savedAt:'',
-    inferred:true,
-    inference:'equal_exact_endpoints',
-    inferredFrom:{startDate:before.date,endDate:after.date}
+    key,
+    rawKey:key==='messages'?'messagesRaw':'collectorsRaw',
+    approxKey:key==='messages'?'messagesApproximate':'collectorsApproximate'
   };
 }
 
-function backfillInferredSnapshot(date){
-  backfillLoad();
-  const observed=backfillSnapshot(date);
-  const cids=new Set();
-  Object.values(backfillState.snapshots).forEach(records=>{
-    Object.keys(records||{}).forEach(cid=>cids.add(String(cid)));
-  });
-  const inferred={};
-  cids.forEach(cid=>{
-    if(observed[cid]) return;
-    const record=backfillInferredRecord(cid,date);
-    if(record) inferred[cid]=record;
-  });
-  return inferred;
+function backfillObservedFieldSeries(cid,field){
+  const {key}=backfillFieldKeys(field);
+  return backfillSavedDates().map(date=>{
+    const record=backfillState.snapshots[date]?.[String(cid)];
+    const value=Number(record?.[key]);
+    if(!record || !Number.isFinite(value)) return null;
+    return {date,record,value};
+  }).filter(Boolean);
 }
 
-function backfillResolvedSnapshot(date){
-  const inferred=backfillInferredSnapshot(date);
-  const observed=backfillSnapshot(date);
-  return {...inferred,...observed};
+function backfillPreviousObservedField(cid,date,field){
+  const {key,rawKey,approxKey}=backfillFieldKeys(field);
+  const entry=[...backfillObservedFieldSeries(cid,field)].reverse().find(item=>item.date<date) || null;
+  if(!entry) return null;
+  return {
+    value:Number(entry.record[key]),
+    raw:String(entry.record[rawKey] ?? entry.record[key]),
+    approximate:Boolean(entry.record[approxKey]),
+    date:entry.date,
+    carried:true
+  };
+}
+
+function backfillInferredField(cid,date,field){
+  const {key,approxKey}=backfillFieldKeys(field);
+  const series=backfillObservedFieldSeries(cid,field);
+  if(!series.length) return null;
+  const before=[...series].reverse().find(item=>item.date<date) || null;
+  const after=series.find(item=>item.date>date) || null;
+  if(!before || !after) return null;
+  if(before.record[approxKey] || after.record[approxKey]) return null;
+  if(Number(before.record[key])!==Number(after.record[key])) return null;
+  return {value:Number(before.record[key]),inferred:true,startDate:before.date,endDate:after.date};
 }
 
 function historicalMessageValue(cid,date){
-  const key=String(cid);
-  const observed=backfillSnapshot(date)[key] || null;
-  const record=observed || backfillInferredRecord(key,date);
-  return record ? {...record,cid:key,date:String(date),inferred:Boolean(record.inferred)} : null;
+  const observed=backfillSnapshot(date)[String(cid)] || null;
+  if(observed && Number.isFinite(Number(observed.messages))){
+    return {cid:String(cid),date:String(date),messages:Number(observed.messages),raw:String(observed.messagesRaw || observed.messages),approximate:Boolean(observed.messagesApproximate),inferred:false};
+  }
+  const inferred=backfillInferredField(cid,date,'messages');
+  return inferred ? {cid:String(cid),date:String(date),messages:inferred.value,raw:String(inferred.value),approximate:false,inferred:true,inference:'equal_exact_endpoints',inferredFrom:{startDate:inferred.startDate,endDate:inferred.endDate}} : null;
 }
 
-function backfillRenderSaved(){
+function historicalCollectorValue(cid,date){
+  const observed=backfillSnapshot(date)[String(cid)] || null;
+  if(observed && Number.isFinite(Number(observed.collectors))){
+    return {cid:String(cid),date:String(date),collectors:Number(observed.collectors),raw:String(observed.collectorsRaw || observed.collectors),approximate:Boolean(observed.collectorsApproximate),inferred:false};
+  }
+  const inferred=backfillInferredField(cid,date,'collectors');
+  return inferred ? {cid:String(cid),date:String(date),collectors:inferred.value,raw:String(inferred.value),approximate:false,inferred:true,inference:'equal_exact_endpoints',inferredFrom:{startDate:inferred.startDate,endDate:inferred.endDate}} : null;
+}
+
+function backfillResolvedSnapshot(date){
+  backfillLoad();
+  const result={};
+  const cids=new Set([...state.meta.keys(),...Object.values(backfillState.snapshots).flatMap(records=>Object.keys(records||{}))]);
+  cids.forEach(cid=>{
+    const observed=backfillSnapshot(date)[String(cid)] || null;
+    const msg=historicalMessageValue(cid,date);
+    const col=historicalCollectorValue(cid,date);
+    if(!observed && !msg && !col) return;
+    result[String(cid)]={
+      ...(observed || {}),
+      messages:msg?.messages ?? observed?.messages ?? null,
+      messagesRaw:msg?.raw ?? observed?.messagesRaw ?? '',
+      messagesApproximate:Boolean(msg?.approximate ?? observed?.messagesApproximate),
+      messagesInferred:Boolean(msg?.inferred),
+      collectors:col?.collectors ?? observed?.collectors ?? null,
+      collectorsRaw:col?.raw ?? observed?.collectorsRaw ?? '',
+      collectorsApproximate:Boolean(col?.approximate ?? observed?.collectorsApproximate),
+      collectorsInferred:Boolean(col?.inferred)
+    };
+  });
+  return result;
+}
+
+function backfillCurrentName(cid){
+  return state.meta.get(String(cid))?.name || state.bots.find(bot=>String(bot.cid)===String(cid))?.name || String(cid);
+}
+
+function backfillBaseCreationDate(cid){
+  const id=String(cid||'');
+  if(!id) return '';
+
+  const eventDate=(()=>{
+    try{return creationEventForCid(id)?.date || ''}catch(_){return ''}
+  })();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) return eventDate;
+
+  const cvDate=(()=>{
+    try{
+      return cvSortedEntriesAsc().find(entry=>
+        String(entry.botCid||'')===id &&
+        ['new','hq_new','compliant_new'].includes(entry.type) &&
+        /^\d{4}-\d{2}-\d{2}$/.test(String(entry.date||''))
+      )?.date || '';
+    }catch(_){return ''}
+  })();
+  if(cvDate) return cvDate;
+
+  // If the bot first appears after the very first canonical snapshot, that first
+  // appearance is a useful creation bound. Bots already present in the first
+  // snapshot remain "unknown" rather than being falsely dated to tracker start.
+  try{
+    const days=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+    const firstGlobal=days[0]?.date || '';
+    const firstSeen=days.find(day=>!!snapshotBot(day.snapshot,id))?.date || '';
+    if(firstSeen && firstSeen!==firstGlobal) return firstSeen;
+  }catch(_){ }
+
+  return '';
+}
+
+function backfillEffectiveCreationDate(cid){
+  backfillLoad();
+  const id=String(cid||'');
+  const override=backfillState.creationDates[id] || '';
+  if(/^\d{4}-\d{2}-\d{2}$/.test(override)) return override;
+  return backfillBaseCreationDate(id);
+}
+
+function backfillSetCreationDate(cid,date,{silent=false}={}){
+  backfillLoad();
+  const id=String(cid||'');
+  if(!id || !/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))) return;
+  backfillState.creationDates[id]=String(date);
+  backfillPersist();
+  try{renderCvDashboard()}catch(_){ }
+  if(!silent){
+    const status=document.querySelector('#backfillSaveStatus');
+    if(status){status.textContent=`${backfillCurrentName(id)} creation date set to ${shortGraphDate(date)} · +30 character CV starts there.`;status.className='backfill-status ok'}
+  }
+}
+
+function backfillCreationLabel(cid,date){
+  const creation=backfillEffectiveCreationDate(cid);
+  if(!creation) return {text:'created: unknown',className:'unknown-created',active:true};
+  return {
+    text:`created ${shortGraphDate(creation)}${String(date)===String(creation)?' · +30 CV':''}`,
+    className:String(date)<String(creation)?'future-bot':'',
+    active:String(date)>=String(creation)
+  };
+}
+
+function backfillFormatFieldStatus(parsed,{inferred=null,carried=null}={}){
+  if(parsed && !parsed.valid) return {text:parsed.error || 'invalid',className:'invalid'};
+  if(parsed && !parsed.empty) return {text:parsed.approximate ? `≈ ${fmt.format(parsed.value)}` : `exact ${fmt.format(parsed.value)}`,className:parsed.approximate?'approx':''};
+  if(inferred) return {text:`inferred ${fmt.format(inferred.value)}`,className:'inferred'};
+  if(carried) return {text:`last ${carried.approximate?'≈ ':''}${fmt.format(carried.value)} · ${shortGraphDate(carried.date)}`,className:'carried'};
+  return {text:'unknown',className:''};
+}
+
+function backfillEditorBots(){
+  const query=String(backfillState.search||'').trim().toLowerCase();
+  const date=backfillState.editDate || backfillDefaultDate();
+
+  return [...state.meta.entries()]
+    .map(([cid,meta])=>{
+      const id=String(cid);
+      const creation=backfillEffectiveCreationDate(id);
+      return {
+        cid:id,
+        name:meta?.name || id,
+        creation,
+        active:Boolean(creation) && String(creation)<=String(date),
+        unknownCreation:!creation
+      };
+    })
+    .filter(bot=>!query || bot.name.toLowerCase().includes(query))
+    .filter(bot=>backfillState.showAll || bot.active)
+    .sort((a,b)=>{
+      if(a.active!==b.active) return a.active?-1:1;
+      if(a.unknownCreation!==b.unknownCreation) return a.unknownCreation?1:-1;
+      return a.name.localeCompare(b.name,undefined,{sensitivity:'base'});
+    });
+}
+
+function backfillFieldDisplay(cid,date,field,record){
+  const {key,rawKey}=backfillFieldKeys(field);
+  if(record && Number.isFinite(Number(record[key]))){
+    const raw=String(record[rawKey] || record[key]);
+    return {raw,parsed:backfillParseValue(raw),carried:null,inferred:null,observed:true};
+  }
+
+  const carried=backfillPreviousObservedField(cid,date,field);
+  if(carried){
+    return {raw:carried.raw,parsed:backfillParseValue(carried.raw),carried,inferred:null,observed:false};
+  }
+
+  const inferred=backfillInferredField(cid,date,field);
+  return {raw:'',parsed:null,carried:null,inferred,observed:false};
+}
+
+function backfillRenderEditor(){
+  backfillLoad();
   const date=backfillState.editDate || backfillDefaultDate();
   const observed=backfillSnapshot(date);
-  const inferred=backfillInferredSnapshot(date);
-  const records={...inferred,...observed};
-  const entries=Object.entries(records).sort((a,b)=>backfillCurrentName(a[0]).localeCompare(backfillCurrentName(b[0]),undefined,{sensitivity:'base'}));
-  const box=document.querySelector('#backfillSavedRows');
-  const meta=document.querySelector('#backfillSavedMeta');
+  const rowsBox=document.querySelector('#backfillEditorRows');
+  const summary=document.querySelector('#backfillEditorSummary');
   const dateStatus=document.querySelector('#backfillDateStatus');
-  const observedCount=Object.keys(observed).length;
-  const inferredCount=Object.keys(inferred).length;
-  const approx=Object.values(observed).filter(record=>record.approximate).length;
-  if(meta){
-    const parts=[];
-    if(observedCount) parts.push(`${observedCount} observed`);
-    if(inferredCount) parts.push(`${inferredCount} inferred`);
-    if(approx) parts.push(`${approx} approximate`);
-    meta.textContent=parts.length ? parts.join(' · ') : '0 values';
+  const toggle=document.querySelector('#backfillShowAll');
+  if(!rowsBox) return;
+
+  if(toggle){
+    toggle.classList.toggle('active',backfillState.showAll);
+    toggle.textContent=backfillState.showAll?'hide later / unknown':'show later / unknown';
   }
+
+  const bots=backfillEditorBots();
+  const observedRecords=Object.values(observed);
+  const savedBots=observedRecords.length;
+  const savedMessages=observedRecords.filter(record=>Number.isFinite(Number(record.messages))).length;
+  const savedCollectors=observedRecords.filter(record=>Number.isFinite(Number(record.collectors))).length;
+
+  if(summary) summary.textContent=savedBots ? `${savedBots} bots · ${savedMessages} M · ${savedCollectors} C` : '0 saved';
   if(dateStatus){
-    if(entries.length){
-      const parts=[];
-      if(observedCount) parts.push(`${observedCount} observed`);
-      if(inferredCount) parts.push(`${inferredCount} inferred exact plateau${inferredCount===1?'':'s'}`);
-      dateStatus.textContent=`${parts.join(' · ')} · every other bot is unknown`;
-    }else{
-      dateStatus.textContent='no observed or inferred historical messagecounts for this date';
-    }
+    const hiddenCount=[...state.meta.keys()].filter(cid=>{
+      const creation=backfillEffectiveCreationDate(cid);
+      return creation && String(creation)>String(date);
+    }).length;
+    dateStatus.textContent=savedBots
+      ? `${savedBots} bots confirmed on ${shortGraphDate(date)} · ${hiddenCount} later bots hidden`
+      : `enter the stands for ${shortGraphDate(date)} · later bots are hidden automatically`;
   }
-  if(!box) return;
-  box.innerHTML=entries.length ? entries.map(([cid,record])=>{
-    const sourceText=record.inferred
-      ? `inferred exact · equal endpoints ${shortGraphDate(record.inferredFrom?.startDate || '')} → ${shortGraphDate(record.inferredFrom?.endDate || '')}`
-      : `${archiveEscape(record.historicalName || backfillCurrentName(cid))} · raw ${archiveEscape(record.raw)} · ${record.approximate?'approximate':'exact'}`;
-    const sideControl=record.inferred
-      ? '<span class="backfill-badge ok">inferred</span>'
-      : `<button class="backfill-icon-button" type="button" data-backfill-delete-cid="${archiveEscape(cid)}" aria-label="delete value">×</button>`;
-    return `<div class="backfill-saved-row">
-      <div class="backfill-saved-main">
-        <b>${archiveEscape(backfillCurrentName(cid))}</b>
-        <small>${sourceText}</small>
+
+  rowsBox.innerHTML=bots.length ? bots.map(bot=>{
+    const record=observed[bot.cid] || null;
+    const creationInfo=backfillCreationLabel(bot.cid,date);
+    const msg=backfillFieldDisplay(bot.cid,date,'messages',record);
+    const col=backfillFieldDisplay(bot.cid,date,'collectors',record);
+    const msgStatus=backfillFormatFieldStatus(msg.parsed,{carried:msg.observed?null:msg.carried,inferred:msg.inferred});
+    const colStatus=backfillFormatFieldStatus(col.parsed,{carried:col.observed?null:col.carried,inferred:col.inferred});
+    const rowClass=[creationInfo.className,bot.unknownCreation?'unknown-created':''].filter(Boolean).join(' ');
+
+    return `<div class="backfill-editor-row ${rowClass}" data-backfill-cid="${archiveEscape(bot.cid)}">
+      <div class="backfill-editor-name">
+        ${archiveEscape(bot.name)}
+        <small class="created-line">
+          <span class="backfill-created-chip">${archiveEscape(creationInfo.text)}</span>
+          <button class="backfill-set-created" type="button" data-backfill-set-created="${archiveEscape(bot.cid)}">set created here</button>
+        </small>
       </div>
-      <div class="backfill-saved-side"><strong>${record.approximate?'≈ ':''}${fmt.format(record.messages)}</strong>${sideControl}</div>
+      <div class="backfill-editor-field">
+        <input type="text" inputmode="decimal" data-backfill-field="messages" value="${archiveEscape(msg.raw)}" placeholder="—">
+        <small class="${msgStatus.className}">${archiveEscape(msgStatus.text)}</small>
+      </div>
+      <div class="backfill-editor-field">
+        <input type="text" inputmode="decimal" data-backfill-field="collectors" value="${archiveEscape(col.raw)}" placeholder="—">
+        <small class="${colStatus.className}">${archiveEscape(colStatus.text)}</small>
+      </div>
     </div>`;
-  }).join('') : '<div class="dashboard-empty">no historical values saved or inferred.</div>';
+  }).join('') : '<div class="dashboard-empty">no bots match this date/search. use “show later / unknown” if you need to correct a creation date.</div>';
 }
 
-function backfillLoadSavedIntoEditor(){
-  const date=backfillState.editDate || backfillDefaultDate();
-  const records=backfillSnapshot(date);
-  const entries=Object.entries(records);
-  const input=document.querySelector('#backfillBulkInput');
-  if(!input) return;
-  input.value=entries.map(([cid,record])=>`${record.historicalName || backfillCurrentName(cid)} | ${record.raw}`).join('\n');
-  backfillPreview();
+function backfillUpdateFieldStatus(input){
+  const row=input.closest('[data-backfill-cid]');
+  if(!row) return;
+  const cid=row.dataset.backfillCid;
+  const field=input.dataset.backfillField;
+  const small=input.parentElement?.querySelector('small');
+  if(!small) return;
+  const parsed=backfillParseValue(input.value);
+  const status=backfillFormatFieldStatus(parsed,{});
+  small.textContent=status.text;
+  small.className=status.className;
+
+  // If a screenshot proves the bot already existed before its current creation date,
+  // move the local creation date back automatically.
+  if(parsed.valid && !parsed.empty){
+    const date=backfillState.editDate || backfillDefaultDate();
+    const current=backfillEffectiveCreationDate(cid);
+    if(!current || String(date)<String(current)) backfillSetCreationDate(cid,date,{silent:true});
+  }
 }
 
-function backfillDeleteRecord(cid){
-  const date=backfillState.editDate || backfillDefaultDate();
-  const records=backfillState.snapshots[date];
-  if(!records || !Object.prototype.hasOwnProperty.call(records,cid)) return;
-  delete records[cid];
-  if(!Object.keys(records).length) delete backfillState.snapshots[date];
+function backfillSaveDate(){
+  const date=backfillState.editDate || document.querySelector('#backfillDate')?.value;
+  const status=document.querySelector('#backfillSaveStatus');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')){
+    if(status){status.textContent='choose a valid date first.';status.className='backfill-status error'}
+    return;
+  }
+
+  const existing={...(backfillState.snapshots[date] || {})};
+  let invalidInput=null;
+  let confirmed=0;
+
+  document.querySelectorAll('#backfillEditorRows [data-backfill-cid]').forEach(row=>{
+    const cid=String(row.dataset.backfillCid || '');
+    const msgInput=row.querySelector('[data-backfill-field="messages"]');
+    const colInput=row.querySelector('[data-backfill-field="collectors"]');
+    const msg=backfillParseValue(msgInput?.value || '');
+    const col=backfillParseValue(colInput?.value || '');
+
+    if(!msg.valid && !invalidInput) invalidInput=msgInput;
+    if(!col.valid && !invalidInput) invalidInput=colInput;
+    if(!msg.valid || !col.valid) return;
+
+    if(msg.empty && col.empty){
+      delete existing[cid];
+      return;
+    }
+
+    existing[cid]={
+      messages:msg.empty ? null : msg.value,
+      messagesRaw:msg.empty ? '' : msg.raw,
+      messagesApproximate:msg.empty ? false : Boolean(msg.approximate),
+      collectors:col.empty ? null : col.value,
+      collectorsRaw:col.empty ? '' : col.raw,
+      collectorsApproximate:col.empty ? false : Boolean(col.approximate),
+      savedAt:new Date().toISOString()
+    };
+    confirmed++;
+
+    const currentCreation=backfillEffectiveCreationDate(cid);
+    if(!currentCreation || String(date)<String(currentCreation)) backfillSetCreationDate(cid,date,{silent:true});
+  });
+
+  if(invalidInput){
+    if(status){status.textContent='one or more values are invalid. use values like 802 or 1.5K.';status.className='backfill-status error'}
+    invalidInput.focus();
+    invalidInput.scrollIntoView?.({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  if(Object.keys(existing).length) backfillState.snapshots[date]=existing;
+  else delete backfillState.snapshots[date];
+
   backfillPersist();
-  backfillRenderSaved();
-  try{renderDashboardArchive()}catch(_){}
+  backfillRenderEditor();
+  if(status){
+    status.textContent=confirmed
+      ? `saved ${confirmed} bot stand${confirmed===1?'':'s'} for ${shortGraphDate(date)}.`
+      : `no observed values saved for ${shortGraphDate(date)}.`;
+    status.className='backfill-status ok';
+  }
+  try{renderCvDashboard()}catch(_){ }
+  try{renderDashboardArchive()}catch(_){ }
+}
+
+function backfillClearForm(){
+  document.querySelectorAll('#backfillEditorRows input[data-backfill-field]').forEach(input=>{
+    input.value='';
+    backfillUpdateFieldStatus(input);
+  });
+  const status=document.querySelector('#backfillSaveStatus');
+  if(status){status.textContent='form cleared — nothing changes until you tap save date.';status.className='backfill-status'}
 }
 
 function backfillDeleteDate(){
   const date=backfillState.editDate || backfillDefaultDate();
   if(!backfillState.snapshots[date]) return;
-  if(!confirm(`Delete all historical messagecounts for ${shortGraphDate(date)}?`)) return;
+  if(!confirm(`Delete all observed historical values for ${shortGraphDate(date)}?`)) return;
   delete backfillState.snapshots[date];
   backfillPersist();
-  backfillRenderSaved();
+  backfillRenderEditor();
   const status=document.querySelector('#backfillSaveStatus');
   if(status){status.textContent='historical values for this date deleted.';status.className='backfill-status ok'}
-  try{renderDashboardArchive()}catch(_){}
+  try{renderDashboardArchive()}catch(_){ }
 }
 
 function backfillPrepareDate(date){
   backfillLoad();
-  backfillCaptureCurrentNames();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')) date=backfillDefaultDate();
   backfillState.editDate=date;
   const input=document.querySelector('#backfillDate');
   if(input && input.value!==date) input.value=date;
-  backfillRenderSaved();
-  backfillRenderAliasEditor();
-  backfillRenderAliasList();
-}
-
-function backfillRenderAliasEditor(){
-  const select=document.querySelector('#backfillAliasBot');
-  if(!select) return;
-  const previous=backfillState.aliasCid || select.value;
-  const options=[...state.meta.entries()].map(([cid,meta])=>({cid:String(cid),name:meta?.name||cid})).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
-  select.innerHTML=options.map(item=>`<option value="${archiveEscape(item.cid)}">${archiveEscape(item.name)}</option>`).join('');
-  const selected=options.some(item=>item.cid===previous) ? previous : (options[0]?.cid || '');
-  select.value=selected;
-  backfillState.aliasCid=selected;
-  const current=document.querySelector('#backfillAliasCurrent');
-  if(current) current.textContent=selected ? `current name: ${backfillCurrentName(selected)}` : 'no bots loaded';
-  const textarea=document.querySelector('#backfillAliasInput');
-  if(textarea) textarea.value=selected ? backfillAliases(selected).join('\n') : '';
-}
-
-function backfillSaveAliases(){
-  const cid=document.querySelector('#backfillAliasBot')?.value || '';
-  const input=document.querySelector('#backfillAliasInput');
-  if(!cid || !input) return;
-  const seen=new Set();
-  const list=[];
-  input.value.split(/\r?\n/).map(value=>value.trim()).filter(Boolean).forEach(value=>{
-    const key=backfillNormalizeName(value);
-    if(!key || seen.has(key)) return;
-    seen.add(key); list.push(value);
-  });
-  backfillState.aliases[cid]=list;
-  backfillPersist();
-  backfillRenderAliasList();
   const status=document.querySelector('#backfillSaveStatus');
-  if(status){status.textContent=`aliases saved for ${backfillCurrentName(cid)}.`;status.className='backfill-status ok'}
-}
-
-function backfillRenderAliasList(){
-  const box=document.querySelector('#backfillAliasList');
-  if(!box) return;
-  const rows=[...state.meta.entries()].map(([cid,meta])=>({cid:String(cid),name:meta?.name||cid,aliases:backfillAliases(cid)})).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
-  box.innerHTML=rows.length ? rows.map(row=>`<div class="backfill-alias-row" data-backfill-alias-cid="${archiveEscape(row.cid)}"><b>${archiveEscape(row.name)}</b><small>${row.aliases.length?archiveEscape(row.aliases.join(' · ')):'no saved aliases'}</small></div>`).join('') : '<div class="dashboard-empty">no bots loaded.</div>';
+  if(status){status.textContent='';status.className='backfill-status'}
+  backfillRenderEditor();
 }
 
 function backfillRenderArchive(monthKey){
+  backfillLoad();
   const box=document.querySelector('#archiveBackfill');
   const meta=document.querySelector('#archiveBackfillMeta');
   if(!box || !meta) return;
   const dates=backfillSavedDates().filter(date=>String(date).startsWith(`${monthKey}-`)).sort().reverse();
-  const totals=dates.map(date=>{
+  const rows=dates.map(date=>{
     const records=Object.values(backfillSnapshot(date));
-    return {date,count:records.length,approx:records.filter(record=>record.approximate).length};
+    const msgCount=records.filter(record=>Number.isFinite(Number(record.messages))).length;
+    const colCount=records.filter(record=>Number.isFinite(Number(record.collectors))).length;
+    const approxCount=records.filter(record=>record.messagesApproximate || record.collectorsApproximate).length;
+    return {date,bots:records.length,msgCount,colCount,approxCount};
   });
-  const count=totals.reduce((sum,row)=>sum+row.count,0);
-  const approx=totals.reduce((sum,row)=>sum+row.approx,0);
-  meta.textContent=count ? `${count} observed values · ${approx} approx` : '—';
-  box.innerHTML=totals.length ? totals.map(row=>`<div class="archive-backfill-row" data-open-backfill-date="${archiveEscape(row.date)}"><span class="date">${shortGraphDate(row.date)}</span><span class="summary">observed partial snapshot · exact equal anchors infer plateaus</span><span class="count">${row.count}${row.approx?` · ≈${row.approx}`:''}</span></div>`).join('') : '<div class="dashboard-empty">no historical backfill this month.</div>';
+  const totalMsg=rows.reduce((sum,row)=>sum+row.msgCount,0);
+  const totalCol=rows.reduce((sum,row)=>sum+row.colCount,0);
+  meta.textContent=rows.length ? `${rows.length} dates · ${totalMsg} M · ${totalCol} C` : '—';
+  box.innerHTML=rows.length ? rows.map(row=>`<div class="archive-backfill-row" data-open-backfill-date="${archiveEscape(row.date)}"><span class="date">${shortGraphDate(row.date)}</span><span class="summary">manual history snapshot · creation dates synchronized</span><span class="count">${row.bots} bots${row.approxCount?` · ≈${row.approxCount}`:''}</span></div>`).join('') : '<div class="dashboard-empty">no historical backfill this month.</div>';
 }
 
 function backfillRefreshView(){
   if(!ENABLE_HISTORICAL_BACKFILL) return;
-  backfillCaptureCurrentNames();
-  backfillRenderAliasEditor();
-  backfillRenderAliasList();
-  backfillRenderSaved();
-  backfillRenderOcrFiles();
+  backfillRenderEditor();
 }
 
 function backfillInit(){
@@ -11946,57 +11928,33 @@ function backfillInit(){
   document.querySelector('#backfillDate')?.addEventListener('change',event=>backfillPrepareDate(event.target.value));
   document.querySelector('#backfillPrevDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),-1)));
   document.querySelector('#backfillNextDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),1)));
-  document.querySelector('#backfillPickScreenshots')?.addEventListener('click',()=>document.querySelector('#backfillScreenshotInput')?.click());
-  document.querySelector('#backfillScreenshotInput')?.addEventListener('change',event=>{
-    const files=[...(event.target.files || [])];
-    if(files.length) backfillImportScreenshots(files);
-    event.target.value='';
+  document.querySelector('#backfillSearch')?.addEventListener('input',event=>{backfillState.search=event.target.value || '';backfillRenderEditor()});
+  document.querySelector('#backfillShowAll')?.addEventListener('click',()=>{backfillState.showAll=!backfillState.showAll;backfillRenderEditor()});
+
+  document.querySelector('#backfillEditorRows')?.addEventListener('input',event=>{
+    const input=event.target.closest('input[data-backfill-field]');
+    if(input) backfillUpdateFieldStatus(input);
   });
-  document.querySelector('#backfillPreviewButton')?.addEventListener('click',backfillPreview);
-  document.querySelector('#backfillClearButton')?.addEventListener('click',()=>{
-    const input=document.querySelector('#backfillBulkInput'); if(input) input.value='';
-    backfillState.preview=[]; backfillState.ocrFiles=[]; backfillRenderPreview(); backfillRenderOcrFiles(); backfillSetOcrStatus('select screenshots to extract names and messagecounts automatically.');
+
+  document.querySelector('#backfillEditorRows')?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-backfill-set-created]');
+    if(!button) return;
+    const cid=button.dataset.backfillSetCreated;
+    backfillSetCreationDate(cid,backfillState.editDate || backfillDefaultDate());
+    backfillRenderEditor();
   });
-  document.querySelector('#backfillManualAdd')?.addEventListener('click',()=>{
-    const name=document.querySelector('#backfillManualName');
-    const value=document.querySelector('#backfillManualValue');
-    const bulk=document.querySelector('#backfillBulkInput');
-    if(!name?.value.trim() || !value?.value.trim() || !bulk) return;
-    bulk.value += `${bulk.value.trim()?'\n':''}${name.value.trim()} | ${value.value.trim()}`;
-    name.value=''; value.value=''; backfillPreview();
-  });
-  document.querySelector('#backfillSaveButton')?.addEventListener('click',backfillSavePreview);
-  document.querySelector('#backfillLoadSavedButton')?.addEventListener('click',backfillLoadSavedIntoEditor);
+
+  document.querySelector('#backfillSaveDate')?.addEventListener('click',backfillSaveDate);
+  document.querySelector('#backfillClearForm')?.addEventListener('click',backfillClearForm);
   document.querySelector('#backfillDeleteDay')?.addEventListener('click',backfillDeleteDate);
-  document.querySelector('#backfillAliasBot')?.addEventListener('change',event=>{backfillState.aliasCid=event.target.value;backfillRenderAliasEditor()});
-  document.querySelector('#backfillAliasSave')?.addEventListener('click',backfillSaveAliases);
-  document.querySelector('#backfillPreviewRows')?.addEventListener('change',event=>{
-    const select=event.target.closest('[data-backfill-cid]');
-    if(select){
-      const index=Number(select.dataset.backfillCid); const row=backfillState.preview[index];
-      if(row){row.cid=select.value;row.matchStatus=select.value?'manual':row.matchStatus;backfillRenderPreview()}
-      return;
-    }
-    const checkbox=event.target.closest('[data-backfill-remember]');
-    if(checkbox){const row=backfillState.preview[Number(checkbox.dataset.backfillRemember)];if(row) row.rememberAlias=checkbox.checked}
-  });
-  document.querySelector('#backfillSavedRows')?.addEventListener('click',event=>{
-    const button=event.target.closest('[data-backfill-delete-cid]');
-    if(button) backfillDeleteRecord(button.dataset.backfillDeleteCid);
-  });
-  document.querySelector('#backfillAliasList')?.addEventListener('click',event=>{
-    const row=event.target.closest('[data-backfill-alias-cid]');
-    if(!row) return;
-    backfillState.aliasCid=row.dataset.backfillAliasCid;
-    backfillRenderAliasEditor();
-    document.querySelector('#backfillAliasBot')?.scrollIntoView?.({behavior:'smooth',block:'center'});
-  });
+
   document.addEventListener('click',event=>{
     const row=event.target.closest('[data-open-backfill-date]');
     if(!row) return;
-    dashboardShowView('backfill');
     backfillPrepareDate(row.dataset.openBackfillDate);
+    dashboardShowView('backfill');
   });
+
   backfillPrepareDate(backfillDefaultDate());
 }
 
