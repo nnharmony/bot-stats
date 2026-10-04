@@ -3045,6 +3045,11 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 .backfill-card-head small{color:var(--dash-muted);font-size:8px}
 .backfill-help{color:var(--dash-muted);font-size:8px;line-height:1.45;margin:6px 0 0}
 #backfillBulkInput{width:100%;min-height:150px;resize:vertical;box-sizing:border-box;font-size:10px;line-height:1.5}
+.backfill-hidden-input{display:none}
+.backfill-ocr-files{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.backfill-ocr-file{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border:1px solid var(--dash-border);border-radius:12px;background:rgba(255,255,255,.03);font-size:10px;color:var(--dash-muted)}
+.backfill-ocr-file b{font-size:11px;color:var(--dash-text)}
+.backfill-ocr-file small{display:block;color:var(--dash-muted)}
 .backfill-toolbar{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
 .backfill-toolbar .backfill-button{padding:0 12px !important}
 .backfill-button.primary{background:var(--dash-accent-soft) !important;border-color:#5d5264 !important;font-weight:850}
@@ -3336,16 +3341,21 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 Vadim | 241.7K
 Ren | 638.2K
 David | 1200"></textarea>
-    <div class="backfill-help">K/M values are stored as approximate. Plain integer values are exact. Missing bots remain unknown — never 0.</div>
+    <input id="backfillScreenshotInput" class="backfill-hidden-input" type="file" accept="image/*" multiple>
+    <div class="backfill-toolbar">
+      <button id="backfillPickScreenshots" class="backfill-button" type="button">+ add screenshots</button>
+      <button id="backfillPreviewButton" class="backfill-button primary" type="button">preview import</button>
+      <button id="backfillClearButton" class="backfill-button" type="button">clear</button>
+    </div>
+    <div id="backfillOcrStatus" class="backfill-status">select screenshots to extract names and messagecounts automatically.</div>
+    <div id="backfillOcrFiles" class="backfill-ocr-files"></div>
+    <div class="backfill-help">K/M values are stored as approximate. Plain integer values are exact. Missing bots remain unknown — never 0. If the same bot has two equal exact values on different dates, the days between them are automatically treated as inferred exact plateau values. Screenshot OCR never saves directly — it always goes through preview first.</div>
     <div class="backfill-manual-row">
       <input id="backfillManualName" type="text" placeholder="historical bot name">
       <input id="backfillManualValue" type="text" inputmode="decimal" placeholder="e.g. 1.5K">
       <button id="backfillManualAdd" class="backfill-button" type="button">+ add line</button>
     </div>
-    <div class="backfill-toolbar">
-      <button id="backfillPreviewButton" class="backfill-button primary" type="button">preview import</button>
-      <button id="backfillClearButton" class="backfill-button" type="button">clear</button>
-    </div>
+
   </section>
 
   <section class="backfill-card">
@@ -11233,7 +11243,9 @@ const backfillState={
   aliases:{},
   preview:[],
   editDate:'',
-  aliasCid:''
+  aliasCid:'',
+  ocrPromise:null,
+  ocrFiles:[]
 };
 
 function backfillStorageKey(){
@@ -11503,6 +11515,185 @@ function backfillSavePreview(){
   try{renderDashboardArchive()}catch(_){}
 }
 
+function backfillRenderOcrFiles(){
+  const box=document.querySelector('#backfillOcrFiles');
+  if(!box) return;
+  const files=Array.isArray(backfillState.ocrFiles)?backfillState.ocrFiles:[];
+  box.innerHTML=files.length ? files.map(file=>`<div class="backfill-ocr-file"><div><b>${archiveEscape(file.name || 'screenshot')}</b><small>${archiveEscape(file.status || 'pending')}</small></div><span>${Number.isFinite(file.extracted) ? `${file.extracted} lines` : ''}</span></div>`).join('') : '';
+}
+
+function backfillSetOcrStatus(message,type=''){
+  const status=document.querySelector('#backfillOcrStatus');
+  if(!status) return;
+  status.textContent=message || '';
+  status.className=`backfill-status${type?` ${type}`:''}`;
+}
+
+function backfillEnsureOcr(){
+  if(window.Tesseract) return Promise.resolve(window.Tesseract);
+  if(backfillState.ocrPromise) return backfillState.ocrPromise;
+  backfillState.ocrPromise=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    script.async=true;
+    script.onload=()=>window.Tesseract ? resolve(window.Tesseract) : reject(new Error('OCR library loaded incorrectly.'));
+    script.onerror=()=>reject(new Error('Could not load OCR library.'));
+    document.head.appendChild(script);
+  });
+  return backfillState.ocrPromise;
+}
+
+function backfillCleanOcrLine(line){
+  return String(line||'')
+    .replace(/[•·▪▫◦]/g,' ')
+    .replace(/[|]+/g,' ')
+    .replace(/[_]{2,}/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function backfillIsIgnorableOcrLine(line){
+  const clean=backfillCleanOcrLine(line);
+  if(!clean) return true;
+  const tests=[
+    /^messages?$/i,/^messagecounts?$/i,/^created$/i,/^scenario$/i,/^search( by name)?$/i,/^share$/i,
+    /^all$/i,/^following$/i,/^latest$/i,/^popular$/i,/^filter/i,/^sort/i,/^tags?$/i,/^male$/i,/^female$/i,
+    /^characters?$/i,/^bots?$/i,/^public$/i,/^private$/i,/^new$/i,/^edit$/i,/^save$/i,/^view all$/i,/^top (growth|slots)$/i,
+    /^home$/i,/^more$/i,/^archive$/i,/^analytics$/i,/^subscribers?$/i,/^creator value$/i,/^events$/i,
+    /^search$/i,/^cancel$/i,/^done$/i,/^copy$/i,/^import$/i,/^preview$/i,/^updated:?/i
+  ];
+  if(tests.some(re=>re.test(clean))) return true;
+  if(/^\d{1,2}:\d{2}$/.test(clean)) return true;
+  if(/^(AM|PM)$/i.test(clean)) return true;
+  if(clean.length<=1 && !/\d/.test(clean)) return true;
+  return false;
+}
+
+function backfillNormalizeHistoricalName(name){
+  return backfillCleanOcrLine(name)
+    .replace(/\b(messages?|created|scenario)\b/ig,' ')
+    .replace(/\s{2,}/g,' ')
+    .trim();
+}
+
+function backfillExtractFromOcrText(text){
+  const rawLines=String(text||'').split(/\r?\n+/).map(backfillCleanOcrLine).filter(Boolean);
+  const extracted=[];
+  let nameBuffer=[];
+
+  const pushExtracted=(name,parsed)=>{
+    const historicalName=backfillNormalizeHistoricalName(name);
+    if(!historicalName || !parsed?.valid) return;
+    extracted.push({historicalName,raw:parsed.raw,messages:parsed.messages,approximate:Boolean(parsed.approximate)});
+  };
+
+  for(const rawLine of rawLines){
+    const line=backfillCleanOcrLine(rawLine);
+    if(!line) continue;
+
+    const direct=backfillSplitLine(line);
+    if(direct){
+      const parsed=backfillParseMessageValue(direct.value);
+      if(parsed.valid && backfillNormalizeHistoricalName(direct.name)){
+        pushExtracted(direct.name,parsed);
+        nameBuffer=[];
+        continue;
+      }
+    }
+
+    const justValue=backfillParseMessageValue(line);
+    if(justValue.valid){
+      const name=nameBuffer.join(' ').trim();
+      if(name) pushExtracted(name,justValue);
+      nameBuffer=[];
+      continue;
+    }
+
+    const inlineMatch=line.match(/^(.*?)([≈~]?\d[\d.,\s]*[kKmM]?)\s*messages?$/i);
+    if(inlineMatch){
+      const parsed=backfillParseMessageValue(inlineMatch[2]);
+      if(parsed.valid){
+        const name=backfillNormalizeHistoricalName(inlineMatch[1]) || nameBuffer.join(' ').trim();
+        if(name) pushExtracted(name,parsed);
+        nameBuffer=[];
+        continue;
+      }
+    }
+
+    if(backfillIsIgnorableOcrLine(line)) continue;
+
+    nameBuffer.push(line);
+    if(nameBuffer.length>2) nameBuffer=nameBuffer.slice(-2);
+  }
+
+  const seen=new Set();
+  return extracted.filter(row=>{
+    const key=`${row.historicalName.toLowerCase()}|${String(row.raw).toLowerCase()}`;
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+async function backfillImportScreenshots(files){
+  const picked=[...(files||[])].filter(file=>/^image\//i.test(file.type||'') || /\.(png|jpe?g|webp|heic|heif)$/i.test(file.name||''));
+  if(!picked.length){
+    backfillSetOcrStatus('no image files selected.','error');
+    return;
+  }
+  backfillState.ocrFiles=picked.map(file=>({name:file.name,status:'queued',extracted:null}));
+  backfillRenderOcrFiles();
+  backfillSetOcrStatus(`loading OCR for ${picked.length} screenshot${picked.length===1?'':'s'}…`);
+
+  let TesseractLib;
+  try{
+    TesseractLib=await backfillEnsureOcr();
+  }catch(error){
+    backfillSetOcrStatus(error.message || 'could not load OCR.','error');
+    backfillState.ocrFiles=backfillState.ocrFiles.map(file=>({...file,status:'failed'}));
+    backfillRenderOcrFiles();
+    return;
+  }
+
+  const allRows=[];
+  for(let i=0;i<picked.length;i++){
+    const file=picked[i];
+    backfillState.ocrFiles[i].status='reading…';
+    backfillRenderOcrFiles();
+    backfillSetOcrStatus(`reading screenshot ${i+1}/${picked.length}…`);
+    try{
+      const result=await TesseractLib.recognize(file,'eng');
+      const rows=backfillExtractFromOcrText(result?.data?.text || '');
+      allRows.push(...rows);
+      backfillState.ocrFiles[i].status=rows.length ? 'ready' : 'no rows found';
+      backfillState.ocrFiles[i].extracted=rows.length;
+      backfillRenderOcrFiles();
+    }catch(error){
+      backfillState.ocrFiles[i].status='failed';
+      backfillState.ocrFiles[i].extracted=0;
+      backfillRenderOcrFiles();
+    }
+  }
+
+  const input=document.querySelector('#backfillBulkInput');
+  if(input){
+    const existingLines=input.value.split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+    const incomingLines=allRows.map(row=>`${row.historicalName} | ${row.raw}`);
+    const merged=[];
+    const seen=new Set();
+    for(const line of [...existingLines,...incomingLines]){
+      const key=line.toLowerCase();
+      if(seen.has(key)) continue;
+      seen.add(key);
+      merged.push(line);
+    }
+    input.value=merged.join('\n');
+  }
+
+  backfillPreview();
+  backfillSetOcrStatus(allRows.length ? `ready — extracted ${allRows.length} line${allRows.length===1?'':'s'} from ${picked.length} screenshot${picked.length===1?'':'s'}. check preview before saving.` : 'OCR finished, but no usable name/message lines were found.','ok');
+}
+
 function backfillSavedDates(){
   backfillLoad();
   return Object.keys(backfillState.snapshots).filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(date)).sort();
@@ -11513,32 +11704,129 @@ function backfillSnapshot(date){
   return backfillState.snapshots[String(date)] || {};
 }
 
+function backfillObservedSeriesForCid(cid){
+  backfillLoad();
+  cid=String(cid||'');
+  if(!cid) return [];
+  return backfillSavedDates().map(date=>{
+    const record=backfillState.snapshots[date]?.[cid] || null;
+    return record ? {date,record} : null;
+  }).filter(Boolean);
+}
+
+function backfillInferredRecord(cid,date){
+  backfillLoad();
+  cid=String(cid||'');
+  date=String(date||'');
+  if(!cid || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return null;
+  if(backfillSnapshot(date)[cid]) return null;
+
+  const series=backfillObservedSeriesForCid(cid);
+  let before=null;
+  let after=null;
+
+  for(const point of series){
+    if(point.date<date){
+      before=point;
+      continue;
+    }
+    if(point.date>date){
+      after=point;
+      break;
+    }
+  }
+
+  if(!before || !after) return null;
+  if(before.record.approximate || after.record.approximate) return null;
+  if(!Number.isFinite(Number(before.record.messages)) || !Number.isFinite(Number(after.record.messages))) return null;
+  if(Number(before.record.messages)!==Number(after.record.messages)) return null;
+
+  return {
+    raw:String(before.record.messages),
+    messages:Number(before.record.messages),
+    approximate:false,
+    historicalName:String(before.record.historicalName || after.record.historicalName || backfillCurrentName(cid)),
+    savedAt:'',
+    inferred:true,
+    inference:'equal_exact_endpoints',
+    inferredFrom:{startDate:before.date,endDate:after.date}
+  };
+}
+
+function backfillInferredSnapshot(date){
+  backfillLoad();
+  const observed=backfillSnapshot(date);
+  const cids=new Set();
+  Object.values(backfillState.snapshots).forEach(records=>{
+    Object.keys(records||{}).forEach(cid=>cids.add(String(cid)));
+  });
+  const inferred={};
+  cids.forEach(cid=>{
+    if(observed[cid]) return;
+    const record=backfillInferredRecord(cid,date);
+    if(record) inferred[cid]=record;
+  });
+  return inferred;
+}
+
+function backfillResolvedSnapshot(date){
+  const inferred=backfillInferredSnapshot(date);
+  const observed=backfillSnapshot(date);
+  return {...inferred,...observed};
+}
+
 function historicalMessageValue(cid,date){
-  const record=backfillSnapshot(date)[String(cid)] || null;
-  return record ? {...record,cid:String(cid),date:String(date)} : null;
+  const key=String(cid);
+  const observed=backfillSnapshot(date)[key] || null;
+  const record=observed || backfillInferredRecord(key,date);
+  return record ? {...record,cid:key,date:String(date),inferred:Boolean(record.inferred)} : null;
 }
 
 function backfillRenderSaved(){
   const date=backfillState.editDate || backfillDefaultDate();
-  const records=backfillSnapshot(date);
+  const observed=backfillSnapshot(date);
+  const inferred=backfillInferredSnapshot(date);
+  const records={...inferred,...observed};
   const entries=Object.entries(records).sort((a,b)=>backfillCurrentName(a[0]).localeCompare(backfillCurrentName(b[0]),undefined,{sensitivity:'base'}));
   const box=document.querySelector('#backfillSavedRows');
   const meta=document.querySelector('#backfillSavedMeta');
   const dateStatus=document.querySelector('#backfillDateStatus');
+  const observedCount=Object.keys(observed).length;
+  const inferredCount=Object.keys(inferred).length;
+  const approx=Object.values(observed).filter(record=>record.approximate).length;
   if(meta){
-    const approx=entries.filter(([,record])=>record.approximate).length;
-    meta.textContent=`${entries.length} ${entries.length===1?'value':'values'}${approx?` · ${approx} approximate`:''}`;
+    const parts=[];
+    if(observedCount) parts.push(`${observedCount} observed`);
+    if(inferredCount) parts.push(`${inferredCount} inferred`);
+    if(approx) parts.push(`${approx} approximate`);
+    meta.textContent=parts.length ? parts.join(' · ') : '0 values';
   }
-  if(dateStatus) dateStatus.textContent=entries.length ? `${entries.length} known messagecount${entries.length===1?'':'s'} · every other bot is unknown` : 'no saved historical messagecounts for this date';
+  if(dateStatus){
+    if(entries.length){
+      const parts=[];
+      if(observedCount) parts.push(`${observedCount} observed`);
+      if(inferredCount) parts.push(`${inferredCount} inferred exact plateau${inferredCount===1?'':'s'}`);
+      dateStatus.textContent=`${parts.join(' · ')} · every other bot is unknown`;
+    }else{
+      dateStatus.textContent='no observed or inferred historical messagecounts for this date';
+    }
+  }
   if(!box) return;
-  box.innerHTML=entries.length ? entries.map(([cid,record])=>`
-    <div class="backfill-saved-row">
+  box.innerHTML=entries.length ? entries.map(([cid,record])=>{
+    const sourceText=record.inferred
+      ? `inferred exact · equal endpoints ${shortGraphDate(record.inferredFrom?.startDate || '')} → ${shortGraphDate(record.inferredFrom?.endDate || '')}`
+      : `${archiveEscape(record.historicalName || backfillCurrentName(cid))} · raw ${archiveEscape(record.raw)} · ${record.approximate?'approximate':'exact'}`;
+    const sideControl=record.inferred
+      ? '<span class="backfill-badge ok">inferred</span>'
+      : `<button class="backfill-icon-button" type="button" data-backfill-delete-cid="${archiveEscape(cid)}" aria-label="delete value">×</button>`;
+    return `<div class="backfill-saved-row">
       <div class="backfill-saved-main">
         <b>${archiveEscape(backfillCurrentName(cid))}</b>
-        <small>${archiveEscape(record.historicalName || backfillCurrentName(cid))} · raw ${archiveEscape(record.raw)} · ${record.approximate?'approximate':'exact'}</small>
+        <small>${sourceText}</small>
       </div>
-      <div class="backfill-saved-side"><strong>${record.approximate?'≈ ':''}${fmt.format(record.messages)}</strong><button class="backfill-icon-button" type="button" data-backfill-delete-cid="${archiveEscape(cid)}" aria-label="delete value">×</button></div>
-    </div>`).join('') : '<div class="dashboard-empty">no historical values saved.</div>';
+      <div class="backfill-saved-side"><strong>${record.approximate?'≈ ':''}${fmt.format(record.messages)}</strong>${sideControl}</div>
+    </div>`;
+  }).join('') : '<div class="dashboard-empty">no historical values saved or inferred.</div>';
 }
 
 function backfillLoadSavedIntoEditor(){
@@ -11637,8 +11925,8 @@ function backfillRenderArchive(monthKey){
   });
   const count=totals.reduce((sum,row)=>sum+row.count,0);
   const approx=totals.reduce((sum,row)=>sum+row.approx,0);
-  meta.textContent=count ? `${count} values · ${approx} approx` : '—';
-  box.innerHTML=totals.length ? totals.map(row=>`<div class="archive-backfill-row" data-open-backfill-date="${archiveEscape(row.date)}"><span class="date">${shortGraphDate(row.date)}</span><span class="summary">partial snapshot · missing bots unknown</span><span class="count">${row.count}${row.approx?` · ≈${row.approx}`:''}</span></div>`).join('') : '<div class="dashboard-empty">no historical backfill this month.</div>';
+  meta.textContent=count ? `${count} observed values · ${approx} approx` : '—';
+  box.innerHTML=totals.length ? totals.map(row=>`<div class="archive-backfill-row" data-open-backfill-date="${archiveEscape(row.date)}"><span class="date">${shortGraphDate(row.date)}</span><span class="summary">observed partial snapshot · exact equal anchors infer plateaus</span><span class="count">${row.count}${row.approx?` · ≈${row.approx}`:''}</span></div>`).join('') : '<div class="dashboard-empty">no historical backfill this month.</div>';
 }
 
 function backfillRefreshView(){
@@ -11647,6 +11935,7 @@ function backfillRefreshView(){
   backfillRenderAliasEditor();
   backfillRenderAliasList();
   backfillRenderSaved();
+  backfillRenderOcrFiles();
 }
 
 function backfillInit(){
@@ -11657,10 +11946,16 @@ function backfillInit(){
   document.querySelector('#backfillDate')?.addEventListener('change',event=>backfillPrepareDate(event.target.value));
   document.querySelector('#backfillPrevDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),-1)));
   document.querySelector('#backfillNextDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),1)));
+  document.querySelector('#backfillPickScreenshots')?.addEventListener('click',()=>document.querySelector('#backfillScreenshotInput')?.click());
+  document.querySelector('#backfillScreenshotInput')?.addEventListener('change',event=>{
+    const files=[...(event.target.files || [])];
+    if(files.length) backfillImportScreenshots(files);
+    event.target.value='';
+  });
   document.querySelector('#backfillPreviewButton')?.addEventListener('click',backfillPreview);
   document.querySelector('#backfillClearButton')?.addEventListener('click',()=>{
     const input=document.querySelector('#backfillBulkInput'); if(input) input.value='';
-    backfillState.preview=[]; backfillRenderPreview();
+    backfillState.preview=[]; backfillState.ocrFiles=[]; backfillRenderPreview(); backfillRenderOcrFiles(); backfillSetOcrStatus('select screenshots to extract names and messagecounts automatically.');
   });
   document.querySelector('#backfillManualAdd')?.addEventListener('click',()=>{
     const name=document.querySelector('#backfillManualName');
