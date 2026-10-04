@@ -2951,6 +2951,8 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 
 /* top slots + freeze pattern monitor */
 .dashboard-top-tabs{display:flex;align-items:center;gap:5px;min-width:0}
+.dashboard-top-actions{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.dashboard-top-actions button[hidden]{display:none !important}
 .dashboard-top-tab{
   border:1px solid transparent !important;
   border-radius:9px !important;
@@ -3027,6 +3029,77 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   .slots-tool-row{grid-template-columns:1fr}
 }
 
+/* historical message backfill */
+.dashboard-backfill{display:block}
+.dashboard-backfill[hidden]{display:none !important}
+.backfill-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+.backfill-head h2{margin:0;font-size:18px;letter-spacing:-.02em}
+.backfill-head small{display:block;margin-top:3px;color:var(--dash-muted);font-size:9px;line-height:1.35}
+.backfill-date-nav{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;gap:7px;align-items:center;margin-bottom:10px}
+.backfill-date-nav input{width:100% !important;min-width:0 !important;height:38px !important;text-align:center;font-size:11px !important}
+.backfill-date-nav button,.backfill-button{min-height:36px !important;border:1px solid var(--dash-border) !important;border-radius:10px !important;background:var(--dash-panel-2) !important;color:var(--dash-text) !important;font-size:10px !important}
+.backfill-date-nav button{padding:0 !important;font-size:18px !important}
+.backfill-card{margin-top:10px;padding:12px;border:1px solid var(--dash-border);border-radius:16px;background:var(--dash-panel)}
+.backfill-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.backfill-card-head strong{font-size:11px}
+.backfill-card-head small{color:var(--dash-muted);font-size:8px}
+.backfill-help{color:var(--dash-muted);font-size:8px;line-height:1.45;margin:6px 0 0}
+#backfillBulkInput{width:100%;min-height:150px;resize:vertical;box-sizing:border-box;font-size:10px;line-height:1.5}
+.backfill-toolbar{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.backfill-toolbar .backfill-button{padding:0 12px !important}
+.backfill-button.primary{background:var(--dash-accent-soft) !important;border-color:#5d5264 !important;font-weight:850}
+.backfill-manual-row{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(90px,.7fr) auto;gap:7px;margin-top:10px}
+.backfill-manual-row input{width:100%;min-width:0;height:38px;font-size:10px}
+.backfill-manual-row button{padding:0 11px !important}
+.backfill-status{min-height:14px;margin:8px 2px 0;color:var(--dash-muted);font-size:9px;line-height:1.35}
+.backfill-status.ok{color:var(--dash-accent-2)}
+.backfill-status.error{color:#d7a1b9}
+.backfill-preview{border:1px solid var(--dash-border);border-radius:13px;overflow:hidden;background:var(--dash-panel-2)}
+.backfill-preview-row{padding:10px;border-top:1px solid rgba(255,255,255,.055)}
+.backfill-preview-row:first-child{border-top:0}
+.backfill-preview-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start}
+.backfill-preview-name{min-width:0;font-size:10px;font-weight:850;overflow-wrap:anywhere}
+.backfill-preview-value{font-size:10px;font-weight:850;color:var(--dash-accent-2);white-space:nowrap}
+.backfill-preview-meta{margin-top:3px;color:var(--dash-muted);font-size:8px;line-height:1.35}
+.backfill-preview-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;margin-top:8px}
+.backfill-preview-controls select{width:100%;min-width:0;height:34px;font-size:9px}
+.backfill-preview-controls label{display:flex;align-items:center;gap:4px;color:var(--dash-muted);font-size:8px;white-space:nowrap}
+.backfill-preview-controls input[type=checkbox]{width:auto}
+.backfill-badge{display:inline-block;margin-left:5px;padding:2px 5px;border:1px solid var(--dash-border);border-radius:999px;color:var(--dash-muted);font-size:7px;font-weight:850;vertical-align:1px}
+.backfill-badge.warn{border-color:#76546d;color:#dfb1cf}
+.backfill-badge.ok{color:var(--dash-accent-2)}
+.backfill-save-row{display:grid;grid-template-columns:1fr auto;gap:7px;margin-top:10px}
+.backfill-save-row button{padding:0 13px !important}
+.backfill-saved-list,.backfill-alias-list{max-height:330px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;border:1px solid var(--dash-border);border-radius:13px;background:var(--dash-panel-2)}
+.backfill-saved-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 10px;border-top:1px solid rgba(255,255,255,.055)}
+.backfill-saved-row:first-child{border-top:0}
+.backfill-saved-main{min-width:0}
+.backfill-saved-main b{display:block;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.backfill-saved-main small{display:block;margin-top:2px;color:var(--dash-muted);font-size:8px;line-height:1.35;overflow-wrap:anywhere}
+.backfill-saved-side{display:flex;align-items:center;gap:7px}
+.backfill-saved-side strong{color:var(--dash-accent-2);font-size:10px;white-space:nowrap}
+.backfill-icon-button{width:30px !important;min-width:30px !important;height:30px !important;min-height:30px !important;padding:0 !important;border:1px solid var(--dash-border) !important;border-radius:9px !important;background:transparent !important;color:var(--dash-muted) !important}
+.backfill-alias-edit{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:end}
+.backfill-alias-edit select,.backfill-alias-edit textarea{width:100%;min-width:0;font-size:9px}
+.backfill-alias-edit textarea{min-height:88px;resize:vertical;margin-top:7px}
+.backfill-alias-edit button{padding:0 12px !important}
+.backfill-alias-current{margin:7px 0;color:var(--dash-muted);font-size:8px}
+.backfill-alias-row{padding:8px 10px;border-top:1px solid rgba(255,255,255,.055);cursor:pointer}
+.backfill-alias-row:first-child{border-top:0}
+.backfill-alias-row b{display:block;font-size:9px}
+.backfill-alias-row small{display:block;margin-top:2px;color:var(--dash-muted);font-size:8px;line-height:1.35;overflow-wrap:anywhere}
+.archive-backfill-row{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 12px;border-top:1px solid rgba(255,255,255,.055);cursor:pointer}
+.archive-backfill-row:first-child{border-top:0}
+.archive-backfill-row .date{color:var(--dash-muted);font-size:8px}
+.archive-backfill-row .summary{min-width:0;font-size:9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.archive-backfill-row .count{color:var(--dash-accent-2);font-size:8px;font-weight:800;white-space:nowrap}
+@media(max-width:430px){
+  .backfill-manual-row{grid-template-columns:minmax(0,1fr) 92px}
+  .backfill-manual-row button{grid-column:1/-1}
+  .backfill-preview-controls{grid-template-columns:1fr}
+  .backfill-alias-edit{grid-template-columns:1fr}
+}
+
 /* subscriber fields need a real gutter on iPhone */
 @media(max-width:650px){
   body.dashboard-shell .subscriber-form{
@@ -3054,9 +3127,9 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   body.dashboard-shell .main-table td{display:block !important;border:0 !important;padding:0 !important;min-width:0 !important}
   body.dashboard-shell .main-table td:nth-child(1){grid-column:1/3;grid-row:1;text-align:left !important;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   body.dashboard-shell .main-table td:nth-child(4){grid-column:3;grid-row:1;text-align:right !important;font-size:12px;font-weight:850;white-space:nowrap}
-  body.dashboard-shell .main-table td:nth-child(2){grid-column:1;grid-row:2;text-align:left !important;color:var(--dash-muted);font-size:8px;white-space:nowrap}
-  body.dashboard-shell .main-table td:nth-child(3){grid-column:2;grid-row:2;text-align:left !important;color:var(--dash-muted);font-size:8px;white-space:nowrap}
-  body.dashboard-shell .main-table td:nth-child(5){grid-column:3;grid-row:2;text-align:right !important;color:var(--dash-muted);font-size:8px;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(2){grid-column:1;grid-row:2;text-align:left !important;color:var(--dash-muted);font-size:9.5px;line-height:1.3;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(3){grid-column:2;grid-row:2;text-align:left !important;color:var(--dash-muted);font-size:9.5px;line-height:1.3;white-space:nowrap}
+  body.dashboard-shell .main-table td:nth-child(5){grid-column:3;grid-row:2;text-align:right !important;color:var(--dash-muted);font-size:9.5px;line-height:1.3;white-space:nowrap}
   body.dashboard-shell .main-table td:nth-child(2)::before{content:'start ';opacity:.7}
   body.dashboard-shell .main-table td:nth-child(3)::before{content:'now ';opacity:.7}
   body.dashboard-shell .main-table td:nth-child(5)::before{content:'C. ';opacity:.7}
@@ -3176,7 +3249,10 @@ body.dashboard-shell .stale{color:#c4aecb !important}
         <button id="dashboardTopModeSlots" class="dashboard-top-tab active" type="button" data-top-home-mode="slots">top slots</button>
         <button id="dashboardTopModeGrowth" class="dashboard-top-tab" type="button" data-top-home-mode="growth">top growth</button>
       </div>
-      <button id="dashboardTopAction" type="button" data-open-dashboard-view="slots">edit</button>
+      <div class="dashboard-top-actions">
+        <button id="dashboardTopViewAll" type="button" data-open-dashboard-view="bots">view all</button>
+        <button id="dashboardTopAction" type="button" data-open-dashboard-view="slots">edit</button>
+      </div>
     </div>
     <div id="dashboardTopBots" class="dashboard-top-list"><div class="dashboard-empty">loading…</div></div>
   </section>
@@ -3239,6 +3315,72 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   <div id="topSlotsSaveStatus" class="slots-save-status"></div>
 </section>
 
+<section id="dashboardHistoricalBackfill" class="dashboard-backfill" data-dashboard-view="backfill" hidden data-backfill-feature>
+  <div class="backfill-head">
+    <div>
+      <h2>historical backfill</h2>
+      <small>temporary import tool · cid-based · partial snapshots</small>
+    </div>
+  </div>
+
+  <div class="backfill-date-nav">
+    <button id="backfillPrevDay" type="button" aria-label="previous day">‹</button>
+    <input id="backfillDate" type="date" aria-label="historical date">
+    <button id="backfillNextDay" type="button" aria-label="next day">›</button>
+  </div>
+  <div id="backfillDateStatus" class="backfill-status"></div>
+
+  <section class="backfill-card">
+    <div class="backfill-card-head"><strong>bulk import</strong><small>name | messagecount</small></div>
+    <textarea id="backfillBulkInput" spellcheck="false" placeholder="Your Military Boyfriend | 18.4K
+Vadim | 241.7K
+Ren | 638.2K
+David | 1200"></textarea>
+    <div class="backfill-help">K/M values are stored as approximate. Plain integer values are exact. Missing bots remain unknown — never 0.</div>
+    <div class="backfill-manual-row">
+      <input id="backfillManualName" type="text" placeholder="historical bot name">
+      <input id="backfillManualValue" type="text" inputmode="decimal" placeholder="e.g. 1.5K">
+      <button id="backfillManualAdd" class="backfill-button" type="button">+ add line</button>
+    </div>
+    <div class="backfill-toolbar">
+      <button id="backfillPreviewButton" class="backfill-button primary" type="button">preview import</button>
+      <button id="backfillClearButton" class="backfill-button" type="button">clear</button>
+    </div>
+  </section>
+
+  <section class="backfill-card">
+    <div class="backfill-card-head"><strong>preview & matching</strong><small id="backfillPreviewMeta">nothing to preview</small></div>
+    <div id="backfillPreviewRows" class="backfill-preview"><div class="dashboard-empty">paste data and tap preview.</div></div>
+    <div class="backfill-save-row">
+      <button id="backfillSaveButton" class="backfill-button primary" type="button">save imported values</button>
+      <button id="backfillLoadSavedButton" class="backfill-button" type="button">load saved</button>
+    </div>
+    <div id="backfillSaveStatus" class="backfill-status"></div>
+  </section>
+
+  <section class="backfill-card">
+    <div class="backfill-card-head"><strong>saved for this date</strong><small id="backfillSavedMeta">0 values</small></div>
+    <div id="backfillSavedRows" class="backfill-saved-list"><div class="dashboard-empty">no historical values saved.</div></div>
+    <div class="backfill-toolbar">
+      <button id="backfillDeleteDay" class="backfill-button" type="button">delete this date</button>
+    </div>
+  </section>
+
+  <section class="backfill-card">
+    <div class="backfill-card-head"><strong>aliases</strong><small>historical names → cid</small></div>
+    <div class="backfill-alias-edit">
+      <div>
+        <select id="backfillAliasBot" aria-label="bot for alias editing"></select>
+        <div id="backfillAliasCurrent" class="backfill-alias-current"></div>
+        <textarea id="backfillAliasInput" spellcheck="false" placeholder="one historical alias per line"></textarea>
+      </div>
+      <button id="backfillAliasSave" class="backfill-button primary" type="button">save aliases</button>
+    </div>
+    <div class="backfill-help">Exact alias matches are remembered. If a historical name matches multiple characters, the importer will never guess.</div>
+    <div id="backfillAliasList" class="backfill-alias-list" style="margin-top:10px"><div class="dashboard-empty">loading bots…</div></div>
+  </section>
+</section>
+
 <section id="dashboardMore" class="dashboard-more" data-dashboard-view="more" hidden>
   <div class="dashboard-section-title" style="margin-top:0">tracker tools</div>
   <div class="dashboard-more-grid">
@@ -3246,6 +3388,7 @@ body.dashboard-shell .stale{color:#c4aecb !important}
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="slots"><span class="dashboard-shortcut-icon">#</span><span><b>top slots</b><small>daily ranking · historical edits</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="backfill" data-backfill-feature><span class="dashboard-shortcut-icon">↶</span><span><b>historical backfill</b><small>old messagecounts · aliases</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="archive"><span class="dashboard-shortcut-icon">▤</span><span><b>archive</b><small>monthly profile history</small></span></button>
   </div>
 
@@ -3303,6 +3446,12 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   <section class="archive-table-card">
     <div class="archive-table-head"><span>date</span><span>messages</span><span>collectors</span><span>est. CV</span></div>
     <div id="archiveDailyRows" class="archive-table-body"><div class="dashboard-empty">no data.</div></div>
+  </section>
+
+  <div class="dashboard-section-title">historical backfill</div>
+  <section class="dashboard-card">
+    <div class="dashboard-card-head"><strong>saved historical values</strong><span id="archiveBackfillMeta" class="archive-card-meta">—</span></div>
+    <div id="archiveBackfill"><div class="dashboard-empty">no historical backfill this month.</div></div>
   </section>
 
   <div class="dashboard-section-title">freezes</div>
@@ -7307,20 +7456,30 @@ function cvCalibration(){
 }
 
 function cvCreationBonusForCid(cid,throughDate=''){
-  let bonus=0;
+  const id=String(cid||'');
+  if(!id) return 0;
 
-  cvSortedEntriesAsc().forEach(entry=>{
-    if(String(entry.botCid||'')!==String(cid)) return;
-    if(throughDate && String(entry.date||'')>throughDate) return;
+  // Character estimator rule for this profile:
+  // every character counts as HQ (+30) from the moment it exists.
+  // Settlements remain profile-level ledger adjustments and do not reduce
+  // the character's displayed creation CV.
+  if(!throughDate){
+    return state.meta.has(id) ? 30 : 0;
+  }
 
-    if(entry.type==='compliant_new'){
-      bonus=Math.max(bonus,10);
-    }else if(entry.type==='new' || entry.type==='hq_new'){
-      bonus=Math.max(bonus,30);
-    }
-  });
+  const existedByDate=state.daily.some(day=>
+    String(day.date||'')<=String(throughDate) && !!snapshotBot(day.snapshot,id)
+  );
+  if(existedByDate) return 30;
 
-  return bonus;
+  // Fallback for a creation/unban event that predates the available snapshots.
+  const hasKnownCharacterEvent=cvSortedEntriesAsc().some(entry=>
+    String(entry.botCid||'')===id &&
+    String(entry.date||'')<=String(throughDate) &&
+    ['compliant_new','new','hq_new','unbanned'].includes(entry.type)
+  );
+
+  return hasKnownCharacterEvent ? 30 : 0;
 }
 
 function cvUncappedEstimator(){
@@ -10123,6 +10282,7 @@ function dashboardTargets(){
     more:document.querySelector('#dashboardMore'),
     archive:document.querySelector('#dashboardArchive'),
     slots:document.querySelector('#dashboardTopSlots'),
+    backfill:document.querySelector('#dashboardHistoricalBackfill'),
     bots:document.querySelector('.all-bots'),
     analytics:document.querySelector('#analyticsPanel'),
     subscribers:document.querySelector('#subscriberPanel'),
@@ -10134,7 +10294,7 @@ function dashboardTargets(){
 
 function dashboardNavGroup(view){
   if(view==='slots') return 'home';
-  if(['analytics','subscribers','cv','archive','more'].includes(view)) return 'more';
+  if(['analytics','subscribers','cv','archive','backfill','more'].includes(view)) return 'more';
   return view;
 }
 
@@ -10168,6 +10328,7 @@ function dashboardShowView(view,{scroll=true}={}){
   if(view==='analytics') setTimeout(()=>analyticsChart?.resize?.(),40);
   if(view==='archive') setTimeout(renderDashboardArchive,0);
   if(view==='slots') setTimeout(()=>topSlotsPrepareEditor(topSlotsState.editDate || topSlotsDefaultDate()),0);
+  if(view==='backfill') setTimeout(()=>backfillPrepareDate(backfillState.editDate || backfillDefaultDate()),0);
   if(scroll) window.scrollTo({top:0,behavior:'smooth'});
   dashboardRefresh();
 }
@@ -10411,6 +10572,12 @@ function topSlotsGrowthForDate(date,cid){
   return now.messages-before.messages;
 }
 
+function topSlotsMessagesForDate(date,cid){
+  const entry=getDailyEntry(date);
+  const bot=snapshotBot(entry?.snapshot,cid);
+  return Number.isFinite(bot?.messages) ? bot.messages : null;
+}
+
 function topSlotsMovement(date,cid,currentIndex){
   const previousDate=topSlotsPreviousSavedDate(date);
   if(!previousDate) return {label:'',className:'',previousDate:''};
@@ -10426,6 +10593,7 @@ function topSlotsMovement(date,cid,currentIndex){
 function topSlotsRenderHome(){
   const box=document.querySelector('#dashboardTopBots');
   const action=document.querySelector('#dashboardTopAction');
+  const viewAll=document.querySelector('#dashboardTopViewAll');
   if(!box || !action) return;
   topSlotsLoadLocal();
 
@@ -10434,8 +10602,8 @@ function topSlotsRenderHome(){
   });
 
   if(topSlotsState.homeMode==='growth'){
-    action.textContent='view all';
-    action.dataset.openDashboardView='bots';
+    if(viewAll) viewAll.hidden=false;
+    action.hidden=true;
     const top=[...state.bots]
       .filter(bot=>Number.isFinite(bot.growth))
       .sort((a,b)=>(b.growth??-Infinity)-(a.growth??-Infinity))
@@ -10452,6 +10620,8 @@ function topSlotsRenderHome(){
     return;
   }
 
+  if(viewAll) viewAll.hidden=false;
+  action.hidden=false;
   action.textContent='edit';
   action.dataset.openDashboardView='slots';
   const date=topSlotsDefaultDate();
@@ -10463,6 +10633,7 @@ function topSlotsRenderHome(){
 
   box.innerHTML=slots.map((cid,index)=>{
     const name=state.meta.get(cid)?.name || cid;
+    const messages=topSlotsMessagesForDate(date,cid);
     const growth=topSlotsGrowthForDate(date,cid);
     const movement=topSlotsMovement(date,cid,index);
     const pattern=freezePatternForCid(cid,date);
@@ -10473,7 +10644,7 @@ function topSlotsRenderHome(){
       <span class="dashboard-rank">${index+1}</span>
       <div>
         <div class="dashboard-bot-name">${archiveEscape(name)}</div>
-        <div class="dashboard-bot-meta">slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
+        <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
         <span class="dashboard-bot-growth">${Number.isFinite(growth)?dashboardSigned(growth):'—'}</span>
@@ -10868,6 +11039,7 @@ function archiveMonthKeys(){
   try{cvSortedEntriesAsc().forEach(entry=>{if(/^\d{4}-\d{2}/.test(entry.date||'')) months.add(entry.date.slice(0,7))})}catch(_){}
   (eventsState.events||[]).forEach(event=>{if(/^\d{4}-\d{2}/.test(event.date||'')) months.add(event.date.slice(0,7))});
   topSlotsSavedDates().forEach(date=>{if(/^\d{4}-\d{2}/.test(date||'')) months.add(date.slice(0,7))});
+  try{backfillSavedDates().forEach(date=>{if(/^\d{4}-\d{2}/.test(date||'')) months.add(date.slice(0,7))})}catch(_){}
   return [...months].sort().reverse();
 }
 
@@ -10970,6 +11142,7 @@ function renderDashboardArchive(){
   }
   set('#archiveTopBotsMeta',top.length?`${top.length} shown`:'—');
   try{topSlotsRenderArchive(key)}catch(_){}
+  try{backfillRenderArchive(key)}catch(_){}
 
   const dailyBox=document.querySelector('#archiveDailyRows');
   if(dailyBox){
@@ -11039,6 +11212,9 @@ function dashboardRefresh(){
   if(dashboardCurrentView==='archive'){
     try{renderDashboardArchive()}catch(_){}
   }
+  if(dashboardCurrentView==='backfill'){
+    try{backfillRefreshView()}catch(_){}
+  }
 
   try{freezePatternRenderHome()}catch(_){}
 }
@@ -11049,9 +11225,490 @@ function dashboardOpenGithub(){
   window.open(url,'_blank','noopener');
 }
 
+/* ===== historical message backfill ===== */
+const ENABLE_HISTORICAL_BACKFILL=true;
+const backfillState={
+  loaded:false,
+  snapshots:{},
+  aliases:{},
+  preview:[],
+  editDate:'',
+  aliasCid:''
+};
+
+function backfillStorageKey(){
+  const profile=(typeof EVENTS_PROFILE!=='undefined' && EVENTS_PROFILE) ? EVENTS_PROFILE : 'main';
+  return `statsTrackerHistoricalBackfill:${profile}`;
+}
+
+function backfillLoad(){
+  if(backfillState.loaded) return;
+  backfillState.loaded=true;
+  try{
+    const raw=JSON.parse(localStorage.getItem(backfillStorageKey()) || '{}');
+    const snapshots=(raw && raw.snapshots && typeof raw.snapshots==='object') ? raw.snapshots : {};
+    const aliases=(raw && raw.aliases && typeof raw.aliases==='object') ? raw.aliases : {};
+    Object.entries(snapshots).forEach(([date,records])=>{
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || !records || typeof records!=='object') return;
+      backfillState.snapshots[date]={};
+      Object.entries(records).forEach(([cid,record])=>{
+        if(!record || !Number.isFinite(Number(record.messages))) return;
+        backfillState.snapshots[date][String(cid)]={
+          raw:String(record.raw ?? record.messages),
+          messages:Math.max(0,Math.round(Number(record.messages))),
+          approximate:Boolean(record.approximate),
+          historicalName:String(record.historicalName || ''),
+          savedAt:String(record.savedAt || '')
+        };
+      });
+    });
+    Object.entries(aliases).forEach(([cid,list])=>{
+      if(!Array.isArray(list)) return;
+      backfillState.aliases[String(cid)]=[...new Set(list.map(v=>String(v).trim()).filter(Boolean))];
+    });
+  }catch(_){ }
+}
+
+function backfillPersist(){
+  try{
+    localStorage.setItem(backfillStorageKey(),JSON.stringify({version:1,snapshots:backfillState.snapshots,aliases:backfillState.aliases}));
+  }catch(error){
+    const status=document.querySelector('#backfillSaveStatus');
+    if(status){status.textContent=`could not save locally: ${error.message}`;status.className='backfill-status error'}
+  }
+}
+
+function backfillDefaultDate(){
+  const latest=state.daily.at(-1)?.date;
+  if(/^\d{4}-\d{2}-\d{2}$/.test(latest||'')) return latest;
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function backfillAddDays(date,amount){
+  const match=String(date||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(!match) return backfillDefaultDate();
+  const d=new Date(Number(match[1]),Number(match[2])-1,Number(match[3])+amount);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function backfillNormalizeName(value){
+  return String(value||'')
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[–—−]/g,'-')
+    .replace(/\s*-\s*/g,' - ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function backfillCurrentName(cid){
+  return state.meta.get(String(cid))?.name || String(cid);
+}
+
+function backfillAliases(cid){
+  backfillLoad();
+  return Array.isArray(backfillState.aliases[String(cid)]) ? backfillState.aliases[String(cid)] : [];
+}
+
+function backfillAddAlias(cid,name,{persist=false}={}){
+  cid=String(cid||''); name=String(name||'').trim();
+  if(!cid || !name) return false;
+  const list=backfillAliases(cid);
+  const normalized=backfillNormalizeName(name);
+  if(list.some(item=>backfillNormalizeName(item)===normalized)) return false;
+  backfillState.aliases[cid]=[...list,name];
+  if(persist) backfillPersist();
+  return true;
+}
+
+function backfillCaptureCurrentNames(){
+  let changed=false;
+  state.meta.forEach((meta,cid)=>{
+    if(meta?.name) changed=backfillAddAlias(cid,meta.name) || changed;
+  });
+  if(changed) backfillPersist();
+}
+
+function backfillCandidates(name){
+  const needle=backfillNormalizeName(name);
+  if(!needle) return [];
+  const matches=[];
+  state.meta.forEach((meta,cid)=>{
+    const names=[meta?.name,...backfillAliases(cid)].filter(Boolean);
+    if(names.some(value=>backfillNormalizeName(value)===needle)) matches.push(String(cid));
+  });
+  return [...new Set(matches)];
+}
+
+function backfillParseMessageValue(raw){
+  const original=String(raw??'').trim();
+  if(!original) return {valid:false,raw:original,error:'missing value'};
+  let value=original.replace(/messages?/ig,'').trim();
+  let approximate=/^[≈~]/.test(value);
+  value=value.replace(/^[≈~]\s*/,'').replace(/\s+/g,'');
+  const suffix=value.match(/^([0-9]+(?:[.,][0-9]+)?)([kKmM])$/);
+  if(suffix){
+    const numeric=Number(suffix[1].replace(',','.'));
+    if(!Number.isFinite(numeric)) return {valid:false,raw:original,error:'invalid value'};
+    const multiplier=suffix[2].toLowerCase()==='m' ? 1000000 : 1000;
+    return {valid:true,raw:original,messages:Math.round(numeric*multiplier),approximate:true};
+  }
+  if(/^\d+$/.test(value)){
+    return {valid:true,raw:original,messages:Number(value),approximate};
+  }
+  if(/^\d{1,3}(?:[.,]\d{3})+$/.test(value)){
+    return {valid:true,raw:original,messages:Number(value.replace(/[.,]/g,'')),approximate};
+  }
+  return {valid:false,raw:original,error:'use an integer or K/M value'};
+}
+
+function backfillSplitLine(line){
+  const clean=String(line||'').trim();
+  if(!clean) return null;
+  if(clean.includes('|')){
+    const index=clean.lastIndexOf('|');
+    return {name:clean.slice(0,index).trim(),value:clean.slice(index+1).trim()};
+  }
+  if(clean.includes('\t')){
+    const parts=clean.split(/\t+/);
+    return {name:parts.slice(0,-1).join(' ').trim(),value:parts.at(-1).trim()};
+  }
+  const match=clean.match(/^(.*?)\s+([≈~]?\d[\d.,\s]*[kKmM]?)$/);
+  return match ? {name:match[1].trim(),value:match[2].trim()} : null;
+}
+
+function backfillParseBulk(text){
+  return String(text||'').split(/\r?\n/).map((line,index)=>({line,index:index+1})).filter(item=>item.line.trim()).map(item=>{
+    const parts=backfillSplitLine(item.line);
+    if(!parts || !parts.name){
+      return {line:item.index,historicalName:item.line.trim(),raw:'',valid:false,error:'could not split name and value',cid:'',candidateCids:[],rememberAlias:true};
+    }
+    const parsed=backfillParseMessageValue(parts.value);
+    const candidateCids=backfillCandidates(parts.name);
+    return {
+      line:item.index,
+      historicalName:parts.name,
+      raw:parts.value,
+      valid:parsed.valid,
+      error:parsed.error || '',
+      messages:parsed.messages,
+      approximate:Boolean(parsed.approximate),
+      candidateCids,
+      cid:candidateCids.length===1 ? candidateCids[0] : '',
+      matchStatus:candidateCids.length===1 ? 'matched' : (candidateCids.length>1 ? 'ambiguous' : 'unknown'),
+      rememberAlias:true
+    };
+  });
+}
+
+function backfillBotOptions(selected=''){
+  return [...state.meta.entries()].map(([cid,meta])=>{
+    const live=state.bots.find(bot=>String(bot.cid)===String(cid));
+    const detail=Number.isFinite(live?.messages) ? ` · ${fmt.format(live.messages)} msg` : '';
+    return {cid:String(cid),label:`${meta?.name || cid}${detail}`};
+  }).sort((a,b)=>a.label.localeCompare(b.label,undefined,{sensitivity:'base'})).map(item=>`<option value="${archiveEscape(item.cid)}"${item.cid===String(selected)?' selected':''}>${archiveEscape(item.label)}</option>`).join('');
+}
+
+function backfillPreview(){
+  backfillCaptureCurrentNames();
+  const input=document.querySelector('#backfillBulkInput');
+  backfillState.preview=backfillParseBulk(input?.value || '');
+  backfillRenderPreview();
+  const status=document.querySelector('#backfillSaveStatus');
+  if(status){status.textContent='';status.className='backfill-status'}
+}
+
+function backfillRenderPreview(){
+  const box=document.querySelector('#backfillPreviewRows');
+  const meta=document.querySelector('#backfillPreviewMeta');
+  if(!box || !meta) return;
+  const rows=backfillState.preview || [];
+  if(!rows.length){
+    meta.textContent='nothing to preview';
+    box.innerHTML='<div class="dashboard-empty">paste data and tap preview.</div>';
+    return;
+  }
+  const unresolved=rows.filter(row=>!row.valid || !row.cid).length;
+  meta.textContent=`${rows.length} ${rows.length===1?'row':'rows'} · ${unresolved?`${unresolved} need attention`:'ready'}`;
+  box.innerHTML=rows.map((row,index)=>{
+    const numeric=row.valid ? `${row.approximate?'≈ ':''}${fmt.format(row.messages)}` : 'invalid';
+    const badge=!row.valid ? '<span class="backfill-badge warn">invalid</span>' : row.cid ? '<span class="backfill-badge ok">matched</span>' : `<span class="backfill-badge warn">${row.matchStatus==='ambiguous'?'ambiguous':'choose bot'}</span>`;
+    const current=row.cid ? backfillCurrentName(row.cid) : '';
+    return `<div class="backfill-preview-row" data-backfill-preview-row="${index}">
+      <div class="backfill-preview-top">
+        <div class="backfill-preview-name">${archiveEscape(row.historicalName)}${badge}</div>
+        <div class="backfill-preview-value">${archiveEscape(numeric)}</div>
+      </div>
+      <div class="backfill-preview-meta">line ${row.line} · raw: ${archiveEscape(row.raw || '—')}${row.valid?` · ${row.approximate?'approximate':'exact'}`:` · ${archiveEscape(row.error||'invalid')}`}${current?` · → ${archiveEscape(current)}`:''}</div>
+      <div class="backfill-preview-controls">
+        <select data-backfill-cid="${index}" ${row.valid?'':'disabled'}>
+          <option value="">${row.matchStatus==='ambiguous'?'choose the correct character…':'choose character…'}</option>
+          ${backfillBotOptions(row.cid)}
+        </select>
+        <label><input type="checkbox" data-backfill-remember="${index}" ${row.rememberAlias?'checked':''} ${row.valid?'':'disabled'}> remember alias</label>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function backfillPreviewDuplicateCid(){
+  const seen=new Set();
+  for(const row of backfillState.preview){
+    if(!row.valid || !row.cid) continue;
+    if(seen.has(row.cid)) return row.cid;
+    seen.add(row.cid);
+  }
+  return '';
+}
+
+function backfillSavePreview(){
+  const status=document.querySelector('#backfillSaveStatus');
+  const date=backfillState.editDate || document.querySelector('#backfillDate')?.value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')){
+    if(status){status.textContent='choose a valid date first.';status.className='backfill-status error'}
+    return;
+  }
+  const rows=backfillState.preview || [];
+  if(!rows.length){
+    if(status){status.textContent='nothing to save — create a preview first.';status.className='backfill-status error'}
+    return;
+  }
+  const bad=rows.find(row=>!row.valid || !row.cid);
+  if(bad){
+    if(status){status.textContent='resolve every invalid or unknown row before saving.';status.className='backfill-status error'}
+    return;
+  }
+  const duplicateCid=backfillPreviewDuplicateCid();
+  if(duplicateCid){
+    if(status){status.textContent=`${backfillCurrentName(duplicateCid)} appears more than once in this import.`;status.className='backfill-status error'}
+    return;
+  }
+  if(!backfillState.snapshots[date]) backfillState.snapshots[date]={};
+  rows.forEach(row=>{
+    backfillState.snapshots[date][row.cid]={
+      raw:row.raw,
+      messages:row.messages,
+      approximate:Boolean(row.approximate),
+      historicalName:row.historicalName,
+      savedAt:new Date().toISOString()
+    };
+    if(row.rememberAlias) backfillAddAlias(row.cid,row.historicalName);
+  });
+  backfillPersist();
+  backfillRenderSaved();
+  backfillRenderAliasEditor();
+  backfillRenderAliasList();
+  if(status){status.textContent=`saved ${rows.length} historical ${rows.length===1?'value':'values'} for ${shortGraphDate(date)}.`;status.className='backfill-status ok'}
+  try{renderDashboardArchive()}catch(_){}
+}
+
+function backfillSavedDates(){
+  backfillLoad();
+  return Object.keys(backfillState.snapshots).filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(date)).sort();
+}
+
+function backfillSnapshot(date){
+  backfillLoad();
+  return backfillState.snapshots[String(date)] || {};
+}
+
+function historicalMessageValue(cid,date){
+  const record=backfillSnapshot(date)[String(cid)] || null;
+  return record ? {...record,cid:String(cid),date:String(date)} : null;
+}
+
+function backfillRenderSaved(){
+  const date=backfillState.editDate || backfillDefaultDate();
+  const records=backfillSnapshot(date);
+  const entries=Object.entries(records).sort((a,b)=>backfillCurrentName(a[0]).localeCompare(backfillCurrentName(b[0]),undefined,{sensitivity:'base'}));
+  const box=document.querySelector('#backfillSavedRows');
+  const meta=document.querySelector('#backfillSavedMeta');
+  const dateStatus=document.querySelector('#backfillDateStatus');
+  if(meta){
+    const approx=entries.filter(([,record])=>record.approximate).length;
+    meta.textContent=`${entries.length} ${entries.length===1?'value':'values'}${approx?` · ${approx} approximate`:''}`;
+  }
+  if(dateStatus) dateStatus.textContent=entries.length ? `${entries.length} known messagecount${entries.length===1?'':'s'} · every other bot is unknown` : 'no saved historical messagecounts for this date';
+  if(!box) return;
+  box.innerHTML=entries.length ? entries.map(([cid,record])=>`
+    <div class="backfill-saved-row">
+      <div class="backfill-saved-main">
+        <b>${archiveEscape(backfillCurrentName(cid))}</b>
+        <small>${archiveEscape(record.historicalName || backfillCurrentName(cid))} · raw ${archiveEscape(record.raw)} · ${record.approximate?'approximate':'exact'}</small>
+      </div>
+      <div class="backfill-saved-side"><strong>${record.approximate?'≈ ':''}${fmt.format(record.messages)}</strong><button class="backfill-icon-button" type="button" data-backfill-delete-cid="${archiveEscape(cid)}" aria-label="delete value">×</button></div>
+    </div>`).join('') : '<div class="dashboard-empty">no historical values saved.</div>';
+}
+
+function backfillLoadSavedIntoEditor(){
+  const date=backfillState.editDate || backfillDefaultDate();
+  const records=backfillSnapshot(date);
+  const entries=Object.entries(records);
+  const input=document.querySelector('#backfillBulkInput');
+  if(!input) return;
+  input.value=entries.map(([cid,record])=>`${record.historicalName || backfillCurrentName(cid)} | ${record.raw}`).join('\n');
+  backfillPreview();
+}
+
+function backfillDeleteRecord(cid){
+  const date=backfillState.editDate || backfillDefaultDate();
+  const records=backfillState.snapshots[date];
+  if(!records || !Object.prototype.hasOwnProperty.call(records,cid)) return;
+  delete records[cid];
+  if(!Object.keys(records).length) delete backfillState.snapshots[date];
+  backfillPersist();
+  backfillRenderSaved();
+  try{renderDashboardArchive()}catch(_){}
+}
+
+function backfillDeleteDate(){
+  const date=backfillState.editDate || backfillDefaultDate();
+  if(!backfillState.snapshots[date]) return;
+  if(!confirm(`Delete all historical messagecounts for ${shortGraphDate(date)}?`)) return;
+  delete backfillState.snapshots[date];
+  backfillPersist();
+  backfillRenderSaved();
+  const status=document.querySelector('#backfillSaveStatus');
+  if(status){status.textContent='historical values for this date deleted.';status.className='backfill-status ok'}
+  try{renderDashboardArchive()}catch(_){}
+}
+
+function backfillPrepareDate(date){
+  backfillLoad();
+  backfillCaptureCurrentNames();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date||'')) date=backfillDefaultDate();
+  backfillState.editDate=date;
+  const input=document.querySelector('#backfillDate');
+  if(input && input.value!==date) input.value=date;
+  backfillRenderSaved();
+  backfillRenderAliasEditor();
+  backfillRenderAliasList();
+}
+
+function backfillRenderAliasEditor(){
+  const select=document.querySelector('#backfillAliasBot');
+  if(!select) return;
+  const previous=backfillState.aliasCid || select.value;
+  const options=[...state.meta.entries()].map(([cid,meta])=>({cid:String(cid),name:meta?.name||cid})).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
+  select.innerHTML=options.map(item=>`<option value="${archiveEscape(item.cid)}">${archiveEscape(item.name)}</option>`).join('');
+  const selected=options.some(item=>item.cid===previous) ? previous : (options[0]?.cid || '');
+  select.value=selected;
+  backfillState.aliasCid=selected;
+  const current=document.querySelector('#backfillAliasCurrent');
+  if(current) current.textContent=selected ? `current name: ${backfillCurrentName(selected)}` : 'no bots loaded';
+  const textarea=document.querySelector('#backfillAliasInput');
+  if(textarea) textarea.value=selected ? backfillAliases(selected).join('\n') : '';
+}
+
+function backfillSaveAliases(){
+  const cid=document.querySelector('#backfillAliasBot')?.value || '';
+  const input=document.querySelector('#backfillAliasInput');
+  if(!cid || !input) return;
+  const seen=new Set();
+  const list=[];
+  input.value.split(/\r?\n/).map(value=>value.trim()).filter(Boolean).forEach(value=>{
+    const key=backfillNormalizeName(value);
+    if(!key || seen.has(key)) return;
+    seen.add(key); list.push(value);
+  });
+  backfillState.aliases[cid]=list;
+  backfillPersist();
+  backfillRenderAliasList();
+  const status=document.querySelector('#backfillSaveStatus');
+  if(status){status.textContent=`aliases saved for ${backfillCurrentName(cid)}.`;status.className='backfill-status ok'}
+}
+
+function backfillRenderAliasList(){
+  const box=document.querySelector('#backfillAliasList');
+  if(!box) return;
+  const rows=[...state.meta.entries()].map(([cid,meta])=>({cid:String(cid),name:meta?.name||cid,aliases:backfillAliases(cid)})).sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
+  box.innerHTML=rows.length ? rows.map(row=>`<div class="backfill-alias-row" data-backfill-alias-cid="${archiveEscape(row.cid)}"><b>${archiveEscape(row.name)}</b><small>${row.aliases.length?archiveEscape(row.aliases.join(' · ')):'no saved aliases'}</small></div>`).join('') : '<div class="dashboard-empty">no bots loaded.</div>';
+}
+
+function backfillRenderArchive(monthKey){
+  const box=document.querySelector('#archiveBackfill');
+  const meta=document.querySelector('#archiveBackfillMeta');
+  if(!box || !meta) return;
+  const dates=backfillSavedDates().filter(date=>String(date).startsWith(`${monthKey}-`)).sort().reverse();
+  const totals=dates.map(date=>{
+    const records=Object.values(backfillSnapshot(date));
+    return {date,count:records.length,approx:records.filter(record=>record.approximate).length};
+  });
+  const count=totals.reduce((sum,row)=>sum+row.count,0);
+  const approx=totals.reduce((sum,row)=>sum+row.approx,0);
+  meta.textContent=count ? `${count} values · ${approx} approx` : '—';
+  box.innerHTML=totals.length ? totals.map(row=>`<div class="archive-backfill-row" data-open-backfill-date="${archiveEscape(row.date)}"><span class="date">${shortGraphDate(row.date)}</span><span class="summary">partial snapshot · missing bots unknown</span><span class="count">${row.count}${row.approx?` · ≈${row.approx}`:''}</span></div>`).join('') : '<div class="dashboard-empty">no historical backfill this month.</div>';
+}
+
+function backfillRefreshView(){
+  if(!ENABLE_HISTORICAL_BACKFILL) return;
+  backfillCaptureCurrentNames();
+  backfillRenderAliasEditor();
+  backfillRenderAliasList();
+  backfillRenderSaved();
+}
+
+function backfillInit(){
+  backfillLoad();
+  document.querySelectorAll('[data-backfill-feature]').forEach(el=>{el.hidden=!ENABLE_HISTORICAL_BACKFILL});
+  if(!ENABLE_HISTORICAL_BACKFILL) return;
+
+  document.querySelector('#backfillDate')?.addEventListener('change',event=>backfillPrepareDate(event.target.value));
+  document.querySelector('#backfillPrevDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),-1)));
+  document.querySelector('#backfillNextDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),1)));
+  document.querySelector('#backfillPreviewButton')?.addEventListener('click',backfillPreview);
+  document.querySelector('#backfillClearButton')?.addEventListener('click',()=>{
+    const input=document.querySelector('#backfillBulkInput'); if(input) input.value='';
+    backfillState.preview=[]; backfillRenderPreview();
+  });
+  document.querySelector('#backfillManualAdd')?.addEventListener('click',()=>{
+    const name=document.querySelector('#backfillManualName');
+    const value=document.querySelector('#backfillManualValue');
+    const bulk=document.querySelector('#backfillBulkInput');
+    if(!name?.value.trim() || !value?.value.trim() || !bulk) return;
+    bulk.value += `${bulk.value.trim()?'\n':''}${name.value.trim()} | ${value.value.trim()}`;
+    name.value=''; value.value=''; backfillPreview();
+  });
+  document.querySelector('#backfillSaveButton')?.addEventListener('click',backfillSavePreview);
+  document.querySelector('#backfillLoadSavedButton')?.addEventListener('click',backfillLoadSavedIntoEditor);
+  document.querySelector('#backfillDeleteDay')?.addEventListener('click',backfillDeleteDate);
+  document.querySelector('#backfillAliasBot')?.addEventListener('change',event=>{backfillState.aliasCid=event.target.value;backfillRenderAliasEditor()});
+  document.querySelector('#backfillAliasSave')?.addEventListener('click',backfillSaveAliases);
+  document.querySelector('#backfillPreviewRows')?.addEventListener('change',event=>{
+    const select=event.target.closest('[data-backfill-cid]');
+    if(select){
+      const index=Number(select.dataset.backfillCid); const row=backfillState.preview[index];
+      if(row){row.cid=select.value;row.matchStatus=select.value?'manual':row.matchStatus;backfillRenderPreview()}
+      return;
+    }
+    const checkbox=event.target.closest('[data-backfill-remember]');
+    if(checkbox){const row=backfillState.preview[Number(checkbox.dataset.backfillRemember)];if(row) row.rememberAlias=checkbox.checked}
+  });
+  document.querySelector('#backfillSavedRows')?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-backfill-delete-cid]');
+    if(button) backfillDeleteRecord(button.dataset.backfillDeleteCid);
+  });
+  document.querySelector('#backfillAliasList')?.addEventListener('click',event=>{
+    const row=event.target.closest('[data-backfill-alias-cid]');
+    if(!row) return;
+    backfillState.aliasCid=row.dataset.backfillAliasCid;
+    backfillRenderAliasEditor();
+    document.querySelector('#backfillAliasBot')?.scrollIntoView?.({behavior:'smooth',block:'center'});
+  });
+  document.addEventListener('click',event=>{
+    const row=event.target.closest('[data-open-backfill-date]');
+    if(!row) return;
+    dashboardShowView('backfill');
+    backfillPrepareDate(row.dataset.openBackfillDate);
+  });
+  backfillPrepareDate(backfillDefaultDate());
+}
+
 function dashboardInit(){
   document.body.classList.add('dashboard-shell');
   topSlotsInit();
+  backfillInit();
 
   const targets=dashboardTargets();
   Object.entries(targets).forEach(([key,el])=>{if(el)el.dataset.dashboardView=key});
