@@ -3152,16 +3152,27 @@ body.dashboard-shell .stale{color:#c4aecb !important}
 }
 .backfill-editor-toolbar{
   display:grid;
-  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-columns:minmax(0,1fr) minmax(105px,.55fr);
   gap:8px;
   padding:12px;
   border-bottom:1px solid var(--dash-border);
 }
-.backfill-editor-toolbar input{
+.backfill-editor-toolbar input,
+.backfill-editor-toolbar select{
   width:100%;
   min-width:0;
   height:38px;
   font-size:10px;
+}
+.backfill-editor-toolbar-actions{
+  grid-column:1 / -1;
+}
+.backfill-editor-sort{
+  border:1px solid var(--dash-border) !important;
+  border-radius:10px !important;
+  background:var(--dash-panel-2) !important;
+  color:var(--dash-text) !important;
+  padding:0 9px !important;
 }
 .backfill-editor-summary{
   display:flex;
@@ -3514,6 +3525,10 @@ body.dashboard-shell .stale{color:#c4aecb !important}
   <section class="backfill-editor-card">
     <div class="backfill-editor-toolbar">
       <input id="backfillSearch" type="search" placeholder="search bot">
+      <select id="backfillSort" class="backfill-editor-sort" aria-label="sort historical bots">
+        <option value="latest">latest</option>
+        <option value="messages">messages on date</option>
+      </select>
       <div class="backfill-editor-toolbar-actions">
         <button id="backfillShowAll" class="backfill-editor-toggle" type="button">show later / unknown</button>
         <div id="backfillEditorSummary" class="backfill-editor-summary">0 saved</div>
@@ -11395,6 +11410,7 @@ const backfillState={
   creationDates:{},
   editDate:'',
   search:'',
+  sort:'latest',
   showAll:false
 };
 
@@ -11679,26 +11695,50 @@ function backfillFormatFieldStatus(parsed,{inferred=null,carried=null}={}){
 function backfillEditorBots(){
   const query=String(backfillState.search||'').trim().toLowerCase();
   const date=backfillState.editDate || backfillDefaultDate();
+  const observed=backfillSnapshot(date);
+  const metaOrder=new Map([...state.meta.keys()].map((cid,index)=>[String(cid),index]));
 
-  return [...state.meta.entries()]
+  const bots=[...state.meta.entries()]
     .map(([cid,meta])=>{
       const id=String(cid);
       const creation=backfillEffectiveCreationDate(id);
+      const record=observed[id] || null;
+      const messageDisplay=backfillFieldDisplay(id,date,'messages',record);
+      const messageParsed=messageDisplay?.raw ? backfillParseValue(messageDisplay.raw) : null;
+      const messages=(messageParsed?.valid && !messageParsed.empty)
+        ? Number(messageParsed.value)
+        : (Number.isFinite(Number(messageDisplay?.inferred?.value)) ? Number(messageDisplay.inferred.value) : null);
+
       return {
         cid:id,
         name:meta?.name || id,
         creation,
+        messages,
         active:Boolean(creation) && String(creation)<=String(date),
-        unknownCreation:!creation
+        unknownCreation:!creation,
+        metaOrder:metaOrder.get(id) ?? 999999
       };
     })
     .filter(bot=>!query || bot.name.toLowerCase().includes(query))
-    .filter(bot=>backfillState.showAll || bot.active)
-    .sort((a,b)=>{
-      if(a.active!==b.active) return a.active?-1:1;
-      if(a.unknownCreation!==b.unknownCreation) return a.unknownCreation?1:-1;
-      return a.name.localeCompare(b.name,undefined,{sensitivity:'base'});
-    });
+    .filter(bot=>backfillState.showAll || bot.active);
+
+  return bots.sort((a,b)=>{
+    if(a.active!==b.active) return a.active?-1:1;
+    if(a.unknownCreation!==b.unknownCreation) return a.unknownCreation?1:-1;
+
+    if(backfillState.sort==='messages'){
+      const am=Number.isFinite(a.messages)?a.messages:-Infinity;
+      const bm=Number.isFinite(b.messages)?b.messages:-Infinity;
+      if(am!==bm) return bm-am;
+    }else{
+      const ad=a.creation || '';
+      const bd=b.creation || '';
+      if(ad!==bd) return bd.localeCompare(ad);
+      if(a.metaOrder!==b.metaOrder) return b.metaOrder-a.metaOrder;
+    }
+
+    return a.name.localeCompare(b.name,undefined,{sensitivity:'base'});
+  });
 }
 
 function backfillFieldDisplay(cid,date,field,record){
@@ -11725,7 +11765,10 @@ function backfillRenderEditor(){
   const summary=document.querySelector('#backfillEditorSummary');
   const dateStatus=document.querySelector('#backfillDateStatus');
   const toggle=document.querySelector('#backfillShowAll');
+  const sortSelect=document.querySelector('#backfillSort');
   if(!rowsBox) return;
+
+  if(sortSelect && sortSelect.value!==backfillState.sort) sortSelect.value=backfillState.sort;
 
   if(toggle){
     toggle.classList.toggle('active',backfillState.showAll);
@@ -11929,6 +11972,7 @@ function backfillInit(){
   document.querySelector('#backfillPrevDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),-1)));
   document.querySelector('#backfillNextDay')?.addEventListener('click',()=>backfillPrepareDate(backfillAddDays(backfillState.editDate||backfillDefaultDate(),1)));
   document.querySelector('#backfillSearch')?.addEventListener('input',event=>{backfillState.search=event.target.value || '';backfillRenderEditor()});
+  document.querySelector('#backfillSort')?.addEventListener('change',event=>{backfillState.sort=event.target.value==='messages'?'messages':'latest';backfillRenderEditor()});
   document.querySelector('#backfillShowAll')?.addEventListener('click',()=>{backfillState.showAll=!backfillState.showAll;backfillRenderEditor()});
 
   document.querySelector('#backfillEditorRows')?.addEventListener('input',event=>{
