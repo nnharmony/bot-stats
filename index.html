@@ -11920,22 +11920,38 @@ function backfillInferredField(cid,date,field){
   return {value:Number(before.record[key]),inferred:true,startDate:before.date,endDate:after.date};
 }
 
+function backfillHasStoredValue(value){
+  return value!==null && value!==undefined && value!=='' && Number.isFinite(Number(value));
+}
+
 function historicalMessageValue(cid,date){
   const observed=backfillSnapshot(date)[String(cid)] || null;
-  if(observed && Number.isFinite(Number(observed.messages))){
-    return {cid:String(cid),date:String(date),messages:Number(observed.messages),raw:String(observed.messagesRaw || observed.messages),approximate:Boolean(observed.messagesApproximate),inferred:false};
+  if(observed && backfillHasStoredValue(observed.messages)){
+    return {cid:String(cid),date:String(date),messages:Number(observed.messages),raw:String(observed.messagesRaw || observed.messages),approximate:Boolean(observed.messagesApproximate),inferred:false,carried:false};
   }
+
+  const carried=backfillPreviousObservedField(cid,date,'messages');
+  if(carried){
+    return {cid:String(cid),date:String(date),messages:Number(carried.value),raw:String(carried.raw),approximate:Boolean(carried.approximate),inferred:false,carried:true,carriedFrom:carried.date};
+  }
+
   const inferred=backfillInferredField(cid,date,'messages');
-  return inferred ? {cid:String(cid),date:String(date),messages:inferred.value,raw:String(inferred.value),approximate:false,inferred:true,inference:'equal_exact_endpoints',inferredFrom:{startDate:inferred.startDate,endDate:inferred.endDate}} : null;
+  return inferred ? {cid:String(cid),date:String(date),messages:inferred.value,raw:String(inferred.value),approximate:false,inferred:true,carried:false,inference:'equal_exact_endpoints',inferredFrom:{startDate:inferred.startDate,endDate:inferred.endDate}} : null;
 }
 
 function historicalCollectorValue(cid,date){
   const observed=backfillSnapshot(date)[String(cid)] || null;
-  if(observed && Number.isFinite(Number(observed.collectors))){
-    return {cid:String(cid),date:String(date),collectors:Number(observed.collectors),raw:String(observed.collectorsRaw || observed.collectors),approximate:Boolean(observed.collectorsApproximate),inferred:false};
+  if(observed && backfillHasStoredValue(observed.collectors)){
+    return {cid:String(cid),date:String(date),collectors:Number(observed.collectors),raw:String(observed.collectorsRaw || observed.collectors),approximate:Boolean(observed.collectorsApproximate),inferred:false,carried:false};
   }
+
+  const carried=backfillPreviousObservedField(cid,date,'collectors');
+  if(carried){
+    return {cid:String(cid),date:String(date),collectors:Number(carried.value),raw:String(carried.raw),approximate:Boolean(carried.approximate),inferred:false,carried:true,carriedFrom:carried.date};
+  }
+
   const inferred=backfillInferredField(cid,date,'collectors');
-  return inferred ? {cid:String(cid),date:String(date),collectors:inferred.value,raw:String(inferred.value),approximate:false,inferred:true,inference:'equal_exact_endpoints',inferredFrom:{startDate:inferred.startDate,endDate:inferred.endDate}} : null;
+  return inferred ? {cid:String(cid),date:String(date),collectors:inferred.value,raw:String(inferred.value),approximate:false,inferred:true,carried:false,inference:'equal_exact_endpoints',inferredFrom:{startDate:inferred.startDate,endDate:inferred.endDate}} : null;
 }
 
 function backfillResolvedSnapshot(date){
@@ -11953,10 +11969,12 @@ function backfillResolvedSnapshot(date){
       messagesRaw:msg?.raw ?? observed?.messagesRaw ?? '',
       messagesApproximate:Boolean(msg?.approximate ?? observed?.messagesApproximate),
       messagesInferred:Boolean(msg?.inferred),
+      messagesCarried:Boolean(msg?.carried),
       collectors:col?.collectors ?? observed?.collectors ?? null,
       collectorsRaw:col?.raw ?? observed?.collectorsRaw ?? '',
       collectorsApproximate:Boolean(col?.approximate ?? observed?.collectorsApproximate),
-      collectorsInferred:Boolean(col?.inferred)
+      collectorsInferred:Boolean(col?.inferred),
+      collectorsCarried:Boolean(col?.carried)
     };
   });
   return result;
@@ -12108,7 +12126,7 @@ function backfillFieldDisplay(cid,date,field,record){
     };
   }
 
-  if(record && Number.isFinite(Number(record[key]))){
+  if(record && backfillHasStoredValue(record[key])){
     const raw=String(record[rawKey] || record[key]);
     return {
       raw,
@@ -12362,8 +12380,8 @@ function backfillRenderEditor(){
   const bots=backfillEditorBots();
   const observedRecords=Object.values(observed);
   const savedBots=observedRecords.length;
-  const savedMessages=observedRecords.filter(record=>Number.isFinite(Number(record.messages))).length;
-  const savedCollectors=observedRecords.filter(record=>Number.isFinite(Number(record.collectors))).length;
+  const savedMessages=observedRecords.filter(record=>backfillHasStoredValue(record.messages)).length;
+  const savedCollectors=observedRecords.filter(record=>backfillHasStoredValue(record.collectors)).length;
 
   if(summary) summary.textContent=savedBots ? `${savedBots} bots · ${savedMessages} M · ${savedCollectors} C` : '0 saved';
   if(dateStatus){
