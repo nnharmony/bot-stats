@@ -11581,9 +11581,13 @@ function backfillNormalizeRecord(record){
     messages:null,
     messagesRaw:'',
     messagesApproximate:false,
+    messagesCarried:Boolean(record.messagesCarried),
+    messagesExplicitZero:Boolean(record.messagesExplicitZero),
     collectors:null,
     collectorsRaw:'',
     collectorsApproximate:false,
+    collectorsCarried:Boolean(record.collectorsCarried),
+    collectorsExplicitZero:Boolean(record.collectorsExplicitZero),
     savedAt:String(record.savedAt || '')
   };
   if(backfillHasStoredValue(record.messages,record.messagesRaw)){
@@ -11598,6 +11602,65 @@ function backfillNormalizeRecord(record){
   }
   if(!Number.isFinite(out.messages) && !Number.isFinite(out.collectors)) return null;
   return out;
+}
+
+function backfillMaterializeMissingCarries(){
+  const dates=Object.keys(backfillState.snapshots)
+    .filter(date=>/^\d{4}-\d{2}-\d{2}$/.test(date))
+    .sort();
+
+  const last=new Map();
+  const getLast=(cid,field)=>last.get(`${cid}::${field}`) || null;
+  const setLast=(cid,field,value)=>last.set(`${cid}::${field}`,value);
+
+  dates.forEach(date=>{
+    const records=backfillState.snapshots[date] || {};
+    Object.entries(records).forEach(([cid,record])=>{
+      ['messages','collectors'].forEach(field=>{
+        const rawKey=`${field}Raw`;
+        const approxKey=`${field}Approximate`;
+        const carriedKey=`${field}Carried`;
+        const explicitZeroKey=`${field}ExplicitZero`;
+        const previous=getLast(cid,field);
+
+        const currentValid=backfillHasStoredValue(record[field],record[rawKey]);
+        const currentNumber=currentValid ? Number(record[field]) : null;
+
+        // Older buggy builds could turn a missing null into a real-looking 0.
+        // If a cumulative/standing value was already positive, treat an old,
+        // unmarked zero as missing and carry the last known stand instead.
+        const ghostZero=
+          currentValid &&
+          currentNumber===0 &&
+          String(record[rawKey] ?? '').trim()==='0' &&
+          !record[explicitZeroKey] &&
+          previous &&
+          Number(previous.value)>0;
+
+        if((!currentValid || ghostZero) && previous){
+          record[field]=Number(previous.value);
+          record[rawKey]=String(previous.raw);
+          record[approxKey]=Boolean(previous.approximate);
+          record[carriedKey]=true;
+          record[explicitZeroKey]=false;
+          setLast(cid,field,{
+            value:Number(previous.value),
+            raw:String(previous.raw),
+            approximate:Boolean(previous.approximate)
+          });
+          return;
+        }
+
+        if(currentValid){
+          setLast(cid,field,{
+            value:currentNumber,
+            raw:String(record[rawKey] ?? record[field]),
+            approximate:Boolean(record[approxKey])
+          });
+        }
+      });
+    });
+  });
 }
 
 function backfillLoad(){
@@ -11638,6 +11701,8 @@ function backfillLoad(){
       const bucket=backfillState.drafts[String(date)] ||= {};
       clean.forEach(item=>{(bucket[item.cid] ||= {}).eventTags=[...item.tags]});
     });
+
+    backfillMaterializeMissingCarries();
   }catch(_){ }
 }
 
@@ -11645,7 +11710,7 @@ function backfillPersist(){
   try{
     localStorage.setItem(
       backfillStorageKey(),
-      JSON.stringify({version:6,snapshots:backfillState.snapshots,creationDates:backfillState.creationDates,pendingEvents:backfillState.pendingEvents})
+      JSON.stringify({version:7,snapshots:backfillState.snapshots,creationDates:backfillState.creationDates,pendingEvents:backfillState.pendingEvents})
     );
   }catch(error){
     const status=document.querySelector('#backfillSaveStatus');
@@ -11767,6 +11832,7 @@ function backfillSyncFromEvents(){
       if(/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))) backfillState.creationDates[String(cid)]=String(date);
     });
   });
+  backfillMaterializeMissingCarries();
   backfillPersist();
   if(dashboardCurrentView==='backfill') backfillRenderEditor();
   if(dashboardCurrentView==='archive') renderDashboardArchive();
@@ -11774,7 +11840,7 @@ function backfillSyncFromEvents(){
 
 function backfillRemoteNote(date){
   return JSON.stringify({
-    version:6,
+    version:7,
     snapshot:backfillState.snapshots[String(date)] || {},
     creationDates:backfillState.creationDates
   });
@@ -11935,7 +12001,7 @@ function backfillHasStoredValue(value,rawMarker=undefined){
 function historicalMessageValue(cid,date){
   const observed=backfillSnapshot(date)[String(cid)] || null;
   if(observed && backfillHasStoredValue(observed.messages,observed.messagesRaw)){
-    return {cid:String(cid),date:String(date),messages:Number(observed.messages),raw:String(observed.messagesRaw || observed.messages),approximate:Boolean(observed.messagesApproximate),inferred:false,carried:false};
+    return {cid:String(cid),date:String(date),messages:Number(observed.messages),raw:String(observed.messagesRaw || observed.messages),approximate:Boolean(observed.messagesApproximate),inferred:false,carried:Boolean(observed.messagesCarried)};
   }
 
   const carried=backfillPreviousObservedField(cid,date,'messages');
@@ -11950,7 +12016,7 @@ function historicalMessageValue(cid,date){
 function historicalCollectorValue(cid,date){
   const observed=backfillSnapshot(date)[String(cid)] || null;
   if(observed && backfillHasStoredValue(observed.collectors,observed.collectorsRaw)){
-    return {cid:String(cid),date:String(date),collectors:Number(observed.collectors),raw:String(observed.collectorsRaw || observed.collectors),approximate:Boolean(observed.collectorsApproximate),inferred:false,carried:false};
+    return {cid:String(cid),date:String(date),collectors:Number(observed.collectors),raw:String(observed.collectorsRaw || observed.collectors),approximate:Boolean(observed.collectorsApproximate),inferred:false,carried:Boolean(observed.collectorsCarried)};
   }
 
   const carried=backfillPreviousObservedField(cid,date,'collectors');
@@ -12066,7 +12132,10 @@ function backfillFormatFieldStatus(parsed,{inferred=null,carried=null}={}){
     return {text:`exact ${fmt.format(parsed.value)}`,className:''};
   }
   if(inferred) return {text:`inferred ${fmt.format(inferred.value)}`,className:'inferred'};
-  if(carried) return {text:`last ${carried.approximate?'≈ ':''}${fmt.format(carried.value)} · ${shortGraphDate(carried.date)}`,className:'carried'};
+  if(carried){
+    const from=carried.date && carried.date!=='previous' ? ` · ${shortGraphDate(carried.date)}` : '';
+    return {text:`last ${carried.approximate?'≈ ':''}${fmt.format(carried.value)}${from}`,className:'carried'};
+  }
   return {text:'unknown',className:''};
 }
 
@@ -12136,12 +12205,19 @@ function backfillFieldDisplay(cid,date,field,record){
 
   if(record && backfillHasStoredValue(record[key],record[rawKey])){
     const raw=String(record[rawKey] || record[key]);
+    const wasCarried=Boolean(record[`${field}Carried`]);
     return {
       raw,
       parsed:{empty:false,valid:true,raw,value:Number(record[key]),approximate:Boolean(record[approxKey])},
-      carried:null,
+      carried:wasCarried ? {
+        value:Number(record[key]),
+        raw,
+        approximate:Boolean(record[approxKey]),
+        date:'previous',
+        carried:true
+      } : null,
       inferred:null,
-      observed:true,
+      observed:!wasCarried,
       draft:false
     };
   }
@@ -12470,6 +12546,37 @@ function backfillUpdateFieldStatus(input){
   if(dateStatus && !dateStatus.textContent.includes('unsaved edits kept')) dateStatus.textContent += ' · unsaved edits kept';
 }
 
+function backfillFieldForSave(cid,date,field,parsed){
+  if(parsed && !parsed.empty){
+    return {
+      value:Number(parsed.value),
+      raw:String(parsed.raw),
+      approximate:Boolean(parsed.approximate),
+      carried:false,
+      explicitZero:Number(parsed.value)===0
+    };
+  }
+
+  const previous=backfillPreviousObservedField(cid,date,field);
+  if(previous){
+    return {
+      value:Number(previous.value),
+      raw:String(previous.raw),
+      approximate:Boolean(previous.approximate),
+      carried:true,
+      explicitZero:false
+    };
+  }
+
+  return {
+    value:null,
+    raw:'',
+    approximate:false,
+    carried:true,
+    explicitZero:false
+  };
+}
+
 async function backfillSaveDate(){
   const date=backfillState.editDate || document.querySelector('#backfillDate')?.value;
   const status=document.querySelector('#backfillSaveStatus');
@@ -12494,18 +12601,25 @@ async function backfillSaveDate(){
     if(!col.valid && !invalidInput) invalidInput=colInput;
     if(!msg.valid || !col.valid) return;
 
-    if(msg.empty && col.empty){
+    const savedMsg=backfillFieldForSave(cid,date,'messages',msg);
+    const savedCol=backfillFieldForSave(cid,date,'collectors',col);
+
+    if(savedMsg.value===null && savedCol.value===null){
       delete existing[cid];
       return;
     }
 
     existing[cid]={
-      messages:msg.empty ? null : msg.value,
-      messagesRaw:msg.empty ? '' : msg.raw,
-      messagesApproximate:msg.empty ? false : Boolean(msg.approximate),
-      collectors:col.empty ? null : col.value,
-      collectorsRaw:col.empty ? '' : col.raw,
-      collectorsApproximate:col.empty ? false : Boolean(col.approximate),
+      messages:savedMsg.value,
+      messagesRaw:savedMsg.raw,
+      messagesApproximate:savedMsg.approximate,
+      messagesCarried:savedMsg.carried,
+      messagesExplicitZero:savedMsg.explicitZero,
+      collectors:savedCol.value,
+      collectorsRaw:savedCol.raw,
+      collectorsApproximate:savedCol.approximate,
+      collectorsCarried:savedCol.carried,
+      collectorsExplicitZero:savedCol.explicitZero,
       savedAt:new Date().toISOString()
     };
     confirmed++;
@@ -12523,14 +12637,20 @@ async function backfillSaveDate(){
     const msg=backfillParseValue(draft.messages ?? '',{field:'messages',cid,date,previous:previousMessages});
     const col=backfillParseValue(draft.collectors ?? '',{field:'collectors',cid,date});
     if(!msg.valid || !col.valid) return;
-    if(msg.empty && col.empty){delete existing[cid];return}
+    const savedMsg=backfillFieldForSave(cid,date,'messages',msg);
+    const savedCol=backfillFieldForSave(cid,date,'collectors',col);
+    if(savedMsg.value===null && savedCol.value===null){delete existing[cid];return}
     existing[cid]={
-      messages:msg.empty?null:msg.value,
-      messagesRaw:msg.empty?'':msg.raw,
-      messagesApproximate:msg.empty?false:Boolean(msg.approximate),
-      collectors:col.empty?null:col.value,
-      collectorsRaw:col.empty?'':col.raw,
-      collectorsApproximate:col.empty?false:Boolean(col.approximate),
+      messages:savedMsg.value,
+      messagesRaw:savedMsg.raw,
+      messagesApproximate:savedMsg.approximate,
+      messagesCarried:savedMsg.carried,
+      messagesExplicitZero:savedMsg.explicitZero,
+      collectors:savedCol.value,
+      collectorsRaw:savedCol.raw,
+      collectorsApproximate:savedCol.approximate,
+      collectorsCarried:savedCol.carried,
+      collectorsExplicitZero:savedCol.explicitZero,
       savedAt:new Date().toISOString()
     };
     confirmed++;
