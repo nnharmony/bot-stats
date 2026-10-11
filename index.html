@@ -4669,8 +4669,106 @@ function getTableRows(){
 }
 
 
+function graphSourceDays(){
+  const byDate=new Map(
+    (state.daily || []).map(day=>[
+      String(day.date || ''),
+      {
+        date:String(day.date || ''),
+        snapshot:day.snapshot
+      }
+    ])
+  );
+
+  try{
+    backfillLoad();
+
+    backfillSavedDates().forEach(date=>{
+      const resolved=backfillResolvedSnapshot(date);
+      const historicalBots=Object.entries(resolved || {})
+        .map(([cid,record])=>{
+          const bot={cid:String(cid),historical:true};
+
+          if(backfillHasStoredValue(record?.messages,record?.messagesRaw)){
+            bot.messages=Number(record.messages);
+            bot.messagesApproximate=Boolean(record.messagesApproximate);
+            bot.messagesCarried=Boolean(record.messagesCarried);
+            bot.messagesInferred=Boolean(record.messagesInferred);
+          }
+
+          if(backfillHasStoredValue(record?.collectors,record?.collectorsRaw)){
+            bot.collectors=Number(record.collectors);
+            bot.collectorsApproximate=Boolean(record.collectorsApproximate);
+            bot.collectorsCarried=Boolean(record.collectorsCarried);
+            bot.collectorsInferred=Boolean(record.collectorsInferred);
+          }
+
+          return bot;
+        })
+        .filter(bot=>Number.isFinite(bot.messages) || Number.isFinite(bot.collectors));
+
+      if(!historicalBots.length) return;
+
+      const canonical=byDate.get(date);
+
+      if(canonical?.snapshot){
+        const merged=new Map(
+          historicalBots.map(bot=>[bot.cid,{...bot}])
+        );
+
+        (canonical.snapshot.bots || []).forEach(bot=>{
+          const previous=merged.get(bot.cid) || {};
+          merged.set(bot.cid,{...previous,...bot,historical:false});
+        });
+
+        byDate.set(date,{
+          date,
+          snapshot:{
+            ...canonical.snapshot,
+            bots:[...merged.values()]
+          }
+        });
+      }else{
+        byDate.set(date,{
+          date,
+          snapshot:{
+            timestamp:`${date}T12:00:00`,
+            historical:true,
+            bots:historicalBots
+          }
+        });
+      }
+    });
+  }catch(_){ }
+
+  return [...byDate.values()]
+    .filter(day=>/^\d{4}-\d{2}-\d{2}$/.test(day.date))
+    .sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function refreshGraphDateBounds(){
+  const days=graphSourceDays();
+  if(!days.length) return;
+
+  const minDate=days[0].date;
+  const maxDate=days.at(-1).date;
+
+  const from=document.querySelector('#fromDate');
+  const to=document.querySelector('#toDate');
+
+  if(from){
+    from.min=minDate;
+    from.max=maxDate;
+  }
+
+  if(to){
+    to.min=minDate;
+    to.max=maxDate;
+  }
+}
+
 function getGraphDays(){
-  let days=[...state.daily];
+  let days=graphSourceDays();
 
   const from=
     document.querySelector('#fromDate')?.value || '';
@@ -4942,25 +5040,7 @@ async function loadStatsData(){
         'No measurements yet';
   }
 
-  if(state.daily.length){
-    const minDate=
-      state.daily[0].date;
-
-    const maxDate=
-      state.daily.at(-1).date;
-
-    document.querySelector('#fromDate')
-      .min=minDate;
-
-    document.querySelector('#fromDate')
-      .max=maxDate;
-
-    document.querySelector('#toDate')
-      .min=minDate;
-
-    document.querySelector('#toDate')
-      .max=maxDate;
-  }
+  refreshGraphDateBounds();
 
   const compareBots=
     document.querySelector(
@@ -11834,6 +11914,11 @@ function backfillSyncFromEvents(){
   });
   backfillMaterializeMissingCarries();
   backfillPersist();
+  try{
+    refreshGraphDateBounds();
+    drawCompareChart();
+    renderDailyGrowth();
+  }catch(_){ }
   if(dashboardCurrentView==='backfill') backfillRenderEditor();
   if(dashboardCurrentView==='archive') renderDashboardArchive();
 }
@@ -12707,6 +12792,12 @@ async function backfillSaveDate(){
       if(status){status.textContent=`saved M/C on this device · sync failed: ${error.message}${eventDrafts.length?' · event edits kept as draft':''}`;status.className='backfill-status error'}
     }
   }
+
+  try{
+    refreshGraphDateBounds();
+    drawCompareChart();
+    renderDailyGrowth();
+  }catch(_){ }
 
   backfillRenderEditor();
   if(status && !status.classList.contains('error')){
