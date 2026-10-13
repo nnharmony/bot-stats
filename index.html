@@ -2862,7 +2862,7 @@ body.dashboard-shell button:not(.dashboard-tile):not(.dashboard-shortcut):not(.d
   border-color:#4a4350;
 }
 body.dashboard-shell .positive{color:#d4b8d2 !important}
-body.dashboard-shell .stale{color:#c4aecb !important}
+body.dashboard-shell .stale{color:#e3b341 !important}
 
 @media(max-width:430px){
   body.dashboard-shell main#app{padding-left:12px;padding-right:12px}
@@ -4574,6 +4574,98 @@ function getPreviousEntry(entry){
 }
 
 
+
+function trackerLastKnownBotBeforeEntry(entry,cid){
+  if(!entry) return null;
+  const index=state.daily.findIndex(day=>day.date===entry.date);
+  if(index<=0) return null;
+
+  let best=null;
+  let bestMessages=-Infinity;
+
+  for(let i=0;i<index;i++){
+    const bot=(state.daily[i]?.snapshot?.bots||[]).find(item=>item.cid===cid);
+    if(!bot || !Number.isFinite(bot.messages)) continue;
+
+    // Message totals are cumulative. Keep the highest valid earlier stand so
+    // a failed fetch that wrote 0 (or another rollback) cannot become baseline.
+    if(bot.messages>=bestMessages){
+      bestMessages=bot.messages;
+      best=bot;
+    }
+  }
+
+  return best ? {...best} : null;
+}
+
+function trackerSafeBotAtEntry(entry,cid){
+  if(!entry) return null;
+
+  const current=(entry.snapshot?.bots||[]).find(bot=>bot.cid===cid) || null;
+  const previous=trackerLastKnownBotBeforeEntry(entry,cid);
+
+  if(!current){
+    return previous
+      ? {...previous,stale:true,staleReason:'stats unavailable'}
+      : null;
+  }
+
+  let stale=Boolean(current.stale);
+
+  if(previous && Number.isFinite(previous.messages)){
+    if(!Number.isFinite(current.messages) || current.messages<previous.messages){
+      stale=true;
+    }
+  }
+
+  if(!stale){
+    return current;
+  }
+
+  const safe={...current,stale:true,staleReason:current.staleReason||'stats unavailable'};
+
+  if(previous && Number.isFinite(previous.messages)){
+    if(!Number.isFinite(current.messages) || current.messages<previous.messages){
+      safe.messages=previous.messages;
+    }
+  }
+
+  if(
+    previous &&
+    Number.isFinite(previous.collectors) &&
+    (
+      !Number.isFinite(current.collectors) ||
+      (
+        Number(current.collectors)===0 &&
+        Number(previous.collectors)>0 &&
+        (
+          !Number.isFinite(current.messages) ||
+          Number(current.messages)<Number(previous.messages)
+        )
+      )
+    )
+  ){
+    safe.collectors=previous.collectors;
+  }
+
+  return safe;
+}
+
+function trackerSafeSnapshotForEntry(entry){
+  if(!entry?.snapshot) return entry?.snapshot || null;
+
+  const cids=new Set([
+    ...state.meta.keys(),
+    ...(entry.snapshot.bots||[]).map(bot=>bot.cid)
+  ]);
+
+  const bots=[...cids]
+    .map(cid=>trackerSafeBotAtEntry(entry,cid))
+    .filter(Boolean);
+
+  return {...entry.snapshot,bots};
+}
+
 function getSelectedRange(){
   const from=
     document.querySelector('#fromDate')?.value || '';
@@ -4615,25 +4707,10 @@ function getTableRows(){
     return [];
   }
 
-  const startMap=
-    new Map(
-      (startEntry?.snapshot.bots || [])
-        .map(b=>[b.cid,b])
-    );
-
-  const endMap=
-    new Map(
-      (endEntry.snapshot.bots || [])
-        .map(b=>[b.cid,b])
-    );
-
   return [...state.meta.values()]
     .map(meta=>{
-      const startBot=
-        startMap.get(meta.cid);
-
-      const endBot=
-        endMap.get(meta.cid);
+      const startBot=trackerSafeBotAtEntry(startEntry,meta.cid);
+      const endBot=trackerSafeBotAtEntry(endEntry,meta.cid);
 
       const startMessages=
         Number.isFinite(startBot?.messages)
@@ -4645,7 +4722,10 @@ function getTableRows(){
           ? endBot.messages
           : null;
 
+      const stale=Boolean(startBot?.stale || endBot?.stale);
+
       const growth=
+        !stale &&
         Number.isFinite(startMessages) &&
         Number.isFinite(endMessages)
           ? endMessages-startMessages
@@ -4663,7 +4743,7 @@ function getTableRows(){
           Number.isFinite(endBot?.collectors)
             ? endBot.collectors
             : null,
-        stale:endBot?.stale || false
+        stale
       };
     });
 }
@@ -4675,7 +4755,7 @@ function graphSourceDays(){
       String(day.date || ''),
       {
         date:String(day.date || ''),
-        snapshot:day.snapshot
+        snapshot:trackerSafeSnapshotForEntry(day)
       }
     ])
   );
@@ -4998,32 +5078,42 @@ async function loadStatsData(){
   const previous=
     history.snapshots.at(-2);
 
-  const prev=
-    new Map(
-      (previous?.bots||[])
-        .map(b=>[b.cid,b])
-    );
+  const latestEntry=state.daily.at(-1) || null;
+  const previousEntry=state.daily.at(-2) || null;
 
   state.bots=
-    (latest?.bots||[])
-      .map(b=>{
-        const m=
-          state.meta.get(b.cid)||{};
+    [...state.meta.values()]
+      .map(m=>{
+        const b=trackerSafeBotAtEntry(latestEntry,m.cid);
+        const before=trackerSafeBotAtEntry(previousEntry,m.cid);
+
+        if(!b){
+          return {
+            cid:m.cid,
+            name:m.name||m.cid,
+            url:m.url,
+            order:m.creation_order??9999,
+            messages:null,
+            collectors:null,
+            growth:null,
+            stale:false
+          };
+        }
+
+        const growth=
+          !b.stale &&
+          !before?.stale &&
+          Number.isFinite(b.messages) &&
+          Number.isFinite(before?.messages)
+            ? b.messages-before.messages
+            : null;
 
         return {
           ...b,
-          name:m.name||b.name,
+          name:m.name||b.name||m.cid,
           url:m.url||b.url,
-          order:
-            m.creation_order??9999,
-          growth:
-            Number.isFinite(b.messages) &&
-            Number.isFinite(
-              prev.get(b.cid)?.messages
-            )
-              ? b.messages-
-                prev.get(b.cid).messages
-              : null
+          order:m.creation_order??9999,
+          growth
         };
       });
 
@@ -5192,21 +5282,23 @@ function render(){
           }
         </td>
 
-        <td class="${b.stale?'stale':''}">
+        <td class="${b.stale?'stale':''}" title="${b.stale?'stats unavailable · showing last known stand':''}">
           ${
             b.messages==null
               ? '—'
-              : fmt.format(b.messages)
+              : (b.stale?'⚠ ':'')+fmt.format(b.messages)
           }
         </td>
 
         <td class="${
-          b.growth>0
-            ? 'positive'
-            : b.growth<0
-              ? 'negative'
-              : ''
-        }">
+          b.stale
+            ? 'stale'
+            : b.growth>0
+              ? 'positive'
+              : b.growth<0
+                ? 'negative'
+                : ''
+        }" title="${b.stale?'growth unavailable for this update':''}">
           ${
             b.growth==null
               ? '—'
@@ -5216,7 +5308,7 @@ function render(){
           }
         </td>
 
-        <td>
+        <td class="${b.stale?'stale':''}" title="${b.stale?'stats unavailable · showing last known stand':''}">
           ${
             b.collectors==null
               ? '—'
@@ -9301,6 +9393,50 @@ function clearEventForm(){
 }
 
 
+
+const AUTH_REMEMBER_STORAGE_KEY='statsTrackerRememberedAuth:v1';
+const AUTH_REMEMBER_MS=7*24*60*60*1000;
+
+function rememberAuthKey(password){
+  const value=String(password||'');
+  if(!value) return;
+  try{sessionStorage.setItem('eventsKey',value)}catch(_){ }
+  try{
+    localStorage.setItem(
+      AUTH_REMEMBER_STORAGE_KEY,
+      JSON.stringify({key:value,expiresAt:Date.now()+AUTH_REMEMBER_MS})
+    );
+  }catch(_){ }
+}
+
+function rememberedAuthKey(){
+  try{
+    const session=sessionStorage.getItem('eventsKey');
+    if(session) return session;
+  }catch(_){ }
+
+  try{
+    const raw=JSON.parse(localStorage.getItem(AUTH_REMEMBER_STORAGE_KEY)||'null');
+    if(!raw || !raw.key || !Number.isFinite(Number(raw.expiresAt))){
+      localStorage.removeItem(AUTH_REMEMBER_STORAGE_KEY);
+      return '';
+    }
+    if(Date.now()>Number(raw.expiresAt)){
+      localStorage.removeItem(AUTH_REMEMBER_STORAGE_KEY);
+      return '';
+    }
+    try{sessionStorage.setItem('eventsKey',String(raw.key))}catch(_){ }
+    return String(raw.key);
+  }catch(_){
+    return '';
+  }
+}
+
+function clearRememberedAuth(){
+  try{sessionStorage.removeItem('eventsKey')}catch(_){ }
+  try{localStorage.removeItem(AUTH_REMEMBER_STORAGE_KEY)}catch(_){ }
+}
+
 async function unlockEvents(){
   const password=
     document.querySelector('#eventsPassword')
@@ -9322,10 +9458,7 @@ async function unlockEvents(){
       {method:'POST'}
     );
 
-    sessionStorage.setItem(
-      'eventsKey',
-      password
-    );
+    rememberAuthKey(password);
 
     document.querySelector('#eventsPassword')
       .value='';
@@ -9339,9 +9472,7 @@ async function unlockEvents(){
 
   }catch(error){
     eventsState.key='';
-    sessionStorage.removeItem(
-      'eventsKey'
-    );
+    clearRememberedAuth();
 
     setEventAuthUI(
       false,
@@ -9356,9 +9487,7 @@ function lockEvents(){
   eventsState.events=[];
   eventsState.editingId=null;
 
-  sessionStorage.removeItem(
-    'eventsKey'
-  );
+  clearRememberedAuth();
 
   setEventAuthUI(
     false,
@@ -9554,10 +9683,7 @@ function editEvent(id){
 
 
 async function restoreEventSession(){
-  const saved=
-    sessionStorage.getItem(
-      'eventsKey'
-    );
+  const saved=rememberedAuthKey();
 
   if(!saved){
     setEventAuthUI(false,'locked');
@@ -9581,9 +9707,7 @@ async function restoreEventSession(){
 
   }catch{
     eventsState.key='';
-    sessionStorage.removeItem(
-      'eventsKey'
-    );
+    clearRememberedAuth();
 
     setEventAuthUI(
       false,
@@ -9792,10 +9916,7 @@ async function siteUnlock(){
     eventsState.key=password;
     eventsState.unlocked=true;
 
-    sessionStorage.setItem(
-      'eventsKey',
-      password
-    );
+    rememberAuthKey(password);
 
     document.querySelector('#siteGate').hidden=true;
     document.querySelector('#app').hidden=false;
@@ -9808,7 +9929,7 @@ async function siteUnlock(){
     eventsState.key='';
     eventsState.unlocked=false;
 
-    sessionStorage.removeItem('eventsKey');
+    clearRememberedAuth();
 
     status.textContent=
       (error.message || 'unlock failed').toLowerCase();
@@ -9819,8 +9940,7 @@ async function siteUnlock(){
 
 
 async function restoreSiteSession(){
-  const saved=
-    sessionStorage.getItem('eventsKey');
+  const saved=rememberedAuthKey();
 
   if(!saved){
     return;
@@ -9836,7 +9956,7 @@ function siteLock(){
   eventsState.unlocked=false;
   eventsState.events=[];
 
-  sessionStorage.removeItem('eventsKey');
+  clearRememberedAuth();
 
   location.reload();
 }
@@ -10785,8 +10905,29 @@ function dashboardApplyLevelBorder(value){
 function dashboardLatestCollectorDelta(){
   const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
   if(days.length<2) return null;
-  const total=day=>(day?.snapshot?.bots||[]).reduce((sum,b)=>sum+(Number.isFinite(b.collectors)?b.collectors:0),0);
-  return total(days.at(-1))-total(days.at(-2));
+
+  const latest=days.at(-1);
+  const before=days.at(-2);
+  let delta=0;
+  let known=0;
+
+  state.meta.forEach((meta,cid)=>{
+    const nowBot=trackerSafeBotAtEntry(latest,cid);
+    const beforeBot=trackerSafeBotAtEntry(before,cid);
+    if(
+      !nowBot ||
+      !beforeBot ||
+      nowBot.stale ||
+      beforeBot.stale ||
+      !Number.isFinite(nowBot.collectors) ||
+      !Number.isFinite(beforeBot.collectors)
+    ) return;
+
+    delta+=nowBot.collectors-beforeBot.collectors;
+    known++;
+  });
+
+  return known ? delta : null;
 }
 
 function dashboardCurrentSubscribers(){
@@ -11016,7 +11157,7 @@ function topSlotsRenderHome(){
         <span class="dashboard-rank">${index+1}</span>
         <div>
           <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}</div>
-          <div class="dashboard-bot-meta">${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
+          <div class="dashboard-bot-meta ${bot.stale?'stale':''}">${bot.stale?'⚠ ':''}${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
         </div>
         <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>
       </div>`).join('') : '<div class="dashboard-empty">no growth data yet.</div>';
@@ -11590,12 +11731,14 @@ function dashboardRefresh(){
   const totalCollectors=state.bots.reduce((sum,b)=>sum+(Number.isFinite(b.collectors)?b.collectors:0),0);
   const dailyMessages=state.bots.reduce((sum,b)=>sum+(Number.isFinite(b.growth)?b.growth:0),0);
   const collectorDelta=dashboardLatestCollectorDelta();
+  const staleCount=state.bots.filter(bot=>bot.stale).length;
+  const partialText=staleCount ? ` · ${staleCount} unavailable` : '';
 
   const setText=(selector,value)=>{const el=document.querySelector(selector);if(el)el.textContent=value};
   setText('#dashboardMessages',state.bots.length?fmt.format(totalMessages):'—');
-  setText('#dashboardMessagesDelta',state.bots.length?`${dashboardSigned(dailyMessages)} latest update`:'—');
+  setText('#dashboardMessagesDelta',state.bots.length?`${dashboardSigned(dailyMessages)} latest update${partialText}`:'—');
   setText('#dashboardCollectors',state.bots.length?fmt.format(totalCollectors):'—');
-  setText('#dashboardCollectorsDelta',Number.isFinite(collectorDelta)?`${dashboardSigned(collectorDelta)} latest update`:'—');
+  setText('#dashboardCollectorsDelta',Number.isFinite(collectorDelta)?`${dashboardSigned(collectorDelta)} latest update${partialText}`:(staleCount?`${staleCount} unavailable`:'—'));
 
   let cvValue=null;
   try{cvValue=Number(cvCurrentEntry()?.total)}catch(_){}
