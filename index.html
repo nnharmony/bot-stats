@@ -4673,19 +4673,28 @@ function getSelectedRange(){
   const to=
     document.querySelector('#toDate')?.value || '';
 
-  const latest=getLatestEntry();
+  // Use the same merged timeline as the graph. This includes historical
+  // backfill rows (for example a bot's creation-day 0 baseline), while
+  // canonical tracker snapshots still win on overlapping dates.
+  const source=graphSourceDays();
+
+  const entryForDate=date=>
+    source.find(item=>item.date===date) || null;
+
+  const latest=source.at(-1) || null;
 
   const endEntry=
     to
-      ? getDailyEntry(to)
+      ? entryForDate(to)
       : latest;
 
   let startEntry=null;
 
   if(from){
-    startEntry=getDailyEntry(from);
+    startEntry=entryForDate(from);
   }else if(endEntry){
-    startEntry=getPreviousEntry(endEntry);
+    const index=source.findIndex(item=>item.date===endEntry.date);
+    startEntry=index>0 ? source[index-1] : null;
   }
 
   return {
