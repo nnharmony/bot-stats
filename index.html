@@ -1308,6 +1308,58 @@ h1{
   padding:4px 6px;
 }
 
+.saved-events-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+.saved-events-head h3{
+  margin:0 !important;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+#copyVisibleEvents{
+  flex:0 0 auto;
+  padding:5px 9px;
+  font-size:10px;
+}
+.saved-events .event-date{white-space:nowrap}
+.saved-events .event-tags{text-align:left}
+.saved-events .event-bot{text-align:left}
+.saved-events.single-bot .event-bot{display:none}
+
+@media(max-width:650px){
+  .saved-events{overflow-x:visible !important}
+  .saved-events table{display:block;width:100%;min-width:0 !important}
+  .saved-events thead{display:none}
+  .saved-events tbody{display:block;width:100%}
+  .saved-events tr{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    gap:5px 8px;
+    width:100%;
+    padding:10px 0;
+    border-bottom:1px solid #343945;
+  }
+  .saved-events td{
+    display:block;
+    min-width:0;
+    padding:0 !important;
+    border-bottom:0 !important;
+    text-align:left !important;
+  }
+  .saved-events .event-date{grid-column:1;grid-row:1;align-self:center;font-weight:700}
+  .saved-events .event-tags{grid-column:2;grid-row:1;align-self:center}
+  .saved-events .event-controls{grid-column:3;grid-row:1;display:flex;gap:4px;justify-content:flex-end;white-space:nowrap}
+  .saved-events .event-controls button{margin:0 !important;padding:4px 6px !important}
+  .saved-events .event-bot{grid-column:1 / -1;grid-row:2;color:#c9c1cb}
+  .saved-events .event-note{grid-column:1 / -1;grid-row:3;max-width:none !important;color:#a9a3ad}
+  .saved-events.single-bot .event-note{grid-row:2}
+  .saved-events .event-empty{grid-column:1 / -1}
+}
+
 /* fullscreen event chips follow the same compact icon style */
 .fullscreen-overlay .tag-chip{
   font-size:11px;
@@ -4223,7 +4275,10 @@ body.dashboard-shell .stale{color:#e3b341 !important}
     </div>
 
     <div class="saved-events">
-      <h3 id="savedEventsTitle">profile — events</h3>
+      <div class="saved-events-head">
+        <h3 id="savedEventsTitle">profile — events</h3>
+        <button id="copyVisibleEvents" type="button">copy</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -6812,7 +6867,8 @@ const eventsState={
   filterAll:false,
   filterDate:'',
   freezeFilter:'',
-  autoFreezeBusy:false
+  autoFreezeBusy:false,
+  visibleEvents:[]
 };
 
 
@@ -9291,10 +9347,59 @@ function setEventsFilterMode(enabled){
 }
 
 
+
+function eventCopyLabels(event){
+  const labels=[...(event.tags || [])].map(eventTagLabel);
+  if(event.status?.banned===true) labels.push('🚫 banned');
+  if(event.status?.freeze===true) labels.push('⏸️ freeze started');
+  if(event.status?.tagged===true) labels.push('⬆️ tagged');
+  if(event.status?.banned===false) labels.push('🔘 unbanned');
+  if(event.status?.freeze===false) labels.push('▶️ freeze ended');
+  if(event.status?.tagged===false) labels.push('⬇️ untagged');
+  return [...new Set(labels)].join(', ') || '—';
+}
+
+async function copyVisibleEvents(button){
+  const list=Array.isArray(eventsState.visibleEvents) ? eventsState.visibleEvents : [];
+  const lines=['date\\tbot\\tevent\\tnote'];
+  list.forEach(event=>{
+    lines.push([
+      event.date || '—',
+      eventBotLabel(event.cid),
+      eventCopyLabels(event),
+      String(event.note || '').replace(/\\s+/g,' ').trim() || '—'
+    ].join('\\t'));
+  });
+  const value=lines.join('\\n');
+  try{
+    if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
+    else throw new Error('clipboard fallback');
+  }catch(_){
+    const area=document.createElement('textarea');
+    area.value=value;
+    area.style.position='fixed';
+    area.style.opacity='0';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+  if(button){
+    const old=button.textContent;
+    button.textContent='copied';
+    setTimeout(()=>button.textContent=old,1000);
+  }
+}
+
 function renderEvents(){
   const rows=document.querySelector('#eventsRows');
   const selectedCid=document.querySelector('#eventBot')?.value || '';
   const title=document.querySelector('#savedEventsTitle');
+  const wrap=rows?.closest('.saved-events');
+
+  if(wrap){
+    wrap.classList.toggle('single-bot',Boolean(selectedCid));
+  }
 
   let visibleEvents=[...eventsState.events].filter(event=>event.cid!==TOP_SLOTS_EVENT_CID && event.cid!==HISTORICAL_LEDGER_EVENT_CID);
 
@@ -9353,10 +9458,12 @@ function renderEvents(){
     }
   }
 
+  eventsState.visibleEvents=[...visibleEvents];
+
   if(!visibleEvents.length){
     rows.innerHTML=`
       <tr>
-        <td colspan="5">
+        <td class="event-empty" colspan="5">
           no matching events
         </td>
       </tr>
@@ -9385,9 +9492,9 @@ function renderEvents(){
 
     return `
       <tr>
-        <td>${event.date || '—'}</td>
-        <td>${eventBotLabel(event.cid)}</td>
-        <td>${tags || '—'}</td>
+        <td class="event-date">${event.date || '—'}</td>
+        <td class="event-bot">${eventBotLabel(event.cid)}</td>
+        <td class="event-tags">${tags || '—'}</td>
         <td class="event-note">${event.note || '—'}</td>
         <td class="event-controls">
           <button type="button" data-event-edit="${event.id}">edit</button>
@@ -9980,6 +10087,12 @@ function initEventsTracker(){
           renderEvents();
         }
       }
+    );
+
+  document.querySelector('#copyVisibleEvents')
+    ?.addEventListener(
+      'click',
+      event=>copyVisibleEvents(event.currentTarget)
     );
 
   document.querySelector('#eventSave')
