@@ -2550,6 +2550,102 @@ body.dashboard-shell h1{
 .dashboard-header-action:active{transform:scale(.96)}
 .dashboard-level-pill{grid-column:span 3}
 #siteLockButton{grid-column:span 1}
+.dashboard-profile-hero{
+  display:grid;
+  grid-template-columns:72px minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+  padding:14px;
+  border:1px solid var(--dash-border);
+  border-radius:20px;
+  background:linear-gradient(180deg,rgba(63,44,78,.92),rgba(23,22,30,.96));
+  box-shadow:0 12px 28px rgba(0,0,0,.2);
+}
+.dashboard-avatar-button{
+  width:72px !important;
+  height:72px !important;
+  min-width:72px !important;
+  min-height:72px !important;
+  border-radius:999px !important;
+  padding:0 !important;
+  overflow:hidden;
+  border:2px solid rgba(233,168,213,.65) !important;
+  background:linear-gradient(180deg,#4c3356,#241f2c) !important;
+  display:grid !important;
+  place-items:center !important;
+}
+.dashboard-avatar-image{width:100%;height:100%;object-fit:cover;display:block}
+.dashboard-avatar-fallback{font-size:28px;font-weight:900;color:#f2d7e8;letter-spacing:-.02em}
+.dashboard-profile-body{min-width:0}
+.dashboard-profile-topline{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.dashboard-profile-title-wrap{min-width:0;flex:1}
+.dashboard-profile-heading-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.dashboard-profile-heading-row h1{margin:0;font-size:24px;line-height:1;letter-spacing:-.03em;color:#ff7ec4}
+.dashboard-profile-uid{margin-top:5px;color:#d2c5d6;font-size:13px;font-weight:650;overflow-wrap:anywhere}
+.dashboard-header-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:6px;
+  max-width:240px;
+}
+.dashboard-header-action{
+  width:38px !important;
+  min-width:38px !important;
+  height:38px !important;
+  min-height:38px !important;
+  border-radius:12px !important;
+}
+.dashboard-lock-action{font-size:15px !important}
+.dashboard-level-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  padding:0 10px !important;
+  border-radius:999px;
+  background:rgba(255,255,255,.06) !important;
+  backdrop-filter:blur(4px);
+}
+.dashboard-level-progress-block{margin-top:10px}
+.dashboard-level-progress-track{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.dashboard-level-progress-bar{height:100%;border-radius:inherit;background:linear-gradient(90deg,#e49fd2,#8a5ab5);min-width:0}
+.dashboard-level-progress-meta{margin-top:5px;color:#cdbfd1;font-size:10px}
+.dashboard-profile-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.dashboard-profile-stat{
+  min-width:0;
+  padding:12px !important;
+  border:1px solid rgba(255,255,255,.07) !important;
+  border-radius:16px !important;
+  background:rgba(15,18,27,.55) !important;
+  text-align:left;
+}
+.dashboard-profile-stat span,.dashboard-profile-stat em{display:block}
+.dashboard-profile-stat span{font-size:9px;color:var(--dash-muted);text-transform:lowercase}
+.dashboard-profile-stat strong{display:block;margin-top:4px;font-size:22px;line-height:1;color:#fff}
+.dashboard-profile-stat em{margin-top:5px;font-size:9px;font-style:normal;color:var(--dash-accent-2);line-height:1.35}
+.dashboard-performance{grid-template-columns:1fr 1fr}
+.dashboard-recent-list{max-height:310px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.dashboard-recent-row{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;padding:10px 12px;border-top:1px solid rgba(255,255,255,.055)}
+.dashboard-recent-row:first-child{border-top:0}
+.dashboard-recent-date{font-size:9px;color:var(--dash-muted)}
+.dashboard-recent-main{min-width:0}
+.dashboard-recent-main b{display:block;font-size:11px;color:var(--dash-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dashboard-recent-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.dashboard-recent-tag{display:inline-flex;align-items:center;padding:3px 6px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:var(--dash-panel-2);color:#d8bfd3;font-size:8px;font-weight:700;text-transform:lowercase}
+.dashboard-recent-note{display:block;margin-top:4px;color:var(--dash-muted);font-size:9px;line-height:1.35;overflow-wrap:anywhere}
+.analytics-insights-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.analytics-compact-card strong{font-size:20px}
+.analytics-milestone-panel{margin-top:10px;padding:12px;border:1px solid var(--dash-border);border-radius:14px;background:var(--dash-panel-2)}
+.analytics-milestone-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-bottom:8px}
+.analytics-milestone-head strong{font-size:13px}
+.analytics-milestone-head small{font-size:10px;color:var(--dash-muted)}
+.analytics-milestone-rows{display:grid;gap:7px}
+.analytics-milestone-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:11px}
+.analytics-milestone-threshold{font-weight:800;color:var(--dash-accent-2)}
+.analytics-milestone-track{height:7px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.analytics-milestone-bar{height:100%;border-radius:inherit;background:linear-gradient(90deg,#c997d7,#7b63be)}
+.analytics-milestone-count{font-weight:700;color:var(--dash-text);white-space:nowrap}
 body.dashboard-shell .app-head-row{
   display:block;
   margin:8px 0 0;
@@ -2581,13 +2677,16 @@ body.dashboard-shell .app-head-row .muted{
   margin:0 0 8px !important;
 }
 body.dashboard-shell #siteLockButton{
-  height:30px;
-  border-radius:10px;
+  width:38px;
+  min-width:38px;
+  height:38px;
+  min-height:38px;
+  border-radius:12px;
   border-color:var(--dash-border);
   background:var(--dash-panel-2) !important;
   color:var(--dash-muted) !important;
-  padding:0 9px !important;
-  font-size:11px !important;
+  padding:0 !important;
+  font-size:15px !important;
 }
 
 .dashboard-home,
@@ -3000,10 +3099,18 @@ body.dashboard-shell .stale{color:#e3b341 !important}
 @media(max-width:430px){
   body.dashboard-shell main#app{padding-left:12px;padding-right:12px}
   .dashboard-header{gap:7px}
+  .dashboard-profile-hero{grid-template-columns:58px minmax(0,1fr);padding:12px}
+  .dashboard-avatar-button{width:58px !important;height:58px !important;min-width:58px !important;min-height:58px !important}
+  .dashboard-avatar-fallback{font-size:22px}
+  .dashboard-profile-heading-row h1{font-size:22px}
+  .dashboard-profile-topline{flex-direction:column;align-items:stretch}
+  .dashboard-header-actions{justify-content:flex-start;max-width:none}
   .dashboard-title-row{gap:5px}
   .dashboard-header-right{column-gap:5px;row-gap:6px}
-  .dashboard-header-action{height:30px !important;min-height:30px !important}
+  .dashboard-header-action{width:34px !important;min-width:34px !important;height:34px !important;min-height:34px !important}
   .dashboard-header-action svg{width:16px;height:16px}
+  .dashboard-profile-stats{grid-template-columns:1fr}
+  .analytics-insights-grid{grid-template-columns:1fr}
   body.dashboard-shell h1{font-size:24px !important}
   .dashboard-level-pill{padding:0 8px !important;font-size:10px !important}
   .dashboard-overview-grid{gap:6px}
@@ -3670,35 +3777,65 @@ body.dashboard-shell .freeze-center .action-actions button{min-height:29px !impo
 <main id="app" hidden>
 
 <div class="dashboard-header">
-  <div class="dashboard-header-left">
-    <div class="dashboard-title-row">
-      <h1><span class="dashboard-title-heart">💟</span><span>my profile</span></h1>
-    </div>
-    <div class="app-head-row">
-      <div id="updated" class="muted">loading…</div>
-    </div>
-  </div>
+  <section class="dashboard-profile-hero">
+    <button id="dashboardAvatarButton" class="dashboard-avatar-button" type="button" aria-label="change profile avatar" title="change profile avatar">
+      <img id="dashboardAvatarImage" class="dashboard-avatar-image" alt="profile avatar" hidden>
+      <span id="dashboardAvatarFallback" class="dashboard-avatar-fallback">N</span>
+    </button>
+    <input id="dashboardAvatarInput" type="file" accept="image/*" hidden>
 
-  <div class="dashboard-header-right">
-    <div class="dashboard-header-actions" aria-label="profile shortcuts">
-      <button id="dashboardShareShortcut" class="dashboard-header-action" type="button" aria-label="open PolyBuzz share link" title="share link">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M10.6 13.4a4 4 0 0 0 5.7.1l2.8-2.8a4 4 0 1 0-5.7-5.7l-1.6 1.6"/><path class="icon-stroke" d="M13.4 10.6a4 4 0 0 0-5.7-.1l-2.8 2.8a4 4 0 1 0 5.7 5.7l1.6-1.6"/></svg>
-      </button>
-      <button id="dashboardProfileShortcut" class="dashboard-header-action" type="button" aria-label="open PolyBuzz profile" title="profile link">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle class="icon-stroke" cx="12" cy="8" r="3.3"/><path class="icon-stroke" d="M5.8 19.2c.7-3.4 3-5.2 6.2-5.2s5.5 1.8 6.2 5.2"/></svg>
-      </button>
-      <button id="dashboardGithubShortcut" class="dashboard-header-action" type="button" aria-label="open GitHub Update characters" title="GitHub">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-fill" d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.51-1.11-1.51-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.92a9.3 9.3 0 0 1 2.5.35c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.79-4.58 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.25 10.25 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z"/></svg>
-      </button>
-      <button id="dashboardRefreshButton" class="dashboard-header-action" type="button" aria-label="refresh page" title="refresh">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M20 6v5h-5"/><path class="icon-stroke" d="M18.2 15.5a7 7 0 1 1-.2-7.2L20 11"/></svg>
-      </button>
+    <div class="dashboard-profile-body">
+      <div class="dashboard-profile-topline">
+        <div class="dashboard-profile-title-wrap">
+          <div class="dashboard-profile-heading-row">
+            <h1 id="dashboardProfileName">Naila</h1>
+            <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
+          </div>
+          <div id="dashboardProfileUid" class="dashboard-profile-uid">UID —</div>
+          <div class="app-head-row">
+            <div id="updated" class="muted">loading…</div>
+          </div>
+        </div>
+
+        <div class="dashboard-header-actions" aria-label="profile shortcuts">
+          <button id="dashboardShareShortcut" class="dashboard-header-action" type="button" aria-label="open PolyBuzz share link" title="share link">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M10.6 13.4a4 4 0 0 0 5.7.1l2.8-2.8a4 4 0 1 0-5.7-5.7l-1.6 1.6"/><path class="icon-stroke" d="M13.4 10.6a4 4 0 0 0-5.7-.1l-2.8 2.8a4 4 0 1 0 5.7 5.7l1.6-1.6"/></svg>
+          </button>
+          <button id="dashboardProfileShortcut" class="dashboard-header-action" type="button" aria-label="open PolyBuzz profile" title="profile link">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle class="icon-stroke" cx="12" cy="8" r="3.3"/><path class="icon-stroke" d="M5.8 19.2c.7-3.4 3-5.2 6.2-5.2s5.5 1.8 6.2 5.2"/></svg>
+          </button>
+          <button id="dashboardDiscordShortcut" class="dashboard-header-action" type="button" aria-label="open Discord" title="Discord">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-fill" d="M20.3 4.9A16.9 16.9 0 0 0 16.1 3l-.5 1c-1.2-.3-2.4-.5-3.6-.5s-2.4.2-3.6.5l-.5-1a16.9 16.9 0 0 0-4.2 1.9C1.1 8.9.5 12.7.8 16.5a17 17 0 0 0 5.1 2.6l1.1-1.8c-.6-.2-1.2-.5-1.7-.8l.4-.3c3.2 1.5 6.7 1.5 9.8 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.8a17 17 0 0 0 5.1-2.6c.5-4.5-.8-8.2-3.1-11.6ZM9.6 14.2c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2c1 0 1.7.9 1.7 2s-.8 2-1.7 2Zm4.8 0c-.9 0-1.7-.9-1.7-2s.7-2 1.7-2c1 0 1.7.9 1.7 2s-.8 2-1.7 2Z"/></svg>
+          </button>
+          <button id="dashboardGithubShortcut" class="dashboard-header-action" type="button" aria-label="open GitHub Update characters" title="GitHub">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-fill" d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.51-1.11-1.51-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.92a9.3 9.3 0 0 1 2.5.35c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.79-4.58 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.25 10.25 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z"/></svg>
+          </button>
+          <button id="dashboardRefreshButton" class="dashboard-header-action" type="button" aria-label="refresh page" title="refresh">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M20 6v5h-5"/><path class="icon-stroke" d="M18.2 15.5a7 7 0 1 1-.2-7.2L20 11"/></svg>
+          </button>
+          <button id="siteLockButton" class="dashboard-header-action dashboard-lock-action" type="button" aria-label="lock tracker" title="lock">🔒</button>
+        </div>
+      </div>
+
+      <div class="dashboard-level-progress-block">
+        <div class="dashboard-level-progress-track"><div id="dashboardLevelProgressBar" class="dashboard-level-progress-bar" style="width:0%"></div></div>
+        <div id="dashboardLevelProgressMeta" class="dashboard-level-progress-meta">—</div>
+      </div>
+
+      <div class="dashboard-profile-stats">
+        <button id="dashboardHeaderCvCard" class="dashboard-profile-stat" type="button" data-open-dashboard-view="cv">
+          <span>creator value</span>
+          <strong id="dashboardCv">—</strong>
+          <em id="dashboardCvMeta">current</em>
+        </button>
+        <button id="dashboardHeaderSubscribersCard" class="dashboard-profile-stat" type="button" data-open-dashboard-view="subscribers">
+          <span>subscribers</span>
+          <strong id="dashboardSubscribers">—</strong>
+          <em id="dashboardSubscribersMeta">current</em>
+        </button>
+      </div>
     </div>
-    <div class="dashboard-header-status">
-      <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
-      <button id="siteLockButton" type="button">lock</button>
-    </div>
-  </div>
+  </section>
 </div>
 <button id="dashboardBack" type="button" hidden>← home</button>
 
@@ -3714,16 +3851,6 @@ body.dashboard-shell .freeze-center .action-actions button{min-height:29px !impo
       <span>collectors</span>
       <strong id="dashboardCollectors">—</strong>
       <em id="dashboardCollectorsDelta">—</em>
-    </button>
-    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="cv">
-      <span>creator value</span>
-      <strong id="dashboardCv">—</strong>
-      <em id="dashboardCvMeta">current</em>
-    </button>
-    <button class="dashboard-stat-card" type="button" data-open-dashboard-view="subscribers">
-      <span>subscribers</span>
-      <strong id="dashboardSubscribers">—</strong>
-      <em id="dashboardSubscribersMeta">current</em>
     </button>
   </div>
 
@@ -3768,6 +3895,15 @@ body.dashboard-shell .freeze-center .action-actions button{min-height:29px !impo
       <button type="button" data-open-dashboard-view="freeze">analyse</button>
     </div>
     <div id="dashboardFreezes"><div class="dashboard-empty">loading…</div></div>
+  </section>
+
+  <div class="dashboard-section-title">recent events</div>
+  <section class="dashboard-card">
+    <div class="dashboard-card-head">
+      <strong>new · avatar · edits</strong>
+      <button type="button" data-open-dashboard-view="events">view all</button>
+    </div>
+    <div id="dashboardRecentEvents" class="dashboard-recent-list"><div class="dashboard-empty">loading…</div></div>
   </section>
 
   <div class="dashboard-section-title">shortcuts</div>
@@ -3974,6 +4110,33 @@ body.dashboard-shell .freeze-center .action-actions button{min-height:29px !impo
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="archive"><span class="dashboard-shortcut-icon">▤</span><span><b>archive</b><small>monthly profile history</small></span></button>
   </div>
 
+  <div class="dashboard-section-title">profile</div>
+  <section class="dashboard-setting-card">
+    <label for="dashboardUsernameInput">username</label>
+    <div class="dashboard-setting-row">
+      <input id="dashboardUsernameInput" type="text" maxlength="120" placeholder="Naila">
+    </div>
+
+    <label for="dashboardUidInput" style="margin-top:10px">UID</label>
+    <div class="dashboard-setting-row">
+      <input id="dashboardUidInput" type="text" inputmode="numeric" maxlength="120" placeholder="3304480798">
+    </div>
+
+    <label for="dashboardDiscordUrl" style="margin-top:10px">discord shortcut</label>
+    <div class="dashboard-setting-row">
+      <input id="dashboardDiscordUrl" type="url" inputmode="url" placeholder="https://discord.com/...">
+      <button id="dashboardDiscordSave" type="button">save</button>
+    </div>
+    <div id="dashboardDiscordStatus" class="dashboard-setting-status"></div>
+
+    <div class="dashboard-setting-row" style="margin-top:10px">
+      <button id="dashboardAvatarChoose" type="button">choose avatar</button>
+      <button id="dashboardAvatarClear" type="button">clear avatar</button>
+      <button id="dashboardProfileMetaSave" type="button">save profile</button>
+    </div>
+    <div id="dashboardProfileMetaStatus" class="dashboard-setting-status"></div>
+  </section>
+
   <div class="dashboard-section-title">PolyBuzz shortcuts</div>
   <section class="dashboard-setting-card">
     <label for="dashboardProfileUrl">profile link</label>
@@ -4145,6 +4308,27 @@ body.dashboard-shell .freeze-center .action-actions button{min-height:29px !impo
         <strong id="analyticsCvNow">—</strong>
         <em id="analyticsCvGrowth">—</em>
       </div>
+    </div>
+
+    <div class="analytics-insights-grid">
+      <div class="analytics-card analytics-compact-card">
+        <span>average / bot</span>
+        <strong id="analyticsAveragePerBot">—</strong>
+        <em id="analyticsAveragePerBotMeta">messages</em>
+      </div>
+      <div class="analytics-card analytics-compact-card">
+        <span>portfolio size</span>
+        <strong id="analyticsBotCount">—</strong>
+        <em id="analyticsBotCountMeta">bots tracked</em>
+      </div>
+    </div>
+
+    <div class="analytics-milestone-panel">
+      <div class="analytics-milestone-head">
+        <strong>message milestones</strong>
+        <small>collection overview</small>
+      </div>
+      <div id="analyticsMilestoneRows" class="analytics-milestone-rows"><div class="dashboard-empty">loading…</div></div>
     </div>
 
     <div class="analytics-subscriber-goal">
@@ -7767,6 +7951,7 @@ function renderAnalyticsDashboard(){
       ? fmt.format(cvStats.current)
       : '—';
   setAnalyticsGrowth('#analyticsCvGrowth',cvStats.delta);
+  dashboardRenderAnalyticsInsights();
 
   const subscriberDaily=analyticsSubscriberDaily();
   const latestSubscriber=subscriberDaily.at(-1)?.total;
@@ -12165,6 +12350,230 @@ function dashboardOpenShare(){
   },80);
 }
 
+function dashboardProfileMetaStorageKey(){
+  const profile=(typeof EVENTS_PROFILE!=='undefined' && EVENTS_PROFILE) ? EVENTS_PROFILE : 'main';
+  return `statsTrackerPolyBuzzProfileMeta:${profile}`;
+}
+
+function dashboardGetProfileMeta(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(dashboardProfileMetaStorageKey()) || '{}');
+    return {
+      username:String(raw?.username || '').trim(),
+      uid:String(raw?.uid || '').trim(),
+      discordUrl:String(raw?.discordUrl || '').trim(),
+      avatarDataUrl:String(raw?.avatarDataUrl || '')
+    };
+  }catch(_){
+    return {username:'',uid:'',discordUrl:'',avatarDataUrl:''};
+  }
+}
+
+function dashboardSaveProfileMeta(partial){
+  const current=dashboardGetProfileMeta();
+  const next={...current,...partial};
+  try{localStorage.setItem(dashboardProfileMetaStorageKey(),JSON.stringify(next))}catch(_){ }
+  return next;
+}
+
+function dashboardLevelRange(value){
+  const level=dashboardLevelNumber(value);
+  const nextTarget=Number(cvState?.settings?.nextLevelTarget);
+  if(level===1) return {level,min:10,max:50};
+  if(level===2) return {level,min:50,max:200};
+  if(level===3) return {level,min:200,max:800};
+  if(level===4) return {level,min:800,max:3000};
+  if(level===5) return {level,min:3000,max:Number.isFinite(nextTarget)&&nextTarget>3000?nextTarget:15000};
+  if(level===6) return {level,min:15000,max:Number.isFinite(nextTarget)&&nextTarget>15000?nextTarget:80000};
+  if(level===7) return {level,min:80000,max:null};
+  return {level:null,min:0,max:Number.isFinite(nextTarget)&&nextTarget>0?nextTarget:10};
+}
+
+function dashboardUpdateProfileCard(cvValue=null){
+  const meta=dashboardGetProfileMeta();
+  const name=(meta.username || 'Naila').trim() || 'Naila';
+  const uid=String(meta.uid || '').trim();
+  const avatar=String(meta.avatarDataUrl || '');
+  const uidText=uid ? `UID: ${uid}` : 'UID —';
+
+  const nameEl=document.querySelector('#dashboardProfileName');
+  if(nameEl) nameEl.textContent=name;
+  const uidEl=document.querySelector('#dashboardProfileUid');
+  if(uidEl) uidEl.textContent=uidText;
+  const fallback=document.querySelector('#dashboardAvatarFallback');
+  if(fallback) fallback.textContent=(name.charAt(0) || 'N').toUpperCase();
+  const img=document.querySelector('#dashboardAvatarImage');
+  if(img){
+    if(avatar){
+      img.src=avatar;
+      img.hidden=false;
+      if(fallback) fallback.hidden=true;
+    }else{
+      img.hidden=true;
+      img.removeAttribute('src');
+      if(fallback) fallback.hidden=false;
+    }
+  }
+
+  const usernameInput=document.querySelector('#dashboardUsernameInput');
+  if(usernameInput && document.activeElement!==usernameInput && usernameInput.value!==name) usernameInput.value=name;
+  const uidInput=document.querySelector('#dashboardUidInput');
+  if(uidInput && document.activeElement!==uidInput && uidInput.value!==uid) uidInput.value=uid;
+  const discordInput=document.querySelector('#dashboardDiscordUrl');
+  if(discordInput && document.activeElement!==discordInput && discordInput.value!==meta.discordUrl) discordInput.value=meta.discordUrl;
+
+  const range=dashboardLevelRange(cvValue);
+  const bar=document.querySelector('#dashboardLevelProgressBar');
+  const metaEl=document.querySelector('#dashboardLevelProgressMeta');
+  let progress=0;
+  let text='add creator value';
+  if(Number.isFinite(cvValue)){
+    if(Number.isFinite(range.max) && range.max>range.min){
+      progress=Math.max(0,Math.min(100,((cvValue-range.min)/(range.max-range.min))*100));
+      text=`${fmt.format(cvValue)} / ${fmt.format(range.max)} CV`;
+    }else{
+      progress=100;
+      text=`${fmt.format(cvValue)} CV`;
+    }
+  }
+  if(bar) bar.style.width=`${progress}%`;
+  if(metaEl) metaEl.textContent=text;
+}
+
+function dashboardSaveProfileMetaFromInputs(){
+  const usernameInput=document.querySelector('#dashboardUsernameInput');
+  const uidInput=document.querySelector('#dashboardUidInput');
+  const status=document.querySelector('#dashboardProfileMetaStatus');
+  const saved=dashboardSaveProfileMeta({
+    username:String(usernameInput?.value || '').trim(),
+    uid:String(uidInput?.value || '').trim()
+  });
+  if(usernameInput) usernameInput.value=saved.username || 'Naila';
+  if(uidInput) uidInput.value=saved.uid;
+  if(status) status.textContent='saved ✓';
+  dashboardRefresh();
+}
+
+function dashboardDiscordStorageUpdate(){
+  const input=document.querySelector('#dashboardDiscordUrl');
+  const status=document.querySelector('#dashboardDiscordStatus');
+  if(!input) return;
+  const raw=String(input.value || '').trim();
+  const url=raw ? dashboardNormalizeUrl(raw) : '';
+  if(raw && !url){
+    if(status) status.textContent='enter a valid Discord link';
+    return;
+  }
+  dashboardSaveProfileMeta({discordUrl:url});
+  input.value=url;
+  if(status) status.textContent=url ? 'saved ✓' : 'cleared';
+}
+
+function dashboardOpenDiscord(){
+  const meta=dashboardGetProfileMeta();
+  const url=dashboardNormalizeUrl(meta.discordUrl || '');
+  if(url){
+    window.open(url,'_blank','noopener');
+    return;
+  }
+  dashboardShowView('more');
+  setTimeout(()=>{
+    const input=document.querySelector('#dashboardDiscordUrl');
+    const status=document.querySelector('#dashboardDiscordStatus');
+    if(status) status.textContent='add your Discord shortcut first';
+    input?.focus();
+  },80);
+}
+
+function dashboardHandleAvatarSelection(file){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    dashboardSaveProfileMeta({avatarDataUrl:String(reader.result || '')});
+    const status=document.querySelector('#dashboardProfileMetaStatus');
+    if(status) status.textContent='avatar saved ✓';
+    dashboardRefresh();
+  };
+  reader.readAsDataURL(file);
+}
+
+function dashboardClearAvatar(){
+  dashboardSaveProfileMeta({avatarDataUrl:''});
+  const input=document.querySelector('#dashboardAvatarInput');
+  if(input) input.value='';
+  const status=document.querySelector('#dashboardProfileMetaStatus');
+  if(status) status.textContent='avatar cleared';
+  dashboardRefresh();
+}
+
+function dashboardMilestoneRows(){
+  return [
+    {label:'2M+',value:2000000},
+    {label:'1.5M+',value:1500000},
+    {label:'1M+',value:1000000},
+    {label:'500K+',value:500000},
+    {label:'100K+',value:100000},
+    {label:'10K+',value:10000}
+  ];
+}
+
+function dashboardRenderAnalyticsInsights(){
+  const bots=Array.isArray(state?.bots) ? state.bots : [];
+  const totalBots=bots.length;
+  const totalMessages=bots.reduce((sum,bot)=>sum+(Number.isFinite(bot?.messages)?Number(bot.messages):0),0);
+  const average=totalBots ? totalMessages/totalBots : null;
+  const avgEl=document.querySelector('#analyticsAveragePerBot');
+  if(avgEl) avgEl.textContent=Number.isFinite(average) ? fmt.format(Math.round(average)) : '—';
+  const avgMeta=document.querySelector('#analyticsAveragePerBotMeta');
+  if(avgMeta) avgMeta.textContent=totalBots ? `${fmt.format(totalMessages)} / ${fmt.format(totalBots)} bots` : 'messages';
+  const countEl=document.querySelector('#analyticsBotCount');
+  if(countEl) countEl.textContent=totalBots ? fmt.format(totalBots) : '—';
+  const countMeta=document.querySelector('#analyticsBotCountMeta');
+  if(countMeta) countMeta.textContent=totalBots ? 'bots tracked' : 'bots';
+
+  const box=document.querySelector('#analyticsMilestoneRows');
+  if(!box) return;
+  if(!totalBots){
+    box.innerHTML='<div class="dashboard-empty">no bots loaded.</div>';
+    return;
+  }
+  const rows=dashboardMilestoneRows().map(item=>{
+    const count=bots.filter(bot=>Number(bot?.messages || 0) >= item.value).length;
+    const pct=Math.max(0,Math.min(100,totalBots ? (count/totalBots)*100 : 0));
+    return `<div class="analytics-milestone-row"><span class="analytics-milestone-threshold">${archiveEscape(item.label)}</span><div class="analytics-milestone-track"><div class="analytics-milestone-bar" style="width:${pct}%"></div></div><span class="analytics-milestone-count">${fmt.format(count)} / ${fmt.format(totalBots)} bots</span></div>`;
+  });
+  box.innerHTML=rows.join('');
+}
+
+function dashboardEventTags(event){
+  const tags=Array.isArray(event?.tags) ? event.tags.filter(Boolean) : [];
+  const status=event?.status && typeof event.status==='object' ? Object.keys(event.status).filter(key=>event.status[key]===true) : [];
+  return [...new Set([...tags,...status])];
+}
+
+function dashboardRenderRecentEvents(){
+  const box=document.querySelector('#dashboardRecentEvents');
+  if(!box) return;
+  const events=Array.isArray(eventsState?.events) ? eventsState.events : [];
+  const special=new Set([TOP_SLOTS_EVENT_CID,HISTORICAL_LEDGER_EVENT_CID]);
+  const rows=events
+    .filter(event=>!special.has(event?.cid) && /^\d{4}-\d{2}-\d{2}$/.test(String(event?.date || '')))
+    .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')) || String(b.createdAt||'').localeCompare(String(a.createdAt||'')))
+    .slice(0,8);
+  if(!rows.length){
+    box.innerHTML='<div class="dashboard-empty">no recent events yet.</div>';
+    return;
+  }
+  box.innerHTML=rows.map(event=>{
+    const bot=event.cid==='__profile__' ? 'profile' : eventBotLabel(event.cid);
+    const tags=dashboardEventTags(event);
+    const tagsHtml=tags.length ? `<div class="dashboard-recent-tags">${tags.slice(0,4).map(tag=>`<span class="dashboard-recent-tag">${archiveEscape(tag)}</span>`).join('')}</div>` : '';
+    const note=String(event.note || '').trim();
+    const noteHtml=note ? `<small class="dashboard-recent-note">${archiveEscape(note)}</small>` : '';
+    return `<div class="dashboard-recent-row"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(event.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b>${tagsHtml}${noteHtml}</div></div>`;
+  }).join('');
+}
+
 /* ===== top slots + freeze pattern detector ===== */
 const TOP_SLOTS_EVENT_CID='__top_slots__';
 const TOP_SLOTS_EVENT_TAG='top';
@@ -13285,6 +13694,10 @@ function dashboardRefresh(){
 
   const subs=dashboardCurrentSubscribers();
   setText('#dashboardSubscribers',Number.isFinite(subs)?fmt.format(subs):'—');
+  setText('#dashboardSubscribersMeta','current');
+  dashboardUpdateProfileCard(cvValue);
+  dashboardRenderRecentEvents();
+  dashboardRenderAnalyticsInsights();
 
   if(dashboardCurrentView==='archive'){
     try{renderDashboardArchive()}catch(_){}
@@ -14737,7 +15150,17 @@ function dashboardInit(){
   document.querySelector('#dashboardGithubShortcut')?.addEventListener('click',dashboardOpenGithub);
   document.querySelector('#dashboardProfileShortcut')?.addEventListener('click',dashboardOpenProfile);
   document.querySelector('#dashboardShareShortcut')?.addEventListener('click',dashboardOpenShare);
+  document.querySelector('#dashboardDiscordShortcut')?.addEventListener('click',dashboardOpenDiscord);
   document.querySelector('#dashboardRefreshButton')?.addEventListener('click',()=>window.location.reload());
+  document.querySelector('#dashboardAvatarButton')?.addEventListener('click',()=>document.querySelector('#dashboardAvatarInput')?.click());
+  document.querySelector('#dashboardAvatarChoose')?.addEventListener('click',()=>document.querySelector('#dashboardAvatarInput')?.click());
+  document.querySelector('#dashboardAvatarInput')?.addEventListener('change',event=>dashboardHandleAvatarSelection(event.target.files?.[0] || null));
+  document.querySelector('#dashboardAvatarClear')?.addEventListener('click',dashboardClearAvatar);
+  document.querySelector('#dashboardProfileMetaSave')?.addEventListener('click',dashboardSaveProfileMetaFromInputs);
+  document.querySelector('#dashboardUsernameInput')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardSaveProfileMetaFromInputs()});
+  document.querySelector('#dashboardUidInput')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardSaveProfileMetaFromInputs()});
+  document.querySelector('#dashboardDiscordSave')?.addEventListener('click',dashboardDiscordStorageUpdate);
+  document.querySelector('#dashboardDiscordUrl')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardDiscordStorageUpdate()});
   document.querySelector('#dashboardProfileSave')?.addEventListener('click',dashboardSaveProfileUrl);
   document.querySelector('#dashboardProfileUrl')?.addEventListener('keydown',event=>{if(event.key==='Enter') dashboardSaveProfileUrl()});
   document.querySelector('#dashboardShareSave')?.addEventListener('click',dashboardSaveShareUrl);
@@ -14748,6 +15171,14 @@ function dashboardInit(){
   if(profileInput) profileInput.value=dashboardGetProfileUrl();
   const shareInput=document.querySelector('#dashboardShareUrl');
   if(shareInput) shareInput.value=dashboardGetShareUrl();
+  const meta=dashboardGetProfileMeta();
+  const usernameInput=document.querySelector('#dashboardUsernameInput');
+  if(usernameInput) usernameInput.value=meta.username || 'Naila';
+  const uidInput=document.querySelector('#dashboardUidInput');
+  if(uidInput) uidInput.value=meta.uid || '';
+  const discordInput=document.querySelector('#dashboardDiscordUrl');
+  if(discordInput) discordInput.value=meta.discordUrl || '';
+  dashboardUpdateProfileCard(Number(cvCurrentEntry()?.total));
 
   document.querySelector('#fullscreenEventsContent')?.addEventListener('click',event=>{
     if(event.target.closest('[data-go-event-date]')) dashboardShowView('events',{scroll:false});
