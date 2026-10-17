@@ -1445,6 +1445,33 @@ h1{
 .freeze-history-name{font-weight:700}
 .freeze-history-days{font-weight:800;white-space:nowrap}
 .freeze-history-dates{font-size:10px;color:#777;margin-top:2px}
+.freeze-overview-tools{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin:8px 0 10px;
+}
+.freeze-bot-filter{
+  flex:1;
+  min-width:0;
+}
+.freeze-copy-button{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+.freeze-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.freeze-section-head .freeze-history-title{
+  flex:1;
+  margin-bottom:6px;
+}
+.freeze-section-head .freeze-copy-button{
+  margin-top:12px;
+}
 .graph-event-marker{
   position:absolute;
   pointer-events:none;
@@ -5787,6 +5814,79 @@ function currentFreezeCids(){
   return new Set(currentFreezeInfo().map(item=>item.cid));
 }
 
+
+let freezeOverviewFilterCid='';
+
+function freezeOverviewAvailableBots(){
+  const ids=new Set();
+
+  currentFreezeInfo().forEach(item=>ids.add(String(item.cid)));
+  freezeHistory().forEach(item=>ids.add(String(item.cid)));
+
+  return [...ids]
+    .map(cid=>({
+      cid,
+      name:state.meta.get(cid)?.name || cid
+    }))
+    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
+}
+
+function freezeOverviewCopyText(kind,infos,history){
+  if(kind==='active'){
+    const lines=['active freezes'];
+    if(!infos.length){
+      lines.push('no active freezes');
+      return lines.join('\n');
+    }
+    infos.forEach(item=>{
+      const since=new Date(item.since+'T00:00:00')
+        .toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
+      lines.push(`${item.name}\t${item.days} ${item.days===1?'day':'days'}\tsince ${since}`);
+    });
+    return lines.join('\n');
+  }
+
+  const lines=['freeze history'];
+  if(!history.length){
+    lines.push('no completed freezes');
+    return lines.join('\n');
+  }
+  history.forEach(item=>{
+    const start=new Date(item.start+'T00:00:00')
+      .toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const end=new Date(item.end+'T00:00:00')
+      .toLocaleDateString('nl-NL',{day:'2-digit',month:'2-digit',year:'numeric'});
+    lines.push(`${item.name}\t${item.days} ${item.days===1?'day':'days'}\t${start} → ${end}`);
+  });
+  return lines.join('\n');
+}
+
+async function freezeOverviewCopy(kind,infos,history,button){
+  const value=freezeOverviewCopyText(kind,infos,history);
+  try{
+    if(navigator.clipboard?.writeText){
+      await navigator.clipboard.writeText(value);
+    }else{
+      throw new Error('clipboard fallback');
+    }
+  }catch(_){
+    const area=document.createElement('textarea');
+    area.value=value;
+    area.style.position='fixed';
+    area.style.opacity='0';
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand('copy');
+    area.remove();
+  }
+
+  if(button){
+    const old=button.textContent;
+    button.textContent='copied';
+    setTimeout(()=>button.textContent=old,1000);
+  }
+}
+
 function renderFreezeOverview(){
   const box=document.querySelector('#freezeOverview');
   if(!box) return;
@@ -5808,10 +5908,23 @@ function renderFreezeOverview(){
     )].map(input=>input.value)
   );
 
-  const infos=currentFreezeInfo()
+  let infos=currentFreezeInfo()
     .filter(item=>selected.has(item.cid));
 
-  const history=freezeHistory();
+  let history=freezeHistory();
+
+  const availableBots=freezeOverviewAvailableBots();
+  if(
+    freezeOverviewFilterCid &&
+    !availableBots.some(item=>item.cid===freezeOverviewFilterCid)
+  ){
+    freezeOverviewFilterCid='';
+  }
+
+  if(freezeOverviewFilterCid){
+    infos=infos.filter(item=>item.cid===freezeOverviewFilterCid);
+    history=history.filter(item=>item.cid===freezeOverviewFilterCid);
+  }
 
   box.hidden=false;
 
@@ -5855,15 +5968,50 @@ function renderFreezeOverview(){
       }).join('')
     : '<div class="freeze-empty">no completed freezes yet.</div>';
 
+  const filterOptions=[
+    '<option value="">all bots</option>',
+    ...availableBots.map(item=>
+      `<option value="${archiveEscape(item.cid)}" ${item.cid===freezeOverviewFilterCid?'selected':''}>${archiveEscape(item.name)}</option>`
+    )
+  ].join('');
+
   box.innerHTML=`
+    <div class="freeze-overview-tools">
+      <select id="freezeBotFilter" class="freeze-bot-filter" aria-label="filter freezes by bot">
+        ${filterOptions}
+      </select>
+    </div>
+
     <div class="freeze-overview-head">
       <span>⏸️ active freezes</span>
-      <span class="freeze-overview-sub">${infos.length} bots</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="freeze-overview-sub">${infos.length} ${infos.length===1?'bot':'bots'}</span>
+        <button type="button" class="freeze-copy-button" id="copyActiveFreezes">copy</button>
+      </div>
     </div>
+
     ${activeHtml}
-    <div class="freeze-history-title">freeze history</div>
+
+    <div class="freeze-section-head">
+      <div class="freeze-history-title">freeze history</div>
+      <button type="button" class="freeze-copy-button" id="copyFreezeHistory">copy</button>
+    </div>
+
     ${historyHtml}
   `;
+
+  box.querySelector('#freezeBotFilter')?.addEventListener('change',event=>{
+    freezeOverviewFilterCid=String(event.target.value||'');
+    renderFreezeOverview();
+  });
+
+  box.querySelector('#copyActiveFreezes')?.addEventListener('click',event=>{
+    freezeOverviewCopy('active',infos,history,event.currentTarget);
+  });
+
+  box.querySelector('#copyFreezeHistory')?.addEventListener('click',event=>{
+    freezeOverviewCopy('history',infos,history,event.currentTarget);
+  });
 }
 
 
