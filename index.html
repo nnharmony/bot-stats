@@ -1360,6 +1360,60 @@ h1{
   .saved-events .event-empty{grid-column:1 / -1}
 }
 
+/* compact research actions */
+.actions-panel{
+  margin:14px 0 4px;
+  border:1px solid var(--dash-border,#343945);
+  border-radius:13px;
+  background:rgba(255,255,255,.015);
+  overflow:hidden;
+}
+.actions-panel>summary{
+  padding:10px 12px;
+  cursor:pointer;
+  color:var(--dash-accent-2,#cdb0cc);
+  font-size:11px;
+  font-weight:850;
+  text-transform:lowercase;
+}
+.actions-content{padding:0 12px 12px}
+.action-bot-hint{margin:0 0 8px;color:var(--dash-muted,#a9a3ad);font-size:9px}
+.action-grid{display:grid;grid-template-columns:1fr .72fr;gap:7px}
+.action-field label{display:block;margin:0 0 4px;color:var(--dash-muted,#a9a3ad);font-size:8px;text-transform:lowercase}
+.action-field input,.action-field textarea{width:100%;min-width:0;font-size:10px}
+.action-field input{height:36px}
+.action-field textarea{min-height:54px;resize:vertical}
+.action-field.full{grid-column:1 / -1}
+.action-tags{display:flex;flex-wrap:wrap;gap:5px}
+.action-tag{
+  width:auto !important;min-width:0 !important;min-height:29px !important;
+  padding:0 9px !important;border-radius:9px !important;
+  border:1px solid var(--dash-border,#4a4350) !important;
+  background:var(--dash-panel-2,#1d1a20) !important;
+  color:var(--dash-muted,#a9a3ad) !important;font-size:9px !important;font-weight:800 !important;
+}
+.action-tag.active{background:var(--dash-accent-soft,#403747) !important;color:var(--dash-text,#f2edf2) !important;border-color:#66566f !important}
+.action-actions{display:flex;gap:7px;align-items:center;margin-top:8px}
+.action-actions button{min-height:33px !important;padding:0 12px !important;font-size:9px !important}
+.action-status{min-height:14px;margin-top:7px;color:var(--dash-muted,#a9a3ad);font-size:8px;line-height:1.35}
+.action-status.ok{color:var(--dash-accent-2,#cdb0cc)}
+.action-status.error{color:#d7a1b9}
+.action-verification{margin-top:8px;padding:8px 9px;border:1px solid var(--dash-border,#343945);border-radius:10px;background:rgba(255,255,255,.018);font-size:8px;line-height:1.45;color:var(--dash-muted,#a9a3ad)}
+.action-verification strong{color:var(--dash-text,#f2edf2);font-size:9px}
+.action-verification .verified{color:#dfb1cf;font-weight:850}
+.action-verification .pending{color:var(--dash-muted,#a9a3ad);font-weight:850}
+.action-verification .inconclusive{color:var(--dash-accent-2,#cdb0cc);font-weight:850}
+.saved-events .action-chip{font-size:8px;padding:3px 5px;border-radius:7px}
+.saved-events .freeze-auto-chip{font-size:8px;padding:3px 5px;border-radius:7px}
+.dashboard-freeze-badge.total,.dashboard-freeze-badge.verified{border-color:#76546d;color:#dfb1cf}
+.dashboard-freeze-badge.partial{border-color:#725d72;color:#d7bad5}
+.dashboard-freeze-badge.suspected{border-color:#65566d;color:#cfb3d4}
+
+@media(max-width:430px){
+  .action-grid{grid-template-columns:1fr 1fr}
+}
+
+
 /* fullscreen event chips follow the same compact icon style */
 .fullscreen-overlay .tag-chip{
   font-size:11px;
@@ -4274,6 +4328,41 @@ body.dashboard-shell .stale{color:#e3b341 !important}
 
     </div>
 
+    <details class="actions-panel" id="actionsPanel" open>
+      <summary>actions</summary>
+      <div class="actions-content">
+        <div id="actionBotHint" class="action-bot-hint">select a bot above</div>
+        <div class="action-grid">
+          <div class="action-field">
+            <label for="actionDate">date</label>
+            <input id="actionDate" type="date">
+          </div>
+          <div class="action-field">
+            <label for="actionTime">time</label>
+            <input id="actionTime" type="time" step="60">
+          </div>
+          <div class="action-field full">
+            <label>actions</label>
+            <div id="actionTags" class="action-tags"></div>
+          </div>
+          <div class="action-field">
+            <label for="actionMessages">messages</label>
+            <input id="actionMessages" type="number" min="0" step="1" inputmode="numeric" placeholder="optional total">
+          </div>
+          <div class="action-field">
+            <label for="actionNote">note</label>
+            <input id="actionNote" type="text" maxlength="1000" placeholder="optional">
+          </div>
+        </div>
+        <div class="action-actions">
+          <button id="actionSave" type="button">save</button>
+          <button id="actionClear" type="button">clear</button>
+        </div>
+        <div id="actionStatus" class="action-status"></div>
+        <div id="actionVerification" class="action-verification" hidden></div>
+      </div>
+    </details>
+
     <div class="saved-events">
       <div class="saved-events-head">
         <h3 id="savedEventsTitle">profile — events</h3>
@@ -4551,7 +4640,7 @@ Chart.register(graphEventMarkerPlugin);
 
 function graphMarkersForDays(days,selectedCids){
   const activeTags=selectedGraphEventTags()
-    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
+    .filter(tag=>['edit','avatar','capped','tagged','alert','action','freeze'].includes(tag));
 
   if(!activeTags.length) return [];
 
@@ -4565,20 +4654,40 @@ function graphMarkersForDays(days,selectedCids){
     if(index===undefined) return;
 
     activeTags.forEach(tag=>{
-      const match=eventHasAnalysisTag(event,tag);
+      const match=tag==='freeze'
+        ? Object.prototype.hasOwnProperty.call(event.status||{},'freeze')
+        : eventHasAnalysisTag(event,tag);
 
       if(match){
         markers.push({
           index,
           cid:event.cid,
           tag,
-          icon:eventTagIcon(tag),
+          icon:tag==='freeze'?(event.status?.freeze===false?'▶️':'⏸️'):eventTagIcon(tag),
           note:event.note || '',
           timestamp:eventTimestamp(event)
         });
       }
     });
   });
+
+  if(activeTags.includes('action')){
+    (actionState.actions||[]).forEach(action=>{
+      if(!selected.has(action.cid)) return;
+      const index=dateIndex.get(action.date);
+      if(index===undefined) return;
+      markers.push({index,cid:action.cid,tag:'action',icon:'🧪',note:(action.tags||[]).join(' · '),timestamp:`${action.date} ${action.time||''}`.trim()});
+    });
+  }
+
+  if(activeTags.includes('freeze')){
+    (freezeAutoState.events||[]).forEach(event=>{
+      if(!selected.has(event.cid)) return;
+      const index=dateIndex.get(event.date);
+      if(index===undefined) return;
+      markers.push({index,cid:event.cid,tag:'freeze',icon:freezeAutoIcon(event),note:freezeAutoEventLabel(event),timestamp:event.date});
+    });
+  }
 
   return markers;
 }
@@ -5237,6 +5346,7 @@ async function loadStatsData(){
       <button type="button" class="graph-event-filter" data-graph-tag="freeze" title="freeze" aria-label="freeze">⏸️</button>
       <button type="button" class="graph-event-filter" data-graph-tag="tagged" title="tagged" aria-label="tagged">⬆️</button>
       <button type="button" class="graph-event-filter" data-graph-tag="alert" title="alert" aria-label="alert">⚠️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="action" title="actions" aria-label="actions">🧪</button>
       <button type="button" class="graph-event-filter" data-graph-tag="banned" title="banned" aria-label="banned">🚫</button>
       <button type="button" class="graph-event-filter" data-graph-tag="violation" title="violation" aria-label="violation">⛔️</button>
     </div>
@@ -5675,15 +5785,26 @@ function renderNewOverview(){
 }
 
 function currentFreezeInfo(){
+  const date=topSlotsDefaultDate();
   const infos=[];
   state.meta.forEach((meta,cid)=>{
-    const p=freezePeriodsForCid(cid).find(p=>p.active && qualifiesFreezePeriod(p));
-    if(p) infos.push({
-      cid,name:meta?.name||cid,since:p.start,days:p.days,
-      threshold:p.threshold,startMessages:p.startMessages
+    const assessment=freezeAssessmentForCid(cid,date);
+    if(!assessment.active) return;
+    infos.push({
+      cid,
+      name:meta?.name||cid,
+      since:assessment.startDate||'',
+      days:assessment.startDate?freezeCalendarDuration(assessment.startDate,date):1,
+      threshold:assessment.confirmThreshold,
+      startMessages:assessment.startMessages,
+      type:assessment.freezeType || assessment.status,
+      status:assessment.status,
+      verified:Boolean(assessment.verified),
+      reasons:assessment.reasons||[],
+      startKnown:assessment.startKnown!==false
     });
   });
-  return infos.sort((a,b)=>b.since.localeCompare(a.since)||a.name.localeCompare(b.name));
+  return infos.sort((a,b)=>String(b.since||'').localeCompare(String(a.since||''))||a.name.localeCompare(b.name));
 }
 
 
@@ -5711,51 +5832,22 @@ function qualifiesFreezePeriod(period){
 }
 
 function freezePeriodsForCid(cid){
-  const days=[...state.daily].sort((a,b)=>a.date.localeCompare(b.date));
-  const periods=[];
-  let startIndex=null, threshold=null, startMessages=null;
-
-  const closePeriod=(endIndex,active)=>{
-    if(startIndex===null) return;
-    periods.push({
-      cid,start:days[startIndex].date,end:days[endIndex].date,
-      days:endIndex-startIndex+1,active,threshold,startMessages
-    });
-    startIndex=null; threshold=null; startMessages=null;
-  };
-
-  for(let i=1;i<days.length;i++){
-    const now=snapshotBot(days[i].snapshot,cid);
-    const before=snapshotBot(days[i-1].snapshot,cid);
-    if(!now || !before || !Number.isFinite(now.messages) || !Number.isFinite(before.messages)){
-      if(startIndex!==null) closePeriod(i-1,false);
-      continue;
-    }
-    const delta=now.messages-before.messages;
-    if(delta===0){
-      if(startIndex===null){
-        startIndex=i;
-        startMessages=before.messages;
-        threshold=freezeThresholdForMessages(startMessages);
-      }
-    }else{
-      // Positive growth defrosts. Negative growth is a correction/unknown, not a freeze.
-      if(startIndex!==null) closePeriod(i-1,false);
-    }
-  }
-  if(startIndex!==null) closePeriod(days.length-1,true);
-  return periods;
+  return freezeComputedPeriodsForCid(cid,{includeSuspected:false});
 }
 
 function freezeHistory(){
   const result=[];
   state.meta.forEach((meta,cid)=>{
-    freezePeriodsForCid(cid)
-      .filter(p=>!p.active && qualifiesFreezePeriod(p))
-      .forEach(p=>result.push({...p,name:meta?.name||cid}));
+    const manual=manualFreezePeriodsForCid(cid).filter(item=>!item.active);
+    const automatic=freezeComputedPeriodsForCid(cid,{includeSuspected:true})
+      .filter(item=>!item.active)
+      .filter(item=>!manual.some(manualItem=>freezePeriodsOverlap(item,manualItem)));
+    [...manual,...automatic].forEach(item=>result.push({...item,name:meta?.name||cid}));
   });
   return result.sort((a,b)=>
-    b.end.localeCompare(a.end)||b.start.localeCompare(a.start)||a.name.localeCompare(b.name)
+    String(b.end||'').localeCompare(String(a.end||''))||
+    String(b.start||b.windowStart||'').localeCompare(String(a.start||a.windowStart||''))||
+    a.name.localeCompare(b.name)
   );
 }
 
@@ -5776,7 +5868,7 @@ function renderEventAnalysisOverview(){
   if(!box) return;
 
   const activeTags=selectedGraphEventTags()
-    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
+    .filter(tag=>['edit','avatar','capped','tagged','alert','action'].includes(tag));
 
   if(!activeTags.length){
     box.hidden=true;
@@ -5792,14 +5884,14 @@ function renderEventAnalysisOverview(){
 
   const {from,to}=graphEventDateRange();
 
-  const rows=(eventsState.events||[])
+  const eventRows=(eventsState.events||[])
     .filter(event=>{
       if((from && String(event.date||'')<from) || (to && String(event.date||'')>to)){
         return false;
       }
 
       return activeTags.some(tag=>{
-        if(!eventHasAnalysisTag(event,tag)) return false;
+        if(tag==='action' || !eventHasAnalysisTag(event,tag)) return false;
 
         // tagged is a history/status log:
         // show tagged ON and OFF events even if that bot is not currently selected anymore.
@@ -5809,7 +5901,23 @@ function renderEventAnalysisOverview(){
         return selected.has(event.cid);
       });
     })
-    .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));
+    .map(event=>({...event,__kind:'event'}));
+
+  const actionRows=activeTags.includes('action')
+    ? (actionState.actions||[])
+        .filter(action=>
+          selected.has(action.cid) &&
+          (!from || String(action.date||'')>=from) &&
+          (!to || String(action.date||'')<=to)
+        )
+        .map(action=>({...action,__kind:'action'}))
+    : [];
+
+  const rows=[...eventRows,...actionRows]
+    .sort((a,b)=>
+      String(b.date||'').localeCompare(String(a.date||'')) ||
+      String(b.time||'').localeCompare(String(a.time||''))
+    );
 
   const cappedSummary=activeTags.includes('capped')
     ? [...selected].map(cid=>{
@@ -5831,8 +5939,27 @@ function renderEventAnalysisOverview(){
     ${
       rows.length
         ? rows.map(event=>{
+            if(event.__kind==='action'){
+              const verification=actionVerificationFor(event);
+              const details=[
+                (event.tags||[]).join(' · '),
+                Number.isFinite(Number(event.messagesTotal))?`messages ${fmt.format(Number(event.messagesTotal))}`:'',
+                verification.status==='verified'?`shortage ${fmt.format(verification.deficit)}`:verification.status==='pending'?'pending verification':'',
+                event.note||''
+              ].filter(Boolean).join(' · ');
+              return `
+                <div class="event-analysis-row">
+                  <div class="event-analysis-top">
+                    <span class="event-analysis-name">🧪 ${eventBotLabel(event.cid)}</span>
+                    <span class="event-analysis-time">${formatEventTimestamp(event)}${event.time?` · ${archiveEscape(event.time)}`:''}</span>
+                  </div>
+                  ${details?`<div class="event-analysis-note">${archiveEscape(details)}</div>`:''}
+                </div>
+              `;
+            }
+
             const matching=activeTags.filter(tag=>{
-              if(!eventHasAnalysisTag(event,tag)) return false;
+              if(tag==='action' || !eventHasAnalysisTag(event,tag)) return false;
               return tag==='tagged' || selected.has(event.cid);
             });
 
@@ -5996,7 +6123,7 @@ function renderFreezeOverview(){
               <span class="freeze-name">${item.name}</span>
               <span class="freeze-days">${item.days} ${item.days===1?'day':'days'}</span>
             </div>
-            <div class="freeze-since">since ${since}</div>
+            <div class="freeze-since">${item.startKnown===false?'start uncertain':`since ${since}`} · ${archiveEscape(item.type||item.status||'freeze')}</div>
             <div class="freeze-track">
               <div class="freeze-bar" style="width:${width}%"></div>
             </div>
@@ -6007,17 +6134,17 @@ function renderFreezeOverview(){
 
   const historyHtml=history.length
     ? history.map(item=>{
-        const start=new Date(item.start+'T00:00:00')
-          .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
-        const end=new Date(item.end+'T00:00:00')
-          .toLocaleDateString('nl-NL',{day:'numeric',month:'numeric',year:'2-digit'});
+        const start=item.startKnown===false
+          ? `start between ${shortGraphDate(item.windowStart)} and ${shortGraphDate(item.windowEnd||item.end)}`
+          : shortGraphDate(item.start);
+        const end=shortGraphDate(item.end);
         return `
           <div class="freeze-history-row">
             <div class="freeze-history-top">
               <span class="freeze-history-name">${item.name}</span>
               <span class="freeze-history-days">${item.days} ${item.days===1?'day':'days'}</span>
             </div>
-            <div class="freeze-history-dates">${start} → ${end}</div>
+            <div class="freeze-history-dates">${archiveEscape(item.type||item.status||'freeze')} · ${start}${item.startKnown===false?'':` → ${end}`}</div>
           </div>
         `;
       }).join('')
@@ -6079,7 +6206,12 @@ function graphEventDateRange(){
 }
 
 function eventFilterCids(tag){
-  if(tag==='freeze') return currentFreezeCids();
+  if(tag==='action') return new Set((actionState.actions||[]).map(item=>item.cid));
+  if(tag==='freeze'){
+    const set=currentFreezeCids();
+    (freezeAutoState.events||[]).forEach(item=>set.add(item.cid));
+    return set;
+  }
   if(tag==='new'){
     const set=new Set();
     state.meta.forEach((meta,cid)=>{
@@ -6628,7 +6760,18 @@ function cidMatchesGraphTag(cid,tag){
     return newStatusOverlapsGraphRange(cid);
   }
 
-  if(tag==='freeze' || tag==='banned' || tag==='tagged'){
+  if(tag==='action'){
+    const dates=graphPeriodDates();
+    return (actionState.actions||[]).some(action=>action.cid===cid && dates.has(action.date));
+  }
+
+  if(tag==='freeze'){
+    if(currentFreezeCids().has(cid)) return true;
+    const dates=graphPeriodDates();
+    return (freezeAutoState.events||[]).some(event=>event.cid===cid && dates.has(event.date));
+  }
+
+  if(tag==='banned' || tag==='tagged'){
     return persistentStatusNow(cid,tag);
   }
 
@@ -6870,6 +7013,22 @@ const eventsState={
   autoFreezeBusy:false,
   visibleEvents:[]
 };
+
+const actionState={
+  actions:[],
+  editingId:null,
+  loaded:false,
+  backendReady:true,
+  error:''
+};
+
+const freezeAutoState={
+  events:[],
+  loaded:false,
+  backendReady:true,
+  error:''
+};
+
 
 
 const analyticsState={
@@ -9008,6 +9167,7 @@ function eventTagIcon(tag){
     new:'💟',
     capped:'🔄',
     alert:'⚠️',
+    action:'🧪',
     avatar:'👤',
     freeze:'⏸️',
     banned:'🚫',
@@ -9122,6 +9282,405 @@ async function eventsRequest(path,options={}){
 }
 
 
+
+
+const ACTION_TAGS=["web","alt","logout","collect","app"];
+
+function actionSelectedTags(){
+  return [...document.querySelectorAll('#actionTags .action-tag.active')]
+    .map(button=>button.dataset.actionTag);
+}
+
+function actionSetSelectedTags(tags){
+  const selected=new Set(tags||[]);
+  document.querySelectorAll('#actionTags .action-tag').forEach(button=>{
+    button.classList.toggle('active',selected.has(button.dataset.actionTag));
+  });
+}
+
+function actionAddDays(date,amount){
+  const d=new Date(String(date)+'T12:00:00');
+  if(Number.isNaN(d.getTime())) return '';
+  d.setDate(d.getDate()+amount);
+  return d.toLocaleDateString('sv-SE');
+}
+
+function actionTargetDates(action){
+  const first=actionAddDays(action?.date,1);
+  if(!first) return [];
+  const hour=Number(String(action?.time||'00:00').split(':')[0]);
+  const nearMidnight=Number.isFinite(hour) && (hour>=23 || hour<1);
+  return nearMidnight ? [first,actionAddDays(first,1)] : [first];
+}
+
+function actionPreTestReading(cid,date){
+  const days=[...state.daily]
+    .filter(day=>String(day.date||'')<=String(date||''))
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  for(let i=days.length-1;i>=0;i--){
+    const bot=snapshotBot(days[i]?.snapshot,cid);
+    if(Number.isFinite(bot?.messages) && !bot?.stale){
+      return {messages:Number(bot.messages),date:days[i].date};
+    }
+  }
+  return null;
+}
+
+async function loadActions(){
+  try{
+    const data=await eventsRequest('/actions');
+    actionState.actions=Array.isArray(data.actions)?data.actions:[];
+    actionState.loaded=true;
+    actionState.backendReady=true;
+    actionState.error='';
+  }catch(error){
+    actionState.loaded=true;
+    actionState.backendReady=false;
+    actionState.error=error.message || 'actions unavailable';
+  }
+  renderActionPanel();
+}
+
+async function loadFreezeEvents(){
+  try{
+    const data=await eventsRequest('/freeze-events');
+    freezeAutoState.events=Array.isArray(data.freezeEvents)?data.freezeEvents:[];
+    freezeAutoState.loaded=true;
+    freezeAutoState.backendReady=true;
+    freezeAutoState.error='';
+  }catch(error){
+    freezeAutoState.loaded=true;
+    freezeAutoState.backendReady=false;
+    freezeAutoState.error=error.message || 'freeze event storage unavailable';
+  }
+}
+
+function actionGroupFor(action){
+  if(!action) return [];
+  const first=(actionTargetDates(action)[0]||'');
+  return actionState.actions.filter(item=>
+    item.cid===action.cid &&
+    (actionTargetDates(item)[0]||'')===first &&
+    Number.isFinite(Number(item.messagesTotal))
+  );
+}
+
+function actionSnapshotBot(date,cid){
+  const day=state.daily.find(item=>item.date===date);
+  if(!day) return null;
+  const bot=snapshotBot(day.snapshot,cid);
+  if(!bot || bot.stale || !Number.isFinite(bot.messages)) return null;
+  return bot;
+}
+
+function actionVerificationFor(action){
+  const own=Number(action?.messagesTotal);
+  if(!Number.isFinite(own)) return {status:'none'};
+
+  const group=actionGroupFor(action);
+  const expected=group.reduce((sum,item)=>sum+(Number(item.messagesTotal)||0),0);
+  const targetSets=group.map(actionTargetDates).filter(list=>list.length);
+  const targetDates=[...new Set(targetSets.flat())].sort();
+  if(!targetDates.length) return {status:'pending',expected};
+
+  const first=targetDates[0];
+  const last=targetDates.at(-1);
+  const beforeDate=actionAddDays(first,-1);
+  const before=actionSnapshotBot(beforeDate,action.cid);
+  const after=actionSnapshotBot(last,action.cid);
+  const latestImported=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||''))).at(-1)?.date || '';
+  const batchClosed=Boolean(latestImported && String(latestImported)>String(last));
+
+  if(!before || !after || !batchClosed){
+    return {status:'pending',expected,targetDates,beforeDate,endDate:last,shared:group.length>1,batchClosed};
+  }
+
+  const registered=Math.max(0,Number(after.messages)-Number(before.messages));
+  const deficit=Math.max(0,expected-registered);
+  const percentage=expected>0 ? (registered/expected)*100 : null;
+
+  return {
+    status:deficit>0?'verified':'inconclusive',
+    expected,
+    registered,
+    deficit,
+    percentage,
+    targetDates,
+    beforeDate,
+    endDate:last,
+    shared:group.length>1,
+    groupIds:group.map(item=>item.id)
+  };
+}
+
+
+function actionVerificationStorage(action,verification){
+  if(!action || !verification || verification.status==='none') return null;
+  const resolved=['verified','inconclusive'].includes(verification.status);
+  const current=action.verification && typeof action.verification==='object'
+    ? action.verification
+    : null;
+  return {
+    status:verification.status,
+    expected:Number.isFinite(verification.expected)?verification.expected:null,
+    registered:Number.isFinite(verification.registered)?verification.registered:null,
+    deficit:Number.isFinite(verification.deficit)?verification.deficit:null,
+    percentage:Number.isFinite(verification.percentage)?verification.percentage:null,
+    targetDates:Array.isArray(verification.targetDates)?[...verification.targetDates]:[],
+    beforeDate:verification.beforeDate||'',
+    endDate:verification.endDate||'',
+    shared:Boolean(verification.shared),
+    groupIds:Array.isArray(verification.groupIds)?[...verification.groupIds]:[],
+    assessedAt:resolved ? (current?.assessedAt || new Date().toISOString()) : ''
+  };
+}
+
+function actionVerificationComparable(value){
+  if(!value || typeof value!=='object') return null;
+  return {
+    status:String(value.status||''),
+    expected:Number.isFinite(Number(value.expected))?Number(value.expected):null,
+    registered:Number.isFinite(Number(value.registered))?Number(value.registered):null,
+    deficit:Number.isFinite(Number(value.deficit))?Number(value.deficit):null,
+    percentage:Number.isFinite(Number(value.percentage))?Number(value.percentage):null,
+    targetDates:Array.isArray(value.targetDates)?value.targetDates.map(String):[],
+    beforeDate:String(value.beforeDate||''),
+    endDate:String(value.endDate||''),
+    shared:Boolean(value.shared),
+    groupIds:Array.isArray(value.groupIds)?value.groupIds.map(String):[]
+  };
+}
+
+async function syncActionVerificationResults(){
+  if(!eventsState.unlocked || !actionState.backendReady) return false;
+  let changed=false;
+
+  for(let i=0;i<actionState.actions.length;i++){
+    const action=actionState.actions[i];
+    if(!Number.isFinite(Number(action.messagesTotal))) continue;
+
+    const verification=actionVerificationFor(action);
+    if(verification.status==='none') continue;
+
+    const targetDates=actionTargetDates(action);
+    const stored=actionVerificationStorage(action,verification);
+    const targetsChanged=JSON.stringify(action.targetDates||[])!==JSON.stringify(targetDates);
+    const verificationChanged=JSON.stringify(actionVerificationComparable(action.verification))!==JSON.stringify(actionVerificationComparable(stored));
+    if(!targetsChanged && !verificationChanged) continue;
+
+    const data=await eventsRequest('/actions',{
+      method:'POST',
+      body:JSON.stringify({
+        ...action,
+        targetDates,
+        verification:stored
+      })
+    });
+    if(data?.action) actionState.actions[i]=data.action;
+    changed=true;
+  }
+
+  return changed;
+}
+
+function verifiedDiscrepanciesForCid(cid,date='9999-12-31'){
+  const seen=new Set();
+  const result=[];
+  (actionState.actions||[]).forEach(action=>{
+    if(action.cid!==cid || !Number.isFinite(Number(action.messagesTotal))) return;
+    const v=actionVerificationFor(action);
+    const key=(v.groupIds||[action.id]).slice().sort().join('|');
+    if(seen.has(key)) return;
+    seen.add(key);
+    if(v.status==='verified' && (!v.endDate || v.endDate<=date)){
+      result.push({...v,action});
+    }
+  });
+  return result;
+}
+
+function renderActionVerification(action=null){
+  const box=document.querySelector('#actionVerification');
+  if(!box) return;
+  const selected=action || actionState.actions.find(item=>item.id===actionState.editingId) || null;
+  if(!selected || !Number.isFinite(Number(selected.messagesTotal))){
+    box.hidden=true;
+    box.innerHTML='';
+    return;
+  }
+  const v=actionVerificationFor(selected);
+  box.hidden=false;
+  if(v.status==='pending'){
+    box.innerHTML=`<strong>message verification</strong><br><span class="pending">pending</span> · waiting for ${archiveEscape((v.targetDates||[]).join(' + ')||'next message batch')}${v.shared?' · shared batch':''}`;
+    return;
+  }
+  if(v.status==='none'){
+    box.hidden=true;
+    return;
+  }
+  const pct=Number.isFinite(v.percentage)?v.percentage.toFixed(1).replace('.',',')+'%':'—';
+  const label=v.status==='verified'?'verified discrepancy':'inconclusive';
+  box.innerHTML=`<strong>message verification</strong><br><span class="${v.status}">${label}</span>${v.shared?' · shared batch':''}<br>test ${fmt.format(v.expected)} · registered +${fmt.format(v.registered)} · shortage ${fmt.format(v.deficit)} · ${pct}`;
+}
+
+function actionSyncBotHint(){
+  const cid=document.querySelector('#eventBot')?.value || '';
+  const hint=document.querySelector('#actionBotHint');
+  if(hint) hint.textContent=cid ? `bot · ${eventBotLabel(cid)}` : 'select a bot above';
+}
+
+function clearActionForm(){
+  actionState.editingId=null;
+  const today=new Date().toLocaleDateString('sv-SE');
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mm=String(now.getMinutes()).padStart(2,'0');
+  const date=document.querySelector('#actionDate');
+  const time=document.querySelector('#actionTime');
+  if(date) date.value=today;
+  if(time) time.value=`${hh}:${mm}`;
+  const messages=document.querySelector('#actionMessages');
+  const note=document.querySelector('#actionNote');
+  if(messages) messages.value='';
+  if(note) note.value='';
+  actionSetSelectedTags([]);
+  const save=document.querySelector('#actionSave');
+  if(save) save.textContent='save';
+  const status=document.querySelector('#actionStatus');
+  if(status){status.textContent='';status.className='action-status'}
+  renderActionVerification(null);
+  actionSyncBotHint();
+}
+
+async function saveAction(){
+  const status=document.querySelector('#actionStatus');
+  const cid=document.querySelector('#eventBot')?.value || '';
+  const date=document.querySelector('#actionDate')?.value || '';
+  const time=document.querySelector('#actionTime')?.value || '';
+  const tags=actionSelectedTags();
+  const rawMessages=document.querySelector('#actionMessages')?.value ?? '';
+  const messagesTotal=rawMessages===''?null:Number(rawMessages);
+  const note=document.querySelector('#actionNote')?.value.trim() || '';
+
+  if(!eventsState.unlocked){
+    if(status){status.textContent='unlock first';status.className='action-status error'}
+    return;
+  }
+  if(!actionState.backendReady){
+    if(status){status.textContent='backend update required for actions';status.className='action-status error'}
+    return;
+  }
+  if(!cid || !date || !time || !tags.length){
+    if(status){status.textContent='choose bot, date, time and at least one action';status.className='action-status error'}
+    return;
+  }
+  if(messagesTotal!==null && (!Number.isInteger(messagesTotal) || messagesTotal<0)){
+    if(status){status.textContent='messages must be one total whole number';status.className='action-status error'}
+    return;
+  }
+
+  const baseline=actionPreTestReading(cid,date);
+  if(status){status.textContent='saving…';status.className='action-status'}
+  try{
+    await eventsRequest('/actions',{
+      method:'POST',
+      body:JSON.stringify({
+        id:actionState.editingId || undefined,
+        cid,date,time,tags,messagesTotal,note,
+        beforeMessages:baseline?.messages ?? null,
+        beforeSnapshotDate:baseline?.date || '',
+        targetDates:actionTargetDates({date,time}),
+        verification:null
+      })
+    });
+    await loadActions();
+    await syncActionVerificationResults();
+    if(status){status.textContent='saved ✓';status.className='action-status ok'}
+    const saved=[...actionState.actions]
+      .filter(item=>item.cid===cid && item.date===date && item.time===time)
+      .sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')))[0] || null;
+    actionState.editingId=saved?.id || null;
+    renderActionVerification(saved);
+    renderEvents();
+    drawCompareChart();
+    freezePatternRenderHome();
+  }catch(error){
+    if(status){status.textContent=error.message;status.className='action-status error'}
+  }
+}
+
+function editAction(id){
+  const action=actionState.actions.find(item=>String(item.id)===String(id));
+  if(!action) return;
+  actionState.editingId=action.id;
+  if(document.querySelector('#eventBot')) document.querySelector('#eventBot').value=action.cid;
+  if(document.querySelector('#actionDate')) document.querySelector('#actionDate').value=action.date;
+  if(document.querySelector('#actionTime')) document.querySelector('#actionTime').value=action.time;
+  if(document.querySelector('#actionMessages')) document.querySelector('#actionMessages').value=Number.isFinite(Number(action.messagesTotal))?String(action.messagesTotal):'';
+  if(document.querySelector('#actionNote')) document.querySelector('#actionNote').value=action.note||'';
+  actionSetSelectedTags(action.tags||[]);
+  actionSyncBotHint();
+  const save=document.querySelector('#actionSave');
+  if(save) save.textContent='update';
+  const status=document.querySelector('#actionStatus');
+  if(status){status.textContent='editing action';status.className='action-status'}
+  renderActionVerification(action);
+  document.querySelector('#actionsPanel')?.setAttribute('open','');
+  document.querySelector('#actionsPanel')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+async function deleteAction(id){
+  if(!eventsState.unlocked) return;
+  if(!confirm('Delete this action?')) return;
+  try{
+    await eventsRequest('/actions/'+encodeURIComponent(id),{method:'DELETE'});
+    if(String(actionState.editingId||'')===String(id)) clearActionForm();
+    await loadActions();
+    renderEvents();
+    drawCompareChart();
+    freezePatternRenderHome();
+  }catch(error){
+    const status=document.querySelector('#actionStatus');
+    if(status){status.textContent=error.message;status.className='action-status error'}
+  }
+}
+
+function renderActionPanel(){
+  actionSyncBotHint();
+  const status=document.querySelector('#actionStatus');
+  if(!actionState.backendReady && status){
+    status.textContent='actions need the supplied backend upgrade';
+    status.className='action-status error';
+  }
+  renderActionVerification();
+}
+
+function initActions(){
+  const tagBox=document.querySelector('#actionTags');
+  if(!tagBox) return;
+  tagBox.innerHTML=ACTION_TAGS.map(tag=>`<button type="button" class="action-tag" data-action-tag="${tag}">${tag}</button>`).join('');
+  tagBox.addEventListener('click',event=>{
+    const button=event.target.closest('[data-action-tag]');
+    if(button) button.classList.toggle('active');
+  });
+  document.querySelector('#actionSave')?.addEventListener('click',saveAction);
+  document.querySelector('#actionClear')?.addEventListener('click',clearActionForm);
+  clearActionForm();
+}
+
+function freezeAutoEventLabel(event){
+  const type=event?.freezeType || 'freeze';
+  const labels={started:'freeze started',detected:'freeze detected',ended:'freeze ended',verified:'freeze verified'};
+  return `${labels[event?.kind]||'freeze'} · ${type}`;
+}
+
+function freezeAutoIcon(event){
+  if(event?.kind==='ended') return '▶️';
+  if(event?.kind==='verified') return '🧪';
+  if(event?.freezeType==='partial') return '⚠️';
+  if(event?.freezeType==='suspected') return '⭕️';
+  return '⏸️';
+}
 
 function freezeStateBeforeDate(cid,date){
   let active=false;
@@ -9270,15 +9829,10 @@ async function loadEvents(){
         ? data.events
         : [];
 
-    const autoChanged=await syncAutomaticFreezeStatus();
-
-    if(autoChanged){
-      const refreshed=await eventsRequest('/events');
-      eventsState.events=
-        Array.isArray(refreshed.events)
-          ? refreshed.events
-          : [];
-    }
+    await Promise.all([loadActions(),loadFreezeEvents()]);
+    await syncActionVerificationResults();
+    const autoChanged=await syncAutomaticFreezeEvents();
+    if(autoChanged) await loadFreezeEvents();
 
     topSlotsSyncFromEvents();
     backfillSyncFromEvents();
@@ -9349,6 +9903,12 @@ function setEventsFilterMode(enabled){
 
 
 function eventCopyLabels(event){
+  if(event.__kind==='action'){
+    return ['🧪 action',...(event.tags||[])].join(', ');
+  }
+  if(event.__kind==='freezeAuto'){
+    return freezeAutoEventLabel(event);
+  }
   const labels=[...(event.tags || [])].map(eventTagLabel);
   if(event.status?.banned===true) labels.push('🚫 banned');
   if(event.status?.freeze===true) labels.push('⏸️ freeze started');
@@ -9401,7 +9961,13 @@ function renderEvents(){
     wrap.classList.toggle('single-bot',Boolean(selectedCid));
   }
 
-  let visibleEvents=[...eventsState.events].filter(event=>event.cid!==TOP_SLOTS_EVENT_CID && event.cid!==HISTORICAL_LEDGER_EVENT_CID);
+  let visibleEvents=[
+    ...eventsState.events
+      .filter(event=>event.cid!==TOP_SLOTS_EVENT_CID && event.cid!==HISTORICAL_LEDGER_EVENT_CID)
+      .map(event=>({...event,__kind:'event'})),
+    ...(actionState.actions||[]).map(action=>({...action,__kind:'action'})),
+    ...(freezeAutoState.events||[]).map(event=>({...event,__kind:'freezeAuto'}))
+  ];
 
   if(eventsState.filterAll){
     if(selectedCid){
@@ -9427,13 +9993,16 @@ function renderEvents(){
     const selectedTags=selectedEventTags();
 
     if(selectedTags.length){
-      visibleEvents=visibleEvents.filter(event=>
-        selectedTags.some(tag=>eventMatchesFilterTag(event,tag))
-      );
+      visibleEvents=visibleEvents.filter(event=>{
+        if(event.__kind==='freezeAuto') return selectedTags.includes('freeze');
+        if(event.__kind==='action') return false;
+        return selectedTags.some(tag=>eventMatchesFilterTag(event,tag));
+      });
     }
 
     visibleEvents.sort((a,b)=>
       String(b.date||'').localeCompare(String(a.date||'')) ||
+      String(b.time||'').localeCompare(String(a.time||'')) ||
       String(b.updatedAt||'').localeCompare(String(a.updatedAt||''))
     );
 
@@ -9472,6 +10041,38 @@ function renderEvents(){
   }
 
   rows.innerHTML=visibleEvents.map(event=>{
+    if(event.__kind==='action'){
+      const verification=actionVerificationFor(event);
+      const statusLabel=verification.status==='verified'?' · discrepancy':verification.status==='pending'?' · pending':verification.status==='inconclusive'?' · inconclusive':'';
+      const tags=`<span class="tag-chip action-chip">🧪</span>`+(event.tags||[]).map(tag=>`<span class="tag-chip action-chip">${archiveEscape(tag)}</span>`).join('');
+      const note=[event.time||'',Number.isFinite(Number(event.messagesTotal))?`messages ${fmt.format(Number(event.messagesTotal))}${statusLabel}`:'',event.note||''].filter(Boolean).join(' · ');
+      return `
+        <tr>
+          <td class="event-date">${event.date || '—'}</td>
+          <td class="event-bot">${eventBotLabel(event.cid)}</td>
+          <td class="event-tags">${tags}</td>
+          <td class="event-note">${archiveEscape(note||'—')}</td>
+          <td class="event-controls">
+            <button type="button" data-action-edit="${event.id}">edit</button>
+            <button type="button" data-action-delete="${event.id}">delete</button>
+          </td>
+        </tr>`;
+    }
+
+    if(event.__kind==='freezeAuto'){
+      const tags=`<span class="tag-chip freeze-auto-chip">${freezeAutoIcon(event)}</span>`;
+      const boundary=event.startKnown===false?'start uncertain':'';
+      const note=[freezeAutoEventLabel(event),boundary,event.note||''].filter(Boolean).join(' · ');
+      return `
+        <tr>
+          <td class="event-date">${event.date || '—'}</td>
+          <td class="event-bot">${eventBotLabel(event.cid)}</td>
+          <td class="event-tags">${tags}</td>
+          <td class="event-note">${archiveEscape(note||'—')}</td>
+          <td class="event-controls"></td>
+        </tr>`;
+    }
+
     const visibleTags=[...(event.tags || [])];
 
     if(event.status?.banned===true) visibleTags.push('banned');
@@ -10086,6 +10687,7 @@ function initEventsTracker(){
           loadEventForSelection();
           renderEvents();
         }
+        actionSyncBotHint();
       }
     );
 
@@ -10123,6 +10725,17 @@ function initEventsTracker(){
           event.target.closest(
             '[data-event-delete]'
           );
+        const actionEdit=event.target.closest('[data-action-edit]');
+        const actionDelete=event.target.closest('[data-action-delete]');
+
+        if(actionEdit){
+          editAction(actionEdit.dataset.actionEdit);
+          return;
+        }
+        if(actionDelete){
+          deleteAction(actionDelete.dataset.actionDelete);
+          return;
+        }
 
         if(edit){
           editEvent(
@@ -10137,6 +10750,8 @@ function initEventsTracker(){
         }
       }
     );
+
+  initActions();
 
   if(eventsState.unlocked){
     loadEvents();
@@ -10736,7 +11351,7 @@ function renderFullscreenBots(){
     <div class="graph-event-filters" data-fs-graph-event-filters>
       ${[
         ['new','💟'],['edit','☑️'],['avatar','👤'],['capped','🔄'],
-        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️']
+        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['action','🧪'],['banned','🚫'],['violation','⛔️']
       ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${activeTags.includes(tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
     </div>`;
 
@@ -11669,32 +12284,187 @@ function freezePatternMedian(values){
   return nums.length%2 ? nums[mid] : (nums[mid-1]+nums[mid])/2;
 }
 
-function freezeGrowthSeriesForCid(cid){
-  const days=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
-  const rows=[];
-  for(let i=1;i<days.length;i++){
-    const now=snapshotBot(days[i]?.snapshot,cid);
-    const before=snapshotBot(days[i-1]?.snapshot,cid);
-    if(!Number.isFinite(now?.messages) || !Number.isFinite(before?.messages)) continue;
-    rows.push({date:days[i].date,growth:now.messages-before.messages,now:now.messages});
+
+function freezeDayMs(){return 24*60*60*1000}
+
+function freezeDateDiffDays(start,end){
+  const a=new Date(String(start)+'T12:00:00');
+  const b=new Date(String(end)+'T12:00:00');
+  if(Number.isNaN(a.getTime())||Number.isNaN(b.getTime())) return null;
+  return Math.round((b-a)/freezeDayMs());
+}
+
+function freezeCalendarDuration(start,end){
+  const diff=freezeDateDiffDays(start,end);
+  return Number.isFinite(diff)?Math.max(1,diff):1;
+}
+
+function freezeEvidencePointsForCid(cid){
+  const id=String(cid||'');
+  const byDate=new Map();
+
+  (state.daily||[]).forEach(day=>{
+    const bot=snapshotBot(day?.snapshot,id);
+    if(!bot || bot.stale || !Number.isFinite(bot.messages)) return;
+    byDate.set(day.date,{
+      date:day.date,
+      messages:Number(bot.messages),
+      collectors:Number.isFinite(bot.collectors)?Number(bot.collectors):null,
+      messagesExact:true,
+      collectorsExact:Number.isFinite(bot.collectors),
+      source:'daily'
+    });
+  });
+
+  try{
+    backfillSavedDates().forEach(date=>{
+      if(byDate.has(date)) return;
+      const record=backfillSnapshot(date)?.[id];
+      if(!record) return;
+      const messageExact=
+        backfillHasStoredValue(record.messages,record.messagesRaw) &&
+        !record.messagesApproximate &&
+        !record.messagesCarried &&
+        !record.messagesInferred;
+      const collectorExact=
+        backfillHasStoredValue(record.collectors,record.collectorsRaw) &&
+        !record.collectorsApproximate &&
+        !record.collectorsCarried &&
+        !record.collectorsInferred;
+      if(!messageExact) return;
+      byDate.set(date,{
+        date,
+        messages:Number(record.messages),
+        collectors:collectorExact?Number(record.collectors):null,
+        messagesExact:true,
+        collectorsExact:collectorExact,
+        source:'historical'
+      });
+    });
+  }catch(_){ }
+
+  return [...byDate.values()].sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function freezeUncertainZeroSpansForCid(cid){
+  const points=freezeEvidencePointsForCid(cid);
+  const spans=[];
+  for(let i=1;i<points.length;i++){
+    const before=points[i-1];
+    const now=points[i];
+    const gap=freezeDateDiffDays(before.date,now.date);
+    if(!Number.isFinite(gap)||gap<=1) continue;
+    if(Number(before.messages)!==Number(now.messages)) continue;
+    spans.push({
+      cid,
+      start:null,
+      end:now.date,
+      windowStart:actionAddDays(before.date,1),
+      windowEnd:now.date,
+      days:Math.max(1,gap),
+      active:false,
+      type:'suspected',
+      status:'suspected',
+      startKnown:false,
+      source:'historical-gap',
+      reason:'equal exact endpoints with missing days'
+    });
   }
-  return rows;
+  return spans;
 }
 
-function freezePatternCompact(value){
-  if(!Number.isFinite(value)) return '—';
-  const abs=Math.abs(value);
-  const sign=value>0?'+':value<0?'-':'';
-  if(abs>=1000000) return sign+(abs/1000000).toFixed(abs<10000000?1:0).replace(/\.0$/,'')+'M';
-  if(abs>=1000) return sign+(abs/1000).toFixed(abs<10000?1:0).replace(/\.0$/,'')+'K';
-  return sign+String(Math.round(abs));
+function freezeActivityProfile(cid,date){
+  const rows=freezeGrowthSeriesForCid(cid).filter(row=>row.date<=date && row.growth>=0);
+  const prior=rows.slice(0,-1);
+  const recentPrior=prior.slice(-7);
+  const baseline=freezePatternMedian(recentPrior.map(row=>row.growth));
+  const positives=prior.filter(row=>row.growth>0);
+  const recentPositive=recentPrior.filter(row=>row.growth>0).length;
+  const creation=effectiveNewCreationDate(cid) || '';
+  const age=creation ? freezeDateDiffDays(creation,date) : null;
+  const isNew=Number.isFinite(age) && age>=0 && age<=7;
+  const veryNew=Number.isFinite(age) && age>=0 && age<=3;
+  const established=(Number.isFinite(baseline)&&baseline>=20) || recentPositive>=3;
+  const lowActivity=(!established && positives.length<=1 && (!Number.isFinite(baseline)||baseline<5));
+  return {rows,prior,baseline,positives,recentPositive,creation,age,isNew,veryNew,established,lowActivity,everGrew:positives.length>0};
 }
 
-function freezePatternForCid(cid,date=topSlotsDefaultDate()){
+function freezeManualStateAtDate(cid,date){
+  let active=false;
+  let startDate='';
+  (eventsState.events||[])
+    .filter(event=>event.cid===cid && String(event.date||'')<=String(date||'') && Object.prototype.hasOwnProperty.call(event.status||{},'freeze'))
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')))
+    .forEach(event=>{
+      if(event.status?.freeze===true){active=true;startDate=event.date||startDate}
+      else if(event.status?.freeze===false){active=false;startDate=''}
+    });
+  return {active,startDate};
+}
+
+function manualFreezePeriodsForCid(cid){
+  const transitions=(eventsState.events||[])
+    .filter(event=>event.cid===cid && Object.prototype.hasOwnProperty.call(event.status||{},'freeze'))
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')));
+  const periods=[];
+  let start='';
+  transitions.forEach(event=>{
+    if(event.status?.freeze===true && !start){
+      start=event.date;
+    }else if(event.status?.freeze===false && start){
+      periods.push({cid,start,end:event.date,days:freezeCalendarDuration(start,event.date),active:false,type:'manual',status:'manual',source:'manual',startKnown:true});
+      start='';
+    }
+  });
+  if(start){
+    const latest=topSlotsDefaultDate();
+    periods.push({cid,start,end:latest,days:freezeCalendarDuration(start,latest),active:true,type:'manual',status:'manual',source:'manual',startKnown:true});
+  }
+  return periods;
+}
+
+function freezeAutoOpenPeriodForCid(cid){
+  const groups=new Map();
+  (freezeAutoState.events||[])
+    .filter(event=>event.cid===cid && event.source!=='manual')
+    .forEach(event=>{
+      const key=event.periodKey || `${event.cid}:${event.startDate||event.date}`;
+      const group=groups.get(key)||{periodKey:key,events:[]};
+      group.events.push(event);
+      groups.set(key,group);
+    });
+  const open=[];
+  groups.forEach(group=>{
+    const events=group.events.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')));
+    const ended=events.some(event=>event.kind==='ended');
+    const start=events.find(event=>event.kind==='started') || events.find(event=>event.kind==='detected');
+    if(start && !ended) open.push({...group,start,freezeType:events.at(-1)?.freezeType||start.freezeType});
+  });
+  return open.sort((a,b)=>String(b.start?.date||'').localeCompare(String(a.start?.date||'')))[0] || null;
+}
+
+function freezeRecentVerified(cid,date){
+  return verifiedDiscrepanciesForCid(cid,date)
+    .filter(item=>{
+      const diff=freezeDateDiffDays(item.endDate||item.action?.date,date);
+      return Number.isFinite(diff) && diff>=0 && diff<=2;
+    })
+    .sort((a,b)=>String(b.endDate||'').localeCompare(String(a.endDate||'')))[0] || null;
+}
+
+function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
   const full=freezeGrowthSeriesForCid(cid).filter(row=>row.date<=date);
   const current=full.at(-1);
-  if(!current || current.date!==date) return {cid,status:'normal',score:0,reasons:[],sequence:[],baseline:null,growth:null,slotRank:null};
+  const manual=freezeManualStateAtDate(cid,date);
+  const openAuto=options.ignoreAuto?null:freezeAutoOpenPeriodForCid(cid);
+  if(!current || current.date!==date){
+    if(manual.active){
+      return {cid,date,status:'total',freezeType:'total',active:true,score:5,reasons:['manual freeze active'],sequence:[],baseline:null,growth:null,slotRank:null,startDate:manual.startDate,startKnown:true,verified:false,recovered:false};
+    }
+    return {cid,date,status:'watching',freezeType:'watching',active:false,score:0,reasons:['insufficient exact data for this date'],sequence:[],baseline:null,growth:null,slotRank:null,startDate:'',startKnown:true,verified:false,recovered:false,insufficient:true};
+  }
 
+  const profile=freezeActivityProfile(cid,date);
   const prior=full.slice(0,-1).filter(row=>row.growth>=0);
   const baselineValues=prior.slice(-7).map(row=>row.growth);
   const baseline=freezePatternMedian(baselineValues);
@@ -11707,8 +12477,7 @@ function freezePatternForCid(cid,date=topSlotsDefaultDate()){
   const slotRank=slotIndex>=0 ? slotIndex+1 : null;
   let score=0;
   const reasons=[];
-
-  const signals={zeroDay:false,severeCollapse:false,notableCollapse:false,microThaw:false,stutter:false,repeatedCollapse:false,slotMismatch:false,persistentSlotStall:false};
+  const signals={zeroDay:false,severeCollapse:false,notableCollapse:false,microThaw:false,stutter:false,repeatedCollapse:false,slotMismatch:false,persistentSlotStall:false,collectorSupport:false,newBotStall:false,verifiedDiscrepancy:false};
   const activeBaseline=Number.isFinite(baseline) && baseline>=20;
 
   if(activeBaseline && currentGrowth===0){signals.zeroDay=true;score+=2;reasons.push('0 growth while normally active')}
@@ -11726,39 +12495,271 @@ function freezePatternForCid(cid,date=topSlotsDefaultDate()){
   const previousSaved=topSlotsPreviousSavedDate(date);
   if(slotRank && previousSaved && topSlotsAddDays(previousSaved,1)===date){
     const prevRank=topSlotsSnapshot(previousSaved).indexOf(cid);
-    if(prevRank>=0 && activeBaseline && Number.isFinite(ratio) && ratio<=0.05){
-      signals.persistentSlotStall=true;score+=1;reasons.push('still in slots during collapse');
-    }
+    if(prevRank>=0 && activeBaseline && Number.isFinite(ratio) && ratio<=0.05){signals.persistentSlotStall=true;score+=1;reasons.push('still in slots during collapse')}
   }
 
-  let confirmed=false;
-  if(date===topSlotsDefaultDate()){
-    try{confirmed=currentFreezeCids().has(cid)}catch(_){confirmed=false}
+  const collectorGrowth=Number.isFinite(current.collectorGrowth)?current.collectorGrowth:null;
+  if(Number.isFinite(collectorGrowth) && collectorGrowth>0 && currentGrowth>=0 && (!Number.isFinite(baseline) || currentGrowth<=Math.max(15,baseline*.15))){
+    signals.collectorSupport=true;score+=1;reasons.push(`+${collectorGrowth} collectors while messages are stalled/low`);
   }
 
-  const usable=full.filter(row=>row.growth>=0).length;
+  let zeroStreak=0;
+  for(let i=full.length-1;i>=0;i--){
+    if(full[i].growth===0) zeroStreak++;
+    else break;
+  }
+  const startRow=zeroStreak?full[full.length-zeroStreak]:null;
+  const startMessages=startRow?.beforeMessages ?? current.beforeMessages ?? null;
+  const legacyThreshold=freezeThresholdForMessages(Number(startMessages));
+  let suspectThreshold=legacyThreshold;
+  let confirmThreshold=legacyThreshold;
+
+  if(profile.established){
+    suspectThreshold=1;
+    confirmThreshold=Math.min(legacyThreshold,Number.isFinite(baseline)&&baseline>=100?1:2);
+  }else if(profile.veryNew){
+    suspectThreshold=1;
+    if(profile.everGrew || signals.collectorSupport) confirmThreshold=Math.min(legacyThreshold,2);
+  }else if(profile.isNew){
+    suspectThreshold=Math.min(legacyThreshold,2);
+    if(profile.everGrew) confirmThreshold=Math.min(legacyThreshold,2);
+  }else if(profile.lowActivity){
+    suspectThreshold=Math.min(legacyThreshold,3);
+  }
+
+  if(profile.veryNew && currentGrowth===0){
+    signals.newBotStall=true;score+=1;reasons.push('new bot stalled in first 3 days');
+  }
+
+  const verified=freezeRecentVerified(cid,date);
+  if(verified){
+    signals.verifiedDiscrepancy=true;score+=3;reasons.push(`verified shortage ${verified.deficit}/${verified.expected}`);
+  }
+
+  const recoveryRows=full.slice(-2);
+  const last2=recoveryRows.map(row=>row.growth);
+  const recovered=activeBaseline && last2.length===2 && last2.every(value=>value>=baseline*.40);
+  // Recovery is only confirmed after two strong days, but once confirmed the
+  // freeze-ended date is the first day of that sustained recovery run.
+  const recoveryStartDate=recovered ? (recoveryRows[0]?.date || date) : '';
+
   let status='normal';
-  if(confirmed) status='confirmed';
-  else if(usable<4) status='watching';
-  else if(score>=5) status='high';
-  else if(score>=3) status='suspicious';
-  else if(score>=2) status='watch';
+  let freezeType='normal';
+  let active=false;
 
-  if(status==='normal' && activeBaseline && full.length>=5){
-    const last2=full.slice(-2).map(row=>row.growth);
-    const earlier=full.slice(-5,-2).map(row=>row.growth);
-    if(last2.length===2 && last2.every(value=>value>=baseline*.40) && earlier.some(value=>value>=0 && value<=baseline*.15)){
-      status='recovering';
-      reasons.push('growth recovering toward baseline');
-    }
+  const canConfirmZero=profile.everGrew || profile.established || signals.collectorSupport || (Number.isFinite(legacyThreshold)&&zeroStreak>=legacyThreshold) || manual.active;
+
+  if(manual.active){
+    status=currentGrowth===0?'total':'partial';
+    freezeType=status;active=true;
+  }else if(verified && !recovered){
+    status='verified';
+    freezeType=currentGrowth===0?'total':'partial';
+    active=true;
+  }else if(verified && recovered){
+    status='recovering';
+    freezeType='recovering';
+    active=false;
+    reasons.push('verified discrepancy followed by sustained recovery');
+  }else if(currentGrowth===0 && zeroStreak>=confirmThreshold && canConfirmZero){
+    status='total';freezeType='total';active=true;
+  }else if(currentGrowth===0 && zeroStreak>=suspectThreshold){
+    status='suspected';freezeType='suspected';active=false;
+  }else if(currentGrowth>0 && activeBaseline && Number.isFinite(ratio) && ((ratio<=.05 && score>=2) || (ratio<=.15 && (score>=3 || Boolean(openAuto))))){
+    status='partial';freezeType='partial';active=true;
+  }else if(openAuto && !recovered && currentGrowth>=0){
+    status='partial';freezeType='partial';active=true;
+    if(currentGrowth<=15) reasons.push('freeze remains active after micro-growth');
+  }else if(openAuto && recovered){
+    status='recovering';freezeType='recovering';active=false;
+    reasons.push('two consecutive days recovered to ≥40% baseline');
+  }else if(score>=2 || signals.newBotStall){
+    status='suspected';freezeType='suspected';active=false;
+  }else if(full.filter(row=>row.growth>=0).length<4){
+    status='watching';freezeType='watching';active=false;
   }
 
-  return {cid,date,status,score,reasons,signals,sequence,baseline,growth:currentGrowth,ratio,slotRank};
+  let startDate='';
+  if(manual.active) startDate=manual.startDate;
+  else if(openAuto?.start?.startDate) startDate=openAuto.start.startDate;
+  else if(startRow?.date) startDate=startRow.date;
+  else if(active) startDate=date;
+
+  return {
+    cid,date,status,freezeType,active,score,reasons,signals,sequence,baseline,growth:currentGrowth,ratio,slotRank,
+    collectorGrowth,zeroStreak,legacyThreshold,suspectThreshold,confirmThreshold,startDate,startKnown:true,startMessages,
+    profile,verified:Boolean(verified),verification:verified||null,recovered,recoveryDate:recoveryStartDate,openAuto:Boolean(openAuto)
+  };
+}
+
+function freezePeriodsOverlap(a,b){
+  const aStart=a.start||a.windowStart||a.end;
+  const bStart=b.start||b.windowStart||b.end;
+  return !!(aStart&&bStart&&a.end&&b.end&&aStart<=b.end&&bStart<=a.end);
+}
+
+function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
+  const rows=freezeGrowthSeriesForCid(cid);
+  const periods=[];
+  let current=null;
+
+  rows.forEach(row=>{
+    const assessment=freezeAssessmentForCid(cid,row.date,{ignoreAuto:true});
+    const qualifies=assessment.active || (includeSuspected && assessment.status==='suspected');
+    const type=assessment.status==='verified'?'verified':assessment.freezeType;
+    if(!qualifies){
+      if(current){current.active=false;periods.push(current);current=null}
+      return;
+    }
+
+    if(!current){
+      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:assessment.status,source:'computed',startKnown:true};
+      return;
+    }
+
+    const gap=freezeDateDiffDays(current.end,row.date);
+    if(gap===1){
+      current.end=row.date;
+      current.days=freezeCalendarDuration(current.start,current.end);
+      if(type==='verified') current.type='verified';
+      else if(type==='total' && current.type!=='verified') current.type='total';
+      else if(current.type==='suspected' && type==='partial') current.type='partial';
+      current.status=assessment.status;
+    }else{
+      current.active=false;periods.push(current);
+      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:assessment.status,source:'computed',startKnown:true};
+    }
+  });
+
+  if(current){
+    const latest=rows.at(-1)?.date;
+    current.active=latest===topSlotsDefaultDate() && freezeAssessmentForCid(cid,latest,{ignoreAuto:true}).active;
+    periods.push(current);
+  }
+
+  if(includeSuspected){
+    freezeUncertainZeroSpansForCid(cid).forEach(span=>periods.push(span));
+  }
+
+  return periods.sort((a,b)=>String(a.start||a.windowStart||'').localeCompare(String(b.start||b.windowStart||'')));
+}
+
+async function postFreezeAutoEvent(payload){
+  if(!freezeAutoState.backendReady) return false;
+  await eventsRequest('/freeze-events',{method:'POST',body:JSON.stringify(payload)});
+  return true;
+}
+
+async function syncAutomaticFreezeEvents(){
+  if(eventsState.autoFreezeBusy || !eventsState.unlocked || !freezeAutoState.backendReady) return false;
+  const latest=topSlotsDefaultDate();
+  if(!latest) return false;
+  let changed=false;
+  eventsState.autoFreezeBusy=true;
+  try{
+    for(const [cid] of state.meta){
+      const assessment=freezeAssessmentForCid(cid,latest);
+      const open=freezeAutoOpenPeriodForCid(cid);
+
+      if(assessment.active){
+        const periodKey=open?.periodKey || `${cid}:${assessment.startKnown!==false && assessment.startDate?assessment.startDate:`detected-${latest}`}`;
+        const evidence={
+          score:assessment.score,
+          baseline:assessment.baseline,
+          growth:assessment.growth,
+          ratio:assessment.ratio,
+          collectorGrowth:assessment.collectorGrowth,
+          zeroStreak:assessment.zeroStreak,
+          reasons:(assessment.reasons||[]).slice(0,6)
+        };
+
+        if(!open && assessment.startKnown!==false && assessment.startDate){
+          await postFreezeAutoEvent({
+            uniqueKey:`${periodKey}|started`,cid,date:assessment.startDate,kind:'started',freezeType:assessment.freezeType==='verified'?'partial':assessment.freezeType,
+            source:'auto',periodKey,startDate:assessment.startDate,startKnown:true,evidence,note:'automatic evidence start'
+          });
+          changed=true;
+        }
+
+        const hasDetected=(freezeAutoState.events||[]).some(item=>item.cid===cid&&item.periodKey===periodKey&&item.kind==='detected');
+        if(!hasDetected){
+          await postFreezeAutoEvent({
+            uniqueKey:`${periodKey}|detected`,cid,date:latest,kind:'detected',freezeType:assessment.freezeType==='verified'?assessment.freezeType:assessment.freezeType,
+            source:'auto',periodKey,startDate:assessment.startDate||'',startKnown:assessment.startKnown!==false,evidence,note:'automatic detection threshold reached'
+          });
+          changed=true;
+        }
+
+        if(assessment.verified && assessment.verification){
+          const verifyDate=assessment.verification.endDate||latest;
+          const hasVerified=(freezeAutoState.events||[]).some(item=>item.cid===cid&&item.periodKey===periodKey&&item.kind==='verified'&&item.date===verifyDate);
+          if(!hasVerified){
+            await postFreezeAutoEvent({
+              uniqueKey:`${periodKey}|verified|${verifyDate}`,cid,date:verifyDate,kind:'verified',freezeType:'verified',source:'auto',periodKey,
+              startDate:assessment.startDate||'',startKnown:assessment.startKnown!==false,
+              evidence:{expected:assessment.verification.expected,registered:assessment.verification.registered,deficit:assessment.verification.deficit,percentage:assessment.verification.percentage},
+              note:'message verification showed a registered shortage'
+            });
+            changed=true;
+          }
+        }
+      }else if(open && !assessment.insufficient && (assessment.recovered || ['normal','recovering'].includes(assessment.status))){
+        const endDate=assessment.recoveryDate||latest;
+        const hasEnded=(freezeAutoState.events||[]).some(item=>item.cid===cid&&item.periodKey===open.periodKey&&item.kind==='ended');
+        if(!hasEnded){
+          await postFreezeAutoEvent({
+            uniqueKey:`${open.periodKey}|ended`,cid,date:endDate,kind:'ended',freezeType:open.freezeType==='verified'?'partial':(open.freezeType||'partial'),source:'auto',periodKey:open.periodKey,
+            startDate:open.start?.startDate||'',endDate,startKnown:open.start?.startKnown!==false,
+            evidence:{baseline:assessment.baseline,growth:assessment.growth,reasons:(assessment.reasons||[]).slice(0,5)},note:'automatic recovery threshold reached'
+          });
+          changed=true;
+        }
+      }
+    }
+    return changed;
+  }finally{
+    eventsState.autoFreezeBusy=false;
+  }
+}
+
+function freezeGrowthSeriesForCid(cid){
+  const points=freezeEvidencePointsForCid(cid);
+  const rows=[];
+  for(let i=1;i<points.length;i++){
+    const before=points[i-1];
+    const now=points[i];
+    const gap=freezeDateDiffDays(before.date,now.date);
+    if(gap!==1) continue;
+    if(!Number.isFinite(now.messages) || !Number.isFinite(before.messages)) continue;
+    rows.push({
+      date:now.date,
+      growth:now.messages-before.messages,
+      now:now.messages,
+      beforeMessages:before.messages,
+      collectorGrowth:Number.isFinite(now.collectors)&&Number.isFinite(before.collectors)?now.collectors-before.collectors:null,
+      collectors:now.collectors,
+      source:now.source
+    });
+  }
+  return rows;
+}
+
+function freezePatternCompact(value){
+  if(!Number.isFinite(value)) return '—';
+  const abs=Math.abs(value);
+  const sign=value>0?'+':value<0?'-':'';
+  if(abs>=1000000) return sign+(abs/1000000).toFixed(abs<10000000?1:0).replace(/\.0$/,'')+'M';
+  if(abs>=1000) return sign+(abs/1000).toFixed(abs<10000?1:0).replace(/\.0$/,'')+'K';
+  return sign+String(Math.round(abs));
+}
+
+function freezePatternForCid(cid,date=topSlotsDefaultDate()){
+  return freezeAssessmentForCid(cid,date);
 }
 
 function freezePatternLatest(){
   const date=topSlotsDefaultDate();
-  const priority={confirmed:6,high:5,suspicious:4,watch:3,recovering:2,watching:1,normal:0};
+  const priority={verified:8,total:7,partial:6,suspected:5,recovering:2,watching:1,normal:0};
   const results=[];
   state.meta.forEach((meta,cid)=>{
     const item=freezePatternForCid(cid,date);
@@ -11778,8 +12779,8 @@ function freezePatternRenderHome(){
     return;
   }
   box.innerHTML=items.map(item=>{
-    const icon=item.status==='confirmed'?'⏸️':item.status==='watching'?'👁':'⚠️';
-    const label=item.status==='confirmed'?'confirmed freeze':item.status==='high'?'high suspicion':item.status;
+    const icon=item.status==='total'?'⏸️':item.status==='partial'?'⚠️':item.status==='verified'?'🧪':item.status==='suspected'?'⭕️':item.status==='watching'?'👁':'⚠️';
+    const label=item.status==='total'?'total freeze':item.status==='partial'?'partial freeze':item.status==='verified'?'verified discrepancy':item.status==='suspected'?'suspected freeze':item.status;
     const baseline=Number.isFinite(item.baseline)?`7d median ${freezePatternCompact(item.baseline)}`:'';
     const reason=item.reasons.slice(0,2).join(' · ') || baseline || 'watching early pattern';
     const sequence=item.sequence.map(freezePatternCompact).join(' · ');
@@ -11790,7 +12791,7 @@ function freezePatternRenderHome(){
         <div class="dashboard-freeze-pattern-reason">${archiveEscape([baseline,reason].filter(Boolean).join(' · '))}</div>
         <div class="dashboard-freeze-sequence">${archiveEscape(sequence)}</div>
       </div>
-      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${item.status==='confirmed'?'':` · ${item.score}`}</span>
+      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering'].includes(item.status)?'':` · ${item.score}`}</span>
     </div>`;
   }).join('');
 }
