@@ -3582,6 +3582,64 @@ body.dashboard-shell .stale{color:#e3b341 !important}
   .backfill-editor-field input{font-size:9.5px;padding:0 7px !important}
 }
 
+
+/* Compact event chips as well: the original 3-column pills were too tall on iPhone. */
+@media(max-width:430px){
+  body.dashboard-shell #eventTags{gap:5px !important}
+  body.dashboard-shell #eventTags .event-tag{
+    min-height:30px !important;height:30px !important;
+    padding:0 7px !important;font-size:10px !important;
+    line-height:1 !important;border-radius:11px !important;
+  }
+}
+/* Freeze center: compact research view without changing the other dashboards. */
+.freeze-center[hidden]{display:none !important}
+.freeze-center{display:block;min-width:0}
+.freeze-center-top{display:flex;justify-content:space-between;align-items:flex-start;gap:9px;margin:4px 0 12px}
+.freeze-center-top h2{margin:0;font-size:18px;letter-spacing:-.02em}
+.freeze-center-top small{display:block;margin-top:4px;color:var(--dash-muted);font-size:9px;line-height:1.4}
+.freeze-center-card{margin:9px 0;border:1px solid var(--dash-border);border-radius:14px;background:var(--dash-panel);padding:11px;min-width:0}
+.freeze-center-card>label{display:block;margin-bottom:5px;font-size:9px;color:var(--dash-muted)}
+#freezeCenterBot{width:100%;height:35px !important;min-height:35px !important;font-size:11px !important;padding:0 10px !important;border-radius:10px !important}
+.freeze-center-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:10px}
+.freeze-center-stat{border:1px solid var(--dash-border);border-radius:10px;background:var(--dash-panel-2);padding:7px 3px;text-align:center;min-width:0}
+.freeze-center-stat strong{display:block;font-size:15px;color:var(--dash-text)}
+.freeze-center-stat small{display:block;font-size:8px;color:var(--dash-muted);margin-top:2px}
+.freeze-center-head{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:1px 0 8px;min-width:0}
+.freeze-center-head strong{font-size:11px;color:var(--dash-text);line-height:1.3}
+.freeze-center-head small{font-size:8px;color:var(--dash-muted)}
+.freeze-center-small-button,.freeze-center-links button{flex:0 0 auto;width:auto !important;min-width:0 !important;min-height:27px !important;height:27px !important;padding:0 9px !important;font-size:9px !important;border:1px solid var(--dash-border) !important;border-radius:9px !important;background:var(--dash-panel-2) !important;color:var(--dash-muted) !important}
+.freeze-center-list{max-height:290px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.freeze-center-row{padding:9px 0;border-top:1px solid rgba(255,255,255,.075);font-size:10px;line-height:1.35;min-width:0}
+.freeze-center-row:first-child{border-top:0}
+.freeze-center-row.clickable{cursor:pointer}
+.freeze-center-row-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.freeze-center-row-top b{font-size:10px;overflow-wrap:anywhere}
+.freeze-center-row-top span{font-size:9px;flex:0 0 auto;color:var(--dash-accent-2)}
+.freeze-center-row-meta{font-size:9px;color:var(--dash-muted);margin-top:3px;overflow-wrap:anywhere}
+.freeze-center-muted{font-size:10px;color:var(--dash-muted);padding:7px 0;line-height:1.4}
+.freeze-center-research-row{display:flex;align-items:center;justify-content:space-between;gap:7px}
+.freeze-center-research-row>div{min-width:0}
+.freeze-center-inline-buttons{display:flex;gap:4px;flex:0 0 auto}
+.freeze-center-inline-buttons button{min-width:0 !important;min-height:25px !important;height:25px !important;font-size:8px !important;padding:0 6px !important;border-radius:8px !important}
+.freeze-center-action-card .actions-panel{margin:4px 0 13px;border:0;border-radius:0;background:transparent}
+.freeze-center-action-card .actions-panel>summary{padding:6px 0 !important;font-size:10px}
+.freeze-center-action-card .actions-content{padding:0 !important}
+/* Tiny research chips for narrow iPhones: five fit comfortably across. */
+body.dashboard-shell #actionTags{display:flex;flex-wrap:wrap;gap:4px}
+body.dashboard-shell #actionTags .action-tag{flex:0 0 auto !important;min-height:25px !important;height:25px !important;padding:0 7px !important;font-size:8px !important;line-height:1 !important;border-radius:8px !important;margin:0 !important}
+body.dashboard-shell .freeze-center .action-field input{min-height:33px !important;height:33px !important;font-size:10px !important}
+body.dashboard-shell .freeze-center .action-actions button{min-height:29px !important;height:29px !important;padding:0 11px !important;font-size:9px !important}
+.freeze-center-links{display:flex;flex-wrap:wrap;gap:7px;margin:13px 0}
+.freeze-center-links button{min-height:32px !important;height:32px !important}
+.freeze-center-note{color:var(--dash-muted);font-size:9px;line-height:1.45;margin:14px 2px 8px}
+@media(max-width:375px){.freeze-center-stats{gap:4px}.freeze-center-stat small{font-size:7px}.freeze-center-card{padding:9px}.freeze-center .action-grid{gap:5px}}
+
+.freeze-center-growth-row{display:grid;grid-template-columns:60px minmax(0,1fr) 42px;gap:6px;align-items:center;padding:6px 0;border-top:1px solid rgba(255,255,255,.045);font-size:9px;color:var(--dash-muted)}
+.freeze-center-growth-row:first-child{border-top:0}
+.freeze-center-growth-row b{text-align:right;color:var(--dash-accent-2);font-size:9px}
+.freeze-center-growth-track{height:5px;border-radius:99px;background:#38333d;overflow:hidden}
+.freeze-center-growth-bar{height:100%;border-radius:99px;background:var(--dash-accent,#b49bc3)}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -3707,7 +3765,7 @@ body.dashboard-shell .stale{color:#e3b341 !important}
   <section class="dashboard-card">
     <div class="dashboard-card-head">
       <strong>⏸️ pattern monitor</strong>
-      <button type="button" data-open-dashboard-view="chart">analyse</button>
+      <button type="button" data-open-dashboard-view="freeze">analyse</button>
     </div>
     <div id="dashboardFreezes"><div class="dashboard-empty">loading…</div></div>
   </section>
@@ -3722,7 +3780,84 @@ body.dashboard-shell .stale{color:#e3b341 !important}
       <span class="dashboard-shortcut-icon">⌁</span>
       <span><b>graph</b><small>growth & freezes</small></span>
     </button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="freeze">
+      <span class="dashboard-shortcut-icon">⏸</span>
+      <span><b>freeze center</b><small>analyse · actions</small></span>
+    </button>
   </div>
+</section>
+
+<section id="dashboardFreeze" class="freeze-center" data-dashboard-view="freeze" hidden>
+  <div class="freeze-center-top">
+    <div><h2>⏸️ freeze center</h2><small>patterns · freeze history · actions · message verification</small></div>
+    <button type="button" class="freeze-center-small-button" data-open-dashboard-view="chart">graph ↗</button>
+  </div>
+  <section class="freeze-center-card">
+    <label for="freezeCenterBot">bot</label>
+    <select id="freezeCenterBot" aria-label="filter freeze center by bot"><option value="">all bots</option></select>
+    <div id="freezeCenterSummary" class="freeze-center-stats"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>message growth · recent batches</strong></div>
+    <div id="freezeCenterGrowth" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>⚠️ pattern monitor</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyPatterns">copy</button></div>
+    <div id="freezeCenterPatterns" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>⏸️ active freezes</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyActive">copy</button></div>
+    <div id="freezeCenterActive" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>freeze history</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyHistory">copy</button></div>
+    <div id="freezeCenterHistory" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card freeze-center-action-card">
+    <div class="freeze-center-head"><strong>🧪 research & verification</strong><small>selected bot · date · time</small></div>
+    <details class="actions-panel" id="actionsPanel" open>
+      <summary>actions</summary>
+      <div class="actions-content">
+        <div id="actionBotHint" class="action-bot-hint">select a bot above</div>
+        <div class="action-grid">
+          <div class="action-field">
+            <label for="actionDate">date</label>
+            <input id="actionDate" type="date">
+          </div>
+          <div class="action-field">
+            <label for="actionTime">time</label>
+            <input id="actionTime" type="time" step="60">
+          </div>
+          <div class="action-field full">
+            <label>actions</label>
+            <div id="actionTags" class="action-tags"></div>
+          </div>
+          <div class="action-field">
+            <label for="actionMessages">messages</label>
+            <input id="actionMessages" type="number" min="0" step="1" inputmode="numeric" placeholder="optional total">
+          </div>
+          <div class="action-field">
+            <label for="actionNote">note</label>
+            <input id="actionNote" type="text" maxlength="1000" placeholder="optional">
+          </div>
+        </div>
+        <div class="action-actions">
+          <button id="actionSave" type="button">save</button>
+          <button id="actionClear" type="button">clear</button>
+        </div>
+        <div id="actionStatus" class="action-status"></div>
+        <div id="actionVerification" class="action-verification" hidden></div>
+      </div>
+    </details>
+    <div class="freeze-center-head"><strong>actions history</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyActions">copy</button></div>
+    <div id="freezeCenterActions" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>freeze timeline</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyTimeline">copy</button></div>
+    <div id="freezeCenterTimeline" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-links"><button type="button" id="freezeCenterManual">+ manual freeze event</button><button type="button" data-open-dashboard-view="backfill">historical backfill</button></section>
+  <p class="freeze-center-note">Freeze assessments are indications from historical counts, patterns and verified tests. Actions are observations, not proof of cause. A missing, carried or rounded measurement is not a confirmed zero-growth day.</p>
 </section>
 
 <section id="dashboardTopSlots" class="dashboard-slots" data-dashboard-view="slots" hidden>
@@ -3835,6 +3970,7 @@ body.dashboard-shell .stale{color:#e3b341 !important}
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="slots"><span class="dashboard-shortcut-icon">#</span><span><b>top slots</b><small>daily ranking · historical edits</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="backfill" data-backfill-feature><span class="dashboard-shortcut-icon">↶</span><span><b>historical backfill</b><small>messages · collectors · manual history</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="freeze"><span class="dashboard-shortcut-icon">⏸</span><span><b>freeze center</b><small>patterns · tests · history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="archive"><span class="dashboard-shortcut-icon">▤</span><span><b>archive</b><small>monthly profile history</small></span></button>
   </div>
 
@@ -4328,40 +4464,6 @@ body.dashboard-shell .stale{color:#e3b341 !important}
 
     </div>
 
-    <details class="actions-panel" id="actionsPanel" open>
-      <summary>actions</summary>
-      <div class="actions-content">
-        <div id="actionBotHint" class="action-bot-hint">select a bot above</div>
-        <div class="action-grid">
-          <div class="action-field">
-            <label for="actionDate">date</label>
-            <input id="actionDate" type="date">
-          </div>
-          <div class="action-field">
-            <label for="actionTime">time</label>
-            <input id="actionTime" type="time" step="60">
-          </div>
-          <div class="action-field full">
-            <label>actions</label>
-            <div id="actionTags" class="action-tags"></div>
-          </div>
-          <div class="action-field">
-            <label for="actionMessages">messages</label>
-            <input id="actionMessages" type="number" min="0" step="1" inputmode="numeric" placeholder="optional total">
-          </div>
-          <div class="action-field">
-            <label for="actionNote">note</label>
-            <input id="actionNote" type="text" maxlength="1000" placeholder="optional">
-          </div>
-        </div>
-        <div class="action-actions">
-          <button id="actionSave" type="button">save</button>
-          <button id="actionClear" type="button">clear</button>
-        </div>
-        <div id="actionStatus" class="action-status"></div>
-        <div id="actionVerification" class="action-verification" hidden></div>
-      </div>
-    </details>
 
     <div class="saved-events">
       <div class="saved-events-head">
@@ -9339,6 +9441,7 @@ async function loadActions(){
     actionState.error=error.message || 'actions unavailable';
   }
   renderActionPanel();
+  if(typeof dashboardCurrentView!=='undefined' && dashboardCurrentView==='freeze')freezeCenterRender();
 }
 
 async function loadFreezeEvents(){
@@ -9595,6 +9698,7 @@ async function saveAction(){
     });
     await loadActions();
     await syncActionVerificationResults();
+    if(typeof dashboardCurrentView!=='undefined' && dashboardCurrentView==='freeze')freezeCenterRender();
     if(status){status.textContent='saved ✓';status.className='action-status ok'}
     const saved=[...actionState.actions]
       .filter(item=>item.cid===cid && item.date===date && item.time===time)
@@ -9613,6 +9717,8 @@ function editAction(id){
   const action=actionState.actions.find(item=>String(item.id)===String(id));
   if(!action) return;
   actionState.editingId=action.id;
+  freezeCenterCid=action.cid;
+  if(typeof dashboardShowView==='function')dashboardShowView('freeze');
   if(document.querySelector('#eventBot')) document.querySelector('#eventBot').value=action.cid;
   if(document.querySelector('#actionDate')) document.querySelector('#actionDate').value=action.date;
   if(document.querySelector('#actionTime')) document.querySelector('#actionTime').value=action.time;
@@ -9625,6 +9731,7 @@ function editAction(id){
   const status=document.querySelector('#actionStatus');
   if(status){status.textContent='editing action';status.className='action-status'}
   renderActionVerification(action);
+  freezeCenterRender();
   document.querySelector('#actionsPanel')?.setAttribute('open','');
   document.querySelector('#actionsPanel')?.scrollIntoView({behavior:'smooth',block:'center'});
 }
@@ -9636,6 +9743,7 @@ async function deleteAction(id){
     await eventsRequest('/actions/'+encodeURIComponent(id),{method:'DELETE'});
     if(String(actionState.editingId||'')===String(id)) clearActionForm();
     await loadActions();
+    if(typeof dashboardCurrentView!=='undefined' && dashboardCurrentView==='freeze')freezeCenterRender();
     renderEvents();
     drawCompareChart();
     freezePatternRenderHome();
@@ -11681,12 +11789,158 @@ document.querySelector('#compareBots')?.addEventListener('click',()=>{
 });
 
 
+
+/* ===== freeze center: presentation only; reuses CID-based original models ===== */
+let freezeCenterCid='';
+let freezeCenterCopyCache={};
+
+function freezeCenterDate(date){
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(date||''))?shortGraphDate(date):'unknown';
+}
+function freezeCenterUpdateBotSelect(){
+  const select=document.querySelector('#freezeCenterBot');
+  if(!select) return;
+  const list=[...state.meta.entries()].map(([cid,meta])=>({cid,name:meta?.name||cid}))
+    .sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base'}));
+  const signature=list.map(item=>item.cid+'='+item.name).join('|');
+  if(select.dataset.signature!==signature){
+    select.innerHTML='<option value="">all bots</option>'+list.map(item=>`<option value="${archiveEscape(item.cid)}">${archiveEscape(item.name)}</option>`).join('');
+    select.dataset.signature=signature;
+  }
+  if(freezeCenterCid && !state.meta.has(freezeCenterCid))freezeCenterCid='';
+  select.value=freezeCenterCid;
+}
+function freezeCenterSetBot(cid){
+  freezeCenterCid=String(cid||'');
+  const eventsSelect=document.querySelector('#eventBot');
+  if(eventsSelect){
+    eventsSelect.value=freezeCenterCid || '';
+    if(eventsSelect.value!==freezeCenterCid) eventsSelect.value='';
+    // Refresh the existing events editor selection without changing its stored values.
+    if(typeof loadEventForSelection==='function')loadEventForSelection();
+  }
+  actionSyncBotHint();
+  freezeCenterRender();
+}
+function freezeCenterRow(title,badge,detail='',cid=''){
+  return `<div class="freeze-center-row${cid?' clickable':''}" ${cid?`data-freeze-center-cid="${archiveEscape(cid)}" role="button" tabindex="0"`:''}>
+    <div class="freeze-center-row-top"><b>${archiveEscape(title)}</b><span>${archiveEscape(badge)}</span></div>
+    ${detail?`<div class="freeze-center-row-meta">${archiveEscape(detail)}</div>`:''}
+  </div>`;
+}
+function freezeCenterRender(){
+  const select=document.querySelector('#freezeCenterBot');
+  if(!select)return;
+  freezeCenterUpdateBotSelect();
+  const cid=freezeCenterCid;
+  const latest=topSlotsDefaultDate();
+  const relevant=item=>!cid || item.cid===cid;
+  const names=new Map([...state.meta.entries()].map(([id,meta])=>[id,meta?.name||id]));
+  const patterns=freezePatternLatest().filter(relevant);
+  const allAssessments=[...state.meta.keys()].map(id=>freezeAssessmentForCid(id,latest));
+  const subset=allAssessments.filter(relevant);
+  const active=currentFreezeInfo().filter(relevant);
+  const history=freezeHistory().filter(relevant);
+  const actions=[...(actionState.actions||[])].filter(relevant).sort((a,b)=>
+    String(b.date||'').localeCompare(String(a.date||''))||String(b.time||'').localeCompare(String(a.time||'')));
+  const manual=(eventsState.events||[])
+    .filter(item=>relevant(item)&&typeof item.status?.freeze==='boolean')
+    .map(item=>({...item,kind:item.status.freeze?'started':'ended',freezeType:'manual',__manual:true}));
+  const timeline=[...(freezeAutoState.events||[]).filter(relevant),...manual]
+    .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
+  const summary=[
+    ['total',subset.filter(item=>item.status==='total').length],
+    ['partial',subset.filter(item=>item.status==='partial').length],
+    ['suspected',subset.filter(item=>item.status==='suspected').length],
+    ['verified',subset.filter(item=>item.status==='verified').length]
+  ];
+  const counter=document.querySelector('#freezeCenterSummary');
+  if(counter)counter.innerHTML=summary.map(([label,value])=>`<div class="freeze-center-stat"><strong>${value}</strong><small>${label}</small></div>`).join('');
+  const growthBox=document.querySelector('#freezeCenterGrowth');
+  if(growthBox){
+    if(!cid){growthBox.innerHTML='<div class="freeze-center-muted">Select a bot above to see its message batches without leaving this screen.</div>'}
+    else{
+      const growth=freezeGrowthSeriesForCid(cid).filter(item=>item.growth>=0).slice(-14).reverse();
+      const max=Math.max(1,...growth.map(item=>item.growth));
+      growthBox.innerHTML=growth.length?growth.map(item=>`<div class="freeze-center-growth-row">
+        <span>${archiveEscape(freezeCenterDate(item.date))}</span>
+        <div class="freeze-center-growth-track"><div style="width:${Math.max(item.growth===0?0:3,item.growth/max*100).toFixed(2)}%" class="freeze-center-growth-bar"></div></div>
+        <b>${archiveEscape(freezePatternCompact(item.growth))}</b>
+      </div>`).join(''):'<div class="freeze-center-muted">Not enough consecutive exact readings yet.</div>';
+    }
+  }
+  const patternBox=document.querySelector('#freezeCenterPatterns');
+  if(patternBox)patternBox.innerHTML=patterns.length?patterns.map(item=>freezeCenterRow(names.get(item.cid)||item.cid,
+    ({total:'⏸️ total',partial:'⚠️ partial',verified:'🧪 verified',suspected:'⭕ suspected',watching:'watching',recovering:'recovering'})[item.status]||item.status,
+    [Number.isFinite(item.growth)?'growth '+freezePatternCompact(item.growth):'',Number.isFinite(item.baseline)?'7d median '+freezePatternCompact(item.baseline):'',(item.reasons||[]).slice(0,2).join(' · ')].filter(Boolean).join(' · '),item.cid)).join(''):'<div class="freeze-center-muted">no suspicious patterns in this selection.</div>';
+  const activeBox=document.querySelector('#freezeCenterActive');
+  if(activeBox)activeBox.innerHTML=active.length?active.map(item=>freezeCenterRow(item.name,
+    item.status==='verified'?'🧪 verified':item.type==='partial'?'⚠️ partial':'⏸️ total',
+    `${item.startKnown===false?'start uncertain':'since '+freezeCenterDate(item.since)} · ${item.days} ${item.days===1?'day':'days'} · ${(item.reasons||[]).slice(0,2).join(' · ')}`.trim(),item.cid)).join(''):'<div class="freeze-center-muted">no active freezes.</div>';
+  const historyBox=document.querySelector('#freezeCenterHistory');
+  if(historyBox)historyBox.innerHTML=history.length?history.map(item=>freezeCenterRow(item.name,
+    `${item.days} ${item.days===1?'day':'days'}`,
+    `${item.type||item.status||'freeze'} · ${item.startKnown===false?'start uncertain':freezeCenterDate(item.start)} → ${freezeCenterDate(item.end)}`,
+    item.cid)).join(''):'<div class="freeze-center-muted">no completed freezes in this selection.</div>';
+  const actionsBox=document.querySelector('#freezeCenterActions');
+  if(actionsBox)actionsBox.innerHTML=actions.length?actions.map(item=>{
+    const v=actionVerificationFor(item);
+    const status=v.status==='verified'?` · discrepancy ${fmt.format(v.deficit)}`:v.status==='pending'?' · pending':v.status==='inconclusive'?' · inconclusive':'';
+    return `<div class="freeze-center-row freeze-center-research-row"><div>
+      <div class="freeze-center-row-top"><b>${archiveEscape(names.get(item.cid)||item.cid)}</b></div>
+      <div class="freeze-center-row-meta">${archiveEscape([freezeCenterDate(item.date),item.time,(item.tags||[]).join(' + '),Number.isFinite(item.messagesTotal)?'messages '+fmt.format(item.messagesTotal)+status:'',item.note||''].filter(Boolean).join(' · '))}</div>
+    </div><div class="freeze-center-inline-buttons"><button type="button" data-freeze-action-edit="${archiveEscape(item.id)}">edit</button><button type="button" data-freeze-action-delete="${archiveEscape(item.id)}">delete</button></div></div>`;
+  }).join(''):actionState.backendReady?'<div class="freeze-center-muted">no actions recorded yet.</div>':'<div class="freeze-center-muted">actions storage unavailable · update Worker or unlock Events.</div>';
+  const timelineBox=document.querySelector('#freezeCenterTimeline');
+  if(timelineBox)timelineBox.innerHTML=timeline.length?timeline.map(item=>freezeCenterRow(names.get(item.cid)||item.cid,
+    item.__manual?'manual '+item.kind:freezeAutoEventLabel(item),
+    `${freezeCenterDate(item.date)}${item.startKnown===false?' · uncertain start':''}${item.note?' · '+item.note:''}`,item.cid)).join(''):'<div class="freeze-center-muted">no freeze events recorded.</div>';
+  freezeCenterCopyCache={patterns:patterns.map(item=>`${names.get(item.cid)||item.cid} | ${item.status} | growth ${item.growth} | median ${item.baseline}`).join('\n'),
+    active:active.map(item=>`${item.name} | ${item.status} | ${item.startKnown===false?'start uncertain':item.since} | ${item.days} days`).join('\n'),
+    history:history.map(item=>`${item.name} | ${item.type||item.status} | ${item.startKnown===false?'start uncertain':item.start} → ${item.end} | ${item.days} days`).join('\n'),
+    actions:actions.map(item=>`${names.get(item.cid)||item.cid} | ${item.date} ${item.time} | ${(item.tags||[]).join(' + ')} | messages ${item.messagesTotal??'—'} | ${actionVerificationFor(item).status} | ${item.note||''}`).join('\n'),
+    timeline:timeline.map(item=>`${names.get(item.cid)||item.cid} | ${item.date} | ${item.__manual?'manual '+item.kind:freezeAutoEventLabel(item)}`).join('\n')};
+  actionSyncBotHint();
+}
+async function freezeCenterCopy(kind,button){
+  const value=freezeCenterCopyCache[kind]||'no entries';
+  try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);else throw Error('fallback')}
+  catch(_){const area=document.createElement('textarea');area.value=value;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();document.execCommand('copy');area.remove()}
+  const before=button.textContent;button.textContent='copied';setTimeout(()=>{button.textContent=before},900);
+}
+function freezeCenterInit(){
+  const root=document.querySelector('#dashboardFreeze');
+  if(!root)return;
+  root.querySelector('#freezeCenterBot')?.addEventListener('change',e=>freezeCenterSetBot(e.target.value));
+  root.addEventListener('click',e=>{
+    const cid=e.target.closest('[data-freeze-center-cid]');
+    if(cid){freezeCenterSetBot(cid.dataset.freezeCenterCid);return}
+    const edit=e.target.closest('[data-freeze-action-edit]');
+    if(edit){editAction(edit.dataset.freezeActionEdit);return}
+    const del=e.target.closest('[data-freeze-action-delete]');
+    if(del){deleteAction(del.dataset.freezeActionDelete).then(freezeCenterRender);return}
+    const copy=e.target.closest('[id^="freezeCenterCopy"]');
+    if(copy){freezeCenterCopy(copy.id.replace('freezeCenterCopy','').toLowerCase(),copy);return}
+  });
+  root.addEventListener('keydown',e=>{
+    const item=e.target.closest('[data-freeze-center-cid]');
+    if(item&&(e.key==='Enter'||e.key===' ')){e.preventDefault();freezeCenterSetBot(item.dataset.freezeCenterCid)}
+  });
+  root.querySelector('#freezeCenterManual')?.addEventListener('click',()=>{
+    dashboardShowView('events');
+    const input=document.querySelector('#eventBot');
+    if(input && freezeCenterCid)input.value=freezeCenterCid;
+    loadEventForSelection();
+  });
+}
+
 /* ===== dashboard shell controller ===== */
 let dashboardCurrentView='home';
 
 function dashboardTargets(){
   return {
     home:document.querySelector('#dashboardHome'),
+    freeze:document.querySelector('#dashboardFreeze'),
     more:document.querySelector('#dashboardMore'),
     archive:document.querySelector('#dashboardArchive'),
     slots:document.querySelector('#dashboardTopSlots'),
@@ -11702,6 +11956,7 @@ function dashboardTargets(){
 
 function dashboardNavGroup(view){
   if(view==='slots') return 'home';
+  if(view==='freeze') return 'more';
   if(['analytics','subscribers','cv','archive','backfill','more'].includes(view)) return 'more';
   return view;
 }
@@ -11733,6 +11988,11 @@ function dashboardShowView(view,{scroll=true}={}){
     setTimeout(()=>compareChart?.resize?.(),40);
   }
 
+  if(view==='freeze'){
+    const eventBot=document.querySelector('#eventBot');
+    if(eventBot)eventBot.value=freezeCenterCid || '';
+    setTimeout(freezeCenterRender,0);
+  }
   if(view==='analytics') setTimeout(()=>analyticsChart?.resize?.(),40);
   if(view==='archive') setTimeout(renderDashboardArchive,0);
   if(view==='slots') setTimeout(()=>topSlotsPrepareEditor(topSlotsState.editDate || topSlotsDefaultDate()),0);
@@ -13034,6 +13294,7 @@ function dashboardRefresh(){
   }
 
   try{freezePatternRenderHome()}catch(_){}
+  if(dashboardCurrentView==='freeze') try{freezeCenterRender()}catch(_){}
 }
 
 function dashboardOpenGithub(){
@@ -14454,6 +14715,7 @@ function dashboardInit(){
   document.body.classList.add('dashboard-shell');
   topSlotsInit();
   backfillInit();
+  freezeCenterInit();
 
   const targets=dashboardTargets();
   Object.entries(targets).forEach(([key,el])=>{if(el)el.dataset.dashboardView=key});
