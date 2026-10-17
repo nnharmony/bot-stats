@@ -4300,6 +4300,76 @@ body.dashboard-shell .dashboard-profile-footer{display:none!important}
   body.dashboard-shell #dashboardCreatorLevel{font-size:11px!important}
 }
 
+
+/* ===== refined creator profile: aligned to approved 6-icon layout ===== */
+body.dashboard-shell .dashboard-profile-hero{padding:14px!important;border-radius:20px!important;background:#211c27!important}
+body.dashboard-shell .dashboard-profile-shortcuts{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;justify-content:initial!important;width:100%!important;margin:0 0 14px!important;padding:0 0 13px!important}
+body.dashboard-shell .dashboard-profile-shortcuts .dashboard-header-action{flex:none!important;display:grid!important;place-items:center;width:100%!important;min-width:0!important;height:43px!important;min-height:43px!important;border-radius:11px!important;background:#24212a!important}
+body.dashboard-shell .dashboard-profile-shortcuts .dashboard-header-action svg{width:19px;height:19px}
+.dashboard-profile-details{grid-template-columns:minmax(0,1fr) minmax(119px,36%)!important;min-height:100px;gap:10px!important;align-items:center!important}
+.dashboard-profile-identity{grid-template-columns:65px minmax(0,1fr)!important;gap:10px!important;align-items:center!important}
+body.dashboard-shell .dashboard-avatar-button{width:65px!important;min-width:65px!important;height:65px!important;min-height:65px!important}
+body.dashboard-shell .dashboard-identity-title-line h1{font-size:24px!important}
+.dashboard-uid-copy #dashboardProfileUid{font-size:11px!important}
+.dashboard-subs-card{min-height:98px!important;border:0!important;border-left:1px solid #514657!important;border-radius:0!important;background:transparent!important;padding:2px 0 2px 10px!important;justify-content:center!important;gap:6px!important}
+.dashboard-subs-caption{font-size:10px!important}
+.dashboard-subs-card>.dashboard-subs-controls{display:flex;justify-content:center;gap:7px!important}
+body.dashboard-shell .dashboard-subs-controls button{width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;font-size:17px!important}
+body.dashboard-shell .dashboard-subs-link{display:flex!important;justify-content:center!important;flex:none!important;gap:5px!important}
+.dashboard-subs-link strong{font-size:21px!important;line-height:1.1!important}
+.dashboard-subs-status:empty{display:none!important}
+.dashboard-subs-status{min-height:0!important;margin:0!important}
+body.dashboard-shell .dashboard-level-section{margin-top:15px!important;padding-top:12px!important}
+.dashboard-profile-updated-row{margin-bottom:10px!important}
+.dashboard-profile-updated-row .muted{font-size:10px!important;color:#b6a9b9!important}
+.dashboard-creator-panel{padding:12px!important;border:1px solid #493d4e;border-radius:15px;background:#28222e}
+.dashboard-level-title-line{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(117px,42%)!important;gap:9px!important;align-items:center!important;min-height:85px}
+.dashboard-level-left{display:flex;align-items:center;justify-content:center;gap:6px;padding:5px 8px 5px 0;border-right:1px solid #55465a;min-height:64px;min-width:0}
+.dashboard-level-crown{font-size:20px;line-height:1;color:#c692cf}
+body.dashboard-shell #dashboardCreatorLevel{display:inline-flex!important;align-items:center;justify-content:center;text-align:center;width:auto!important;max-width:none!important;height:auto!important;min-height:42px!important;padding:7px 10px!important;font-size:12px!important;line-height:1.25!important;white-space:normal;border-radius:10px!important;background:#302438!important}
+body.dashboard-shell .dashboard-cv-link{width:100%!important;margin:0!important;padding:4px 0!important;gap:4px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.dashboard-cv-caption{font-size:10px!important}.dashboard-cv-number-row strong{font-size:20px!important;color:#eab4dc!important}
+.dashboard-cv-extra{font-size:8px!important;line-height:1.4!important;color:#c6b5c7}
+body.dashboard-shell .dashboard-level-progress-block{margin-top:12px!important}
+body.dashboard-shell .dashboard-level-progress-track{height:10px!important;background:#443a4b!important}
+body.dashboard-shell .dashboard-level-progress-bar{background:linear-gradient(90deg,#f0a5d4 0%,#c286e4 58%,#9361d5 100%)!important}
+body.dashboard-shell .dashboard-level-progress-meta{margin-top:7px!important;font-size:10px!important;color:#c3afc8!important}
+body.dashboard-shell .dashboard-profile-footer{display:none!important}
+@media(max-width:430px){
+ body.dashboard-shell .dashboard-profile-hero{padding:12px!important}
+ body.dashboard-shell .dashboard-profile-shortcuts{gap:7px!important}
+ body.dashboard-shell .dashboard-profile-shortcuts .dashboard-header-action{flex:none!important;width:100%!important;min-width:0!important;height:39px!important;min-height:39px!important}
+ .dashboard-profile-details{grid-template-columns:minmax(0,1fr) 117px!important;gap:7px!important}
+ .dashboard-profile-identity{grid-template-columns:55px minmax(0,1fr)!important;gap:8px!important}
+ body.dashboard-shell .dashboard-avatar-button{width:55px!important;min-width:55px!important;height:55px!important;min-height:55px!important}
+ body.dashboard-shell .dashboard-identity-title-line h1{font-size:21px!important}
+ .dashboard-uid-copy #dashboardProfileUid{font-size:10px!important}
+ .dashboard-subs-card{padding-left:7px!important}
+ .dashboard-creator-panel{padding:11px!important}
+ .dashboard-level-title-line{grid-template-columns:minmax(0,1fr) minmax(114px,42%)!important;gap:7px!important}
+ .dashboard-level-left{gap:5px;padding-right:5px}
+ .dashboard-level-crown{font-size:16px}
+ body.dashboard-shell #dashboardCreatorLevel{font-size:11px!important;padding:7px 7px!important}
+ .dashboard-cv-number-row strong{font-size:19px!important}
+}
+@media(max-width:350px){
+ .dashboard-profile-details{grid-template-columns:minmax(0,1fr) 105px!important;gap:5px!important}
+ .dashboard-profile-identity{grid-template-columns:43px minmax(0,1fr)!important;gap:6px!important}
+ body.dashboard-shell .dashboard-avatar-button{width:43px!important;min-width:43px!important;height:43px!important;min-height:43px!important}
+ .dashboard-uid-copy #dashboardProfileUid{font-size:9px!important}
+ .dashboard-subs-card{padding-left:5px!important}
+ .dashboard-level-crown{display:none!important}
+ body.dashboard-shell #dashboardCreatorLevel{font-size:10px!important}
+ .dashboard-level-title-line{grid-template-columns:minmax(0,1fr) 110px!important}
+}
+
+
+/* Profile header: LV5's canonical gold level code must NOT colour this outline.
+   Keep the automatic level calculation and other level colours intact. */
+body.dashboard-shell #dashboardCreatorLevel[data-level="5"]{
+  border-color:#946fa5 !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -4372,26 +4442,23 @@ body.dashboard-shell .dashboard-profile-footer{display:none!important}
 
       <div class="dashboard-subs-card" aria-label="subscriber overview">
         <div class="dashboard-subs-caption">subscribers</div>
-        <div class="dashboard-subs-line">
-          <div class="dashboard-subs-controls" aria-label="quick subscriber update">
-            <button id="dashboardSubscriberMinus" type="button" aria-label="subtract 1 subscriber">−</button>
-          </div>
-          <button id="dashboardHeaderSubscribersCard" class="dashboard-subs-link" type="button" data-open-dashboard-view="subscribers" title="open Subscriber Hub">
-            <strong id="dashboardSubscribers">—</strong><span class="dashboard-inline-link-mark" aria-hidden="true">↗</span>
-          </button>
-          <div class="dashboard-subs-controls" aria-label="quick subscriber update">
-            <button id="dashboardSubscriberPlus" type="button" aria-label="add 1 subscriber">+</button>
-          </div>
+        <div class="dashboard-subs-controls" aria-label="quick subscriber update">
+          <button id="dashboardSubscriberMinus" type="button" aria-label="subtract 1 subscriber">−</button>
+          <button id="dashboardSubscriberPlus" type="button" aria-label="add 1 subscriber">+</button>
         </div>
-        <div class="dashboard-subs-live">live</div>
+        <button id="dashboardHeaderSubscribersCard" class="dashboard-subs-link" type="button" data-open-dashboard-view="subscribers" title="open Subscriber Hub">
+          <strong id="dashboardSubscribers">—</strong><span class="dashboard-inline-link-mark" aria-hidden="true">↗</span>
+        </button>
         <div id="dashboardSubscribersMeta" class="dashboard-subs-status" role="status" aria-live="polite"></div>
       </div>
     </div>
 
     <div class="dashboard-level-section">
       <div class="dashboard-profile-updated-row"><div id="updated" class="muted">loading…</div></div>
+      <div class="dashboard-creator-panel">
       <div class="dashboard-level-title-line">
         <div class="dashboard-level-left">
+          <span class="dashboard-level-crown" aria-hidden="true">♛</span>
           <span id="dashboardCreatorLevel" class="dashboard-level-pill">creator level —</span>
         </div>
         <button id="dashboardHeaderCvCard" class="dashboard-cv-link" type="button" data-open-dashboard-view="cv" title="open Creator Value Hub">
@@ -4404,6 +4471,7 @@ body.dashboard-shell .dashboard-profile-footer{display:none!important}
         <div class="dashboard-level-progress-track" role="progressbar" aria-label="creator level progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="dashboardLevelProgressBar" class="dashboard-level-progress-bar" style="width:0%"></div></div>
       </div>
       <div id="dashboardLevelProgressMeta" class="dashboard-level-progress-meta">—</div>
+      </div>
     </div>
     <div class="dashboard-profile-footer"></div>
   </section>
@@ -4695,6 +4763,13 @@ body.dashboard-shell .dashboard-profile-footer{display:none!important}
       <button id="dashboardDiscordSave" type="button">save</button>
     </div>
     <div id="dashboardDiscordStatus" class="dashboard-setting-status"></div>
+
+    <label for="dashboardExtraUrl" style="margin-top:10px">extra shortcut link (+)</label>
+    <div class="dashboard-setting-row">
+      <input id="dashboardExtraUrl" type="url" inputmode="url" placeholder="https://...">
+      <button id="dashboardExtraSave" type="button">save</button>
+    </div>
+    <div id="dashboardExtraStatus" class="dashboard-setting-status"></div>
 
     <div class="dashboard-setting-row" style="margin-top:10px">
       <button id="dashboardAvatarChoose" type="button">choose avatar</button>
@@ -13014,7 +13089,7 @@ function dashboardUpdateProfileCard(cvValue=null){
   if(bar) bar.style.background='linear-gradient(90deg,#f5a9d1 0%, #cc96ff 52%, #a877ff 100%)';
   if(metaEl){
     if(Number.isFinite(cvValue) && Number.isFinite(range.max) && range.max>cvValue){
-      metaEl.textContent=`${fmt.format(range.max-cvValue)} CV to LV ${range.level ? range.level+1 : 1}`;
+      metaEl.textContent=`${fmt.format(cvValue)} / ${fmt.format(range.max)} CV · ${fmt.format(range.max-cvValue)} to LV ${range.level ? range.level+1 : 1}`;
     }else{
       metaEl.textContent=text;
     }
@@ -13122,11 +13197,31 @@ function dashboardOpenDiscord(){
   },80);
 }
 
+function dashboardExtraUrlKey(){
+  return `statsTrackerExtraShortcutUrl:${typeof EVENTS_PROFILE!=='undefined'?EVENTS_PROFILE:'main'}`;
+}
+function dashboardGetExtraUrl(){
+  try{return localStorage.getItem(dashboardExtraUrlKey())||''}catch(_){return ''}
+}
+function dashboardSaveExtraUrl(){
+  const input=document.querySelector('#dashboardExtraUrl');
+  const status=document.querySelector('#dashboardExtraStatus');
+  const raw=String(input?.value||'').trim();
+  const url=raw?dashboardNormalizeUrl(raw):'';
+  if(raw&&!url){if(status)status.textContent='enter a valid URL';return}
+  try{if(url)localStorage.setItem(dashboardExtraUrlKey(),url);else localStorage.removeItem(dashboardExtraUrlKey())}catch(_){ }
+  if(input)input.value=url;
+  if(status)status.textContent=url?'saved ✓':'cleared';
+}
 function dashboardOpenExtraShortcut(){
+  const url=dashboardGetExtraUrl();
+  if(url){window.open(url,'_blank','noopener');return}
   dashboardShowView('more');
   setTimeout(()=>{
-    const status=document.querySelector('#dashboardProfileStatus') || document.querySelector('#dashboardProfileMetaStatus');
-    if(status) status.textContent='extra shortcut placeholder — set any future link here';
+    const input=document.querySelector('#dashboardExtraUrl');
+    const status=document.querySelector('#dashboardExtraStatus');
+    if(status)status.textContent='add a link for this shortcut first';
+    input?.focus();
   },80);
 }
 
@@ -15792,6 +15887,8 @@ function dashboardInit(){
 
   document.querySelector('#dashboardBack')?.addEventListener('click',()=>dashboardShowView('home'));
   document.querySelector('#dashboardExtraShortcut')?.addEventListener('click',dashboardOpenExtraShortcut);
+  document.querySelector('#dashboardExtraSave')?.addEventListener('click',dashboardSaveExtraUrl);
+  document.querySelector('#dashboardExtraUrl')?.addEventListener('keydown',event=>{if(event.key==='Enter')dashboardSaveExtraUrl()});
   document.querySelector('#dashboardGithubShortcut')?.addEventListener('click',dashboardOpenGithub);
   document.querySelector('#dashboardProfileShortcut')?.addEventListener('click',dashboardOpenProfile);
   document.querySelector('#dashboardShareShortcut')?.addEventListener('click',dashboardOpenShare);
@@ -15827,6 +15924,8 @@ function dashboardInit(){
   if(uidInput) uidInput.value=meta.uid || '';
   const discordInput=document.querySelector('#dashboardDiscordUrl');
   if(discordInput) discordInput.value=meta.discordUrl || '';
+  const extraInput=document.querySelector('#dashboardExtraUrl');
+  if(extraInput)extraInput.value=dashboardGetExtraUrl();
   dashboardUpdateProfileCard(Number(cvCurrentEntry()?.total));
 
   document.querySelector('#fullscreenEventsContent')?.addEventListener('click',event=>{
