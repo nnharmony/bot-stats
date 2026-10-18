@@ -4893,6 +4893,120 @@ body.dashboard-shell .dashboard-level-title-line > button:focus-visible {
   }
 }
 
+
+/* === Sticky chart event/status filters ===
+   The action test tags remain confined to Freeze Center, not graph / Events. */
+#compareBots .graph-event-filters,
+#fsBotsList.graph-fs-bots-list .graph-event-filters{
+  position:sticky !important;
+  top:0 !important;
+  z-index:30 !important;
+  box-sizing:border-box !important;
+  display:grid !important;
+  grid-template-columns:repeat(9,minmax(0,1fr)) !important;
+  align-items:center;
+  gap:4px !important;
+  width:100% !important;
+  margin:0 0 9px !important;
+  padding:8px 2px 9px !important;
+  border-bottom:1px solid #554956;
+  background:#25202b !important;
+  box-shadow:0 5px 9px rgba(10,8,13,.28);
+}
+#compareBots .graph-event-filters .graph-event-filter,
+#fsBotsList.graph-fs-bots-list .graph-event-filters .graph-event-filter{
+  min-width:0 !important;
+  width:100% !important;
+  height:34px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+#compareBots,
+#fsBotsList.graph-fs-bots-list {overscroll-behavior-y:contain;}
+
+
+/* Analytics overview: three deliberate rows in two equal columns.
+   Collectors | Total messages; Subscribers | Capped messages;
+   Creator Value | Uncapped messages. All IDs and calculations unchanged. */
+body.dashboard-shell .analytics-content > .analytics-cards {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  align-items:stretch;
+  gap:9px !important;
+}
+body.dashboard-shell .analytics-content > .analytics-cards > .analytics-card {
+  min-width:0;
+  height:100%;
+  box-sizing:border-box;
+}
+body.dashboard-shell .analytics-content > .analytics-cards > .analytics-card strong {
+  overflow-wrap:anywhere;
+}
+
+
+/* Portfolio Insights: calm collapsible milestone ladder and growth leaderboard */
+body.dashboard-shell .analytics-milestone-head{align-items:center;}
+body.dashboard-shell .analytics-milestone-toggle{
+  display:inline-flex;align-items:center;justify-content:flex-end;gap:7px;
+  border:0!important;background:transparent!important;box-shadow:none!important;
+  padding:7px 0 7px 8px!important;color:#c8b7c9!important;
+  font-size:11px!important;font-weight:550;min-height:34px;
+  text-align:right;white-space:nowrap;cursor:pointer;
+}
+body.dashboard-shell .analytics-milestone-toggle span{font-size:17px;line-height:12px;color:#d7a6d1;}
+body.dashboard-shell .analytics-milestone-toggle:focus-visible,
+body.dashboard-shell .analytics-hot-tab:focus-visible{outline:2px solid #dcacd9;outline-offset:2px;}
+body.dashboard-shell #analyticsMilestoneRows[hidden],
+body.dashboard-shell #analyticsMilestoneFullPanel[hidden],
+body.dashboard-shell #analyticsMilestoneCompactHint[hidden]{display:none!important;}
+body.dashboard-shell .analytics-milestone-rows{gap:8px;}
+body.dashboard-shell .analytics-milestone-row{grid-template-columns:57px minmax(0,1fr) auto;gap:8px;line-height:1.35;font-size:11px;}
+body.dashboard-shell .analytics-milestone-threshold{font-size:11px;white-space:nowrap;}
+body.dashboard-shell .analytics-milestone-track{min-width:0;}
+body.dashboard-shell .analytics-milestone-count{font-size:10px;text-align:right;}
+body.dashboard-shell .analytics-milestone-full-panel{padding-top:1px;}
+body.dashboard-shell .analytics-milestone-footnote{font-size:10px;line-height:1.5;color:#aa9aaf;margin-top:10px;}
+body.dashboard-shell .analytics-hot-panel{
+  margin-top:12px;padding:14px 12px;border:1px solid var(--dash-border);
+  border-radius:14px;background:var(--dash-panel-2);min-width:0;
+}
+body.dashboard-shell .analytics-hot-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+body.dashboard-shell .analytics-hot-heading strong{font-size:14px;font-weight:760;color:var(--dash-text);}
+body.dashboard-shell .analytics-hot-heading small{font-size:10px;color:var(--dash-muted);}
+body.dashboard-shell .analytics-hot-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px;}
+body.dashboard-shell .analytics-hot-tab{
+  display:flex;justify-content:center;align-items:center;min-width:0;
+  height:34px;min-height:34px;border-radius:10px!important;
+  border:1px solid #4e4255!important;background:rgba(255,255,255,.025)!important;
+  color:#cbbccd!important;font-size:11px!important;font-weight:700!important;
+  padding:0 6px!important;box-shadow:none!important;cursor:pointer;
+}
+body.dashboard-shell .analytics-hot-tab.active{
+  border-color:#a87dba!important;background:linear-gradient(130deg,#48324f,#4d395b)!important;
+  color:#f5d9ef!important;
+}
+body.dashboard-shell .analytics-hot-period-meta{min-height:17px;margin-top:8px;color:#a99cab;font-size:10px;line-height:1.4;}
+body.dashboard-shell .analytics-hot-rows{display:grid;margin-top:5px;}
+body.dashboard-shell .analytics-hot-row{
+  display:grid;grid-template-columns:26px minmax(0,1fr) auto;
+  gap:9px;align-items:center;min-height:58px;
+  padding:8px 0;border-bottom:1px solid rgba(255,255,255,.075);
+}
+body.dashboard-shell .analytics-hot-row:last-child{border-bottom:0;}
+body.dashboard-shell .analytics-hot-rank{font-size:18px;line-height:1;text-align:center;}
+body.dashboard-shell .analytics-hot-name-wrap{min-width:0;}
+body.dashboard-shell .analytics-hot-name{display:block;font-size:12px;line-height:1.3;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+body.dashboard-shell .analytics-hot-name-wrap small{display:block;font-size:9px;line-height:1.5;color:#ad9fb2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:3px;}
+body.dashboard-shell .analytics-hot-growth{color:#e9aed5;font-size:13px;line-height:1.2;white-space:nowrap;font-weight:750;}
+@media(max-width:355px){
+  body.dashboard-shell .analytics-milestone-row{grid-template-columns:49px minmax(0,1fr) auto;gap:5px;}
+  body.dashboard-shell .analytics-milestone-count{font-size:9px;}
+  body.dashboard-shell .analytics-milestone-head strong{font-size:12px;}
+  body.dashboard-shell .analytics-milestone-toggle{font-size:10px!important;}
+  body.dashboard-shell .analytics-hot-heading small{font-size:9px;}
+  body.dashboard-shell .analytics-hot-growth{font-size:12px;}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -5443,27 +5557,15 @@ body.dashboard-shell .dashboard-level-title-line > button:focus-visible {
 
     <div class="analytics-cards">
       <div class="analytics-card">
-        <span>messages</span>
-        <strong id="analyticsMessagesNow">—</strong>
-        <em id="analyticsMessagesGrowth">—</em>
-      </div>
-
-      <div class="analytics-card">
-        <span>capped messages</span>
-        <strong id="analyticsCappedNow">—</strong>
-        <em id="analyticsCappedGrowth">—</em>
-      </div>
-
-      <div class="analytics-card">
-        <span>uncapped messages</span>
-        <strong id="analyticsUncappedNow">—</strong>
-        <em id="analyticsUncappedGrowth">—</em>
-      </div>
-
-      <div class="analytics-card">
         <span>collectors</span>
         <strong id="analyticsCollectorsNow">—</strong>
         <em id="analyticsCollectorsGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>total messages</span>
+        <strong id="analyticsMessagesNow">—</strong>
+        <em id="analyticsMessagesGrowth">—</em>
       </div>
 
       <div class="analytics-card">
@@ -5473,9 +5575,21 @@ body.dashboard-shell .dashboard-level-title-line > button:focus-visible {
       </div>
 
       <div class="analytics-card">
+        <span>capped messages</span>
+        <strong id="analyticsCappedNow">—</strong>
+        <em id="analyticsCappedGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
         <span>creator value</span>
         <strong id="analyticsCvNow">—</strong>
         <em id="analyticsCvGrowth">—</em>
+      </div>
+
+      <div class="analytics-card">
+        <span>uncapped messages</span>
+        <strong id="analyticsUncappedNow">—</strong>
+        <em id="analyticsUncappedGrowth">—</em>
       </div>
     </div>
 
@@ -5495,10 +5609,30 @@ body.dashboard-shell .dashboard-level-title-line > button:focus-visible {
     <div class="analytics-milestone-panel">
       <div class="analytics-milestone-head">
         <strong>message milestones</strong>
-        <small>collection overview</small>
+        <button id="analyticsMilestoneToggle" class="analytics-milestone-toggle" type="button" aria-expanded="false" aria-controls="analyticsMilestoneFullPanel">collection overview <span aria-hidden="true">⌄</span></button>
       </div>
       <div id="analyticsMilestoneRows" class="analytics-milestone-rows"><div class="dashboard-empty">loading…</div></div>
+      <div id="analyticsMilestoneFullPanel" class="analytics-milestone-full-panel" hidden>
+        <div id="analyticsMilestoneFullRows" class="analytics-milestone-rows"></div>
+        <div class="analytics-milestone-footnote">Milestones are cumulative; the &lt;5K group counts bots with known totals below 5,000.</div>
+      </div>
+      <div id="analyticsMilestoneCompactHint" class="analytics-milestone-footnote" hidden></div>
     </div>
+
+    <section class="analytics-hot-panel" aria-label="Hot bots">
+      <div class="analytics-hot-heading">
+        <strong>🔥 hot bots</strong>
+        <small>top 3 · message growth</small>
+      </div>
+      <div class="analytics-hot-tabs" role="group" aria-label="Hot bots period">
+        <button type="button" class="analytics-hot-tab active" data-analytics-hot-period="1" aria-pressed="true">24H</button>
+        <button type="button" class="analytics-hot-tab" data-analytics-hot-period="7" aria-pressed="false">7D</button>
+        <button type="button" class="analytics-hot-tab" data-analytics-hot-period="30" aria-pressed="false">30D</button>
+        <button type="button" class="analytics-hot-tab" data-analytics-hot-period="90" aria-pressed="false">90D</button>
+      </div>
+      <div id="analyticsHotPeriodMeta" class="analytics-hot-period-meta">latest daily batch</div>
+      <div id="analyticsHotRows" class="analytics-hot-rows"><div class="dashboard-empty">loading…</div></div>
+    </section>
 
     <div class="analytics-subscriber-goal">
       <div>
@@ -6095,7 +6229,7 @@ Chart.register(graphEventMarkerPlugin);
 
 function graphMarkersForDays(days,selectedCids){
   const activeTags=selectedGraphEventTags()
-    .filter(tag=>['edit','avatar','capped','tagged','alert','action','freeze'].includes(tag));
+    .filter(tag=>['edit','avatar','capped','tagged','alert','freeze'].includes(tag));
 
   if(!activeTags.length) return [];
 
@@ -6125,15 +6259,6 @@ function graphMarkersForDays(days,selectedCids){
       }
     });
   });
-
-  if(activeTags.includes('action')){
-    (actionState.actions||[]).forEach(action=>{
-      if(!selected.has(action.cid)) return;
-      const index=dateIndex.get(action.date);
-      if(index===undefined) return;
-      markers.push({index,cid:action.cid,tag:'action',icon:'🧪',note:(action.tags||[]).join(' · '),timestamp:`${action.date} ${action.time||''}`.trim()});
-    });
-  }
 
   if(activeTags.includes('freeze')){
     (freezeAutoState.events||[]).forEach(event=>{
@@ -6801,7 +6926,6 @@ async function loadStatsData(){
       <button type="button" class="graph-event-filter" data-graph-tag="freeze" title="freeze" aria-label="freeze">⏸️</button>
       <button type="button" class="graph-event-filter" data-graph-tag="tagged" title="tagged" aria-label="tagged">⬆️</button>
       <button type="button" class="graph-event-filter" data-graph-tag="alert" title="alert" aria-label="alert">⚠️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="action" title="actions" aria-label="actions">🧪</button>
       <button type="button" class="graph-event-filter" data-graph-tag="banned" title="banned" aria-label="banned">🚫</button>
       <button type="button" class="graph-event-filter" data-graph-tag="violation" title="violation" aria-label="violation">⛔️</button>
     </div>
@@ -7323,7 +7447,7 @@ function renderEventAnalysisOverview(){
   if(!box) return;
 
   const activeTags=selectedGraphEventTags()
-    .filter(tag=>['edit','avatar','capped','tagged','alert','action'].includes(tag));
+    .filter(tag=>['edit','avatar','capped','tagged','alert'].includes(tag));
 
   if(!activeTags.length){
     box.hidden=true;
@@ -7346,7 +7470,7 @@ function renderEventAnalysisOverview(){
       }
 
       return activeTags.some(tag=>{
-        if(tag==='action' || !eventHasAnalysisTag(event,tag)) return false;
+        if(!eventHasAnalysisTag(event,tag)) return false;
 
         // tagged is a history/status log:
         // show tagged ON and OFF events even if that bot is not currently selected anymore.
@@ -7358,17 +7482,7 @@ function renderEventAnalysisOverview(){
     })
     .map(event=>({...event,__kind:'event'}));
 
-  const actionRows=activeTags.includes('action')
-    ? (actionState.actions||[])
-        .filter(action=>
-          selected.has(action.cid) &&
-          (!from || String(action.date||'')>=from) &&
-          (!to || String(action.date||'')<=to)
-        )
-        .map(action=>({...action,__kind:'action'}))
-    : [];
-
-  const rows=[...eventRows,...actionRows]
+  const rows=[...eventRows]
     .sort((a,b)=>
       String(b.date||'').localeCompare(String(a.date||'')) ||
       String(b.time||'').localeCompare(String(a.time||''))
@@ -7394,27 +7508,8 @@ function renderEventAnalysisOverview(){
     ${
       rows.length
         ? rows.map(event=>{
-            if(event.__kind==='action'){
-              const verification=actionVerificationFor(event);
-              const details=[
-                (event.tags||[]).join(' · '),
-                Number.isFinite(Number(event.messagesTotal))?`messages ${fmt.format(Number(event.messagesTotal))}`:'',
-                verification.status==='verified'?`shortage ${fmt.format(verification.deficit)}`:verification.status==='pending'?'pending verification':'',
-                event.note||''
-              ].filter(Boolean).join(' · ');
-              return `
-                <div class="event-analysis-row">
-                  <div class="event-analysis-top">
-                    <span class="event-analysis-name">🧪 ${eventBotLabel(event.cid)}</span>
-                    <span class="event-analysis-time">${formatEventTimestamp(event)}${event.time?` · ${archiveEscape(event.time)}`:''}</span>
-                  </div>
-                  ${details?`<div class="event-analysis-note">${archiveEscape(details)}</div>`:''}
-                </div>
-              `;
-            }
-
             const matching=activeTags.filter(tag=>{
-              if(tag==='action' || !eventHasAnalysisTag(event,tag)) return false;
+              if(!eventHasAnalysisTag(event,tag)) return false;
               return tag==='tagged' || selected.has(event.cid);
             });
 
@@ -7661,7 +7756,6 @@ function graphEventDateRange(){
 }
 
 function eventFilterCids(tag){
-  if(tag==='action') return new Set((actionState.actions||[]).map(item=>item.cid));
   if(tag==='freeze'){
     const set=currentFreezeCids();
     (freezeAutoState.events||[]).forEach(item=>set.add(item.cid));
@@ -8213,11 +8307,6 @@ function graphPeriodDates(){
 function cidMatchesGraphTag(cid,tag){
   if(tag==='new'){
     return newStatusOverlapsGraphRange(cid);
-  }
-
-  if(tag==='action'){
-    const dates=graphPeriodDates();
-    return (actionState.actions||[]).some(action=>action.cid===cid && dates.has(action.date));
   }
 
   if(tag==='freeze'){
@@ -11427,7 +11516,6 @@ function renderEvents(){
     ...eventsState.events
       .filter(event=>event.cid!==TOP_SLOTS_EVENT_CID && event.cid!==HISTORICAL_LEDGER_EVENT_CID)
       .map(event=>({...event,__kind:'event'})),
-    ...(actionState.actions||[]).map(action=>({...action,__kind:'action'})),
     ...(freezeAutoState.events||[]).map(event=>({...event,__kind:'freezeAuto'}))
   ];
 
@@ -11503,24 +11591,6 @@ function renderEvents(){
   }
 
   rows.innerHTML=visibleEvents.map(event=>{
-    if(event.__kind==='action'){
-      const verification=actionVerificationFor(event);
-      const statusLabel=verification.status==='verified'?' · discrepancy':verification.status==='pending'?' · pending':verification.status==='inconclusive'?' · inconclusive':'';
-      const tags=`<span class="tag-chip action-chip">🧪</span>`+(event.tags||[]).map(tag=>`<span class="tag-chip action-chip">${archiveEscape(tag)}</span>`).join('');
-      const note=[event.time||'',Number.isFinite(Number(event.messagesTotal))?`messages ${fmt.format(Number(event.messagesTotal))}${statusLabel}`:'',event.note||''].filter(Boolean).join(' · ');
-      return `
-        <tr>
-          <td class="event-date">${event.date || '—'}</td>
-          <td class="event-bot">${eventBotLabel(event.cid)}</td>
-          <td class="event-tags">${tags}</td>
-          <td class="event-note">${archiveEscape(note||'—')}</td>
-          <td class="event-controls">
-            <button type="button" data-action-edit="${event.id}">edit</button>
-            <button type="button" data-action-delete="${event.id}">delete</button>
-          </td>
-        </tr>`;
-    }
-
     if(event.__kind==='freezeAuto'){
       const tags=`<span class="tag-chip freeze-auto-chip">${freezeAutoIcon(event)}</span>`;
       const boundary=event.startKnown===false?'start uncertain':'';
@@ -12813,7 +12883,7 @@ function renderFullscreenBots(){
     <div class="graph-event-filters" data-fs-graph-event-filters>
       ${[
         ['new','💟'],['edit','☑️'],['avatar','👤'],['capped','🔄'],
-        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['action','🧪'],['banned','🚫'],['violation','⛔️']
+        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️']
       ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${activeTags.includes(tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
     </div>`;
 
@@ -13769,15 +13839,151 @@ function dashboardClearAvatar(){
   dashboardRefresh();
 }
 
+// Portfolio insights: compact milestone ladder, full collection, and Hot Bots.
+// The preview removes only repeated cumulative bot counts; the full ladder retains every tier.
+let dashboardMilestoneExpanded=false;
+let dashboardHotPeriod=1;
+
 function dashboardMilestoneRows(){
   return [
+    {label:'10M+',value:10000000},
+    {label:'7.5M+',value:7500000},
+    {label:'5M+',value:5000000},
+    {label:'4M+',value:4000000},
+    {label:'3M+',value:3000000},
+    {label:'2.5M+',value:2500000},
     {label:'2M+',value:2000000},
     {label:'1.5M+',value:1500000},
     {label:'1M+',value:1000000},
+    {label:'750K+',value:750000},
     {label:'500K+',value:500000},
+    {label:'250K+',value:250000},
+    {label:'200K+',value:200000},
+    {label:'150K+',value:150000},
     {label:'100K+',value:100000},
-    {label:'10K+',value:10000}
+    {label:'75K+',value:75000},
+    {label:'50K+',value:50000},
+    {label:'25K+',value:25000},
+    {label:'20K+',value:20000},
+    {label:'10K+',value:10000},
+    {label:'5K+',value:5000}
   ];
+}
+
+function dashboardMilestoneMarkup(item,totalBots){
+  const pct=Math.max(0,Math.min(100,totalBots ? (item.count/totalBots)*100 : 0));
+  return `<div class="analytics-milestone-row">
+    <span class="analytics-milestone-threshold">${archiveEscape(item.label)}</span>
+    <div class="analytics-milestone-track" role="img" aria-label="${pct.toFixed(1)}% of bots"><div class="analytics-milestone-bar" style="width:${pct}%"></div></div>
+    <span class="analytics-milestone-count">${fmt.format(item.count)} / ${fmt.format(totalBots)} bots</span>
+  </div>`;
+}
+
+function dashboardRenderMilestones(bots,totalBots){
+  const compact=document.querySelector('#analyticsMilestoneRows');
+  const full=document.querySelector('#analyticsMilestoneFullRows');
+  const panel=document.querySelector('#analyticsMilestoneFullPanel');
+  const toggle=document.querySelector('#analyticsMilestoneToggle');
+  const hint=document.querySelector('#analyticsMilestoneCompactHint');
+  if(!compact || !full || !panel || !toggle) return;
+
+  const counts=dashboardMilestoneRows().map(tier=>({
+    ...tier,
+    count:bots.filter(bot=>Number.isFinite(bot?.messages) && bot.messages>=tier.value).length
+  }));
+  const bottomCount=bots.filter(bot=>Number.isFinite(bot?.messages) && bot.messages<5000).length;
+  const all=[...counts,{label:'<5K',value:0,count:bottomCount}];
+  // Deduplication applies only to cumulative + tiers. The <5K remainder is not a cumulative tier.
+  let higherCount=0;
+  const meaningful=counts.filter(item=>{
+    if(item.count===0 || item.count===higherCount) return false;
+    higherCount=item.count;
+    return true;
+  });
+  const compactRows=meaningful.slice(0,7);
+
+  compact.innerHTML=totalBots
+    ? (compactRows.length ? compactRows.map(item=>dashboardMilestoneMarkup(item,totalBots)).join('') : '<div class="dashboard-empty">no milestones reached yet.</div>')
+    : '<div class="dashboard-empty">no bots loaded.</div>';
+  full.innerHTML=totalBots ? all.map(item=>dashboardMilestoneMarkup(item,totalBots)).join('') : '<div class="dashboard-empty">no bots loaded.</div>';
+
+  if(hint){
+    hint.hidden=dashboardMilestoneExpanded || meaningful.length<=compactRows.length;
+    hint.textContent=`${meaningful.length-compactRows.length} more distinct milestones · open collection overview`;
+  }
+  compact.hidden=dashboardMilestoneExpanded;
+  panel.hidden=!dashboardMilestoneExpanded;
+  toggle.setAttribute('aria-expanded',String(dashboardMilestoneExpanded));
+  toggle.innerHTML=dashboardMilestoneExpanded?'compact view <span aria-hidden="true">⌃</span>':'collection overview <span aria-hidden="true">⌄</span>';
+}
+
+function dashboardHotDayDelta(from,to){
+  const a=new Date(String(from||'')+'T12:00:00');
+  const b=new Date(String(to||'')+'T12:00:00');
+  return Number.isFinite(a.getTime())&&Number.isFinite(b.getTime())?Math.round((b-a)/(24*60*60*1000)):0;
+}
+
+function dashboardHotBotsData(period){
+  const days=[...(state.daily||[])].filter(item=>/^\d{4}-\d{2}-\d{2}$/.test(String(item.date||'')))
+    .sort((a,b)=>a.date.localeCompare(b.date));
+  const last=days.at(-1);
+  if(!last || days.length<2) return {rows:[],description:'not enough daily messagebatches yet'};
+  const targetDate=topSlotsAddDays(last.date,-period);
+  const baseline=period===1 ? days.at(-2) : (days.filter(day=>day.date<=targetDate).at(-1) || days[0]);
+  if(!baseline || baseline.date>=last.date) return {rows:[],description:'not enough daily messagebatches yet'};
+  const actualDays=dashboardHotDayDelta(baseline.date,last.date);
+  const part=actualDays<period;
+  const dateLabel=`${shortGraphDate(baseline.date)} → ${shortGraphDate(last.date)}`;
+  const description=period===1
+    ? `latest messagebatch · ${dateLabel}`
+    : `${dateLabel}${part?` · ${actualDays} of ${period} days recorded`:''}`;
+  const earliestForCid=(cid)=>{
+    for(const day of days){
+      if(day.date<=baseline.date || day.date>=last.date) continue;
+      const found=snapshotBot(day.snapshot,cid);
+      if(found && !found.stale && Number.isFinite(found.messages)) return {value:found.messages,date:day.date};
+    }
+    return null;
+  };
+  const rows=(state.bots||[]).filter(bot=>!bot.stale && Number.isFinite(bot.messages)).map(bot=>{
+    let before=snapshotBot(baseline.snapshot,bot.cid);
+    let since=baseline.date;
+    let partialBot=false;
+    if(!before || before.stale || !Number.isFinite(before.messages)){
+      const first=earliestForCid(bot.cid);
+      if(!first) return null;
+      before={messages:first.value};
+      since=first.date;
+      partialBot=true;
+    }
+    const growth=Number(bot.messages)-Number(before.messages);
+    if(!Number.isFinite(growth) || growth<0) return null;
+    return {cid:bot.cid,name:bot.name||bot.cid,messages:bot.messages,growth,since:partialBot?since:''};
+  }).filter(Boolean).sort((a,b)=>b.growth-a.growth || b.messages-a.messages).slice(0,3);
+  return {rows,description};
+}
+
+function dashboardRenderHotBots(){
+  const box=document.querySelector('#analyticsHotRows');
+  const label=document.querySelector('#analyticsHotPeriodMeta');
+  if(!box) return;
+  document.querySelectorAll('[data-analytics-hot-period]').forEach(button=>{
+    const active=Number(button.dataset.analyticsHotPeriod)===dashboardHotPeriod;
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
+  });
+  const data=dashboardHotBotsData(dashboardHotPeriod);
+  if(label) label.textContent=data.description;
+  const medals=['🥇','🥈','🥉'];
+  box.innerHTML=data.rows.length ? data.rows.map((bot,index)=>`
+    <div class="analytics-hot-row">
+      <span class="analytics-hot-rank" aria-label="rank ${index+1}">${medals[index]}</span>
+      <div class="analytics-hot-name-wrap">
+        <strong class="analytics-hot-name">${archiveEscape(bot.name)}</strong>
+        <small>${fmt.format(bot.messages)} messages${bot.since?` · since ${shortGraphDate(bot.since)}`:''}</small>
+      </div>
+      <strong class="analytics-hot-growth">${dashboardSigned(bot.growth)}</strong>
+    </div>`).join('') : '<div class="dashboard-empty">no comparable message growth in this period yet.</div>';
 }
 
 function dashboardRenderAnalyticsInsights(){
@@ -13793,19 +13999,8 @@ function dashboardRenderAnalyticsInsights(){
   if(countEl) countEl.textContent=totalBots ? fmt.format(totalBots) : '—';
   const countMeta=document.querySelector('#analyticsBotCountMeta');
   if(countMeta) countMeta.textContent=totalBots ? 'bots tracked' : 'bots';
-
-  const box=document.querySelector('#analyticsMilestoneRows');
-  if(!box) return;
-  if(!totalBots){
-    box.innerHTML='<div class="dashboard-empty">no bots loaded.</div>';
-    return;
-  }
-  const rows=dashboardMilestoneRows().map(item=>{
-    const count=bots.filter(bot=>Number(bot?.messages || 0) >= item.value).length;
-    const pct=Math.max(0,Math.min(100,totalBots ? (count/totalBots)*100 : 0));
-    return `<div class="analytics-milestone-row"><span class="analytics-milestone-threshold">${archiveEscape(item.label)}</span><div class="analytics-milestone-track"><div class="analytics-milestone-bar" style="width:${pct}%"></div></div><span class="analytics-milestone-count">${fmt.format(count)} / ${fmt.format(totalBots)} bots</span></div>`;
-  });
-  box.innerHTML=rows.join('');
+  dashboardRenderMilestones(bots,totalBots);
+  dashboardRenderHotBots();
 }
 
 function dashboardEventTags(event){
@@ -16408,6 +16603,16 @@ function dashboardInit(){
     }
   });
 
+  document.querySelector('#analyticsMilestoneToggle')?.addEventListener('click',()=>{
+    dashboardMilestoneExpanded=!dashboardMilestoneExpanded;
+    dashboardRenderAnalyticsInsights();
+  });
+  document.querySelectorAll('[data-analytics-hot-period]').forEach(button=>button.addEventListener('click',()=>{
+    const period=Number(button.dataset.analyticsHotPeriod);
+    if(![1,7,30,90].includes(period)) return;
+    dashboardHotPeriod=period;
+    dashboardRenderHotBots();
+  }));
   document.querySelector('#dashboardBack')?.addEventListener('click',()=>dashboardShowView('home'));
   document.querySelector('#dashboardExtraShortcut')?.addEventListener('click',dashboardOpenExtraShortcut);
   document.querySelector('#dashboardExtraSave')?.addEventListener('click',dashboardSaveExtraUrl);
