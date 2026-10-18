@@ -4475,7 +4475,7 @@ body.dashboard-shell .dashboard-creator-panel {
   background: linear-gradient(112deg, #29232f 0%, #302536 56%, #35283b 100%) !important;
   border-color: #514557 !important;
 }
-body.dashboard-shell .dashboard-creator-panel::before {
+body.dashboard-shell .dashboard-level-left::before {
   content: "";
   position: absolute;
   z-index: -1;
@@ -4608,6 +4608,291 @@ body.dashboard-shell .dashboard-level-progress-block { margin-top: 9px !importan
   overflow-wrap: anywhere;
 }
 
+
+/* === Profile v4: move update above identity; coherent CV/Level pair === */
+body.dashboard-shell .dashboard-profile-identity{
+  display:grid !important;
+  grid-template-columns:var(--identity-avatar-width,66px) minmax(0,1fr) !important;
+  grid-template-rows:auto auto;
+  align-content:center;
+  align-items:center;
+  column-gap:10px !important;
+  row-gap:6px !important;
+}
+body.dashboard-shell .dashboard-profile-identity>.dashboard-identity-updated{
+  grid-column:1 / -1 !important;
+  grid-row:1 !important;
+  justify-self:start !important;
+  margin:0 !important;
+  padding:0 !important;
+  width:100%;
+  text-align:left;
+  font-size:9px !important;
+  line-height:1.3;
+  color:#bcb0c2 !important;
+  white-space:normal;
+}
+body.dashboard-shell .dashboard-profile-identity>#dashboardAvatarButton{
+  grid-column:1 !important;
+  grid-row:2 !important;
+}
+body.dashboard-shell .dashboard-profile-identity>.dashboard-identity-content{
+  grid-column:2 !important;
+  grid-row:2 !important;
+}
+body.dashboard-shell .dashboard-creator-panel{
+  position:relative !important;
+  isolation:isolate;
+  overflow:hidden !important;
+  background:linear-gradient(112deg,#29232f 0%,#302636 54%,#352a3a 100%) !important;
+  border:1px solid #514557 !important;
+}
+body.dashboard-shell .dashboard-level-title-line{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  gap:0 !important;
+  min-height:103px;
+}
+/* The level is one full-size hub button, not an inset mini badge. */
+body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left{
+  box-sizing:border-box !important;
+  position:relative !important;
+  isolation:isolate;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:8px !important;
+  min-width:0;
+  min-height:103px !important;
+  width:100% !important;
+  height:auto !important;
+  margin:0 !important;
+  padding:12px 10px 12px 6px !important;
+  border:0 !important;
+  border-right:1px solid #6a586f !important;
+  border-radius:0 !important;
+  text-align:left !important;
+  background:linear-gradient(110deg,rgba(108,74,126,.17),rgba(60,42,76,.05)) !important;
+  color:inherit !important;
+  box-shadow:none !important;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+/* The existing provided image belongs entirely INSIDE the left panel. */
+body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  opacity:.11;
+  background-size:contain !important;
+  background-repeat:no-repeat !important;
+  background-position:left center !important;
+  -webkit-mask-image:radial-gradient(ellipse 77% 82% at 48% 50%,#000 5%,rgba(0,0,0,.6) 42%,transparent 92%);
+  mask-image:radial-gradient(ellipse 77% 82% at 48% 50%,#000 5%,rgba(0,0,0,.6) 42%,transparent 92%);
+}
+body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left>*{
+  position:relative;
+  z-index:1;
+}
+body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left .dashboard-level-label,
+body.dashboard-shell .dashboard-level-title-line>.dashboard-cv-link .dashboard-cv-caption{
+  display:block !important;
+  height:auto !important;
+  padding:0 !important;
+  margin:0 !important;
+  font-size:11px !important;
+  font-weight:550 !important;
+  line-height:1.4 !important;
+  letter-spacing:0 !important;
+  color:#cfbfd1 !important;
+}
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel,
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel[data-level="5"]{
+  display:block !important;
+  height:auto !important;
+  min-height:0 !important;
+  width:auto !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:transparent !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  white-space:nowrap;
+  font-size:28px !important;
+  line-height:1 !important;
+  font-weight:800 !important;
+  letter-spacing:-.02em;
+  color:#edc5e4 !important;
+}
+/* The CV number and today's breakdown are inside ONE outlined clickable button. */
+body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard{
+  box-sizing:border-box !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  gap:5px !important;
+  align-self:stretch !important;
+  width:calc(100% - 12px) !important;
+  min-height:95px !important;
+  height:auto !important;
+  min-width:0 !important;
+  margin:4px 2px 4px 10px !important;
+  padding:10px 10px !important;
+  border:1px solid #75627d !important;
+  border-radius:11px !important;
+  background:linear-gradient(135deg,rgba(79,57,89,.50),rgba(45,35,57,.4)) !important;
+  box-shadow:none !important;
+  text-align:left !important;
+  cursor:pointer;
+}
+body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-number-row{
+  display:flex !important;
+  width:100%;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:4px;
+  line-height:normal !important;
+  margin:0 !important;
+}
+body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-number-row strong{
+  font-size:24px !important;
+  line-height:1.1 !important;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  color:#efc7e7 !important;
+}
+body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-extra{
+  font-size:8px !important;
+  line-height:1.4 !important;
+  color:#cbbdd2 !important;
+  margin:0 !important;
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+body.dashboard-shell .dashboard-level-progress-block{margin-top:10px !important}
+body.dashboard-shell .dashboard-level-progress-track{height:9px !important}
+body.dashboard-shell .dashboard-level-progress-bar{
+  background:linear-gradient(90deg,#ee9ed4 0%,#c38add 55%,#9365d0 100%) !important;
+}
+@media(max-width:430px){
+  body.dashboard-shell .dashboard-profile-identity{--identity-avatar-width:55px;column-gap:8px !important}
+  body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left{padding-left:4px !important;padding-right:7px !important}
+  body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard{
+    width:calc(100% - 10px) !important;
+    margin-left:8px !important;
+    padding:9px 8px !important;
+  }
+  body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel{font-size:27px !important}
+  body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-number-row strong{font-size:22px !important}
+}
+@media(max-width:350px){
+  body.dashboard-shell .dashboard-profile-identity{--identity-avatar-width:45px;column-gap:6px !important}
+  body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left{padding-left:1px !important}
+  body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel{font-size:24px !important}
+  body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard{
+    margin-left:5px !important;
+    width:calc(100% - 7px) !important;
+    padding:7px 6px !important;
+  }
+  body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-number-row strong{font-size:20px !important}
+  body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-extra{font-size:7.5px !important}
+}
+
+
+/* === Final requested header refinements: crown treatment + subscriber hub button === */
+/* The supplied line-art crown/logo never leaves the left level pane. A soft
+   four-sided fade prevents a rigid rectangle ending beside the progress bar. */
+body.dashboard-shell .dashboard-level-title-line > .dashboard-level-left {
+  background: linear-gradient(118deg,rgba(105,64,105,.19),rgba(65,43,75,.09)) !important;
+  border-right: 1px solid rgba(194,158,197,.4) !important;
+}
+body.dashboard-shell .dashboard-level-title-line > .dashboard-level-left::before {
+  inset:0 !important;
+  top:0 !important;
+  left:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  width:100% !important;
+  height:100% !important;
+  z-index:0 !important;
+  background-size:100% 100% !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  opacity:.62 !important;
+  filter:brightness(1.45) contrast(1.15) saturate(1.1);
+  mix-blend-mode:screen;
+  -webkit-mask-image:radial-gradient(ellipse 72% 80% at 50% 48%, #000 28%, rgba(0,0,0,.75) 50%, transparent 100%) !important;
+  mask-image:radial-gradient(ellipse 72% 80% at 50% 48%, #000 28%, rgba(0,0,0,.75) 50%, transparent 100%) !important;
+}
+body.dashboard-shell .dashboard-level-title-line > .dashboard-level-left .dashboard-level-label,
+body.dashboard-shell .dashboard-level-title-line > .dashboard-level-left #dashboardCreatorLevel {
+  position:relative;
+  z-index:1;
+  text-shadow:0 1px 4px rgba(18,13,23,.45);
+}
+/* Subscriber count: a real outlined, keyboard-focusable hub button,
+   visually separate from the existing minus/plus controls. */
+body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard {
+  box-sizing:border-box !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  width:min(100%,93px) !important;
+  min-width:0 !important;
+  min-height:41px !important;
+  margin:1px auto 0 !important;
+  padding:6px 8px !important;
+  border:1px solid #74617c !important;
+  border-radius:10px !important;
+  background:linear-gradient(150deg,#382b3e,#302636) !important;
+  color:#f0eaf2 !important;
+  box-shadow:none !important;
+  text-decoration:none !important;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease;
+}
+body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard strong {
+  font-size:23px !important;
+  font-weight:820 !important;
+  line-height:1.1 !important;
+  letter-spacing:-.018em !important;
+  font-variant-numeric:tabular-nums;
+}
+body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard .dashboard-inline-link-mark {
+  font-size:12px !important;
+  line-height:1 !important;
+}
+body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard:hover,
+body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard:focus-visible {
+  border-color:#b58cbb !important;
+  background:linear-gradient(150deg,#47334c,#36293c) !important;
+}
+body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard:focus-visible,
+body.dashboard-shell .dashboard-level-title-line > button:focus-visible {
+  outline:2px solid #d6a4d2 !important;
+  outline-offset:2px !important;
+}
+@media(max-width:350px){
+  body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard {
+    width:min(100%,85px) !important;
+    min-height:38px !important;
+    padding:5px 6px !important;
+  }
+  body.dashboard-shell .dashboard-subs-card > #dashboardHeaderSubscribersCard strong {
+    font-size:21px !important;
+  }
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -4662,6 +4947,7 @@ body.dashboard-shell .dashboard-level-progress-block { margin-top: 9px !importan
 
     <div class="dashboard-profile-details">
       <div class="dashboard-profile-identity">
+        <div id="updated" class="dashboard-identity-updated muted">loading…</div>
         <button id="dashboardAvatarButton" class="dashboard-avatar-button" type="button" aria-label="change profile avatar" title="change profile avatar">
           <img id="dashboardAvatarImage" class="dashboard-avatar-image" alt="profile avatar" hidden>
           <span id="dashboardAvatarFallback" class="dashboard-avatar-fallback">N</span>
@@ -4676,7 +4962,6 @@ body.dashboard-shell .dashboard-level-progress-block { margin-top: 9px !importan
             <span id="dashboardProfileUid">UID —</span><span aria-hidden="true" class="dashboard-uid-copy-symbol">⧉</span>
           </button>
         </div>
-        <div id="updated" class="dashboard-identity-updated muted">loading…</div>
       </div>
 
       <div class="dashboard-subs-card" aria-label="subscriber overview">
@@ -4695,10 +4980,10 @@ body.dashboard-shell .dashboard-level-progress-block { margin-top: 9px !importan
     <div class="dashboard-level-section">
       <div class="dashboard-creator-panel">
       <div class="dashboard-level-title-line">
-        <div class="dashboard-level-left">
+        <button class="dashboard-level-left" id="dashboardLevelHubShortcut" type="button" data-open-dashboard-view="cv" title="open Creator Value Hub" aria-label="open Creator Value Hub via Creator Level">
           <span class="dashboard-level-label">creator level</span>
           <span id="dashboardCreatorLevel" class="dashboard-level-pill">LV —</span>
-        </div>
+        </button>
         <button id="dashboardHeaderCvCard" class="dashboard-cv-link" type="button" data-open-dashboard-view="cv" title="open Creator Value Hub">
           <span class="dashboard-cv-caption">creator value</span>
           <span class="dashboard-cv-number-row"><strong id="dashboardCv">—</strong><span class="dashboard-inline-link-mark" aria-hidden="true">↗</span></span>
