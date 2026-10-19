@@ -5254,6 +5254,41 @@ body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard {
   box-shadow:none!important;
 }
 
+
+/* Analytics: full portfolio popularity, calculated using the same Hot Ranking data. */
+body.dashboard-shell .analytics-profile-popularity {
+  display:block!important;width:100%!important;box-sizing:border-box!important;
+  margin:12px 0 11px!important;padding:14px 15px!important;
+  border:1px solid #6c536b!important;border-radius:15px!important;
+  text-align:left!important;
+  background:linear-gradient(110deg,#2a222e 0%,#322537 100%)!important;
+  color:#f0d4e9!important;box-shadow:none!important;
+}
+body.dashboard-shell .analytics-profile-popularity-heading {
+  display:flex;align-items:baseline;justify-content:space-between;gap:9px;min-width:0;
+}
+body.dashboard-shell .analytics-profile-popularity-heading strong {
+  font-size:15px!important;font-weight:800!important;letter-spacing:0!important;color:#f0e0ec!important;
+}
+body.dashboard-shell .analytics-profile-popularity-heading>span {
+  font-size:11px!important;white-space:nowrap;color:#bda9bc!important;
+}
+body.dashboard-shell .analytics-profile-popularity-value {
+  display:block!important;margin:7px 0 4px!important;color:#efbee3!important;
+  font-size:27px!important;font-weight:850!important;line-height:1.14!important;
+}
+body.dashboard-shell .analytics-profile-popularity-details {
+  display:block;font-size:11px!important;font-weight:500!important;line-height:1.45!important;
+  color:#bfb0c1!important;overflow-wrap:anywhere;
+}
+@media(max-width:350px){
+  body.dashboard-shell .analytics-profile-popularity{padding:11px 12px!important}
+  body.dashboard-shell .analytics-profile-popularity-heading strong{font-size:13px!important}
+  body.dashboard-shell .analytics-profile-popularity-heading>span{font-size:10px!important}
+  body.dashboard-shell .analytics-profile-popularity-value{font-size:24px!important}
+  body.dashboard-shell .analytics-profile-popularity-details{font-size:10px!important}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -5412,7 +5447,7 @@ body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard {
     <section class="rankings-home-card" data-rank-home="new"><div class="rankings-home-head"><strong>💟 new and popular</strong><span>newest characters</span></div><div class="rankings-home-body" id="rankingsHomeNew">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="new" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="new">full ranking ↗</button></div></section>
     <section class="rankings-home-card" data-rank-home="leader"><div class="rankings-home-head"><strong>❤️‍🔥 leaderboard</strong><span>relative growth</span></div><div class="rankings-home-body" id="rankingsHomeLeader">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="leader" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="leader">full ranking ↗</button></div></section>
     <section class="rankings-home-card" data-rank-home="breakouts"><div class="rankings-home-head"><strong>⚡️ breakouts</strong><span>personal growth spikes</span></div><div class="rankings-home-body" id="rankingsHomeBreakouts">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="breakouts" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="breakouts">full ranking ↗</button></div></section>
-    <section class="rankings-home-card" data-rank-home="hot"><div class="rankings-home-head"><strong>🔥 hot ranking</strong><span>estimated popularity · 7D</span></div><div id="rankingsHomeScore" class="rankings-home-score">—</div><div class="rankings-home-body" id="rankingsHomeHot">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="hot" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="hot">full ranking ↗</button></div></section>
+    <section class="rankings-home-card" data-rank-home="hot"><div class="rankings-home-head"><strong>🔥 hot ranking</strong><span>profile popularity · 7D</span></div><div id="rankingsHomeScore" class="rankings-home-score">—</div><div class="rankings-home-body" id="rankingsHomeHot">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="hot" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="hot">full ranking ↗</button></div></section>
   </div>
 
   <div class="dashboard-section-title">freeze monitor</div>
@@ -5472,8 +5507,7 @@ body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard {
     <p id="rankingsHubMeta" class="rankings-hub-meta"></p>
     <div id="rankingsHubRows" class="rankings-hub-rows" aria-live="polite"></div>
   </section>
-  <details class="rankings-metadata"><summary>public characters & publication dates</summary><p>Only public characters count. Enter a publication date when it differs from creation. Unknown publication dates remain labelled as estimates when creation dates are used.</p><div id="rankingsMetadataRows"></div></details>
-  <p class="rankings-disclaimer">The 🔥 score is an estimate from recorded message growth, not an official PolyBuzz score. Missing observations are never treated as zero.</p>
+  <p class="rankings-disclaimer">🔥 is your own popularity index (recorded message growth ÷ adjustable coefficient), not an official PolyBuzz score. Missing observations are never treated as zero.</p>
 </section>
 
 <section id="dashboardFreeze" class="freeze-center" data-dashboard-view="freeze" hidden>
@@ -5876,14 +5910,14 @@ body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard {
 
     <div class="analytics-insights-grid">
       <div class="analytics-card analytics-compact-card">
+        <span>characters</span>
+        <strong id="analyticsBotCount">—</strong>
+        <em id="analyticsBotCountMeta">bots tracked</em>
+      </div>
+      <div class="analytics-card analytics-compact-card">
         <span>average / bot</span>
         <strong id="analyticsAveragePerBot">—</strong>
         <em id="analyticsAveragePerBotMeta">messages</em>
-      </div>
-      <div class="analytics-card analytics-compact-card">
-        <span>portfolio size</span>
-        <strong id="analyticsBotCount">—</strong>
-        <em id="analyticsBotCountMeta">bots tracked</em>
       </div>
     </div>
 
@@ -5901,6 +5935,11 @@ body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard {
     </div>
 
     <button type="button" class="rankings-analytics-link" data-open-dashboard-view="rankings">🏆 open rankings hub <span>new · relative · breakouts · 🔥</span><b aria-hidden="true">↗</b></button>
+    <button type="button" class="analytics-profile-popularity" data-rank-open="hot" aria-label="Open profile popularity in Hot Ranking">
+      <span class="analytics-profile-popularity-heading"><strong>🔥 profile popularity</strong><span>rolling 7D <span aria-hidden="true">↗</span></span></span>
+      <strong id="analyticsProfilePopularityScore" class="analytics-profile-popularity-value">—</strong>
+      <span class="analytics-profile-popularity-details" id="analyticsProfilePopularityDetails">Waiting for 7 complete daily updates</span>
+    </button>
     <section class="analytics-hot-panel" aria-label="Hot bots">
       <div class="analytics-hot-heading">
         <strong>🔥 hot bots</strong>
@@ -14270,6 +14309,23 @@ function dashboardRenderHotBots(){
     </div>`).join('') : '<div class="dashboard-empty">no comparable message growth in this period yet.</div>';
 }
 
+function dashboardRenderProfilePopularity(){
+  const value=document.getElementById('analyticsProfilePopularityScore');
+  const details=document.getElementById('analyticsProfilePopularityDetails');
+  if(!value || !details)return;
+  rankingsLoad();
+  const result=rankingsBuild('hot','7');
+  if(!result.window?.valid){
+    value.textContent='—';
+    details.textContent=result.description||'Waiting for 7 complete daily updates';
+    return;
+  }
+  const count=(result.rows||[]).length;
+  const total=result.publicCount||0;
+  value.textContent=`${rankingsFloat(result.score)} 🔥`;
+  details.textContent=`+${fmt.format(result.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${result.incomplete?` · ${count}/${total} public characters measured`:''}`;
+}
+
 function dashboardRenderAnalyticsInsights(){
   const bots=Array.isArray(state?.bots) ? state.bots : [];
   const totalBots=bots.length;
@@ -14285,6 +14341,7 @@ function dashboardRenderAnalyticsInsights(){
   if(countMeta) countMeta.textContent=totalBots ? 'bots tracked' : 'bots';
   dashboardRenderMilestones(bots,totalBots);
   dashboardRenderHotBots();
+  try{dashboardRenderProfilePopularity();}catch(error){console.warn('Profile popularity:',error)}
 }
 
 function dashboardEventTags(event){
@@ -16873,7 +16930,7 @@ const rankingTabConfig={
   new:{title:'💟 New and Popular',detail:'Newest public characters · absolute or relative growth.',periods:['1','7','30']},
   leader:{title:'❤️‍🔥 Leaderboard',detail:'All public characters ranked by relative message growth.',periods:['1','7','30','90']},
   breakouts:{title:'⚡️ Breakouts',detail:'Daily growth compared with the previous 14 complete growth intervals.',periods:['1']},
-  hot:{title:'🔥 Hot Ranking',detail:'Estimated popularity, calculated from actual public portfolio message growth.',periods:['7','weekly','30','90']}
+  hot:{title:'🔥 Hot Ranking',detail:'Your own popularity index, calculated from actual public portfolio message growth.',periods:['7','weekly','30','90']}
 };
 function rankingsStorageKey(){return 'pbRankingsV1:'+(typeof EVENTS_PROFILE!=='undefined'&&EVENTS_PROFILE||'main')}
 function rankingsLoad(){if(rankingsConfig.loaded)return;rankingsConfig.loaded=true;try{const o=JSON.parse(localStorage.getItem(rankingsStorageKey())||'{}');if(o.published&&typeof o.published==='object')rankingsConfig.published=o.published;if(o.publicOverrides&&typeof o.publicOverrides==='object')rankingsConfig.publicOverrides=o.publicOverrides;if(Number.isFinite(+o.coef)&&+o.coef>0)rankingsConfig.coef=+o.coef;}catch(_){}}
@@ -16897,7 +16954,7 @@ function rankingsWindow(period){const days=rankingsDays(),last=days.at(-1);if(!l
     const monday=mondays.at(-1);if(!monday)return{valid:false,reason:'No completed Monday snapshot available for weekly ranking.'};
     end=monday.date;start=rankingsAddDays(end,-7);daysCount=7;
     const displayStart=rankingsAddDays(end,-8),displayEnd=rankingsAddDays(end,-1);
-    note=`PolyBuzz week ${rankingsDateLabel(displayStart)}–${rankingsDateLabel(displayEnd)} · published Monday ${rankingsDateLabel(end)} · message snapshots ${rankingsDateLabel(start)} → ${rankingsDateLabel(end)} (estimated ranking).`;
+    note=`PolyBuzz week ${rankingsDateLabel(displayStart)}–${rankingsDateLabel(displayEnd)} · published Monday ${rankingsDateLabel(end)} · message snapshots ${rankingsDateLabel(start)} → ${rankingsDateLabel(end)} · own popularity index.`;
   }else{
     daysCount=Number(period)||1;start=rankingsAddDays(end,-daysCount);
     note=`${rankingsDateLabel(start)} → ${rankingsDateLabel(end)} · ${daysCount} completed daily updates.`;
@@ -16970,7 +17027,7 @@ function rankingsBreakouts(w,publicBots,options={}){
  return{rows,window:w,description:`${rankingsDateLabel(end)} batch · compared with its preceding 14 valid daily growth values.`,publicCount:publicBots.length,skipped};
 }
 function rankingsRowLabel(tab,r){if(tab==='new')return r.relative===null?'NEW':`+${rankingsPercent(r.relative)}`;if(tab==='leader')return r.relative===null?'NEW':`+${rankingsPercent(r.relative)}`;if(tab==='breakouts')return r.reactivated?'⚡ REACTIVATED':r.factor===null?'—':rankingsFloat(r.factor)+'×';return rankingsFloat(r.score)+' 🔥'}
-function rankingsRowDetails(tab,r){if(tab==='new')return `${r.age===null?'age unknown':r.age+'d since '+(r.published?.estimated?'creation (est.)':'publication')} · ${fmt.format(r.end)} total · +${fmt.format(r.growth)}${r.partial?' · partial period':''}`;
+function rankingsRowDetails(tab,r){if(tab==='new')return `${r.age===null?'age unknown':r.age+'d since '+(r.published?.estimated?'creation':'publication')} · ${fmt.format(r.end)} total · +${fmt.format(r.growth)}${r.partial?' · partial period':''}`;
  if(tab==='leader')return `${fmt.format(r.start)} → ${fmt.format(r.end)} · +${fmt.format(r.growth)}`;
  if(tab==='breakouts')return `+${fmt.format(r.growth)} today · normal ${rankingsFloat(r.typical)}/day${r.best30?' · 🏅 30D personal best':''}`;
  return `+${fmt.format(r.growth)} msgs · ${rankingsFloat(r.share)}% of measured portfolio`;
@@ -16981,9 +17038,8 @@ function rankingsRenderHome(){rankingsLoad();for(const [tab,id] of Object.entrie
  const period=tab==='new'?'1':tab==='leader'?'1':tab==='breakouts'?'1':'7';
  const res=rankingsBuild(tab,period);
  box.innerHTML=res.rows.length?rankingsRowsMarkup(tab,res.rows):`<div class="rankings-empty">${archiveEscape(res.description||'No qualifying comparable bots yet.')}</div>`;
- if(tab==='hot'){const sum=document.getElementById('rankingsHomeScore');if(sum)sum.textContent=res.window?.valid?`${rankingsFloat(res.score)} 🔥 · +${fmt.format(res.totalGrowth)} messages · 7D${res.incomplete?' · partial':''}`:'Estimated profile score · pending 7D snapshots';}
+ if(tab==='hot'){const sum=document.getElementById('rankingsHomeScore');if(sum)sum.textContent=res.window?.valid?`${rankingsFloat(res.score)} 🔥 · +${fmt.format(res.totalGrowth)} messages · 7D${res.incomplete?' · partial':''}`:'Profile score · waiting for 7D snapshots';}
  }}
-function rankingsRenderMeta(){const box=document.getElementById('rankingsMetadataRows');if(!box)return;box.innerHTML='<div class="rankings-metadata-meta">Publication date (optional) · Included in public rankings ✓</div>'+[...(state.bots||[])].sort((a,b)=>(b.order||0)-(a.order||0)).map(bot=>{const pub=rankingsPublication(bot);return `<div class="rankings-metadata-row"><span>${archiveEscape(bot.name||bot.cid)}${pub.estimated?' <small>· est.</small>':''}</span><input type="date" data-rank-published="${archiveEscape(bot.cid)}" value="${archiveEscape(rankingsConfig.published[bot.cid]||'')}" title="publication date" aria-label="publication date for ${archiveEscape(bot.name||bot.cid)}"><input type="checkbox" data-rank-public="${archiveEscape(bot.cid)}" ${rankingsIsPublic(bot)?'checked':''} title="public character" aria-label="public: ${archiveEscape(bot.name||bot.cid)}"></div>`}).join('');}
 function rankingsRenderHub(){rankingsLoad();const tab=rankingsConfig.tab,info=rankingTabConfig[tab],p=rankingsConfig.period[tab];if(!info)return;
  document.querySelectorAll('[data-rank-tab]').forEach(b=>b.classList.toggle('active',b.dataset.rankTab===tab));
  const title=document.getElementById('rankingsHubTitle'),desc=document.getElementById('rankingsHubDescription');if(title)title.textContent=info.title;if(desc)desc.textContent=info.detail;
@@ -16996,8 +17052,8 @@ function rankingsRenderHub(){rankingsLoad();const tab=rankingsConfig.tab,info=ra
  const res=rankingsBuild(tab,p),box=document.getElementById('rankingsHubRows'),meta=document.getElementById('rankingsHubMeta'),sum=document.getElementById('rankingsProfileSummary');
  if(meta)meta.textContent=res.description+(res.skipped?` · ${res.skipped} characters missing a valid baseline/readout`:'' )+` · ${res.publicCount||0} public bots`;
  if(box)box.innerHTML=res.rows?.length?rankingsRowsMarkup(tab,res.rows):`<div class="rankings-empty">${archiveEscape(res.description||'No qualifying bots for this period.')}</div>`;
- if(sum){sum.hidden=tab!=='hot';if(tab==='hot'){sum.innerHTML=res.window?.valid?`<small>🔥 PROFILE POPULARITY · ${p==='weekly'?'closed Monday ranking':p+'D'} · Estimated Score</small><strong>${rankingsFloat(res.score)} 🔥</strong><small>+${fmt.format(res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${res.incomplete?' · partial: some public bots lack readings':''}</small>`:`<small>🔥 PROFILE POPULARITY · Estimated Score</small><strong>—</strong><small>${archiveEscape(res.description)}</small>`;}}
- rankingsRenderMeta();}
+ if(sum){sum.hidden=tab!=='hot';if(tab==='hot'){sum.innerHTML=res.window?.valid?`<small>🔥 PROFILE POPULARITY · ${p==='weekly'?'closed Monday ranking':p+'D'}</small><strong>${rankingsFloat(res.score)} 🔥</strong><small>+${fmt.format(res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${res.incomplete?' · partial: some public bots lack readings':''}</small>`:`<small>🔥 PROFILE POPULARITY</small><strong>—</strong><small>${archiveEscape(res.description)}</small>`;}}
+}
 function rankingsInit(){rankingsLoad();document.addEventListener('click',event=>{
  const open=event.target.closest('[data-rank-open]');if(open){rankingsConfig.tab=open.dataset.rankOpen;dashboardShowView('rankings');return;}
  const expand=event.target.closest('[data-rank-expand]');if(expand){const tab=expand.dataset.rankExpand,card=expand.closest('.rankings-home-card');rankingsConfig.expanded[tab]=!rankingsConfig.expanded[tab];card?.classList.toggle('expanded',rankingsConfig.expanded[tab]);expand.setAttribute('aria-expanded',String(rankingsConfig.expanded[tab]));expand.textContent=rankingsConfig.expanded[tab]?'show less ⌃':'show all ⌄';return;}
@@ -17010,12 +17066,9 @@ function rankingsInit(){rankingsLoad();document.addEventListener('click',event=>
   if(key==='newSelection'||key==='newSort')rankingsConfig[key]=el.value;
   if(key==='minimum'){const val=el.value;rankingsConfig.minimumMode[tab]=val;if(val==='custom'){rankingsConfig.minimum[tab]=Math.max(0,Number(document.getElementById('rankingsCustomMin')?.value)||25);}else rankingsConfig.minimum[tab]=Math.max(0,Number(val)||0);}
   if(key==='custom')rankingsConfig.minimum[tab]=Math.max(0,Math.floor(Number(el.value)||0));
-  if(key==='coef'){const v=Math.floor(Number(el.value));if(v>0)rankingsConfig.coef=v;rankingsSave();rankingsRenderHome();}
+  if(key==='coef'){const v=Math.floor(Number(el.value));if(v>0)rankingsConfig.coef=v;rankingsSave();rankingsRenderHome();dashboardRenderProfilePopularity();}
   rankingsRenderHub();
  });}
- document.getElementById('rankingsMetadataRows')?.addEventListener('change',event=>{const input=event.target;if(input.matches('[data-rank-published]')){if(rankingsDayPattern.test(input.value))rankingsConfig.published[input.dataset.rankPublished]=input.value;else delete rankingsConfig.published[input.dataset.rankPublished];}
- if(input.matches('[data-rank-public]'))rankingsConfig.publicOverrides[input.dataset.rankPublic]=Boolean(input.checked);
- rankingsSave();rankingsRenderHome();rankingsRenderHub();});
 }
 
 function dashboardInit(){
