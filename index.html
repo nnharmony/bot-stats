@@ -5255,6 +5255,103 @@ body.dashboard-shell .dashboard-level-title-line>#dashboardHeaderCvCard {
 }
 
 
+
+
+/* Final polish: keep LV label fully transparent and surface the weekly Hot archive. */
+body.dashboard-shell #dashboardCreatorLevel,
+body.dashboard-shell #dashboardCreatorLevel[data-level="5"],
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel,
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel[data-level="5"]{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  outline:none!important;
+  padding:0!important;
+  display:block!important;
+}
+body.dashboard-shell .rankings-weekly-card,
+body.dashboard-shell .rankings-weekly-archive{
+  display:block;
+  margin:12px 0 0;
+  padding:14px 15px;
+  border:1px solid #6c536b;
+  border-radius:15px;
+  background:linear-gradient(110deg,#28212d 0%,#312537 100%);
+  color:#f0d4e9;
+}
+body.dashboard-shell .rankings-weekly-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:8px;
+}
+body.dashboard-shell .rankings-weekly-head strong,
+body.dashboard-shell .rankings-weekly-archive strong{
+  display:block;
+  font-size:15px;
+  font-weight:800;
+  color:#f0e0ec;
+}
+body.dashboard-shell .rankings-weekly-head small,
+body.dashboard-shell .rankings-weekly-archive small,
+body.dashboard-shell .rankings-weekly-note,
+body.dashboard-shell .rankings-weekly-empty{
+  display:block;
+  font-size:11px;
+  line-height:1.45;
+  color:#bfaebf;
+}
+body.dashboard-shell .rankings-weekly-score{
+  display:block;
+  margin:2px 0 3px;
+  font-size:28px;
+  line-height:1.08;
+  font-weight:850;
+  color:#efbee3;
+}
+body.dashboard-shell .rankings-weekly-minirows{
+  margin-top:10px;
+}
+body.dashboard-shell .rankings-weekly-minirows .rankings-row{
+  padding-left:0;
+  padding-right:0;
+}
+body.dashboard-shell .rankings-weekly-archive-top{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:9px;
+}
+body.dashboard-shell .rankings-weekly-archive label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+  font-size:11px;
+  color:#bfaebf;
+}
+body.dashboard-shell .rankings-weekly-archive select{
+  width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  border:1px solid #735d75;
+  border-radius:12px;
+  background:#2b2331;
+  color:#f2deee;
+  padding:10px 12px;
+  font:inherit;
+}
+body.dashboard-shell .rankings-weekly-archive-body{margin-top:6px;}
+@media(max-width:430px){
+  body.dashboard-shell .rankings-weekly-card,
+  body.dashboard-shell .rankings-weekly-archive{padding:12px 13px;}
+  body.dashboard-shell .rankings-weekly-score{font-size:25px;}
+  body.dashboard-shell .rankings-weekly-archive-top{flex-direction:column;align-items:stretch;}
+}
+
 /* Analytics: full portfolio popularity, calculated using the same Hot Ranking data. */
 body.dashboard-shell .analytics-profile-popularity {
   display:block!important;width:100%!important;box-sizing:border-box!important;
@@ -5553,6 +5650,8 @@ body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47p
       <label id="rankingsCoefficientWrap" hidden>🔥 coefficient<input id="rankingsCoefficient" type="number" min="1" step="1" inputmode="numeric" value="4000"></label>
     </div>
     <section id="rankingsProfileSummary" class="rankings-profile-score" hidden></section>
+    <section id="rankingsWeeklyScore" class="rankings-weekly-card" hidden></section>
+    <section id="rankingsWeeklyArchive" class="rankings-weekly-archive" hidden></section>
     <p id="rankingsHubMeta" class="rankings-hub-meta"></p>
     <div id="rankingsHubRows" class="rankings-hub-rows" aria-live="polite"></div>
   </section>
@@ -17089,7 +17188,7 @@ function backfillInit(){
 
 
 /* === Independent rankings module. Snapshot messages are read-only. === */
-const rankingsConfig={tab:'new',period:{new:'1',leader:'1',breakouts:'1',hot:'7'},newSelection:'latest5',newSort:'relative',minimum:{leader:25,breakouts:25},minimumMode:{leader:'25',breakouts:'25'},coef:4000,expanded:{new:false,leader:false,breakouts:false,hot:false},published:{},publicOverrides:{},loaded:false};
+const rankingsConfig={tab:'new',period:{new:'1',leader:'1',breakouts:'1',hot:'7'},newSelection:'latest5',newSort:'relative',minimum:{leader:25,breakouts:25},minimumMode:{leader:'25',breakouts:'25'},coef:4000,expanded:{new:false,leader:false,breakouts:false,hot:false},published:{},publicOverrides:{},weeklyArchiveEnd:'',loaded:false};
 const rankingTabConfig={
   new:{title:'💟 New and Popular',detail:'Newest public characters · absolute or relative growth.',periods:['1','7','30']},
   leader:{title:'❤️‍🔥 Leaderboard',detail:'All public characters ranked by relative message growth.',periods:['1','7','30','90']},
@@ -17129,6 +17228,70 @@ function rankingsWindow(period){const days=rankingsDays(),last=days.at(-1);if(!l
 function rankingsDateLabel(d){return d?shortGraphDate(d):'—'}
 function rankingsPercent(v){return v===null?'NEW':new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(v)+'%'}
 function rankingsFloat(v){return new Intl.NumberFormat('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v)}
+
+function rankingsIsoWeek(date){
+  const d=new Date(date+'T12:00:00Z');
+  if(!Number.isFinite(d.getTime()))return {year:'',week:''};
+  const day=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-day+3);
+  const year=d.getUTCFullYear();
+  const firstThursday=new Date(Date.UTC(year,0,4));
+  const firstDay=(firstThursday.getUTCDay()+6)%7;firstThursday.setUTCDate(firstThursday.getUTCDate()-firstDay+3);
+  const week=1+Math.round((d-firstThursday)/604800000);
+  return {year,week};
+}
+function rankingsHotForSpan(start,end){
+  const days=rankingsDays(),publicBots=rankingsPublicBots();
+  if(!start||!end)return {valid:false,description:'Missing week boundaries.',rows:[],publicCount:publicBots.length};
+  const span=Math.round(rankingsDateDelta(start,end));
+  const known=new Set(days.map(d=>d.date));
+  for(let i=0;i<=span;i++){
+    const check=rankingsAddDays(start,i);
+    if(!known.has(check))return {valid:false,description:`Missing ${rankingsDateLabel(check)}.`,rows:[],publicCount:publicBots.length};
+  }
+  let skipped=0;
+  let rows=publicBots.map(bot=>{
+    const pair=rankingsPair(days,start,end,bot.cid);
+    if(!pair){skipped++;return null;}
+    return {...pair,cid:bot.cid,name:bot.name||bot.cid};
+  }).filter(Boolean).sort((a,b)=>b.growth-a.growth||b.end-a.end);
+  const totalGrowth=rows.reduce((s,r)=>s+r.growth,0);
+  const coef=Number(rankingsConfig.coef)||4000;
+  rows.forEach(r=>{r.score=r.growth/coef;r.share=totalGrowth>0?r.growth/totalGrowth*100:0;});
+  return {valid:true,rows,totalGrowth,score:totalGrowth/coef,publicCount:publicBots.length,skipped,incomplete:skipped>0,description:`${rankingsDateLabel(start)} → ${rankingsDateLabel(end)} · ${span} completed daily updates.`};
+}
+function rankingsWeeklyHistory(limit=26){
+  const mondays=rankingsDays().filter(d=>new Date(d.date+'T12:00:00Z').getUTCDay()===1);
+  const items=[];
+  for(const monday of mondays){
+    const end=monday.date,start=rankingsAddDays(end,-7),displayStart=rankingsAddDays(end,-8),displayEnd=rankingsAddDays(end,-1);
+    const res=rankingsHotForSpan(start,end);
+    if(!res.valid)continue;
+    const iso=rankingsIsoWeek(displayEnd||end);
+    items.push({end,start,displayStart,displayEnd,iso,res,label:`week ${iso.week} · ${rankingsDateLabel(displayStart)} – ${rankingsDateLabel(displayEnd)}`});
+  }
+  return items.slice(-limit);
+}
+function rankingsRenderWeeklyExtras(){
+  const weekly=document.getElementById('rankingsWeeklyScore');
+  const archive=document.getElementById('rankingsWeeklyArchive');
+  if(!weekly||!archive)return;
+  const show=rankingsConfig.tab==='hot';
+  weekly.hidden=!show;archive.hidden=!show;
+  if(!show)return;
+  const history=rankingsWeeklyHistory();
+  if(!history.length){
+    weekly.innerHTML=`<div class="rankings-weekly-empty">No closed Monday-to-Monday week is available yet.</div>`;
+    archive.innerHTML='';
+    return;
+  }
+  const latest=history[history.length-1];
+  weekly.innerHTML=`<div class="rankings-weekly-head"><div><strong>🔥 current weekly ranking</strong><small>Resets from zero after the next complete Monday update.</small></div><small>${archiveEscape(latest.label)}</small></div><span class="rankings-weekly-score">${rankingsFloat(latest.res.score)} 🔥</span><span class="rankings-weekly-note">+${fmt.format(latest.res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${latest.res.incomplete?' · partial: some public bots lack readings':''}</span><div class="rankings-weekly-minirows">${rankingsRowsMarkup('hot',latest.res.rows.slice(0,3))}</div>`;
+  const selected=(history.find(h=>h.end===rankingsConfig.weeklyArchiveEnd)||latest).end;
+  rankingsConfig.weeklyArchiveEnd=selected;
+  const active=history.find(h=>h.end===selected)||latest;
+  archive.innerHTML=`<div class="rankings-weekly-archive-top"><div><strong>weekly archive</strong><small>Closed end scores for earlier PolyBuzz-style weeks.</small></div><label>week<select id="rankingsWeeklyArchiveSelect">${history.slice().reverse().map(h=>`<option value="${h.end}" ${h.end===selected?'selected':''}>${archiveEscape(h.label)}</option>`).join('')}</select></label></div><div class="rankings-weekly-note">Published Monday ${archiveEscape(rankingsDateLabel(active.end))} · message snapshots ${archiveEscape(rankingsDateLabel(active.start))} → ${archiveEscape(rankingsDateLabel(active.end))}</div><div class="rankings-weekly-archive-body">${active.res.rows.length?`<div class="rankings-weekly-score">${rankingsFloat(active.res.score)} 🔥</div><div class="rankings-weekly-note">+${fmt.format(active.res.totalGrowth)} messages · ${active.res.publicCount||0} public bots${active.res.incomplete?' · partial':''}</div>${rankingsRowsMarkup('hot',active.res.rows)}`:`<div class="rankings-weekly-empty">No comparable bots in this week yet.</div>`}</div>`;
+}
+
 function rankingsBuild(tab,period,options={}){
  const w=rankingsWindow(period),publicBots=rankingsPublicBots();
  if(!w.valid)return{rows:[],window:w,missing:true,description:w.reason,publicCount:publicBots.length};
@@ -17217,10 +17380,12 @@ function rankingsRenderHub(){rankingsLoad();const tab=rankingsConfig.tab,info=ra
  if(meta)meta.textContent=res.description+(res.skipped?` · ${res.skipped} characters missing a valid baseline/readout`:'' )+` · ${res.publicCount||0} public bots`;
  if(box)box.innerHTML=res.rows?.length?rankingsRowsMarkup(tab,res.rows):`<div class="rankings-empty">${archiveEscape(res.description||'No qualifying bots for this period.')}</div>`;
  if(sum){sum.hidden=tab!=='hot';if(tab==='hot'){sum.innerHTML=res.window?.valid?`<small>🔥 PROFILE POPULARITY · ${p==='weekly'?'closed Monday ranking':p+'D'}</small><strong>${rankingsFloat(res.score)} 🔥</strong><small>+${fmt.format(res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${res.incomplete?' · partial: some public bots lack readings':''}</small>`:`<small>🔥 PROFILE POPULARITY</small><strong>—</strong><small>${archiveEscape(res.description)}</small>`;}}
+ rankingsRenderWeeklyExtras();
 }
 function rankingsInit(){rankingsLoad();document.addEventListener('click',event=>{
  const open=event.target.closest('[data-rank-open]');if(open){rankingsConfig.tab=open.dataset.rankOpen;dashboardShowView('rankings');return;}
  const expand=event.target.closest('[data-rank-expand]');if(expand){const tab=expand.dataset.rankExpand,card=expand.closest('.rankings-home-card');rankingsConfig.expanded[tab]=!rankingsConfig.expanded[tab];card?.classList.toggle('expanded',rankingsConfig.expanded[tab]);expand.setAttribute('aria-expanded',String(rankingsConfig.expanded[tab]));expand.textContent=rankingsConfig.expanded[tab]?'show less ⌃':'show all ⌄';return;}
+ const archiveSelect=event.target.closest('#rankingsWeeklyArchiveSelect');if(archiveSelect){rankingsConfig.weeklyArchiveEnd=archiveSelect.value;rankingsRenderWeeklyExtras();return;}
  const tab=event.target.closest('[data-rank-tab]');if(tab){rankingsConfig.tab=tab.dataset.rankTab;rankingsRenderHub();return;}
  });
  for(const [id,key] of Object.entries({rankingsPeriod:'period',rankingsNewSelection:'newSelection',rankingsNewSort:'newSort',rankingsMinimum:'minimum',rankingsCustomMin:'custom',rankingsCoefficient:'coef'})){
