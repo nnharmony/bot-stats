@@ -17408,8 +17408,10 @@ function rankingsRenderWeeklyExtras(){
   const show=rankingsConfig.tab==='hot';weekly.hidden=!show;final.hidden=!show;archive.hidden=!show;
   if(!show)return;
   const current=rankingsCurrentWeekData(),closed=rankingsClosedWeekData(),history=rankingsWeeklyHistory();
+  // The week heading is always the full Monday-to-Monday period.
+  // current.end is only the latest measured day, NOT the end of this week.
   const currentCaption=current.base?
-    `${rankingsDateLabel(current.base)} → ${rankingsDateLabel(current.end)} · resets when next Monday update is saved`:
+    `${rankingsDateLabel(current.base)} → ${rankingsDateLabel(rankingsAddDays(current.base,7))}`:
     'Awaiting Monday baseline';
   weekly.innerHTML=rankingsScoreBlock('🔥 current week',currentCaption,current.res);
   final.innerHTML=rankingsScoreBlock('🏆 last closed weekly ranking',closed?`${rankingsDateLabel(closed.displayStart)} – ${rankingsDateLabel(closed.displayEnd)} · finalized ${rankingsDateLabel(closed.end)}`:'No closed week',closed?.res);
@@ -17439,7 +17441,11 @@ function rankingsBuild(tab,period,options={}){
      if(latest)result=rankingsHotForSpan(rankingsAddDays(latest,-Number(period)),latest);
    }
    if(!result)return {rows:[],window:{valid:false},description:'No matching snapshots available yet.',publicCount:rankingsPublicBots().length};
-   return {...result,window:{valid:result.valid},description:result.description};
+   // In the hub as well, a current-week label must not end on the latest update day.
+   const label=(period==='current'&&result.valid)?
+     `${rankingsDateLabel(rankingsCurrentMonday())} → ${rankingsDateLabel(rankingsAddDays(rankingsCurrentMonday(),7))}`:
+     result.description;
+   return {...result,window:{valid:result.valid},description:label};
  }
  const w=rankingsWindow(period),publicBots=rankingsPublicBots();
  if(!w.valid)return{rows:[],window:w,missing:true,description:w.reason,publicCount:publicBots.length};
