@@ -5374,7 +5374,7 @@ body.dashboard-shell .graph-hot-periods{display:flex;align-items:center;gap:6px;
 body.dashboard-shell .graph-hot-periods button{background:#27232d;border:1px solid #64536b;border-radius:9px;color:#cbb7ce;font-size:11px;padding:6px 10px;min-height:29px;}
 body.dashboard-shell .graph-hot-periods button.active{background:#48334f;border-color:#b189ba;color:#f6d7ee;}
 @media(max-width:375px){body.dashboard-shell .rankings-weekly-card,body.dashboard-shell .rankings-weekly-archive{padding:11px 10px;}body.dashboard-shell .rankings-weekly-head{flex-wrap:wrap;}body.dashboard-shell .rankings-weekly-nav{gap:5px;}body.dashboard-shell .rankings-weekly-nav button{min-width:30px;padding:4px 6px;}}
-/* Analytics: full portfolio popularity, calculated using the same Hot Ranking data. */
+/* Analytics: full portfolio popularity, calculated using the same Popular ranking data. */
 body.dashboard-shell .analytics-profile-popularity {
   display:block!important;width:100%!important;box-sizing:border-box!important;
   margin:12px 0 11px!important;padding:14px 15px!important;
@@ -5456,6 +5456,23 @@ body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47p
   body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{column-gap:3px!important}
   body.dashboard-shell #compareBots .graph-event-filters .graph-event-filter,
   body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters .graph-event-filter{font-size:14px!important}
+}
+
+/* Distinct current + completed week score cards; preserve each card's existing padding. */
+body.dashboard-shell .rankings-weekly-card[hidden],
+body.dashboard-shell .rankings-weekly-final[hidden]{display:none!important;}
+body.dashboard-shell #rankingsWeeklyFinal{margin-top:16px;}
+body.dashboard-shell #rankingsWeeklyArchive{margin-top:16px;}
+body.dashboard-shell #rankingsWeeklyScore .rankings-weekly-block,
+body.dashboard-shell #rankingsWeeklyFinal .rankings-weekly-block{border-top:0!important;margin-top:0!important;padding-top:0!important;}
+
+/* 20 Oct — LV text must remain genuine transparent text, not a backdrop-blurred pill.
+   The old .dashboard-level-pill backdrop-filter causes the rectangular patch over
+   the existing line-art crown, even though #dashboardCreatorLevel is transparent. */
+body.dashboard-shell #dashboardCreatorLevel,
+body.dashboard-shell #dashboardCreatorLevel[data-level="5"]{
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
 }
 </style>
 
@@ -5612,10 +5629,10 @@ body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47p
 
   <!-- Rankings cards: independent from existing Analytics Hot Bots and Daily Update. -->
   <div id="rankingsHomeCards" class="rankings-home-cards">
-    <section class="rankings-home-card" data-rank-home="new"><div class="rankings-home-head"><strong>💟 new and popular</strong><span>newest characters</span></div><div class="rankings-home-body" id="rankingsHomeNew">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="new" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="new">full ranking ↗</button></div></section>
+    <section class="rankings-home-card" data-rank-home="new"><div class="rankings-home-head"><strong>💟 new &amp; hot</strong><span>newest characters</span></div><div class="rankings-home-body" id="rankingsHomeNew">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="new" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="new">full ranking ↗</button></div></section>
     <section class="rankings-home-card" data-rank-home="leader"><div class="rankings-home-head"><strong>❤️‍🔥 leaderboard</strong><span>relative growth</span></div><div class="rankings-home-body" id="rankingsHomeLeader">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="leader" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="leader">full ranking ↗</button></div></section>
     <section class="rankings-home-card" data-rank-home="breakouts"><div class="rankings-home-head"><strong>⚡️ breakouts</strong><span>personal growth spikes</span></div><div class="rankings-home-body" id="rankingsHomeBreakouts">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="breakouts" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="breakouts">full ranking ↗</button></div></section>
-    <section class="rankings-home-card" data-rank-home="hot"><div class="rankings-home-head"><strong>🔥 hot ranking</strong><span>profile popularity · 7D</span></div><div id="rankingsHomeScore" class="rankings-home-score">—</div><div class="rankings-home-body" id="rankingsHomeHot">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="hot" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="hot">full ranking ↗</button></div></section>
+    <section class="rankings-home-card" data-rank-home="hot"><div class="rankings-home-head"><strong>🔥 popular</strong><span>profile popularity · 7D</span></div><div id="rankingsHomeScore" class="rankings-home-score">—</div><div class="rankings-home-body" id="rankingsHomeHot">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="hot" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="hot">full ranking ↗</button></div></section>
   </div>
 
   <div class="dashboard-section-title">freeze monitor</div>
@@ -5656,13 +5673,13 @@ body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47p
 <section id="dashboardRankings" class="rankings-hub" data-dashboard-view="rankings" hidden>
   <header class="rankings-hub-head"><div><h2>🏆 rankings hub</h2><p>Four independent ways to recognize outstanding growth.</p></div><button type="button" data-open-dashboard-view="home">home ↗</button></header>
   <nav class="rankings-hub-tabs" aria-label="ranking category">
-    <button type="button" data-rank-tab="new" class="active">💟 new & popular</button>
+    <button type="button" data-rank-tab="new" class="active">💟 new &amp; hot</button>
     <button type="button" data-rank-tab="leader">❤️‍🔥 leaderboard</button>
     <button type="button" data-rank-tab="breakouts">⚡️ breakouts</button>
-    <button type="button" data-rank-tab="hot">🔥 hot ranking</button>
+    <button type="button" data-rank-tab="hot">🔥 popular</button>
   </nav>
   <section class="rankings-hub-card">
-    <div class="rankings-current-heading"><h3 id="rankingsHubTitle">new and popular</h3><p id="rankingsHubDescription"></p></div>
+    <div class="rankings-current-heading"><h3 id="rankingsHubTitle">new &amp; hot</h3><p id="rankingsHubDescription"></p></div>
     <div class="rankings-settings">
       <label id="rankingsNewSelectionWrap">selection<select id="rankingsNewSelection"><option value="latest5">latest 5</option><option value="last30">last 30 days</option></select></label>
       <label id="rankingsNewSortWrap">sort by<select id="rankingsNewSort"><option value="relative">relative growth (%)</option><option value="absolute">absolute growth</option></select></label>
@@ -5673,6 +5690,7 @@ body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47p
     </div>
     <section id="rankingsProfileSummary" class="rankings-profile-score" hidden></section>
     <section id="rankingsWeeklyScore" class="rankings-weekly-card" hidden></section>
+    <section id="rankingsWeeklyFinal" class="rankings-weekly-card rankings-weekly-final" hidden></section>
     <section id="rankingsWeeklyArchive" class="rankings-weekly-archive" hidden></section>
     <p id="rankingsHubMeta" class="rankings-hub-meta"></p>
     <div id="rankingsHubRows" class="rankings-hub-rows" aria-live="polite"></div>
@@ -6105,7 +6123,7 @@ body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47p
     </div>
 
     <button type="button" class="rankings-analytics-link" data-open-dashboard-view="rankings">🏆 open rankings hub <span>new · relative · breakouts · 🔥</span><b aria-hidden="true">↗</b></button>
-    <button type="button" class="analytics-profile-popularity" data-rank-open="hot" aria-label="Open profile popularity in Hot Ranking">
+    <button type="button" class="analytics-profile-popularity" data-rank-open="hot" aria-label="Open profile popularity in Popular">
       <span class="analytics-profile-popularity-heading"><strong>🔥 profile popularity</strong><span>rolling 7D <span aria-hidden="true">↗</span></span></span>
       <strong id="analyticsProfilePopularityScore" class="analytics-profile-popularity-value">—</strong>
       <span class="analytics-profile-popularity-details" id="analyticsProfilePopularityDetails">Waiting for 7 complete daily updates</span>
@@ -7444,7 +7462,7 @@ async function loadStatsData(){
       <button type="button" class="graph-event-filter" data-graph-tag="recovering" title="recovered" aria-label="recovered">▶️</button>
       <button type="button" class="graph-event-filter" data-graph-tag="rankRelative" title="leaderboard · relative growth" aria-label="leaderboard relative growth">❤️‍🔥</button>
       <button type="button" class="graph-event-filter" data-graph-tag="rankBreakouts" title="breakouts · times normal growth" aria-label="breakouts">⚡️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="rankHot" title="hot ranking · popularity score" aria-label="hot ranking">🔥</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="rankHot" title="popular · portfolio popularity score" aria-label="popular">🔥</button>
     </div>
     <div class="graph-checkbox-internals" aria-hidden="true">
       <input type="checkbox" id="selectAllBots" tabindex="-1">
@@ -7778,7 +7796,7 @@ function effectiveNewCreationDate(cid){
   return creationEventForCid(cid)?.date || '';
 }
 
-// One creation registration, shared by the NEW graph tag and New and Popular.
+// One creation registration, shared by the NEW graph tag and new & hot.
 // A character qualifies within the last 30 days OR while in the latest five.
 // Historical creation events remain unchanged; this does not create/edit events.
 function recentGraphCreationCids(date){
@@ -17262,10 +17280,10 @@ function backfillInit(){
 /* === Independent rankings module. Snapshot messages are read-only. === */
 const rankingsConfig={tab:'new',period:{new:'1',leader:'1',breakouts:'1',hot:'7'},newSelection:'latest5',newSort:'relative',minimum:{leader:25,breakouts:25},minimumMode:{leader:'25',breakouts:'25'},coef:4000,expanded:{new:false,leader:false,breakouts:false,hot:false},published:{},publicOverrides:{},weeklyArchiveEnd:'',loaded:false};
 const rankingTabConfig={
-  new:{title:'💟 New and Popular',detail:'Newest public characters · absolute or relative growth.',periods:['1','7','30']},
-  leader:{title:'❤️‍🔥 Leaderboard',detail:'All public characters ranked by relative message growth.',periods:['1','7','30','90']},
-  breakouts:{title:'⚡️ Breakouts',detail:'Daily growth compared with the previous 14 complete growth intervals.',periods:['1']},
-  hot:{title:'🔥 Hot Ranking',detail:'Your own popularity index, calculated from actual public portfolio message growth.',periods:['1','current','weekly','7','30','90']}
+  new:{title:'💟 new & hot',detail:'Newest public characters · absolute or relative growth.',periods:['1','7','30']},
+  leader:{title:'❤️‍🔥 leaderboard',detail:'All public characters ranked by relative message growth.',periods:['1','7','30','90']},
+  breakouts:{title:'⚡️ breakouts',detail:'Daily growth compared with the previous 14 complete growth intervals.',periods:['1']},
+  hot:{title:'🔥 popular',detail:'Your own popularity index, calculated from actual public portfolio message growth.',periods:['1','current','weekly','7','30','90']}
 };
 function rankingsStorageKey(){return 'pbRankingsV1:'+(typeof EVENTS_PROFILE!=='undefined'&&EVENTS_PROFILE||'main')}
 function rankingsLoad(){if(rankingsConfig.loaded)return;rankingsConfig.loaded=true;try{const o=JSON.parse(localStorage.getItem(rankingsStorageKey())||'{}');if(o.published&&typeof o.published==='object')rankingsConfig.published=o.published;if(o.publicOverrides&&typeof o.publicOverrides==='object')rankingsConfig.publicOverrides=o.publicOverrides;if(Number.isFinite(+o.coef)&&+o.coef>0)rankingsConfig.coef=+o.coef;}catch(_){}}
@@ -17385,16 +17403,16 @@ function rankingsScoreBlock(title,caption,result,showRows=true){
     ${showRows?`<div class="rankings-weekly-minirows">${rankingsRowsMarkup('hot',result.rows)}</div>`:''}</div>`;
 }
 function rankingsRenderWeeklyExtras(){
-  const weekly=document.getElementById('rankingsWeeklyScore'),archive=document.getElementById('rankingsWeeklyArchive');
-  if(!weekly||!archive)return;
-  const show=rankingsConfig.tab==='hot';weekly.hidden=!show;archive.hidden=!show;
+  const weekly=document.getElementById('rankingsWeeklyScore'),final=document.getElementById('rankingsWeeklyFinal'),archive=document.getElementById('rankingsWeeklyArchive');
+  if(!weekly||!final||!archive)return;
+  const show=rankingsConfig.tab==='hot';weekly.hidden=!show;final.hidden=!show;archive.hidden=!show;
   if(!show)return;
   const current=rankingsCurrentWeekData(),closed=rankingsClosedWeekData(),history=rankingsWeeklyHistory();
   const currentCaption=current.base?
     `${rankingsDateLabel(current.base)} → ${rankingsDateLabel(current.end)} · resets when next Monday update is saved`:
     'Awaiting Monday baseline';
-  weekly.innerHTML=rankingsScoreBlock('🔥 current week',currentCaption,current.res)+
-    rankingsScoreBlock('🔥 last closed weekly ranking',closed?`${rankingsDateLabel(closed.displayStart)} – ${rankingsDateLabel(closed.displayEnd)} · finalized ${rankingsDateLabel(closed.end)}`:'No closed week',closed?.res);
+  weekly.innerHTML=rankingsScoreBlock('🔥 current week',currentCaption,current.res);
+  final.innerHTML=rankingsScoreBlock('🏆 last closed weekly ranking',closed?`${rankingsDateLabel(closed.displayStart)} – ${rankingsDateLabel(closed.displayEnd)} · finalized ${rankingsDateLabel(closed.end)}`:'No closed week',closed?.res);
   const latest=history.at(-1),active=history.find(h=>h.end===rankingsConfig.weeklyArchiveEnd)||latest;
   if(!active){archive.innerHTML='<div class="rankings-weekly-empty">Historical weekly results will appear once dated snapshots are available.</div>';return;}
   rankingsConfig.weeklyArchiveEnd=active.end;
