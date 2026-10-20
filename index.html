@@ -5289,6 +5289,55 @@ body.dashboard-shell .analytics-profile-popularity-details {
   body.dashboard-shell .analytics-profile-popularity-details{font-size:10px!important}
 }
 
+
+/* Graph filter refinements: existing nine-column size, now two consistent rows. */
+body.dashboard-shell .bot-picker{position:relative!important;min-width:0!important}
+body.dashboard-shell .bot-picker>summary{
+  box-sizing:border-box!important;max-width:29%!important;min-width:0!important;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  padding:8px 1px 8px 0!important;
+}
+body.dashboard-shell .graph-selection-tools{
+  position:absolute;right:0;top:3px;width:69%;display:grid;
+  grid-template-columns:1fr 1fr;gap:6px;align-items:center;
+}
+body.dashboard-shell .graph-selection-tools button,
+body.dashboard-shell .graph-fs-select-head button{
+  min-width:0!important;min-height:32px!important;border:1px solid #68596f!important;
+  border-radius:9px!important;padding:4px 5px!important;font-size:11px!important;
+  line-height:1.2!important;letter-spacing:0!important;white-space:nowrap!important;
+  color:#c9adcb!important;background:#2d2633!important;box-shadow:none!important;
+}
+body.dashboard-shell .graph-selection-tools button.active,
+body.dashboard-shell .graph-fs-select-head button.active{
+  background:#4a3554!important;border-color:#c697d1!important;color:#f1d4ed!important;
+}
+body.dashboard-shell .graph-checkbox-internals{display:none!important}
+body.dashboard-shell #compareBots .graph-event-filters,
+body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{
+  grid-template-columns:repeat(9,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,34px)!important;
+  row-gap:8px!important;
+  column-gap:4px!important;
+}
+body.dashboard-shell #compareBots .graph-event-filters .graph-event-filter,
+body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters .graph-event-filter{
+  width:100%!important;height:34px!important;min-width:0!important;font-size:16px!important;
+}
+body.dashboard-shell .graph-fs-select-head{
+  display:grid;grid-template-columns:28% 1fr 1fr;align-items:center;gap:5px;
+  position:sticky;top:0;z-index:40;padding:7px 2px;
+  background:#25202b;color:#ead8e9;border-bottom:1px solid #514559;
+}
+body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{top:47px!important}
+@media(max-width:350px){
+  body.dashboard-shell .graph-selection-tools button,
+  body.dashboard-shell .graph-fs-select-head button{font-size:9px!important;padding:4px 2px!important}
+  body.dashboard-shell #compareBots .graph-event-filters,
+  body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters{column-gap:3px!important}
+  body.dashboard-shell #compareBots .graph-event-filters .graph-event-filter,
+  body.dashboard-shell #fsBotsList.graph-fs-bots-list .graph-event-filters .graph-event-filter{font-size:14px!important}
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -6334,6 +6383,9 @@ body.dashboard-shell .analytics-profile-popularity-details {
       <option value="messages">messages</option>
       <option value="growth">growth</option>
       <option value="collectors">collectors</option>
+      <option value="rankRelative">❤️‍🔥 relative growth % · 1D</option>
+      <option value="rankBreakouts">⚡ breakout factor × · 1D</option>
+      <option value="rankHot">🔥 popularity score · rolling 7D</option>
     </select>
 
     <select id="comparePeriod">
@@ -6348,6 +6400,10 @@ body.dashboard-shell .analytics-profile-popularity-details {
 
   <details class="bot-picker">
     <summary id="compareSummary">bots</summary>
+    <div class="graph-selection-tools" role="group" aria-label="graph bot selection">
+      <button type="button" id="graphTotalToggle" aria-pressed="false" title="Toggle total/profile line">total/profile</button>
+      <button type="button" id="graphSelectToggle" aria-pressed="false" title="Select or deselect all characters">select all</button>
+    </div>
     <div id="compareBots"></div>
   </details>
 
@@ -6421,6 +6477,9 @@ body.dashboard-shell .analytics-profile-popularity-details {
       <option value="messages">messages</option>
       <option value="growth">growth</option>
       <option value="collectors">collectors</option>
+      <option value="rankRelative">❤️‍🔥 relative growth % · 1D</option>
+      <option value="rankBreakouts">⚡ breakout factor × · 1D</option>
+      <option value="rankHot">🔥 popularity score · rolling 7D</option>
     </select>
 
     <select id="fsDisplayMode" aria-label="label mode">
@@ -7249,24 +7308,20 @@ async function loadStatsData(){
       <button type="button" class="graph-event-filter" data-graph-tag="alert" title="alert" aria-label="alert">⚠️</button>
       <button type="button" class="graph-event-filter" data-graph-tag="banned" title="banned" aria-label="banned">🚫</button>
       <button type="button" class="graph-event-filter" data-graph-tag="violation" title="violation" aria-label="violation">⛔️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="suspected" title="suspected freeze" aria-label="suspected freeze">⏳</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="verified" title="verified discrepancy" aria-label="verified discrepancy">⭕️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="partial" title="partial freeze" aria-label="partial freeze">❄️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="total" title="total freeze" aria-label="total freeze">⏹️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="watching" title="watching" aria-label="watching">⏺️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="recovering" title="recovered" aria-label="recovered">▶️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="rankRelative" title="leaderboard · relative growth" aria-label="leaderboard relative growth">❤️‍🔥</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="rankBreakouts" title="breakouts · times normal growth" aria-label="breakouts">⚡️</button>
+      <button type="button" class="graph-event-filter" data-graph-tag="rankHot" title="hot ranking · popularity score" aria-label="hot ranking">🔥</button>
     </div>
-
-    <label>
-      <input
-        type="checkbox"
-        id="selectAllBots"
-      >
-      Select all
-    </label>
-
-    <label>
-      <input
-        type="checkbox"
-        id="totalProfile"
-        value="__total__"
-      >
-      Total
-    </label>
+    <div class="graph-checkbox-internals" aria-hidden="true">
+      <input type="checkbox" id="selectAllBots" tabindex="-1">
+      <input type="checkbox" id="totalProfile" value="__total__" tabindex="-1">
+    </div>
   ` +
   [...bots]
     .sort(
@@ -7595,31 +7650,26 @@ function effectiveNewCreationDate(cid){
   return creationEventForCid(cid)?.date || '';
 }
 
-function newStatusAtDate(cid,date){
-  const creationDate=effectiveNewCreationDate(cid);
-  if(!creationDate || !date) return false;
-
-  const start=parseDay(creationDate);
-  const current=parseDay(date);
-  const age=Math.floor((current-start)/(24*60*60*1000));
-
-  return age>=0 && age<7;
+// One creation registration, shared by the NEW graph tag and New and Popular.
+// A character qualifies within the last 30 days OR while in the latest five.
+// Historical creation events remain unchanged; this does not create/edit events.
+function recentGraphCreationCids(date){
+  if(!date) return new Set();
+  const all=[...state.meta.keys()].map(cid=>({cid,created:effectiveNewCreationDate(cid)}))
+    .filter(row=>/^\d{4}-\d{2}-\d{2}$/.test(row.created)&&row.created<=date)
+    .sort((a,b)=>b.created.localeCompare(a.created)||Number(state.meta.get(b.cid)?.creation_order??0)-Number(state.meta.get(a.cid)?.creation_order??0));
+  const latest5=new Set(all.slice(0,5).map(row=>row.cid));
+  return new Set(all.filter(row=>{
+    const age=Math.round((Date.parse(date+'T12:00:00Z')-Date.parse(row.created+'T12:00:00Z'))/86400000);
+    return (age>=0&&age<=30)||latest5.has(row.cid);
+  }).map(row=>row.cid));
 }
-
+function newStatusAtDate(cid,date){
+  return recentGraphCreationCids(date).has(cid);
+}
 function newStatusOverlapsGraphRange(cid){
-  const creationDate=effectiveNewCreationDate(cid);
-  if(!creationDate) return false;
-
-  const {from,to}=graphEventDateRange();
-  if(!from || !to) return false;
-
-  const ms=24*60*60*1000;
-  const start=parseDay(creationDate).getTime();
-  const endExclusive=start+(7*ms);
-  const rangeStart=parseDay(from).getTime();
-  const rangeEnd=parseDay(to).getTime();
-
-  return start<=rangeEnd && endExclusive>rangeStart;
+  const date=graphEventDateRange().to || new Date().toLocaleDateString('sv-SE');
+  return recentGraphCreationCids(date).has(cid);
 }
 
 function renderNewOverview(){
@@ -7644,7 +7694,7 @@ function renderNewOverview(){
 
   state.meta.forEach((meta,cid)=>{
     const created=effectiveNewCreationDate(cid);
-    if(!created) return;
+    if(!created || !newStatusAtDate(cid,today)) return;
 
     const createdTime=parseDay(created).getTime();
     const age=Math.max(0,Math.floor((todayTime-createdTime)/ms));
@@ -7665,7 +7715,7 @@ function renderNewOverview(){
   box.hidden=false;
   box.innerHTML=`
     <div class="new-overview-head">
-      <span>💟 created bots</span>
+      <span>💟 new characters · 30D or latest 5</span>
       <span class="new-overview-sub">${items.length} bots</span>
     </div>
     ${
@@ -8154,6 +8204,76 @@ function applyGraphEventFilters(containerSelector){
   drawCompareChart();
 }
 
+
+function graphRankingSeries(days,cid,metric){
+  const lookback=metric==='rankHot'?7:metric==='rankBreakouts'?15:1;
+  const all=new Map(graphSourceDays().map(e=>[e.date,e]));
+  const isTotal=cid==='__total__';
+  const eligible=isTotal?rankingsPublicBots().map(bot=>bot.cid):[cid];
+  const coefficient=Number(rankingsConfig.coef)||4000;
+  function reading(date){
+    const e=all.get(date);
+    if(!e) return null;
+    if(!isTotal) return rankingsReading(e,cid);
+    if(!eligible.length) return null;
+    let sum=0;
+    for(const id of eligible){const v=rankingsReading(e,id);if(v===null)return null;sum+=v;}
+    return sum;
+  }
+  return days.map(day=>{
+    const date=day.date;
+    for(let n=0;n<=lookback;n++){
+      if(!all.has(rankingsAddDays(date,-n)))return null;
+    }
+    const end=reading(date);
+    if(end===null)return null;
+    if(metric==='rankBreakouts'){
+      const values=[];
+      for(let n=15;n>=0;n--){const v=reading(rankingsAddDays(date,-n));if(v===null)return null;values.push(v)}
+      if(values.some((v,i)=>i>0&&v<values[i-1]))return null;
+      const diffs=values.slice(1).map((v,i)=>v-values[i]);
+      const typical=diffs.slice(0,14).reduce((sum,v)=>sum+v,0)/14;
+      // No division by zero; reactivated is a label in the rankings, not Infinity on a graph.
+      return typical>0 ? diffs.at(-1)/typical : null;
+    }
+    const start=reading(rankingsAddDays(date,-lookback));
+    if(start===null || end<start)return null;
+    const growth=end-start;
+    if(metric==='rankRelative')return start>0?growth/start*100:null;
+    return growth/coefficient;
+  });
+}
+function graphRankingFormat(v,metric){
+  if(!Number.isFinite(v))return '—';
+  return new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(v)+(metric==='rankRelative'?'%':metric==='rankBreakouts'?'×':' 🔥');
+}
+function syncGraphRankingButtons(){
+  const metric=document.querySelector('#compareMetric')?.value;
+  document.querySelectorAll('#compareBots .graph-event-filter[data-graph-tag^="rank"], #fsBotsList .graph-event-filter[data-fs-graph-tag^="rank"]').forEach(button=>{
+    const tag=button.dataset.graphTag||button.dataset.fsGraphTag;
+    const on=tag===metric;
+    button.classList.toggle('active',on);
+    button.setAttribute('aria-pressed',String(on));
+  });
+}
+function syncGraphSelectionTools(){
+  const all=[...document.querySelectorAll('#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)')];
+  const allOn=all.length>0&&all.every(input=>input.checked);
+  const totalOn=!!document.querySelector('#totalProfile')?.checked;
+  const select=document.querySelector('#selectAllBots');if(select)select.checked=allOn;
+  for(const [id,pressed] of [['graphTotalToggle',totalOn],['graphSelectToggle',allOn],['fsTotalToggle',totalOn],['fsSelectToggle',allOn]]){
+    const b=document.getElementById(id);if(b){b.classList.toggle('active',pressed);b.setAttribute('aria-pressed',String(pressed));}
+  }
+}
+function graphRankTagChange(tag){
+  const metric=document.querySelector('#compareMetric');
+  if(!metric)return;
+  metric.value=metric.value===tag?'messages':tag;
+  if(document.querySelector('#fsMetric'))document.querySelector('#fsMetric').value=metric.value;
+  syncGraphRankingButtons();
+  drawCompareChart();
+}
+
 function drawCompareChart(){
   renderNewOverview();
   renderDailyGrowth();
@@ -8163,6 +8283,7 @@ function drawCompareChart(){
     document.querySelector(
       '#compareMetric'
     ).value;
+  syncGraphRankingButtons();
 
   const selected=
     [
@@ -8182,16 +8303,12 @@ function drawCompareChart(){
   const totalSelected=
     selected.includes('__total__');
 
-  document.querySelector(
-    '#compareSummary'
-  ).textContent=
-    selected.length===0
-      ? 'bots'
-      : totalSelected && realSelected.length===0
-        ? 'Total selected'
-        : totalSelected
-          ? realSelected.length+' bots + Total'
-          : realSelected.length+' bots selected';
+  const summary=document.querySelector('#compareSummary');
+  if(summary){
+    summary.textContent='bots';
+    summary.title=selected.length?`${realSelected.length} characters${totalSelected?' + profile':''}`:'choose bots';
+  }
+  syncGraphSelectionTools();
 
   if(compareChart){
     compareChart.destroy();
@@ -8224,9 +8341,11 @@ function drawCompareChart(){
   const labels=
     days.map(item=>shortGraphDate(item.date));
 
+  const rankingsMetric=['rankRelative','rankBreakouts','rankHot'].includes(metric);
   const datasets=
     selected.map(cid=>{
 
+      if(rankingsMetric) return {label:displayLabel(cid),data:graphRankingSeries(days,cid,metric),tension:0.2,spanGaps:false};
       let rawValues;
 
       if(cid==='__total__'){
@@ -8355,7 +8474,7 @@ function drawCompareChart(){
               beginAtZero:true,
               ticks:{
                 font:{size:11},
-                callback:value=>compactAxisValue(value)
+                callback:value=>rankingsMetric?graphRankingFormat(value,metric):compactAxisValue(value)
               }
             }
           }
@@ -8366,6 +8485,11 @@ function drawCompareChart(){
   const compareData=
     selected.map(cid=>{
 
+      if(rankingsMetric){
+        const values=graphRankingSeries(days,cid,metric).filter(Number.isFinite);
+        if(!values.length)return {cid,start:null,current:null,growth:null};
+        return {cid,start:values[0],current:values.at(-1),growth:values.at(-1)-values[0]};
+      }
       let rawValues;
 
       if(cid==='__total__'){
@@ -8468,6 +8592,15 @@ function drawCompareChart(){
       0
     );
 
+  const rankingTableHead=document.querySelector('.compare-table thead tr');
+  if(rankingTableHead) rankingTableHead.innerHTML=rankingsMetric
+    ? '<th>bot</th><th>first value</th><th>latest value</th><th>change</th>'
+    : '<th>bot</th><th>start</th><th>now</th><th>growth</th>';
+  if(rankingsMetric){
+    const htmlRows=compareData.map(r=>`<tr><td>${archiveEscape(displayLabel(r.cid))}</td><td>${graphRankingFormat(r.start,metric)}</td><td>${graphRankingFormat(r.current,metric)}</td><td>${graphRankingFormat(r.growth,metric)}</td></tr>`).join('');
+    document.querySelector('#compareRows').innerHTML=htmlRows;
+    return;
+  }
   const compareRowsHtml=
     compareData.map(row=>{
 
@@ -8574,7 +8707,7 @@ document.querySelector('#dailyGrowthBot')?.addEventListener('change',renderDaily
 document.querySelector('#compareMetric')
   .addEventListener(
     'change',
-    drawCompareChart
+    ()=>{syncGraphRankingButtons();drawCompareChart()}
   );
 
 
@@ -8626,6 +8759,15 @@ function graphPeriodDates(){
 }
 
 function cidMatchesGraphTag(cid,tag){
+  if(['suspected','verified','partial','total','watching','recovering'].includes(tag)){
+    const {to}=graphEventDateRange();
+    const date=to || topSlotsDefaultDate();
+    if(!date) return false;
+    const a=freezeAssessmentForCid(cid,date,{ignoreAuto:date!==topSlotsDefaultDate()});
+    if(a.insufficient) return false;
+    if(tag==='verified') return !!a.verified;
+    return a.status===tag;
+  }
   if(tag==='new'){
     return newStatusOverlapsGraphRange(cid);
   }
@@ -8664,7 +8806,7 @@ function applyGraphEventFilters(){
 
   const activeTags=buttons
     .map(button=>button.dataset.graphTag)
-    .filter(tag=>tag!=='capped');
+    .filter(tag=>tag!=='capped' && !['rankRelative','rankBreakouts','rankHot'].includes(tag));
 
   const cappedActive=buttons.some(button=>button.dataset.graphTag==='capped');
 
@@ -8701,6 +8843,10 @@ document.querySelector('#compareBots')
     if(!button) return;
 
     const tag=button.dataset.graphTag;
+    if(['rankRelative','rankBreakouts','rankHot'].includes(tag)){
+      graphRankTagChange(tag);
+      return;
+    }
 
     if(tag==='capped'){
       // 🔄 cycles: off → capped → uncapped → off
@@ -8728,6 +8874,16 @@ document.querySelector('#compareBots')
     applyGraphEventFilters();
     renderFreezeOverview();
   });
+
+document.querySelector('#graphTotalToggle')?.addEventListener('click',()=>{
+  const cb=document.querySelector('#totalProfile');if(!cb)return;
+  cb.checked=!cb.checked;drawCompareChart();
+});
+document.querySelector('#graphSelectToggle')?.addEventListener('click',()=>{
+  const cb=document.querySelector('#selectAllBots');if(!cb)return;
+  cb.checked=!cb.checked;
+  cb.dispatchEvent(new Event('change',{bubbles:true}));
+});
 
 
 function updateDateSelection(){
@@ -13201,16 +13357,21 @@ function renderFullscreenBots(){
   )].map(button=>button.dataset.graphTag);
 
   const filterButtons=`
+    <div class="graph-fs-select-head">
+      <span>bots</span>
+      <button type="button" id="fsTotalToggle">total/profile</button>
+      <button type="button" id="fsSelectToggle">select all</button>
+    </div>
     <div class="graph-event-filters" data-fs-graph-event-filters>
       ${[
         ['new','💟'],['edit','☑️'],['avatar','👤'],['capped','🔄'],
-        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️']
-      ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${activeTags.includes(tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
+        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️'],
+        ['suspected','⏳'],['verified','⭕️'],['partial','❄️'],['total','⏹️'],['watching','⏺️'],['recovering','▶️'],
+        ['rankRelative','❤️‍🔥'],['rankBreakouts','⚡️'],['rankHot','🔥']
+      ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${(activeTags.includes(tag)||document.querySelector('#compareMetric')?.value===tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
     </div>`;
 
-  list.innerHTML=filterButtons+`
-    <label><input type="checkbox" id="fsSelectAll"> select all</label>
-  `+
+  list.innerHTML=filterButtons+`<input type="checkbox" id="fsSelectAll" hidden tabindex="-1">`+
   mainInputs.map(input=>`
     <label>
       <input
@@ -13228,20 +13389,22 @@ function renderFullscreenBots(){
 
   updateFullscreenBotsSummary();
   renderFullscreenTimelines();
+  syncGraphSelectionTools();
 
   list.querySelectorAll('[data-fs-graph-tag]').forEach(button=>{
     button.addEventListener('click',()=>{
       const tag=button.dataset.fsGraphTag;
       const mainButton=document.querySelector(`#compareBots .graph-event-filter[data-graph-tag="${tag}"]`);
-      mainButton?.classList.toggle('active');
-      applyGraphEventFilters();
+      mainButton?.click();
       refreshFullscreenGraph();
     });
   });
 
-  document.querySelector('#fsSelectAll').addEventListener('change',e=>{
-    real.forEach(input=>input.checked=e.target.checked);
-    refreshFullscreenGraph();
+  document.querySelector('#fsSelectToggle')?.addEventListener('click',()=>{
+    document.querySelector('#graphSelectToggle')?.click();refreshFullscreenGraph();
+  });
+  document.querySelector('#fsTotalToggle')?.addEventListener('click',()=>{
+    document.querySelector('#graphTotalToggle')?.click();refreshFullscreenGraph();
   });
 
   list.querySelectorAll('[data-fs-cid]').forEach(fsInput=>{
@@ -13325,7 +13488,8 @@ function buildFullscreenChart(){
           beginAtZero:true,
           ticks:{
             font:{size:11},
-            callback:value=>compactAxisValue(value)
+            callback:value=>['rankRelative','rankBreakouts','rankHot'].includes(document.querySelector('#compareMetric')?.value)
+              ? graphRankingFormat(value,document.querySelector('#compareMetric').value):compactAxisValue(value)
           }
         }
       },
@@ -17038,7 +17202,7 @@ function rankingsRenderHome(){rankingsLoad();for(const [tab,id] of Object.entrie
  const period=tab==='new'?'1':tab==='leader'?'1':tab==='breakouts'?'1':'7';
  const res=rankingsBuild(tab,period);
  box.innerHTML=res.rows.length?rankingsRowsMarkup(tab,res.rows):`<div class="rankings-empty">${archiveEscape(res.description||'No qualifying comparable bots yet.')}</div>`;
- if(tab==='hot'){const sum=document.getElementById('rankingsHomeScore');if(sum)sum.textContent=res.window?.valid?`${rankingsFloat(res.score)} 🔥 · +${fmt.format(res.totalGrowth)} messages · 7D${res.incomplete?' · partial':''}`:'Profile score · waiting for 7D snapshots';}
+ if(tab==='hot'){const sum=document.getElementById('rankingsHomeScore');if(sum)sum.textContent=res.window?.valid?`${rankingsFloat(res.score)} · +${fmt.format(res.totalGrowth)} messages · 7D${res.incomplete?' · partial':''}`:'Profile score · waiting for 7D snapshots';}
  }}
 function rankingsRenderHub(){rankingsLoad();const tab=rankingsConfig.tab,info=rankingTabConfig[tab],p=rankingsConfig.period[tab];if(!info)return;
  document.querySelectorAll('[data-rank-tab]').forEach(b=>b.classList.toggle('active',b.dataset.rankTab===tab));
