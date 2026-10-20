@@ -5695,7 +5695,6 @@ body.dashboard-shell #dashboardCreatorLevel[data-level="5"]{
     <p id="rankingsHubMeta" class="rankings-hub-meta"></p>
     <div id="rankingsHubRows" class="rankings-hub-rows" aria-live="polite"></div>
   </section>
-  <p class="rankings-disclaimer">🔥 is your own popularity index (recorded message growth ÷ adjustable coefficient), not an official PolyBuzz score. Missing observations are never treated as zero.</p>
 </section>
 
 <section id="dashboardFreeze" class="freeze-center" data-dashboard-view="freeze" hidden>
@@ -14525,7 +14524,9 @@ function dashboardMilestoneRows(){
     {label:'10M+',value:10000000},
     {label:'7.5M+',value:7500000},
     {label:'5M+',value:5000000},
+    {label:'4.5M+',value:4500000},
     {label:'4M+',value:4000000},
+    {label:'3.5M+',value:3500000},
     {label:'3M+',value:3000000},
     {label:'2.5M+',value:2500000},
     {label:'2M+',value:2000000},
@@ -14533,6 +14534,8 @@ function dashboardMilestoneRows(){
     {label:'1M+',value:1000000},
     {label:'750K+',value:750000},
     {label:'500K+',value:500000},
+    {label:'400K+',value:400000},
+    {label:'300K+',value:300000},
     {label:'250K+',value:250000},
     {label:'200K+',value:200000},
     {label:'150K+',value:150000},
@@ -14541,6 +14544,7 @@ function dashboardMilestoneRows(){
     {label:'50K+',value:50000},
     {label:'25K+',value:25000},
     {label:'20K+',value:20000},
+    {label:'15K+',value:15000},
     {label:'10K+',value:10000},
     {label:'5K+',value:5000}
   ];
@@ -17283,7 +17287,7 @@ const rankingTabConfig={
   new:{title:'💟 new & hot',detail:'Newest public characters · absolute or relative growth.',periods:['1','7','30']},
   leader:{title:'❤️‍🔥 leaderboard',detail:'All public characters ranked by relative message growth.',periods:['1','7','30','90']},
   breakouts:{title:'⚡️ breakouts',detail:'Daily growth compared with the previous 14 complete growth intervals.',periods:['1']},
-  hot:{title:'🔥 popular',detail:'Your own popularity index, calculated from actual public portfolio message growth.',periods:['1','current','weekly','7','30','90']}
+  hot:{title:'🔥 popular',detail:'Portfolio popularity · message growth.',periods:['1','current','weekly','7','30','90']}
 };
 function rankingsStorageKey(){return 'pbRankingsV1:'+(typeof EVENTS_PROFILE!=='undefined'&&EVENTS_PROFILE||'main')}
 function rankingsLoad(){if(rankingsConfig.loaded)return;rankingsConfig.loaded=true;try{const o=JSON.parse(localStorage.getItem(rankingsStorageKey())||'{}');if(o.published&&typeof o.published==='object')rankingsConfig.published=o.published;if(o.publicOverrides&&typeof o.publicOverrides==='object')rankingsConfig.publicOverrides=o.publicOverrides;if(Number.isFinite(+o.coef)&&+o.coef>0)rankingsConfig.coef=+o.coef;}catch(_){}}
@@ -17307,7 +17311,7 @@ function rankingsWindow(period){const days=rankingsDays(),last=days.at(-1);if(!l
     const monday=mondays.at(-1);if(!monday)return{valid:false,reason:'No completed Monday snapshot available for weekly ranking.'};
     end=monday.date;start=rankingsAddDays(end,-7);daysCount=7;
     const displayStart=rankingsAddDays(end,-8),displayEnd=rankingsAddDays(end,-1);
-    note=`PolyBuzz week ${rankingsDateLabel(displayStart)}–${rankingsDateLabel(displayEnd)} · published Monday ${rankingsDateLabel(end)} · message snapshots ${rankingsDateLabel(start)} → ${rankingsDateLabel(end)} · own popularity index.`;
+    note=`PolyBuzz week ${rankingsDateLabel(displayStart)}–${rankingsDateLabel(displayEnd)} · published Monday ${rankingsDateLabel(end)} · message snapshots ${rankingsDateLabel(start)} → ${rankingsDateLabel(end)}.`;
   }else{
     daysCount=Number(period)||1;start=rankingsAddDays(end,-daysCount);
     note=`${rankingsDateLabel(start)} → ${rankingsDateLabel(end)} · ${daysCount} completed daily updates.`;
