@@ -5819,6 +5819,66 @@ body.dashboard-shell .dashboard-top-bots-card::before{
   opacity:.18!important;
 }
 
+
+
+/* === 21 Oct user-requested visual + nav fixes ===
+   - creator level crown clearer on LEFT half only
+   - latest CV growth crown visible again on LEFT half only
+   - top bots crown keep full-card background, but a little LOWER
+   - bottom nav fixed to true viewport bottom
+*/
+body.dashboard-shell .dashboard-creator-panel::before{
+  top:12% !important;
+  left:2.5% !important;
+  width:50% !important;
+  height:76% !important;
+  background-size:92% auto !important;
+  background-position:left 54% !important;
+  opacity:.38 !important;
+  filter:brightness(1.38) contrast(1.28) saturate(1.02) !important;
+}
+body.dashboard-shell .cv-day-estimate::before{
+  top:10% !important;
+  left:2.5% !important;
+  width:50% !important;
+  height:78% !important;
+  background-size:90% auto !important;
+  background-position:left 56% !important;
+  opacity:.24 !important;
+  filter:brightness(1.28) contrast(1.18) !important;
+}
+body.dashboard-shell .dashboard-top-bots-card::before{
+  background-size:88% auto !important;
+  background-position:50% 86% !important;
+  opacity:.18 !important;
+  filter:brightness(1.14) contrast(1.06) !important;
+}
+/* ensure top bots watermark remains behind content but spans full card */
+body.dashboard-shell .dashboard-top-bots-card{overflow:hidden !important;}
+
+/* stronger fixed bottom nav */
+#dashboardBottomNav.dashboard-bottom-nav{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 10px) !important;
+  transform:translateX(-50%) !important;
+  z-index:2147483000 !important;
+  width:min(590px, calc(100vw - 20px)) !important;
+  margin:0 !important;
+}
+body.dashboard-shell{
+  padding-bottom:104px !important;
+}
+
+/* Keep bottom navigation separate from the login screen. The gate is intentionally
+   placed at the bottom; nav must not cover it or be clickable before unlock. */
+#siteGate:not([hidden]) ~ #dashboardBottomNav {
+  display:none !important;
+}
+#app[hidden] + #dashboardBottomNav {
+  display:none !important;
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -6933,6 +6993,10 @@ body.dashboard-shell .dashboard-top-bots-card::before{
 </div>
 
 
+
+
+</main>
+
 <nav class="dashboard-bottom-nav" id="dashboardBottomNav" aria-label="tracker navigation">
   <button class="dashboard-nav-button active" type="button" data-dashboard-nav="home"><span class="nav-icon">⌂</span><span>home</span></button>
   <button class="dashboard-nav-button" type="button" data-dashboard-nav="bots"><span class="nav-icon">♡</span><span>bots</span></button>
@@ -6940,8 +7004,6 @@ body.dashboard-shell .dashboard-top-bots-card::before{
   <button class="dashboard-nav-button" type="button" data-dashboard-nav="analytics"><span class="nav-icon">▥</span><span>analytics</span></button>
   <button class="dashboard-nav-button" type="button" data-dashboard-nav="more"><span class="nav-icon">•••</span><span>more</span></button>
 </nav>
-
-</main>
 
 <div id="graphFullscreen" aria-hidden="true">
   <div class="graph-fs-toolbar">
@@ -18106,6 +18168,8 @@ dashboardInit();
 restoreSiteSession();
 
 </script>
+
+
 
 </body>
 </html>
