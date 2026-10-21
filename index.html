@@ -5861,6 +5861,34 @@ body.dashboard-shell { padding-bottom:110px !important; }
 #siteGate:not([hidden]) ~ #dashboardBottomNav,
 #app[hidden] ~ #dashboardBottomNav { display:none !important; }
 
+
+/* 21 Oct — Latest CV Growth uses a complete, uncropped full-card crown watermark.
+   The Creator Level half-width crown and original gradients stay exactly as before. */
+body.dashboard-shell #cvDayEstimate.cv-day-estimate::before{
+  inset:0 !important;
+  top:0 !important;
+  right:0 !important;
+  bottom:0 !important;
+  left:0 !important;
+  width:100% !important;
+  height:100% !important;
+  background-image:var(--pb-crown-cv-outline) !important;
+  background-size:contain !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  opacity:.72 !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+  -webkit-mask-image:none !important;
+  mask-image:none !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+}
+body.dashboard-shell #cvDayEstimate.cv-day-estimate > *{
+  position:relative !important;
+  z-index:1 !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -6668,8 +6696,8 @@ body.dashboard-shell { padding-bottom:110px !important; }
       </div>
       <div class="cv-day-grid">
         <div><span>adjustments</span><strong id="cvDayAdjustments">—</strong><small>recorded corrections</small></div>
-        <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small>historical ratio</small></div>
         <div><span>messages</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
+        <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small>historical ratio</small></div>
         <div><span>UCU</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
       </div>
       <div id="cvDayFormula" class="cv-day-formula">—</div>
