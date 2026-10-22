@@ -5943,6 +5943,30 @@ body.dashboard-shell .analytics-record-empty {color:#a891a6}
   body.dashboard-shell .analytics-rolling-day{font-size:9px}
 }
 
+
+/* Personal bot records and historical Breakouts navigation */
+body.dashboard-shell .analytics-personal-tools{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:11px 0 5px;color:#cbb2c8;font-size:11px}
+body.dashboard-shell .analytics-personal-tools select{min-width:0;width:min(220px,65%);height:37px;background:#211a2a;color:#eedcea;border:1px solid #745b7a;border-radius:10px;padding:5px 9px;font:inherit}
+body.dashboard-shell .analytics-personal-count{margin:7px 0 4px;color:#bda8bc;font-size:10px;line-height:1.5}
+body.dashboard-shell .analytics-personal-list{max-height:260px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#795a78 transparent}
+body.dashboard-shell .analytics-personal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;width:100%;min-width:0;align-items:center;border:0;border-bottom:1px solid rgba(177,143,179,.18);padding:9px 2px;background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer}
+body.dashboard-shell .analytics-personal-row:active{background:rgba(142,100,140,.13)}
+body.dashboard-shell .analytics-personal-name{font-size:11px;font-weight:700;color:#ead3e7;overflow-wrap:anywhere}
+body.dashboard-shell .analytics-personal-badge{font-size:9px;color:#e4ba85;white-space:nowrap;margin-top:3px}
+body.dashboard-shell .analytics-personal-right{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+body.dashboard-shell .analytics-personal-right strong{display:block;color:#f3cfe6;font-size:12px}
+body.dashboard-shell .analytics-personal-right small{display:block;color:#bda6b8;font-size:10px;margin-top:4px}
+body.dashboard-shell .analytics-personal-more{display:block;margin:9px auto 0;padding:8px 14px;background:#382b40;border:1px solid #6e5975;border-radius:10px;color:#edd2e5;font:inherit;font-size:11px}
+body.dashboard-shell .analytics-personal-more[hidden]{display:none!important}
+body.dashboard-shell #rankingsBreakoutsDateWrap[hidden]{display:none!important}
+
+
+/* 22 Oct · CV growth inner four boxes only: preserve the gradient and crown art.
+   Slightly soften the tiles so the full-card crown can show through (4% lower opacity). */
+body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
+  background: linear-gradient(120deg,rgba(33,23,48,.88),rgba(28,22,47,.91)) !important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -6153,6 +6177,7 @@ body.dashboard-shell .analytics-record-empty {color:#a891a6}
       <label id="rankingsNewSelectionWrap">selection<select id="rankingsNewSelection"><option value="latest5">latest 5</option><option value="last30">last 30 days</option></select></label>
       <label id="rankingsNewSortWrap">sort by<select id="rankingsNewSort"><option value="relative">relative growth (%)</option><option value="absolute">absolute growth</option></select></label>
       <label id="rankingsPeriodWrap">period<select id="rankingsPeriod"></select></label>
+      <label id="rankingsBreakoutsDateWrap" hidden>day<select id="rankingsBreakoutsDate" aria-label="Historical breakout day"><option value="">latest update</option></select></label>
       <label id="rankingsMinWrap" hidden>minimum growth<select id="rankingsMinimum"><option value="0">off</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option><option value="custom">custom</option></select></label>
       <label id="rankingsCustomWrap" hidden>custom<input id="rankingsCustomMin" type="number" min="0" step="1" inputmode="numeric" value="25"></label>
       <label id="rankingsCoefficientWrap" hidden>🔥 coefficient<input id="rankingsCoefficient" type="number" min="1" step="1" inputmode="numeric" value="4000"></label>
@@ -6590,15 +6615,7 @@ body.dashboard-shell .analytics-record-empty {color:#a891a6}
       </div>
     </details>
 
-    <details class="analytics-records-card" id="analyticsRecords">
-      <summary><span>🏆 records</span><small>profile · bots</small></summary>
-      <div class="analytics-records-inner">
-        <div class="analytics-records-section-title">profile records</div>
-        <div id="analyticsProfileRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
-        <div class="analytics-records-section-title">bot records</div>
-        <div id="analyticsBotRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
-      </div>
-    </details>
+
 
     <div class="analytics-milestone-panel">
       <div class="analytics-milestone-head">
@@ -6612,6 +6629,24 @@ body.dashboard-shell .analytics-record-empty {color:#a891a6}
       </div>
       <div id="analyticsMilestoneCompactHint" class="analytics-milestone-footnote" hidden></div>
     </div>
+
+    <details class="analytics-records-card" id="analyticsRecords">
+      <summary><span>🏆 records</span><small>profile · bots</small></summary>
+      <div class="analytics-records-inner">
+        <div class="analytics-records-section-title">profile records</div>
+        <div id="analyticsProfileRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
+        <div class="analytics-records-section-title">bot records</div>
+        <div id="analyticsBotRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
+        <div class="analytics-records-section-title">🏅 personal bot records · 30D</div>
+        <div class="analytics-personal-tools">
+          <label for="analyticsPersonalBotFilter">bot</label>
+          <select id="analyticsPersonalBotFilter" aria-label="Filter personal bests by bot"><option value="">all bots</option></select>
+        </div>
+        <div id="analyticsPersonalRecordCount" class="analytics-personal-count">Historic 30D personal best moments, with dates.</div>
+        <div id="analyticsPersonalRecordRows" class="analytics-personal-list"><div class="dashboard-empty">open to load records…</div></div>
+        <button id="analyticsPersonalRecordMore" class="analytics-personal-more" type="button" hidden>show more ⌄</button>
+      </div>
+    </details>
 
     <button type="button" class="rankings-analytics-link" data-open-dashboard-view="rankings">⭐️ rankings <span>new · relative · breakouts · 🔥</span><b aria-hidden="true">↗</b></button>
     <button type="button" class="analytics-profile-popularity" data-rank-open="hot" aria-label="Open profile popularity in Popular">
@@ -6756,13 +6791,13 @@ body.dashboard-shell .analytics-record-empty {color:#a891a6}
     </div>
 
     <div class="cv-summary-grid">
-      <div class="cv-stat" title="Historical intervals used to calibrate messages per UCU">
-        <span>intervals</span><strong id="cvCalibrationCount">—</strong>
-      </div>
+      <div class="cv-stat"><span>latest</span><strong id="cvLatestTop">—</strong></div>
       <div class="cv-stat"><span>new</span><strong id="cvEarnedMonth">—</strong></div>
       <div class="cv-stat"><span>next</span><strong id="cvNextSettlement">—</strong></div>
       <div class="cv-stat"><span>loss</span><strong id="cvSettlementLoss">—</strong></div>
-      <div class="cv-stat"><span>latest</span><strong id="cvLatestTop">—</strong></div>
+      <div class="cv-stat" title="Historical intervals used to calibrate messages per UCU">
+        <span>intervals</span><strong id="cvCalibrationCount">—</strong>
+      </div>
       <div class="cv-stat"><span>rest</span><strong id="cvSettlementEstimate">—</strong></div>
     </div>
 
@@ -17859,7 +17894,7 @@ function backfillInit(){
 
 
 /* === Independent rankings module. Snapshot messages are read-only. === */
-const rankingsConfig={tab:'new',period:{new:'1',leader:'1',breakouts:'1',hot:'7'},newSelection:'latest5',newSort:'relative',minimum:{leader:25,breakouts:25},minimumMode:{leader:'25',breakouts:'25'},coef:4000,expanded:{new:false,leader:false,breakouts:false,hot:false},published:{},publicOverrides:{},weeklyArchiveEnd:'',loaded:false};
+const rankingsConfig={tab:'new',period:{new:'1',leader:'1',breakouts:'1',hot:'7'},newSelection:'latest5',newSort:'relative',minimum:{leader:25,breakouts:25},minimumMode:{leader:'25',breakouts:'25'},breakoutsDate:'',coef:4000,expanded:{new:false,leader:false,breakouts:false,hot:false},published:{},publicOverrides:{},weeklyArchiveEnd:'',loaded:false};
 const rankingTabConfig={
   new:{title:'💟 new & hot',detail:'Newest public characters · absolute or relative growth.',periods:['1','7','30']},
   leader:{title:'❤️‍🔥 leaderboard',detail:'All public characters ranked by relative message growth.',periods:['1','7','30','90']},
@@ -17882,7 +17917,7 @@ function rankingsPair(days,from,to,cid){const earlier=days.find(d=>d.date===from
 // An interval closes when both boundary snapshots are present on exact dates.
 // For rolling 7D/30D/90D every daily update date in the span must exist;
 // a missing day is not a day with zero messages.
-function rankingsWindow(period){const days=rankingsDays(),last=days.at(-1);if(!last)return{valid:false,reason:'No daily snapshots available yet.'};let end=last.date,start='',note='',daysCount=0;
+function rankingsWindow(period,asOfDate=''){const days=rankingsDays(),last=asOfDate?days.find(d=>d.date===asOfDate):days.at(-1);if(!last)return{valid:false,reason:asOfDate?'Selected day has no saved snapshot.':'No daily snapshots available yet.'};let end=last.date,start='',note='',daysCount=0;
   if(period==='weekly'){
     const mondays=days.filter(d=>new Date(d.date+'T12:00:00Z').getUTCDay()===1);
     const monday=mondays.at(-1);if(!monday)return{valid:false,reason:'No completed Monday snapshot available for weekly ranking.'};
@@ -18028,7 +18063,7 @@ function rankingsBuild(tab,period,options={}){
      result.description;
    return {...result,window:{valid:result.valid},description:label};
  }
- const w=rankingsWindow(period),publicBots=rankingsPublicBots();
+ const w=rankingsWindow(period,tab==='breakouts'?(options.endDate||''):''),publicBots=rankingsPublicBots();
  if(!w.valid)return{rows:[],window:w,missing:true,description:w.reason,publicCount:publicBots.length};
  if(tab==='breakouts')return rankingsBreakouts(w,publicBots,options);
  let bots=publicBots;
@@ -18091,7 +18126,7 @@ function rankingsBreakouts(w,publicBots,options={}){
 function rankingsRowLabel(tab,r){if(tab==='hot'&&(r.unknown||r.score===null))return 'Unknown';if(tab==='new')return r.relative===null?'NEW':`+${rankingsPercent(r.relative)}`;if(tab==='leader')return r.relative===null?'NEW':`+${rankingsPercent(r.relative)}`;if(tab==='breakouts')return r.reactivated?'⚡ REACTIVATED':r.factor===null?'—':rankingsFloat(r.factor)+'×';return rankingsFloat(r.score)+' 🔥'}
 function rankingsRowDetails(tab,r){if(tab==='hot'&&(r.unknown||r.score===null))return `${r.start===null?'Unknown':fmt.format(r.start)} → ${r.end===null?'Unknown':fmt.format(r.end)} · growth unknown`;if(tab==='new')return `${r.age===null?'age unknown':r.age+'d since '+(r.published?.estimated?'creation':'publication')} · ${fmt.format(r.end)} total · +${fmt.format(r.growth)}${r.partial?' · partial period':''}`;
  if(tab==='leader')return `${fmt.format(r.start)} → ${fmt.format(r.end)} · +${fmt.format(r.growth)}`;
- if(tab==='breakouts')return `+${fmt.format(r.growth)} today · normal ${rankingsFloat(r.typical)}/day${r.best30?' · 🏅 30D personal best':''}`;
+ if(tab==='breakouts')return `+${fmt.format(r.growth)} · normal ${rankingsFloat(r.typical)}/day${r.best30?' · 🏅 30D personal best':''}`;
  return `+${fmt.format(r.growth)} msgs · ${rankingsFloat(r.share)}% of measured portfolio`;
 }
 function rankingsRowsMarkup(tab,rows){return rows.map((r,i)=>`<div class="rankings-entry"><div class="rankings-position">${i+1}</div><div><div class="rankings-name">${archiveEscape(r.name)}</div><div class="rankings-details">${archiveEscape(rankingsRowDetails(tab,r))}</div></div><div class="rankings-highlight">${archiveEscape(rankingsRowLabel(tab,r))}</div></div>`).join('')}
@@ -18105,13 +18140,21 @@ function rankingsRenderHome(){rankingsLoad();for(const [tab,id] of Object.entrie
 function rankingsRenderHub(){rankingsLoad();const tab=rankingsConfig.tab,info=rankingTabConfig[tab],p=rankingsConfig.period[tab];if(!info)return;
  document.querySelectorAll('[data-rank-tab]').forEach(b=>b.classList.toggle('active',b.dataset.rankTab===tab));
  const title=document.getElementById('rankingsHubTitle'),desc=document.getElementById('rankingsHubDescription');if(title)title.textContent=info.title;if(desc)desc.textContent=info.detail;
- for(const [id,show] of Object.entries({rankingsNewSelectionWrap:tab==='new',rankingsNewSortWrap:tab==='new',rankingsMinWrap:['leader','breakouts'].includes(tab),rankingsCoefficientWrap:tab==='hot'})){const el=document.getElementById(id);if(el)el.hidden=!show;}
+ for(const [id,show] of Object.entries({rankingsNewSelectionWrap:tab==='new',rankingsNewSortWrap:tab==='new',rankingsMinWrap:['leader','breakouts'].includes(tab),rankingsBreakoutsDateWrap:tab==='breakouts',rankingsCoefficientWrap:tab==='hot'})){const el=document.getElementById(id);if(el)el.hidden=!show;}
  const select=document.getElementById('rankingsPeriod');if(select){select.innerHTML=info.periods.map(v=>`<option value="${v}">${v==='current'?'current week':v==='weekly'?'weekly final':v==='1'?'24H':v+'D'}</option>`).join('');select.value=p;}
+ const previousDays=rankingsDays();
+ const breakoutDay=document.getElementById('rankingsBreakoutsDate');
+ if(breakoutDay){
+   const days=[...new Set(previousDays.map(d=>d.date))].reverse();
+   breakoutDay.innerHTML='<option value="">latest update</option>'+days.map(date=>`<option value="${date}">${analyticsRecordDates(date)}</option>`).join('');
+   if(rankingsConfig.breakoutsDate&&!days.includes(rankingsConfig.breakoutsDate))rankingsConfig.breakoutsDate='';
+   breakoutDay.value=rankingsConfig.breakoutsDate;
+ }
  const newSelect=document.getElementById('rankingsNewSelection');if(newSelect)newSelect.value=rankingsConfig.newSelection;
  const newSort=document.getElementById('rankingsNewSort');if(newSort)newSort.value=rankingsConfig.newSort;
  const min=document.getElementById('rankingsMinimum');if(min){const n=rankingsConfig.minimum[tab]??25;min.value=rankingsConfig.minimumMode[tab]||([0,25,50,100].includes(n)?String(n):'custom');const custom=document.getElementById('rankingsCustomMin');if(custom)custom.value=n;const wrap=document.getElementById('rankingsCustomWrap');if(wrap)wrap.hidden=!['leader','breakouts'].includes(tab)||min.value!=='custom';}
  const coef=document.getElementById('rankingsCoefficient');if(coef)coef.value=rankingsConfig.coef;
- const res=rankingsBuild(tab,p),box=document.getElementById('rankingsHubRows'),meta=document.getElementById('rankingsHubMeta'),sum=document.getElementById('rankingsProfileSummary');
+ const res=rankingsBuild(tab,p,tab==='breakouts'?{endDate:rankingsConfig.breakoutsDate}:{}),box=document.getElementById('rankingsHubRows'),meta=document.getElementById('rankingsHubMeta'),sum=document.getElementById('rankingsProfileSummary');
  if(meta)meta.textContent=res.description+(res.skipped?` · ${res.skipped} characters missing a valid baseline/readout`:'' )+` · ${res.publicCount||0} public bots`;
  if(box)box.innerHTML=res.rows?.length?rankingsRowsMarkup(tab,res.rows):`<div class="rankings-empty">${archiveEscape(res.description||'No qualifying bots for this period.')}</div>`;
  if(sum){sum.hidden=tab!=='hot';if(tab==='hot'){sum.innerHTML=res.window?.valid?`<small>PROFILE POPULARITY · ${p==='current'?'current week':p==='weekly'?'weekly final':p==='1'?'24H':p+'D'}</small><strong>${res.score===null?'Unknown':rankingsFloat(res.score)+' 🔥'}</strong><small>+${fmt.format(res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${res.incomplete?' · partial: some public bots lack readings':''}</small>`:`<small>PROFILE POPULARITY</small><strong>—</strong><small>${archiveEscape(res.description)}</small>`;}}
@@ -18133,10 +18176,11 @@ function rankingsInit(){rankingsLoad();
 
  const tab=event.target.closest('[data-rank-tab]');if(tab){rankingsConfig.tab=tab.dataset.rankTab;rankingsRenderHub();return;}
  });
- for(const [id,key] of Object.entries({rankingsPeriod:'period',rankingsNewSelection:'newSelection',rankingsNewSort:'newSort',rankingsMinimum:'minimum',rankingsCustomMin:'custom',rankingsCoefficient:'coef'})){
+ for(const [id,key] of Object.entries({rankingsPeriod:'period',rankingsBreakoutsDate:'breakoutsDate',rankingsNewSelection:'newSelection',rankingsNewSort:'newSort',rankingsMinimum:'minimum',rankingsCustomMin:'custom',rankingsCoefficient:'coef'})){
  const el=document.getElementById(id);if(!el)continue;el.addEventListener(key==='coef'||key==='custom'?'change':'change',()=>{
   const tab=rankingsConfig.tab;
   if(key==='period')rankingsConfig.period[tab]=el.value;
+  if(key==='breakoutsDate')rankingsConfig.breakoutsDate=el.value;
   if(key==='newSelection'||key==='newSort')rankingsConfig[key]=el.value;
   if(key==='minimum'){const val=el.value;rankingsConfig.minimumMode[tab]=val;if(val==='custom'){rankingsConfig.minimum[tab]=Math.max(0,Number(document.getElementById('rankingsCustomMin')?.value)||25);}else rankingsConfig.minimum[tab]=Math.max(0,Number(val)||0);}
   if(key==='custom')rankingsConfig.minimum[tab]=Math.max(0,Math.floor(Number(el.value)||0));
@@ -18441,7 +18485,98 @@ function analyticsRenderRollingAndRecords(){
   }
 }
 
+
+/* Historical 30D personal-best moments for EACH public bot.
+   Mirrors the 30D personal-best criterion in Breakouts: the selected day's
+   growth must exceed every one of the preceding 30 observed daily intervals.
+   All 32 boundary snapshots must be consecutive and reliable. */
+const analyticsPersonalState={filter:'',visible:24,items:[]};
+function analyticsPersonalBestMoments(){
+  const days=rankingsDays(),available=new Map(days.map(d=>[d.date,d]));
+  const publicBots=rankingsPublicBots();
+  const results=[];
+  for(const bot of publicBots){
+    const cid=String(bot.cid),name=String(bot.name||cid);
+    for(let idx=0;idx<days.length;idx++){
+      const date=days[idx].date;
+      const start=rankingsAddDays(date,-31);
+      const measurements=[];
+      let valid=true;
+      for(let k=0;k<=31;k++){
+        const entry=available.get(rankingsAddDays(start,k));
+        const v=analyticsReliableNumber(snapshotBot(entry?.snapshot,cid),'messages');
+        if(v===null){valid=false;break;}
+        measurements.push(v);
+      }
+      if(!valid)continue;
+      const deltas=[];
+      for(let k=1;k<measurements.length;k++){
+        const diff=measurements[k]-measurements[k-1];
+        if(diff<0){valid=false;break;}
+        deltas.push(diff);
+      }
+      if(!valid)continue;
+      const today=deltas[30];
+      if(today>0 && today>Math.max(...deltas.slice(0,30))){
+        results.push({cid,name,date,growth:today,previousBest:Math.max(...deltas.slice(0,30))});
+      }
+    }
+  }
+  results.sort((a,b)=>b.date.localeCompare(a.date)||b.growth-a.growth||a.name.localeCompare(b.name));
+  return results;
+}
+function analyticsRenderPersonalBests(){
+  const box=document.getElementById('analyticsPersonalRecordRows');
+  const filter=document.getElementById('analyticsPersonalBotFilter');
+  const count=document.getElementById('analyticsPersonalRecordCount');
+  const more=document.getElementById('analyticsPersonalRecordMore');
+  if(!box||!filter||!count||!more)return;
+  const items=analyticsPersonalState.items;
+  const allBots=rankingsPublicBots().slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
+  const ids=new Set(allBots.map(b=>String(b.cid)));
+  filter.innerHTML='<option value="">all bots</option>'+allBots.map(b=>`<option value="${archiveEscape(String(b.cid))}">${archiveEscape(String(b.name||b.cid))}</option>`).join('');
+  if(analyticsPersonalState.filter&&!ids.has(analyticsPersonalState.filter))analyticsPersonalState.filter='';
+  filter.value=analyticsPersonalState.filter;
+  const filtered=analyticsPersonalState.filter?items.filter(e=>e.cid===analyticsPersonalState.filter):items;
+  count.textContent=`${filtered.length} recorded 30D personal best${filtered.length===1?'':'s'} · open a result to view that day's Breakouts`;
+  const visible=filtered.slice(0,analyticsPersonalState.visible);
+  box.innerHTML=visible.length?visible.map(item=>`<button type="button" class="analytics-personal-row" data-analytics-best-day="${item.date}" title="View historical Breakouts on ${analyticsRecordDates(item.date)}">
+    <span><span class="analytics-personal-name">${archiveEscape(item.name)}</span><span class="analytics-personal-badge">🏅 30D personal best</span></span>
+    <span class="analytics-personal-right"><strong>+${fmt.format(item.growth)}</strong><small>${analyticsRecordDates(item.date)}</small></span>
+  </button>`).join(''):'<div class="dashboard-empty">No 30D personal bests found in the saved consecutive daily readings.</div>';
+  more.hidden=filtered.length<=analyticsPersonalState.visible;
+  more.textContent=`show more ⌄ (${filtered.length-analyticsPersonalState.visible} left)`;
+}
+function analyticsInitPersonalRecordControls(){
+  document.getElementById('analyticsRecords')?.addEventListener('toggle',event=>{
+    if(!event.target.open)return;
+    analyticsPersonalState.items=analyticsPersonalBestMoments();
+    analyticsRenderPersonalBests();
+  });
+  document.getElementById('analyticsPersonalBotFilter')?.addEventListener('change',event=>{
+    analyticsPersonalState.filter=event.target.value;
+    analyticsPersonalState.visible=24;
+    analyticsRenderPersonalBests();
+  });
+  document.getElementById('analyticsPersonalRecordMore')?.addEventListener('click',()=>{
+    analyticsPersonalState.visible+=24;
+    analyticsRenderPersonalBests();
+  });
+  document.getElementById('analyticsPersonalRecordRows')?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-analytics-best-day]');
+    if(!button)return;
+    rankingsConfig.tab='breakouts';
+    rankingsConfig.breakoutsDate=button.dataset.analyticsBestDay;
+    // A personal best may be smaller than the user's usual minimum filter.
+    // Show every qualifying bot on this historical day when following a record.
+    rankingsConfig.minimum.breakouts=0;
+    rankingsConfig.minimumMode.breakouts='0';
+    dashboardShowView('rankings');
+  });
+}
+
 dashboardInit();
+analyticsInitPersonalRecordControls();
 
 restoreSiteSession();
 
