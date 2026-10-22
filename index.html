@@ -5889,6 +5889,60 @@ body.dashboard-shell #cvDayEstimate.cv-day-estimate > *{
   z-index:1 !important;
 }
 
+
+/* Rolling 7D + historical records: same quiet mauve surface as Analytics. */
+body.dashboard-shell .analytics-rolling-card,
+body.dashboard-shell .analytics-records-card {
+  background:#2b2230; border:1px solid #69516d; border-radius:16px;
+  margin:12px 0 14px; color:#f4e8f2; overflow:hidden; min-width:0;
+}
+body.dashboard-shell .analytics-rolling-card > summary,
+body.dashboard-shell .analytics-records-card > summary {
+  list-style:none; display:flex; justify-content:space-between; align-items:center;
+  gap:8px; padding:16px 15px; cursor:pointer; font-size:14px; font-weight:760;
+}
+body.dashboard-shell .analytics-rolling-card > summary::-webkit-details-marker,
+body.dashboard-shell .analytics-records-card > summary::-webkit-details-marker {display:none}
+body.dashboard-shell .analytics-rolling-card > summary span,
+body.dashboard-shell .analytics-records-card > summary span {min-width:0}
+body.dashboard-shell .analytics-rolling-card > summary small,
+body.dashboard-shell .analytics-records-card > summary small {margin-left:auto;font-size:11px;color:#c5abc1;font-weight:500;white-space:nowrap}
+body.dashboard-shell .analytics-rolling-card > summary::after,
+body.dashboard-shell .analytics-records-card > summary::after {content:'⌄';font-size:17px;color:#cfa5d3;transform:rotate(0);transition:transform .2s}
+body.dashboard-shell .analytics-rolling-card[open] > summary::after,
+body.dashboard-shell .analytics-records-card[open] > summary::after {transform:rotate(180deg)}
+body.dashboard-shell .analytics-rolling-content {padding:3px 10px 12px;border-top:1px solid #504054}
+body.dashboard-shell .analytics-rolling-grid {
+  display:grid;grid-template-columns:20px minmax(0,1.32fr) minmax(0,1.03fr) minmax(0,.72fr) minmax(0,.69fr) minmax(0,.75fr);
+  column-gap:2px;align-items:center;min-width:0; font-variant-numeric:tabular-nums;
+}
+body.dashboard-shell .analytics-rolling-grid>span {min-width:0;white-space:nowrap;overflow:hidden;text-overflow:clip}
+body.dashboard-shell .analytics-rolling-grid>span:not(:first-child) {text-align:right}
+body.dashboard-shell .analytics-rolling-header {color:#c4aec2;font-weight:600;font-size:9px;padding:10px 0 8px}
+body.dashboard-shell .analytics-rolling-day {padding:10px 0;border-top:1px solid rgba(177,143,179,.18);font-size:10px;font-weight:700;line-height:1.4}
+body.dashboard-shell .analytics-rolling-day .rolling-day-label {color:#cda9c7}
+body.dashboard-shell .analytics-rolling-day .rolling-missing {color:#9e8a9d;font-weight:500}
+body.dashboard-shell .analytics-rolling-day .rolling-positive {color:#f2d5ed}
+body.dashboard-shell .analytics-rolling-day .rolling-negative {color:#edb5bd}
+body.dashboard-shell .analytics-rolling-day .rolling-record {color:#f4d6a0}
+body.dashboard-shell .analytics-rolling-day .rolling-record-mark {font-size:9px;vertical-align:1px;margin-left:1px}
+body.dashboard-shell .analytics-rolling-dates {color:#bda7b8;text-align:right;font-size:10px;padding:10px 2px 2px;border-top:1px solid rgba(177,143,179,.18)}
+body.dashboard-shell .analytics-records-inner {padding:3px 14px 14px;border-top:1px solid #504054}
+body.dashboard-shell .analytics-records-section-title {font-size:12px;font-weight:800;color:#e3bddd;margin:13px 0 5px}
+body.dashboard-shell .analytics-record {display:grid;grid-template-columns:minmax(0,1.14fr) minmax(0,.92fr);gap:6px;align-items:center;padding:9px 0;border-bottom:1px solid rgba(177,143,179,.18);font-size:11px}
+body.dashboard-shell .analytics-record:last-child{border-bottom:0}
+body.dashboard-shell .analytics-record-label {color:#dbc6d9;font-weight:600;line-height:1.3}
+body.dashboard-shell .analytics-record-result {text-align:right;min-width:0}
+body.dashboard-shell .analytics-record-result strong {display:block;color:#f2d0e7;font-size:13px;font-weight:750;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+body.dashboard-shell .analytics-record-result small {display:block;color:#aa98aa;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+body.dashboard-shell .analytics-record-empty {color:#a891a6}
+@media (max-width:365px){
+  body.dashboard-shell .analytics-rolling-content{padding-left:7px;padding-right:7px}
+  body.dashboard-shell .analytics-rolling-grid{grid-template-columns:16px minmax(0,1.15fr) minmax(0,.89fr) minmax(0,.59fr) minmax(0,.62fr) minmax(0,.7fr);column-gap:2px}
+  body.dashboard-shell .analytics-rolling-header{font-size:8px}
+  body.dashboard-shell .analytics-rolling-day{font-size:9px}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -6522,6 +6576,29 @@ body.dashboard-shell #cvDayEstimate.cv-day-estimate > *{
         <em id="analyticsAveragePerBotMeta">messages</em>
       </div>
     </div>
+
+    <details class="analytics-rolling-card" id="analyticsRollingWindow" open>
+      <summary><span>↗ 7-day rolling window</span><small>daily updates</small></summary>
+      <div class="analytics-rolling-content">
+        <div class="analytics-rolling-grid analytics-rolling-header" aria-hidden="true">
+          <span>D</span><span>messages</span><span>collectors</span><span>subs</span><span>CV</span><span>%</span>
+        </div>
+        <div id="analyticsRollingRows" aria-label="Daily growth across the latest seven recorded calendar days">
+          <div class="dashboard-empty">loading…</div>
+        </div>
+        <div id="analyticsRollingDates" class="analytics-rolling-dates">—</div>
+      </div>
+    </details>
+
+    <details class="analytics-records-card" id="analyticsRecords">
+      <summary><span>🏆 records</span><small>profile · bots</small></summary>
+      <div class="analytics-records-inner">
+        <div class="analytics-records-section-title">profile records</div>
+        <div id="analyticsProfileRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
+        <div class="analytics-records-section-title">bot records</div>
+        <div id="analyticsBotRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
+      </div>
+    </details>
 
     <div class="analytics-milestone-panel">
       <div class="analytics-milestone-head">
@@ -15196,6 +15273,9 @@ function dashboardRenderAnalyticsInsights(){
   dashboardRenderMilestones(bots,totalBots);
   dashboardRenderHotBots();
   try{dashboardRenderProfilePopularity();}catch(error){console.warn('Profile popularity:',error)}
+  if(document.querySelector('#dashboardView-analytics')?.hidden===false || document.querySelector('#analyticsPanel')?.offsetParent){
+    analyticsRenderRollingAndRecords();
+  }
 }
 
 function dashboardEventTags(event){
@@ -17914,7 +17994,7 @@ function rankingsRenderWeeklyExtras(){
   const currentCaption=current.base?
     `${rankingsDateLabel(current.base)} → ${rankingsDateLabel(rankingsAddDays(current.base,7))}`:
     'Awaiting Monday baseline';
-  weekly.innerHTML=rankingsScoreBlock('🔥 current week',currentCaption,current.res);
+  weekly.innerHTML=rankingsScoreBlock('current week',currentCaption,current.res);
   final.innerHTML=rankingsScoreBlock('🏆 last closed weekly ranking',closed?`${rankingsDateLabel(closed.displayStart)} – ${rankingsDateLabel(closed.displayEnd)} · finalized ${rankingsDateLabel(closed.end)}`:'No closed week',closed?.res);
   const latest=history.at(-1),active=history.find(h=>h.end===rankingsConfig.weeklyArchiveEnd)||latest;
   if(!active){archive.innerHTML='<div class="rankings-weekly-empty">Historical weekly results will appear once dated snapshots are available.</div>';return;}
@@ -18034,7 +18114,7 @@ function rankingsRenderHub(){rankingsLoad();const tab=rankingsConfig.tab,info=ra
  const res=rankingsBuild(tab,p),box=document.getElementById('rankingsHubRows'),meta=document.getElementById('rankingsHubMeta'),sum=document.getElementById('rankingsProfileSummary');
  if(meta)meta.textContent=res.description+(res.skipped?` · ${res.skipped} characters missing a valid baseline/readout`:'' )+` · ${res.publicCount||0} public bots`;
  if(box)box.innerHTML=res.rows?.length?rankingsRowsMarkup(tab,res.rows):`<div class="rankings-empty">${archiveEscape(res.description||'No qualifying bots for this period.')}</div>`;
- if(sum){sum.hidden=tab!=='hot';if(tab==='hot'){sum.innerHTML=res.window?.valid?`<small>🔥 PROFILE POPULARITY · ${p==='current'?'current week':p==='weekly'?'weekly final':p==='1'?'24H':p+'D'}</small><strong>${res.score===null?'Unknown':rankingsFloat(res.score)+' 🔥'}</strong><small>+${fmt.format(res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${res.incomplete?' · partial: some public bots lack readings':''}</small>`:`<small>🔥 PROFILE POPULARITY</small><strong>—</strong><small>${archiveEscape(res.description)}</small>`;}}
+ if(sum){sum.hidden=tab!=='hot';if(tab==='hot'){sum.innerHTML=res.window?.valid?`<small>PROFILE POPULARITY · ${p==='current'?'current week':p==='weekly'?'weekly final':p==='1'?'24H':p+'D'}</small><strong>${res.score===null?'Unknown':rankingsFloat(res.score)+' 🔥'}</strong><small>+${fmt.format(res.totalGrowth)} messages · coefficient ${fmt.format(rankingsConfig.coef)}${res.incomplete?' · partial: some public bots lack readings':''}</small>`:`<small>PROFILE POPULARITY</small><strong>—</strong><small>${archiveEscape(res.description)}</small>`;}}
  rankingsRenderWeeklyExtras();
 }
 function rankingsInit(){rankingsLoad();
@@ -18171,6 +18251,194 @@ function dashboardInit(){
   const updated=document.querySelector('#updated');
   if(updated) new MutationObserver(()=>dashboardRefresh()).observe(updated,{childList:true,subtree:true,characterData:true});
   setTimeout(dashboardRefresh,150);
+}
+
+
+/* --- Compact 7D rolling summary and verified recorded peaks --- */
+function analyticsReliableNumber(bot,key){
+  const v=bot?.[key];
+  if(!bot || bot.stale || bot[`${key}Carried`] || bot[`${key}Inferred`] || bot[`${key}Approximate`])return null;
+  return typeof v==='number' && Number.isFinite(v) && v>=0 ? v : null;
+}
+function analyticsRecordDates(date){
+  return String(date||'').match(/^\d{4}-\d{2}-\d{2}$/) ? `${date.slice(8)}/${date.slice(5,7)}/${date.slice(0,4)}` : '—';
+}
+function analyticsDayLetter(date){
+  const index=new Date(`${date}T12:00:00Z`).getUTCDay();
+  return ['S','M','T','W','T','F','S'][index]||'—';
+}
+function analyticsCompactDelta(value){
+  if(!Number.isFinite(value))return '—';
+  const sign=value>0?'+':value<0?'−':'';
+  const abs=Math.abs(value);
+  const truncated=n=>Math.floor(n*10)/10;
+  if(abs>=1000000)return `${sign}${truncated(abs/1000000).toLocaleString('nl-NL',{maximumFractionDigits:1})}M`;
+  if(abs>=10000)return `${sign}${truncated(abs/1000).toLocaleString('nl-NL',{maximumFractionDigits:1})}K`;
+  return sign+fmt.format(Math.round(abs));
+}
+function analyticsRollingPct(value){
+  if(!Number.isFinite(value))return '—';
+  const sign=value>0?'+':'';
+  return sign+value.toLocaleString('nl-NL',{maximumFractionDigits:1,minimumFractionDigits:0})+'%';
+}
+function analyticsSameDayLedgerDelta(entries,date){
+  const latest=new Map();
+  for(const item of entries){
+    if(/^\d{4}-\d{2}-\d{2}$/.test(item?.date||'') && Number.isFinite(Number(item.total))) latest.set(item.date,Number(item.total));
+  }
+  const prior=rankingsAddDays(date,-1);
+  return latest.has(date)&&latest.has(prior) ? latest.get(date)-latest.get(prior) : null;
+}
+function analyticsLiveAnalysisData(){
+  const days=graphSourceDays(), byDate=new Map(days.map(d=>[d.date,d]));
+  const bots=rankingsPublicBots();
+  const publicCids=new Set(bots.map(b=>String(b.cid)));
+  const botNames=new Map(bots.map(b=>[String(b.cid),b.name||b.cid]));
+  const todayCache=new Map(), popularityCache=new Map();
+  const subs=analyticsSubscriberDaily(), cvs=analyticsLatestByDate(analyticsCvEntriesAsc());
+  const latest=days.at(-1)?.date||'';
+  function popularity(date){
+    if(popularityCache.has(date))return popularityCache.get(date);
+    const start=rankingsAddDays(date,-7);
+    const result=rankingsHotForSpan(start,date,{days:byDate,bots});
+    const val=result.valid&&Number.isFinite(result.score)?result.score:null;
+    popularityCache.set(date,val);
+    return val;
+  }
+  function daily(date){
+    if(todayCache.has(date))return todayCache.get(date);
+    const previous=byDate.get(rankingsAddDays(date,-1)),current=byDate.get(date);
+    let messages=null,collectors=null;const perBot=[];
+    if(previous&&current){
+      const past=new Map((previous.snapshot?.bots||[]).map(b=>[String(b.cid),b]));
+      let mSum=0,cSum=0,mCount=0,cCount=0;
+      for(const now of (current.snapshot?.bots||[])){
+        if(!publicCids.has(String(now.cid)))continue;
+        const old=past.get(String(now.cid));
+        const msgNow=analyticsReliableNumber(now,'messages'),msgOld=analyticsReliableNumber(old,'messages');
+        const colNow=analyticsReliableNumber(now,'collectors'),colOld=analyticsReliableNumber(old,'collectors');
+        const msgDelta=msgNow!==null&&msgOld!==null&&msgNow>=msgOld?msgNow-msgOld:null;
+        const colDelta=colNow!==null&&colOld!==null?colNow-colOld:null;
+        if(msgDelta!==null){mCount++;mSum+=msgDelta;}
+        if(colDelta!==null){cCount++;cSum+=colDelta;}
+        perBot.push({cid:String(now.cid),name:botNames.get(String(now.cid))||String(now.cid),messages:msgDelta,collectors:colDelta});
+      }
+      if(mCount)messages=mSum;
+      if(cCount)collectors=cSum;
+    }
+    const subsDelta=analyticsSameDayLedgerDelta(subs,date),cvDelta=analyticsSameDayLedgerDelta(cvs,date);
+    const score=popularity(date),prevScore=popularity(rankingsAddDays(date,-1));
+    const percent=score!==null&&prevScore!==null&&prevScore>0?(score-prevScore)/prevScore*100:null;
+    const item={date,messages,collectors,subs:subsDelta,cv:cvDelta,score,percent,perBot};
+    todayCache.set(date,item);return item;
+  }
+  return {days,byDate,bots,publicCids,botNames,subs,cvs,latest,popularity,daily};
+}
+function analyticsComputeRecordedPeaks(data){
+  const records={profile:{},bots:{}};
+  function consider(group,key,value,date,name){
+    if(!Number.isFinite(value)||value<=0)return;
+    if(!records[group][key]||value>records[group][key].value){records[group][key]={value,date,name:name||''};}
+  }
+  for(const day of data.days){
+    const date=day.date;
+    const d=data.daily(date);
+    consider('profile','messages',d.messages,date);
+    consider('profile','collectors',d.collectors,date);
+    consider('profile','subs',d.subs,date);
+    consider('profile','cv',d.cv,date);
+    consider('profile','popularity',d.score,date);
+    consider('profile','percent',d.percent,date);
+    for(const b of d.perBot){
+      consider('bots','messages',b.messages,date,b.name);
+      consider('bots','collectors',b.collectors,date,b.name);
+    }
+    for(const bot of (day.snapshot?.bots||[])){
+      if(!data.publicCids.has(String(bot.cid)))continue;
+      const name=data.botNames.get(String(bot.cid))||String(bot.cid);
+      consider('bots','lifetimeMessages',analyticsReliableNumber(bot,'messages'),date,name);
+      consider('bots','lifetimeCollectors',analyticsReliableNumber(bot,'collectors'),date,name);
+    }
+    const start=data.byDate.get(rankingsAddDays(date,-7));
+    if(start){
+      const previous=new Map((start.snapshot?.bots||[]).map(b=>[String(b.cid),b]));
+      for(const now of (day.snapshot?.bots||[])){
+        if(!data.publicCids.has(String(now.cid)))continue;
+        const currentValue=analyticsReliableNumber(now,'messages');
+        const before=analyticsReliableNumber(previous.get(String(now.cid)),'messages');
+        if(currentValue!==null&&before!==null&&currentValue>=before){
+          consider('bots','growth7d',currentValue-before,date,data.botNames.get(String(now.cid))||String(now.cid));
+        }
+      }
+    }
+  }
+  // Current public bots are included even when the last snapshot predates a profile edit.
+  for(const bot of data.bots){
+    const name=bot.name||bot.cid;
+    consider('bots','lifetimeMessages',Number.isFinite(bot.messages)?bot.messages:null,data.latest,name);
+    consider('bots','lifetimeCollectors',Number.isFinite(bot.collectors)?bot.collectors:null,data.latest,name);
+  }
+  return records;
+}
+function analyticsRollingCell(value,date,peak,key){
+  if(!Number.isFinite(value))return '<span class="rolling-missing">—</span>';
+  const record=peak?.date===date&&peak.value===value;
+  const pretty=key==='percent'?analyticsRollingPct(value):analyticsCompactDelta(value);
+  const full=key==='percent'?analyticsRollingPct(value):analyticsSigned(value);
+  const cls=record?'rolling-record':value<0?'rolling-negative':'rolling-positive';
+  const title=`${analyticsRecordDates(date)} · ${key}: ${full}${record?' · record':''}`;
+  return `<span class="${cls}" title="${archiveEscape(title)}">${archiveEscape(pretty)}${record?'<span class="rolling-record-mark" aria-label="record">♛</span>':''}</span>`;
+}
+function analyticsRenderRollingAndRecords(){
+  const box=document.getElementById('analyticsRollingRows'),dates=document.getElementById('analyticsRollingDates');
+  const profile=document.getElementById('analyticsProfileRecordRows'),botRows=document.getElementById('analyticsBotRecordRows');
+  if(!box||!profile||!botRows)return;
+  try{
+    const data=analyticsLiveAnalysisData(),records=analyticsComputeRecordedPeaks(data);
+    if(!data.latest){
+      box.innerHTML='<div class="dashboard-empty">No daily updates recorded yet.</div>';
+      profile.innerHTML=botRows.innerHTML='<div class="dashboard-empty">No recorded values yet.</div>';
+      if(dates)dates.textContent='—';return;
+    }
+    const rolling=[];
+    for(let i=6;i>=0;i--){
+      const day=rankingsAddDays(data.latest,-i),d=data.daily(day);
+      const vals=['messages','collectors','subs','cv','percent'];
+      rolling.push(`<div class="analytics-rolling-grid analytics-rolling-day" title="${analyticsRecordDates(day)}">
+        <span class="rolling-day-label">${analyticsDayLetter(day)}</span>
+        ${vals.map(key=>`<span>${analyticsRollingCell(d[key],day,records.profile[key],key)}</span>`).join('')}
+      </div>`);
+    }
+    box.innerHTML=rolling.join('');
+    if(dates)dates.textContent=`${analyticsRecordDates(rankingsAddDays(data.latest,-6))} – ${analyticsRecordDates(data.latest)}`;
+    function formatRecord(label,rec,kind){
+      const name=kind==='bot'?rec?.name:'';
+      const date=rec?.date?analyticsRecordDates(rec.date):'';
+      let val='—';
+      if(rec){val=kind==='percent'?analyticsRollingPct(rec.value):kind==='popularity'?rankingsFloat(rec.value):fmt.format(Math.round(rec.value));}
+      const info=[name,date].filter(Boolean).join(' · ');
+      return `<div class="analytics-record"><span class="analytics-record-label">${label}</span><span class="analytics-record-result"><strong>${archiveEscape(val)}</strong><small>${archiveEscape(info||'—')}</small></span></div>`;
+    }
+    profile.innerHTML=[
+      ['best daily messages',records.profile.messages,'number'],
+      ['best daily collectors',records.profile.collectors,'number'],
+      ['best daily subscribers',records.profile.subs,'number'],
+      ['best daily CV',records.profile.cv,'number'],
+      ['highest 7D popularity',records.profile.popularity,'popularity'],
+      ['biggest 7D score jump',records.profile.percent,'percent']
+    ].map(([title,r,kind])=>formatRecord(title,r,kind)).join('');
+    botRows.innerHTML=[
+      ['best daily messages',records.bots.messages],
+      ['best daily collectors',records.bots.collectors],
+      ['best 7D messages',records.bots.growth7d],
+      ['most lifetime messages',records.bots.lifetimeMessages],
+      ['most collectors',records.bots.lifetimeCollectors]
+    ].map(([title,r])=>formatRecord(title,r,'bot')).join('');
+  }catch(error){
+    console.warn('Analytics rolling + records:',error);
+    box.innerHTML='<div class="dashboard-empty">Could not load rolling history.</div>';
+    profile.innerHTML=botRows.innerHTML='<div class="dashboard-empty">Could not load records.</div>';
+  }
 }
 
 dashboardInit();
