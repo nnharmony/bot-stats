@@ -6077,78 +6077,99 @@ body.dashboard-shell .analytics-rolling-day > span:last-child .rolling-positive{
 }
 
 
-/* === 23 October: fixed, shared crown backdrop ===
-   Same approved artwork, in its original proportions. A SINGLE viewport-fixed
-   watermark lives below the app, so it does not move as pages are scrolled.
-   Local emphasis remains deliberately stronger on the Creator Level and
-   latest-CV cards, without redrawing or resizing the artwork itself. */
+/* === 23 October: fixed lower-page crown, after mobile screenshot review ===
+   Exact approved logo asset; CSS changes only. Only its UPPER portion is
+   visible, anchored to the BOTTOM of the screen and never repeated/tiled.
+   This does not modify the logo, CV values, event history or tracker logic. */
 body.dashboard-shell::before{
   content:"";
   position:fixed;
-  inset:0;
+  inset:auto !important;
+  left:50% !important;
+  bottom:0 !important;
+  width:min(100vw,620px);
+  height:clamp(235px,36svh,320px);
+  transform:translateX(-50%);
   z-index:0;
   pointer-events:none;
   background-image:var(--pb-crown-watermark-image);
   background-repeat:no-repeat;
-  background-size:min(116vw,740px) auto;
-  background-position:center 56%;
-  opacity:.36;
-  filter:brightness(1.15) saturate(1.08);
+  background-size:100% auto;
+  background-position:center top;
+  opacity:.32;
+  filter:brightness(1.13) saturate(1.28);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 13%,#000 92%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 13%,#000 92%,transparent 100%);
 }
 body.dashboard-shell main#app{
   position:relative;
   z-index:1;
   background:transparent!important;
 }
-/* Semi-translucent quiet surfaces: fixed watermark is perceptible, but the
-   original mauve palette and legibility are preserved. Hero gradients stay. */
+/* Let the fixed artwork show subtly THROUGH the existing sections.
+   Soft mauve backgrounds are retained for contrast and legibility. */
 body.dashboard-shell .dashboard-profile-hero{
-  background:rgba(33,28,39,.89)!important;
+  background:rgba(33,28,39,.88)!important;
 }
 body.dashboard-shell .dashboard-card{
-  background:rgba(36,29,42,.81)!important;
+  background:rgba(36,29,42,.80)!important;
 }
 body.dashboard-shell .dashboard-top-bots-card{
-  background:rgba(35,28,40,.72)!important;
+  background:rgba(35,28,40,.77)!important;
 }
-body.dashboard-shell .dashboard-top-bots-card::before{
-  opacity:.28!important;
+body.dashboard-shell .dashboard-performance .dashboard-stat-card,
+body.dashboard-shell .analytics-cards>.analytics-card{
+  background:rgba(43,34,48,.87)!important;
 }
 body.dashboard-shell .all-bots{
-  background:rgba(33,27,39,.80)!important;
+  background:rgba(33,27,39,.79)!important;
 }
 body.dashboard-shell .all-bots-content{
   background:transparent!important;
-}
-body.dashboard-shell .all-bots::before{
-  opacity:.20!important;
 }
 body.dashboard-shell .pb-bots-statistics,
 body.dashboard-shell .pb-bots-lower-card,
 body.dashboard-shell .analytics-rolling-card,
 body.dashboard-shell .analytics-records-card{
-  background:rgba(38,30,44,.84)!important;
+  background:rgba(38,30,44,.82)!important;
 }
-body.dashboard-shell .analytics-cards>.analytics-card,
-body.dashboard-shell .dashboard-performance .dashboard-stat-card{
-  background:rgba(43,34,48,.88)!important;
+body.dashboard-shell #analyticsPanel,
+body.dashboard-shell #subscriberPanel,
+body.dashboard-shell #cvPanel,
+body.dashboard-shell #eventsPanel,
+body.dashboard-shell .comparebox{
+  background:rgba(29,25,35,.80)!important;
+}
+body.dashboard-shell .rankings-home-card,
+body.dashboard-shell .rankings-hub-card,
+body.dashboard-shell .rankings-metadata{
+  background:rgba(35,29,40,.79)!important;
 }
 body.dashboard-shell .cv-bot-estimator{
-  background:rgba(43,35,49,.85)!important;
+  background:rgba(43,35,49,.82)!important;
 }
-/* Intensify the original crown in Creator Level; preserve its LEFT-HALF
-   location, shape, fade and separately designed gradient background. */
+body.dashboard-shell .cv-bot-estimator-row{
+  background:rgba(51,41,57,.88)!important;
+}
+/* A single fixed crown is easier to read than overlapping crown copies.
+   Keep the prominently approved artwork inside Creator Level and latest CV. */
+body.dashboard-shell .dashboard-top-bots-card::before,
+body.dashboard-shell .all-bots::before{
+  opacity:0!important;
+}
+/* Preserve the existing Creator Level and Latest CV Growth gradients, and
+   give their separate approved crown overlays stronger definition. */
 body.dashboard-shell .dashboard-creator-panel::before{
   opacity:1!important;
-  filter:brightness(1.23) saturate(1.13)!important;
+  filter:brightness(1.19) saturate(1.10)!important;
 }
-/* Latest CV Growth retains the entire crown across its full card. */
 body.dashboard-shell #cvDayEstimate.cv-day-estimate::before{
-  opacity:.83!important;
+  opacity:.86!important;
   filter:brightness(1.08) saturate(1.08)!important;
 }
+/* More breathing room above iOS bottom navigation; no fixed nav changes. */
 @media(min-width:760px){
-  body.dashboard-shell::before{background-size:740px auto;background-position:center 51%}
+  body.dashboard-shell::before{height:290px;width:620px}
 }
 
 </style>
