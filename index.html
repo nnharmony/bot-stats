@@ -5518,7 +5518,6 @@ body.dashboard-shell .analytics-card strong{font-size:clamp(15px,4.3vw,22px)!imp
 body.dashboard-shell .analytics-card em{font-size:10px!important;color:#d9c2d4!important;overflow-wrap:anywhere;display:flex;align-items:baseline;justify-content:space-between;gap:8px;width:100%}
 body.dashboard-shell .analytics-card em .analytics-growth-value{min-width:0;}
 body.dashboard-shell .analytics-card em .analytics-growth-percent{white-space:nowrap;color:#d5e7ae;opacity:.98;}
-body.dashboard-shell .analytics-card em.negative .analytics-growth-percent{color:#ffcfbf!important}
 body.dashboard-shell .analytics-card em.positive{color:#f2cbf0!important}
 body.dashboard-shell .analytics-card em.negative{color:#ffbaba!important}
 body.dashboard-shell .analytics-info-strip{margin:8px 0 10px;padding:8px 12px;border:1px solid var(--dash-border);border-radius:12px;background:#2b2230;color:#e6c3de;font-size:11px;line-height:1.35}
@@ -5967,6 +5966,191 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
   background: linear-gradient(120deg,rgba(33,23,48,.88),rgba(28,22,47,.91)) !important;
 }
 
+
+/* === 23 October: component placement, Bots portfolio, navigability === */
+body.dashboard-shell .pb-sticky-links{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:90;
+  padding:9px 10px 8px;margin:0 0 10px;
+  background:rgba(27,23,32,.97);border:1px solid #3c3443;border-radius:17px;
+  box-shadow:0 8px 22px rgba(9,7,12,.24);backdrop-filter:blur(12px);
+}
+body.dashboard-shell .pb-sticky-links.pb-pinned{position:fixed!important;top:env(safe-area-inset-top,0px)!important;z-index:200!important;margin:0!important}
+body.dashboard-shell .pb-sticky-links .dashboard-profile-shortcuts{margin:0!important;padding:0!important;border:0!important}
+body.dashboard-shell .dashboard-header{margin-bottom:11px!important}
+body.dashboard-shell .dashboard-profile-hero{padding:12px 13px!important}
+body.dashboard-shell .pb-level-placement{margin:0 0 22px;min-width:0}
+body.dashboard-shell .pb-level-placement .dashboard-level-section{margin:0!important;padding:0!important;border:0!important}
+body.dashboard-shell .pb-level-placement[hidden]{display:none!important}
+body.dashboard-shell #pbBackToTop{position:fixed;right:24px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:95;
+  width:41px;height:41px;min-height:41px;border-radius:50%;border:1px solid #805e7a;background:#312837;
+  color:#eed4e6;font-size:24px;font-weight:500;box-shadow:0 4px 20px #110d15a8;opacity:0;pointer-events:none;
+  transform:translateY(8px);transition:opacity .2s,transform .2s}
+body.dashboard-shell #pbBackToTop.pb-visible{opacity:.97;pointer-events:auto;transform:translateY(0)}
+body.dashboard-shell .pb-bots-intro{margin:5px 0 16px}
+body.dashboard-shell .pb-bots-statistics,body.dashboard-shell .pb-bots-lower-card{
+  background:#241e2a;border:1px solid #59485e;border-radius:18px;overflow:hidden;margin:0 0 15px;color:#f0e4f0}
+body.dashboard-shell .pb-bots-statistics>summary,body.dashboard-shell .pb-bots-lower-card>summary{
+  padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;
+  list-style:none;font-size:16px;font-weight:750;color:#e6d6e3}
+body.dashboard-shell .pb-bots-statistics>summary::-webkit-details-marker,body.dashboard-shell .pb-bots-lower-card>summary::-webkit-details-marker{display:none}
+body.dashboard-shell .pb-bots-lower-card>summary small{font-size:11px;font-weight:500;color:#bea7ba}
+body.dashboard-shell .pb-bots-stats-content{border-top:1px solid #483b50;padding:13px 15px 16px}
+body.dashboard-shell .pb-bots-period{display:flex;align-items:center;gap:7px;margin:0 0 13px;color:#ad9caf;font-size:12px}
+body.dashboard-shell .pb-bots-period select{height:33px!important;min-height:33px!important;flex:1;min-width:0;
+  border-radius:10px!important;border:1px solid #55455c!important;background:#302838!important;color:#e6d5e4!important;
+  font-size:12px!important;padding:0 6px!important}
+body.dashboard-shell .pb-bots-stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+body.dashboard-shell .pb-bots-stats-grid>div{display:flex;flex-direction:column;gap:5px;min-width:0;
+  border-radius:12px;padding:11px 12px;background:#312738;border:1px solid #58475d}
+body.dashboard-shell .pb-bots-stats-grid span{font-size:12px;color:#c3b2c3}
+body.dashboard-shell .pb-bots-stats-grid strong{font-size:22px;color:#f4e9f1;font-weight:700;font-variant-numeric:tabular-nums}
+body.dashboard-shell .pb-bots-stats-grid .pb-stat-winner{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between}
+body.dashboard-shell .pb-bots-stats-grid .pb-stat-winner strong{font-size:19px}
+body.dashboard-shell .pb-stats-note{display:block;margin-top:9px;color:#aa9eae;line-height:1.4;font-size:10px}
+body.dashboard-shell .pb-bots-stats-grid strong.pb-pct-up{color:#b9d9af!important}
+body.dashboard-shell .pb-bots-stats-grid strong.pb-pct-down{color:#edb5bd!important}
+body.dashboard-shell .pb-collector-label svg,body.dashboard-shell .pb-col-icon{display:inline-block;vertical-align:middle;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round}
+body.dashboard-shell .pb-bots-filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:12px 0 9px}
+body.dashboard-shell .pb-bots-filters button{padding:7px 11px!important;min-height:33px!important;border-radius:12px!important;
+  font-size:12px!important;background:#292330!important;color:#bdaebe!important;border:1px solid #524356!important}
+body.dashboard-shell .pb-bots-filters button.active{background:#57415d!important;border-color:#9c7597!important;color:#fff3f8!important}
+body.dashboard-shell .pb-bots-filters small{margin-left:auto;color:#a899ad;font-size:10px}
+body.dashboard-shell .all-bots{position:relative;isolation:isolate;overflow:hidden;border-radius:18px}
+body.dashboard-shell .all-bots::before{content:'';position:absolute;inset:8% 0 0;z-index:0;pointer-events:none;
+ background-image:var(--pb-crown-watermark-image);background-repeat:no-repeat;background-position:50% 26%;background-size:100% auto;opacity:.17}
+body.dashboard-shell .all-bots>*,body.dashboard-shell .all-bots-content>*{position:relative;z-index:1}
+body.dashboard-shell .all-bots-table-wrap{max-height:min(125vh,1250px);overflow-y:auto!important;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;scrollbar-width:thin}
+body.dashboard-shell .main-table .pb-col-icon{margin-right:4px;color:#c8b0c5}
+body.dashboard-shell .pb-bots-jump-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:12px 0 16px}
+body.dashboard-shell .pb-bots-jump-grid button{display:flex;justify-content:space-between;align-items:center;gap:8px;
+ padding:14px 12px!important;background:#2d2533!important;border:1px solid #5a4961!important;border-radius:14px!important;
+ font-size:13px!important;color:#e7dbe7!important}
+body.dashboard-shell .pb-bots-jump-grid strong{color:#edc2df;font-size:16px}
+body.dashboard-shell .pb-bots-lower-content{padding:13px;border-top:1px solid #4e3d53}
+body.dashboard-shell .pb-slots-tools{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+body.dashboard-shell .pb-slots-tools select{flex:1;min-width:115px;max-width:155px;height:34px!important;min-height:34px!important;font-size:12px!important;color:#ead8e6!important}
+body.dashboard-shell .pb-slots-tools button{min-height:33px!important;padding:7px 9px!important;font-size:11px!important;
+ background:#302738!important;color:#d6c3d7!important;border:1px solid #5b4960!important;border-radius:10px!important}
+body.dashboard-shell .pb-slot-view-toggle{display:flex;gap:3px}
+body.dashboard-shell .pb-slot-view-toggle button.active{background:#5a435c!important;color:#fff!important}
+body.dashboard-shell .pb-slot-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:9px;align-items:center;
+ padding:12px 3px;border-bottom:1px solid #453a4c;font-size:12px;color:#eadeeb}
+body.dashboard-shell .pb-slot-row .pb-slot-number{color:#ecc2df;font-size:17px;font-weight:700}
+body.dashboard-shell .pb-slot-row small{display:block;color:#a99bac;font-size:10px;margin-top:4px}
+body.dashboard-shell .pb-slots-list.pb-slot-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+body.dashboard-shell .pb-slot-thumb{min-width:0;background:#32293a;border:1px solid #57485c;border-radius:13px;overflow:hidden;text-align:left}
+body.dashboard-shell .pb-slot-thumb-picture{aspect-ratio:3/4;display:grid;place-items:center;position:relative;background:linear-gradient(130deg,#5c425b,#292136);font-size:35px;color:#edb8d4}
+body.dashboard-shell .pb-slot-thumb-picture img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+body.dashboard-shell .pb-slot-thumb-picture b{position:absolute;left:6px;top:6px;background:#271d30de;border-radius:7px;padding:4px 7px;font-size:14px}
+body.dashboard-shell .pb-slot-thumb-footer{padding:8px 6px;min-width:0}
+body.dashboard-shell .pb-slot-thumb-footer strong{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;font-size:11px}
+body.dashboard-shell .pb-slot-thumb-footer small{display:block;color:#b69ab1;font-size:10px;margin-top:4px}
+body.dashboard-shell .pb-achievement-row{display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid #433749;font-size:12px}
+body.dashboard-shell .pb-achievement-row small{display:block;color:#a89bae;font-size:10px;margin-top:4px}
+body.dashboard-shell .pb-achievement-row strong{font-size:13px;color:#edc6df;text-align:right;white-space:nowrap}
+body.dashboard-shell .pb-bots-page-link{display:block;margin-top:15px!important;color:#eed1e9!important;font-size:12px!important}
+body.dashboard-shell .cv-bot-estimator{border:1px solid #72576f!important;background:#2b2331!important;border-radius:16px!important;margin-bottom:16px!important}
+body.dashboard-shell .cv-bot-estimator>summary{color:#e9c5de!important;border-radius:16px}
+body.dashboard-shell .cv-bot-estimator-rows{max-height:min(78vh,790px);overflow-y:auto;overscroll-behavior:contain}
+body.dashboard-shell .cv-bot-estimator-row{padding:11px 13px!important;border-bottom:1px solid #54435b!important;background:#332939!important}
+body.dashboard-shell #pbMilestoneDetails,body.dashboard-shell #pbRecordDetails{max-height:min(75vh,770px);overflow-y:auto;overscroll-behavior:contain}
+body.dashboard-shell .subscriber-table-wrap{max-height:min(88vh,870px);overflow-y:auto;overscroll-behavior:contain}
+body.dashboard-shell .daily-growth-table-wrap{max-height:min(100vh,950px);overflow-y:auto;overscroll-behavior:contain}
+/* Positive percentage only; leave the existing negative percentage color untouched. */
+body.dashboard-shell .analytics-card em.positive .analytics-growth-percent{color:#b8d5ad!important}
+body.dashboard-shell .analytics-card em.negative .analytics-growth-percent{color:#ffcfbf!important}
+body.dashboard-shell .analytics-rolling-day > span:last-child .rolling-positive{color:#b8d5ad!important}
+@media(max-width:650px){
+ body.dashboard-shell .main-table tr:not(.total-row){grid-template-columns:minmax(0,1fr) auto!important;gap:4px 10px!important;padding:13px 3px!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(1){grid-column:1!important;grid-row:1!important;font-size:13px!important;font-weight:600}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(5){grid-column:2!important;grid-row:1!important;font-size:11px!important;color:#c1aabd!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(5)::before{content:none!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(3){grid-column:1!important;grid-row:2!important;
+  font-size:17px!important;line-height:1.3!important;font-weight:400!important;color:#eadae8!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(3)::before{content:'now  '!important;font-size:10px!important;color:#a99cab!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(4){grid-column:2!important;grid-row:2!important;
+  font-size:17px!important;line-height:1.3!important;font-weight:800!important;text-align:right!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(2){grid-column:1/-1!important;grid-row:3!important;font-size:10px!important}
+ body.dashboard-shell .main-table tr:not(.total-row) td:nth-child(2)::before{content:'start  '!important}
+ body.dashboard-shell .pb-bots-stats-grid strong{font-size:19px}
+}
+
+
+/* === 23 October: fixed, shared crown backdrop ===
+   Same approved artwork, in its original proportions. A SINGLE viewport-fixed
+   watermark lives below the app, so it does not move as pages are scrolled.
+   Local emphasis remains deliberately stronger on the Creator Level and
+   latest-CV cards, without redrawing or resizing the artwork itself. */
+body.dashboard-shell::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:var(--pb-crown-watermark-image);
+  background-repeat:no-repeat;
+  background-size:min(116vw,740px) auto;
+  background-position:center 56%;
+  opacity:.36;
+  filter:brightness(1.15) saturate(1.08);
+}
+body.dashboard-shell main#app{
+  position:relative;
+  z-index:1;
+  background:transparent!important;
+}
+/* Semi-translucent quiet surfaces: fixed watermark is perceptible, but the
+   original mauve palette and legibility are preserved. Hero gradients stay. */
+body.dashboard-shell .dashboard-profile-hero{
+  background:rgba(33,28,39,.89)!important;
+}
+body.dashboard-shell .dashboard-card{
+  background:rgba(36,29,42,.81)!important;
+}
+body.dashboard-shell .dashboard-top-bots-card{
+  background:rgba(35,28,40,.72)!important;
+}
+body.dashboard-shell .dashboard-top-bots-card::before{
+  opacity:.28!important;
+}
+body.dashboard-shell .all-bots{
+  background:rgba(33,27,39,.80)!important;
+}
+body.dashboard-shell .all-bots-content{
+  background:transparent!important;
+}
+body.dashboard-shell .all-bots::before{
+  opacity:.20!important;
+}
+body.dashboard-shell .pb-bots-statistics,
+body.dashboard-shell .pb-bots-lower-card,
+body.dashboard-shell .analytics-rolling-card,
+body.dashboard-shell .analytics-records-card{
+  background:rgba(38,30,44,.84)!important;
+}
+body.dashboard-shell .analytics-cards>.analytics-card,
+body.dashboard-shell .dashboard-performance .dashboard-stat-card{
+  background:rgba(43,34,48,.88)!important;
+}
+body.dashboard-shell .cv-bot-estimator{
+  background:rgba(43,35,49,.85)!important;
+}
+/* Intensify the original crown in Creator Level; preserve its LEFT-HALF
+   location, shape, fade and separately designed gradient background. */
+body.dashboard-shell .dashboard-creator-panel::before{
+  opacity:1!important;
+  filter:brightness(1.23) saturate(1.13)!important;
+}
+/* Latest CV Growth retains the entire crown across its full card. */
+body.dashboard-shell #cvDayEstimate.cv-day-estimate::before{
+  opacity:.83!important;
+  filter:brightness(1.08) saturate(1.08)!important;
+}
+@media(min-width:760px){
+  body.dashboard-shell::before{background-size:740px auto;background-position:center 51%}
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -5996,8 +6180,7 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
 
 <main id="app" hidden>
 
-<div class="dashboard-header">
-  <section class="dashboard-profile-hero" aria-label="creator profile">
+<div class="pb-sticky-links" aria-label="quick links">
     <div class="dashboard-header-actions dashboard-profile-shortcuts" aria-label="profile shortcuts">
         <button id="dashboardExtraShortcut" class="dashboard-header-action" type="button" aria-label="open extra shortcut" title="extra shortcut">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M7 12h10"/><path class="icon-stroke" d="M12 7v10"/><path class="icon-stroke" d="M7.5 4.5h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3Z"/></svg>
@@ -6018,6 +6201,11 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
             <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M20 6v5h-5"/><path class="icon-stroke" d="M18.2 15.5a7 7 0 1 1-.2-7.2L20 11"/></svg>
           </button>
     </div>
+</div>
+
+<div class="dashboard-header">
+  <section class="dashboard-profile-hero" aria-label="creator profile">
+
 
     <div class="dashboard-profile-details">
       <div class="dashboard-profile-identity">
@@ -6051,6 +6239,10 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
       </div>
     </div>
 
+    <div class="dashboard-profile-footer"></div>
+  </section>
+</div>
+<section class="pb-level-placement" id="pbLevelPlacement" aria-label="creator level">
     <div class="dashboard-level-section">
       <div class="dashboard-creator-panel">
       <div class="dashboard-level-title-line">
@@ -6070,9 +6262,7 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
       <div id="dashboardLevelProgressMeta" class="dashboard-level-progress-meta">—</div>
       </div>
     </div>
-    <div class="dashboard-profile-footer"></div>
-  </section>
-</div>
+</section>
 <button id="dashboardBack" type="button" hidden>← home</button>
 
 <section id="dashboardHome" class="dashboard-home" data-dashboard-view="home">
@@ -6485,7 +6675,26 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
   <section class="dashboard-card"><div id="archiveEvents"><div class="dashboard-empty">no events.</div></div></section>
 </section>
 
-<details class="all-bots">
+<section id="pbBotsView" class="pb-bots-view" data-dashboard-view="bots" hidden>
+<section class="pb-bots-intro" aria-label="Bots Hub">
+  <details id="pbBotsStatistics" class="pb-bots-statistics">
+    <summary><span id="pbBotsStatsTitle">characters | statistics</span><span class="pb-details-chevron" aria-hidden="true">⌄</span></summary>
+    <div class="pb-bots-stats-content">
+      <div class="pb-bots-period"><span>date</span><select id="pbStatsFrom" aria-label="statistics start date"></select><span aria-hidden="true">→</span><select id="pbStatsTo" aria-label="statistics end date"></select></div>
+      <div class="pb-bots-stats-grid">
+        <div><span>active</span><strong id="pbStatActive">—</strong></div>
+        <div><span>messages</span><strong id="pbStatMessages">—</strong></div>
+        <div><span>%</span><strong id="pbStatPercent">—</strong></div>
+        <div><span>🔥</span><strong id="pbStatPopular">—</strong></div>
+        <div><span class="pb-collector-label" aria-label="collectors"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></span><strong id="pbStatCollectors">—</strong></div>
+        <div><span>CV</span><strong id="pbStatCv">—</strong></div>
+        <div class="pb-stat-winner"><span id="pbStatWinnerName">#1 —</span><strong id="pbStatWinnerGrowth">—</strong></div>
+      </div>
+      <small id="pbStatsNote" class="pb-stats-note"></small>
+    </div>
+  </details>
+</section>
+<details class="all-bots" id="pbAllBots" open>
   <summary>all bots</summary>
 
   <div class="all-bots-content">
@@ -6508,6 +6717,12 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
       <button id="copyAllBots" class="copy-table-button" type="button">copy</button>
     </div>
 
+    <div class="pb-bots-filters" role="group" aria-label="filter growth">
+      <button type="button" data-pb-bot-filter="all" class="active" aria-pressed="true">all</button>
+      <button type="button" data-pb-bot-filter="active" aria-pressed="false">active</button>
+      <button type="button" data-pb-bot-filter="zero" aria-pressed="false">no growth</button>
+      <small id="pbVisibleBotCount" aria-live="polite"></small>
+    </div>
     <div class="all-bots-table-wrap">
     <table class="main-table">
       <thead>
@@ -6516,7 +6731,7 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
           <th>start</th>
           <th>now</th>
           <th>growth</th>
-          <th>C.</th>
+          <th aria-label="collectors">♡</th>
         </tr>
       </thead>
       <tbody id="rows"></tbody>
@@ -6525,8 +6740,37 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
 
   </div>
 </details>
-
-
+<div class="pb-bots-jump-grid" aria-label="character achievements">
+  <button type="button" data-pb-jump="pbCharacterMilestones">🏅 milestones <strong id="pbMilestoneCount">—</strong></button>
+  <button type="button" data-pb-jump="pbCharacterRecords">🏆 records <strong id="pbRecordCount">—</strong></button>
+</div>
+<details class="pb-bots-lower-card" id="pbBotsTopSlots" open>
+  <summary><span>👑 top slots</span><small id="pbTopSlotsDateLabel">—</small></summary>
+  <div class="pb-bots-lower-content">
+    <div class="pb-slots-tools">
+      <select id="pbSlotsDate" aria-label="saved top slots date"></select>
+      <div class="pb-slot-view-toggle" role="group" aria-label="top slots display">
+        <button type="button" class="active" data-pb-slot-view="list" aria-pressed="true">☷ list</button>
+        <button type="button" data-pb-slot-view="thumb" aria-pressed="false">▦ thumbs</button>
+      </div>
+      <button id="pbSlotsEdit" type="button">edit ↗</button>
+    </div>
+    <div id="pbSlotsList" class="pb-slots-list"></div>
+  </div>
+</details>
+<details class="pb-bots-lower-card" id="pbCharacterMilestones">
+  <summary>🏅 character milestones <small id="pbMilestonesPeriodLabel">—</small></summary>
+  <div class="pb-bots-lower-content"><div id="pbMilestoneDetails"></div>
+    <button type="button" class="pb-bots-page-link" data-open-dashboard-view="rankings">⭐ rankings ↗</button>
+  </div>
+</details>
+<details class="pb-bots-lower-card" id="pbCharacterRecords">
+  <summary>🏆 character records <small id="pbRecordsPeriodLabel">—</small></summary>
+  <div class="pb-bots-lower-content"><div id="pbRecordDetails"></div>
+    <button type="button" class="pb-bots-page-link" data-open-dashboard-view="rankings">⭐ rankings ↗</button>
+  </div>
+</details>
+</section><!-- pbBotsView -->
 
 <details class="analytics-panel" id="analyticsPanel" open>
   <summary>analytics</summary>
@@ -6774,23 +7018,7 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
 
   <div class="cv-content">
 
-    <div class="cv-hero">
-      <div>
-        <div class="cv-kicker">current creator value</div>
-        <div class="cv-current-line">
-          <span id="cvCurrent">—</span>
-          <span class="cv-slash">/</span>
-          <input id="cvNextLevelTarget" type="number" min="1" step="1" value="15000" aria-label="next level target">
-        </div>
-        <div id="cvToNext" class="cv-to-next">add your first CV update</div>
-      </div>
-
-      <div class="cv-progress-track" aria-hidden="true">
-        <div id="cvProgressBar" class="cv-progress-bar" style="width:0%"></div>
-      </div>
-    </div>
-
-    <div class="cv-summary-grid">
+        <div class="cv-summary-grid">
       <div class="cv-stat"><span>latest</span><strong id="cvLatestTop">—</strong></div>
       <div class="cv-stat"><span>new</span><strong id="cvEarnedMonth">—</strong></div>
       <div class="cv-stat"><span>next</span><strong id="cvNextSettlement">—</strong></div>
@@ -6833,6 +7061,23 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
         <strong id="cvNearCapCount">—</strong>
       </div>
     </div>
+
+<div class="cv-hero">
+      <div>
+        <div class="cv-kicker">current creator value</div>
+        <div class="cv-current-line">
+          <span id="cvCurrent">—</span>
+          <span class="cv-slash">/</span>
+          <input id="cvNextLevelTarget" type="number" min="1" step="1" value="15000" aria-label="next level target">
+        </div>
+        <div id="cvToNext" class="cv-to-next">add your first CV update</div>
+      </div>
+
+      <div class="cv-progress-track" aria-hidden="true">
+        <div id="cvProgressBar" class="cv-progress-bar" style="width:0%"></div>
+      </div>
+    </div>
+
 
     <details class="cv-bot-estimator">
       <summary>uncapped bot estimate</summary>
@@ -7117,6 +7362,7 @@ body.dashboard-shell #cvDayEstimate .cv-day-grid > div {
 
 
 
+<button id="pbBackToTop" type="button" aria-label="back to top" title="back to top">↑</button>
 </main>
 
 <nav class="dashboard-bottom-nav" id="dashboardBottomNav" aria-label="tracker navigation">
@@ -14638,7 +14884,7 @@ function dashboardTargets(){
     archive:document.querySelector('#dashboardArchive'),
     slots:document.querySelector('#dashboardTopSlots'),
     backfill:document.querySelector('#dashboardHistoricalBackfill'),
-    bots:document.querySelector('.all-bots'),
+    bots:document.querySelector('#pbBotsView'),
     analytics:document.querySelector('#analyticsPanel'),
     subscribers:document.querySelector('#subscriberPanel'),
     cv:document.querySelector('#cvPanel'),
@@ -15400,6 +15646,7 @@ function topSlotsSyncFromEvents(){
   if(changed) topSlotsPersistLocal();
   if(dashboardCurrentView==='slots') topSlotsPrepareEditor(topSlotsState.editDate || topSlotsDefaultDate(),{preserveDirty:true});
   try{topSlotsRenderHome()}catch(_){ }
+  if(dashboardCurrentView==='bots') try{pbRenderSlots()}catch(_){ }
 }
 
 function topSlotsDefaultDate(){
@@ -18574,6 +18821,179 @@ function analyticsInitPersonalRecordControls(){
     dashboardShowView('rankings');
   });
 }
+
+
+/* === 23 October: portfolio presentation, retaining underlying data and editor === */
+const pbPortfolioUi={filter:'all',slotView:'list',slotDate:'',from:'',to:'',lastRecordKey:'',recordCache:[]};
+const pbCollectorSvg='<svg class="pb-col-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg>';
+function pbPortfolioDates(){return graphSourceDays().map(item=>item.date).filter(Boolean).sort();}
+function pbPortfolioRange(){
+ const dates=pbPortfolioDates(),last=dates.at(-1)||'';
+ const to=pbPortfolioUi.to||last;
+ const priorIndex=dates.indexOf(to)-1;
+ const from=pbPortfolioUi.from||dates[Math.max(0,priorIndex)]||to;
+ return {from,to};
+}
+function pbPortfolioRows(){
+ const {from,to}=pbPortfolioRange();
+ const source=graphSourceDays(),start=source.find(e=>e.date===from),end=source.find(e=>e.date===to);
+ return [...state.meta.values()].map(meta=>{
+  const a=trackerSafeBotAtEntry(start,meta.cid),b=trackerSafeBotAtEntry(end,meta.cid);
+  const am=analyticsReliableNumber(a,'messages'),bm=analyticsReliableNumber(b,'messages');
+  const ac=analyticsReliableNumber(a,'collectors'),bc=analyticsReliableNumber(b,'collectors');
+  return {cid:meta.cid,name:meta.name||meta.cid,url:meta.url,order:meta.creation_order??9999,isPublic:rankingsIsPublic({cid:meta.cid}),
+   startMessages:am,messages:bm,collectors:bc,startCollectors:ac,
+   growth:am!==null&&bm!==null&&bm>=am?bm-am:null,
+   collectorGrowth:ac!==null&&bc!==null?bc-ac:null,
+   stale:!!(a?.stale||b?.stale)};
+ });
+}
+function pbPickDates(){
+ const dates=pbPortfolioDates(),last=dates.at(-1)||'',prior=dates.at(-2)||last;
+ if(!pbPortfolioUi.to||!dates.includes(pbPortfolioUi.to))pbPortfolioUi.to=last;
+ if(!pbPortfolioUi.from||!dates.includes(pbPortfolioUi.from))pbPortfolioUi.from=prior;
+ for(const [id,key] of [['pbStatsFrom','from'],['pbStatsTo','to']]){
+  const el=document.getElementById(id);if(!el)return;
+  const current=el.value,signature=dates.join('|');
+  if(el.dataset.dates!==signature){el.innerHTML=dates.map(d=>`<option value="${d}">${shortGraphDate(d)}</option>`).join('');el.dataset.dates=signature;}
+  el.value=pbPortfolioUi[key];
+ }
+}
+function pbPortfolioCv(from,to){
+ // Only recorded CV contributions are included; settlement and corrections do
+ // not count as bot-earned CV. Unknown organic deltas stay unknown.
+ const entries=cvSortedEntriesAsc();if(!entries.length)return null;
+ const updates=[...new Set(entries.filter(e=>e.type==='update' && e.date>from&&e.date<=to).map(e=>e.date))];
+ let organic=0;
+ for(const date of updates){const context=cvDailyUpdateContext(date);
+  if(!context||!Number.isFinite(context.organicCv)||String(context.baseline?.date||'')<from)return null;
+  organic+=context.organicCv;
+ }
+ const creation=entries.filter(e=>e.date>from&&e.date<=to&&['hq_new','compliant_new'].includes(e.type));
+ const bonuses=creation.reduce((sum,e)=>sum+(Number(e.adjustment)||cvDefaultAdjustment(e.type)),0);
+ return updates.length||creation.length ? organic+bonuses:null;
+}
+function pbPortfolioSummary(rows){
+ const {from,to}=pbPortfolioRange();
+ const usable=rows.filter(r=>Number.isFinite(r.growth)),active=usable.filter(r=>r.growth>0);
+ const sum=usable.reduce((n,r)=>n+r.growth,0);
+ const baseline=usable.reduce((n,r)=>n+r.startMessages,0);
+ const pct=usable.length && baseline>0?sum/baseline*100:null;
+ const c=rows.filter(r=>Number.isFinite(r.collectorGrowth));
+ const collectors=c.length?c.reduce((n,r)=>n+r.collectorGrowth,0):null;
+ const top=active.slice().sort((a,b)=>b.growth-a.growth)[0];
+ const signed=n=>Number.isFinite(n)?(n>0?'+':'')+fmt.format(Math.round(n)):'—';
+ const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+ put('pbBotsStatsTitle',`${state.meta.size} characters | statistics`);
+ put('pbStatActive',String(active.length));put('pbStatMessages',usable.length?signed(sum):'—');
+ const p=document.getElementById('pbStatPercent');if(p){p.textContent=Number.isFinite(pct)?analyticsPercentLabel(pct):'—';p.classList.toggle('pb-pct-up',pct>0);p.classList.toggle('pb-pct-down',pct<0)}
+ put('pbStatPopular',usable.length?`${rankingsFloat(sum/Math.max(1,Number(rankingsConfig.coef)||4000))}`:'—');
+ put('pbStatCollectors',signed(collectors));
+ const cv=pbPortfolioCv(from,to);put('pbStatCv',Number.isFinite(cv)?signed(cv):'—');
+ put('pbStatWinnerName',top?'#1 '+top.name:'#1 —');put('pbStatWinnerGrowth',top?signed(top.growth):'—');
+ put('pbStatsNote',`${shortGraphDate(from)} → ${shortGraphDate(to)} · ${usable.length}/${rows.length} measured · 🔥 = messages ÷ ${fmt.format(rankingsConfig.coef||4000)}${cv===null?' · CV not confirmed for this period':''}`);
+}
+function pbPortfolioAchievements(rows){
+ const {from,to}=pbPortfolioRange();
+ const milestones=[];
+ const tiers=dashboardMilestoneRows();
+ for(const bot of rows){if(!Number.isFinite(bot.startMessages)||!Number.isFinite(bot.messages))continue;
+  for(const tier of tiers){if(bot.startMessages<tier.value && bot.messages>=tier.value){milestones.push({name:bot.name,threshold:tier.label,date:to,cid:bot.cid});}}
+ }
+ const milestoneBox=document.getElementById('pbMilestoneDetails');
+ if(milestoneBox)milestoneBox.innerHTML=milestones.length?milestones.map(r=>`<div class="pb-achievement-row"><span>${archiveEscape(r.name)}<small>milestone reached by ${shortGraphDate(r.date)}</small></span><strong>${archiveEscape(r.threshold)}</strong></div>`).join(''):'<div class="dashboard-empty">no new message milestones in this range.</div>';
+ document.getElementById('pbMilestoneCount').textContent=String(milestones.length);
+ document.getElementById('pbMilestonesPeriodLabel').textContent=`${shortGraphDate(from)} → ${shortGraphDate(to)}`;
+ const key=state.daily.length+'|'+(state.daily.at(-1)?.date||'');
+ if(pbPortfolioUi.lastRecordKey!==key){
+  try{pbPortfolioUi.recordCache=analyticsPersonalBestMoments()}catch(_){pbPortfolioUi.recordCache=[]}
+  pbPortfolioUi.lastRecordKey=key;
+ }
+ const records=pbPortfolioUi.recordCache.filter(item=>item.date>from&&item.date<=to);
+ const recordBox=document.getElementById('pbRecordDetails');
+ if(recordBox)recordBox.innerHTML=records.length?records.map(r=>`<button type="button" class="pb-achievement-row" data-pb-record-date="${r.date}"><span>${archiveEscape(r.name)}<small>30D personal best · ${shortGraphDate(r.date)}</small></span><strong>+${fmt.format(r.growth)}</strong></button>`).join(''):'<div class="dashboard-empty">no confirmed 30D personal bests for this period.</div>';
+ document.getElementById('pbRecordCount').textContent=String(records.length);
+ document.getElementById('pbRecordsPeriodLabel').textContent=`${shortGraphDate(from)} → ${shortGraphDate(to)}`;
+}
+function pbSlotAvatar(cid){const m=state.meta.get(cid)||{};
+ const url=[m.avatar_url,m.avatarUrl,m.image_url,m.imageUrl,m.avatar,m.image,m.thumbnail].find(x=>typeof x==='string'&&(/^(https?:\/\/|data:image\/)/i).test(x));
+ return url?`<img src="${archiveEscape(url)}" loading="lazy" alt="">`:'';
+}
+function pbRenderSlots(){
+ topSlotsLoadLocal();const dates=topSlotsSavedDates(),sel=document.getElementById('pbSlotsDate');if(!sel)return;
+ if(!pbPortfolioUi.slotDate||!dates.includes(pbPortfolioUi.slotDate))pbPortfolioUi.slotDate=dates.at(-1)||topSlotsDefaultDate();
+ const signature=dates.join('|');if(sel.dataset.dates!==signature){sel.innerHTML=dates.length?dates.map(d=>`<option value="${d}">${shortGraphDate(d)}</option>`).join(''):'<option value="">no saved days</option>';sel.dataset.dates=signature;}
+ sel.value=dates.includes(pbPortfolioUi.slotDate)?pbPortfolioUi.slotDate:'';
+ const date=pbPortfolioUi.slotDate,slots=topSlotsSnapshot(date),box=document.getElementById('pbSlotsList');
+ const label=document.getElementById('pbTopSlotsDateLabel');if(label)label.textContent=dates.includes(date)?shortGraphDate(date):'not saved';
+ document.querySelectorAll('[data-pb-slot-view]').forEach(b=>{const active=b.dataset.pbSlotView===pbPortfolioUi.slotView;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
+ const thumbs=pbPortfolioUi.slotView==='thumb';box.classList.toggle('pb-slot-grid',thumbs);
+ box.innerHTML=slots.length?slots.map((cid,i)=>{
+  const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
+  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture">${pbSlotAvatar(cid)||'<span>♕</span>'}<b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}</strong><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
+  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}<small>${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
+ }).join(''):'<div class="dashboard-empty">no top slots saved for this day. Use edit to record positions.</div>';
+}
+function pbRenderBots(){if(!state.meta.size)return;
+ pbPickDates();const allRows=pbPortfolioRows(),rows=allRows.filter(r=>r.isPublic);pbPortfolioSummary(rows);pbPortfolioAchievements(rows);pbRenderSlots();
+ const query=(document.getElementById('search')?.value||'').toLowerCase(),sort=document.getElementById('sort')?.value||'creation';
+ const filtered=allRows.filter(b=>(b.name+' '+b.cid).toLowerCase().includes(query))
+ .filter(b=>pbPortfolioUi.filter==='all'||(pbPortfolioUi.filter==='active'?b.growth>0:b.growth===0));
+ filtered.sort((a,b)=>sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order);
+ const label=cid=>tableDisplayLabel(cid),signed=n=>Number.isFinite(n)?(n>0?'+':'')+fmt.format(n):'—';
+ const box=document.getElementById('rows');if(!box)return;
+ box.innerHTML=filtered.map(b=>`<tr>
+ <td>${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</td>
+ <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
+ <td class="${b.stale?'stale':''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
+ <td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${signed(b.growth)}</td>
+ <td aria-label="collectors">${pbCollectorSvg}${Number.isFinite(b.collectors)?fmt.format(b.collectors):'—'}</td></tr>`).join('')||'<tr><td colspan="5">no matching bots.</td></tr>';
+ const total=allRows.filter(b=>Number.isFinite(b.growth));
+ const totals=allRows.reduce((sum,b)=>({start:sum.start+(b.startMessages||0),now:sum.now+(b.messages||0),collectors:sum.collectors+(b.collectors||0)}),{start:0,now:0,collectors:0});
+ box.innerHTML+=`<tr class="total-row"><td>total</td><td>${fmt.format(totals.start)}</td><td>${fmt.format(totals.now)}</td><td>${total.length?signed(total.reduce((sum,b)=>sum+b.growth,0)):'—'}</td><td>${pbCollectorSvg}${fmt.format(totals.collectors)}</td></tr>`;
+ const visible=document.getElementById('pbVisibleBotCount');if(visible)visible.textContent=`${filtered.length} / ${allRows.length}`;
+ document.querySelectorAll('[data-pb-bot-filter]').forEach(el=>{let on=el.dataset.pbBotFilter===pbPortfolioUi.filter;el.classList.toggle('active',on);el.setAttribute('aria-pressed',String(on))});
+}
+function pbInitUpgrade(){
+ const level=document.getElementById('pbLevelPlacement');
+ function updateLevelVisibility(){if(level)level.hidden=!['home','analytics','cv'].includes(dashboardCurrentView)}
+ const oldRefresh=dashboardRefresh;
+ dashboardRefresh=function(){oldRefresh();if(dashboardCurrentView==='bots')pbRenderBots()};
+ const oldView=dashboardShowView;
+ dashboardShowView=function(view,options={}){oldView(view,options);updateLevelVisibility()};
+ updateLevelVisibility();
+ const oldRender=render;
+ render=function(){oldRender();if(dashboardCurrentView==='bots')pbRenderBots()};
+ document.querySelectorAll('[data-pb-bot-filter]').forEach(b=>b.addEventListener('click',()=>{pbPortfolioUi.filter=b.dataset.pbBotFilter;pbRenderBots()}));
+ for(const key of ['from','to']){document.getElementById('pbStats'+(key==='from'?'From':'To'))?.addEventListener('change',e=>{
+  pbPortfolioUi[key]=e.target.value;if(pbPortfolioUi.from>pbPortfolioUi.to){pbPortfolioUi[key==='from'?'to':'from']=e.target.value;}
+  pbRenderBots();
+ })}
+ document.getElementById('pbSlotsDate')?.addEventListener('change',e=>{pbPortfolioUi.slotDate=e.target.value;pbRenderSlots()});
+ document.querySelectorAll('[data-pb-slot-view]').forEach(b=>b.addEventListener('click',()=>{pbPortfolioUi.slotView=b.dataset.pbSlotView;pbRenderSlots()}));
+ document.getElementById('pbSlotsEdit')?.addEventListener('click',()=>{topSlotsPrepareEditor(pbPortfolioUi.slotDate||topSlotsDefaultDate());dashboardShowView('slots')});
+ document.querySelectorAll('[data-pb-jump]').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.pbJump);if(!el)return;el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'})}));
+ document.getElementById('pbRecordDetails')?.addEventListener('click',e=>{const b=e.target.closest('[data-pb-record-date]');if(!b)return;rankingsConfig.tab='breakouts';rankingsConfig.breakoutsDate=b.dataset.pbRecordDate;rankingsConfig.minimum.breakouts=0;rankingsConfig.minimumMode.breakouts='0';dashboardShowView('rankings')});
+ const back=document.getElementById('pbBackToTop');
+ const links=document.querySelector('.pb-sticky-links');
+ const spacer=document.createElement('div');spacer.className='pb-links-spacer';links?.after(spacer);
+ let pinAt=(links?.getBoundingClientRect().top||0)+window.scrollY;
+ function scrollState(){
+  if(back)back.classList.toggle('pb-visible',window.scrollY>520);
+  if(!links)return;
+  const pinned=window.scrollY>pinAt;
+  if(pinned){const bounds=document.getElementById('app').getBoundingClientRect();
+   links.style.left=Math.max(0,bounds.left+12)+'px';links.style.width=Math.max(0,bounds.width-24)+'px';
+   spacer.style.height=links.offsetHeight+'px';links.classList.add('pb-pinned');
+  }else{links.classList.remove('pb-pinned');links.style.left='';links.style.width='';spacer.style.height='0px';
+   pinAt=links.getBoundingClientRect().top+window.scrollY;
+  }
+ }
+ document.addEventListener('scroll',scrollState,{passive:true});window.addEventListener('scroll',scrollState,{passive:true});
+ window.addEventListener('resize',scrollState,{passive:true});scrollState();
+ back?.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+}
+pbInitUpgrade();
 
 dashboardInit();
 analyticsInitPersonalRecordControls();
