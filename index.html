@@ -6362,6 +6362,78 @@ body.dashboard-shell #pbBotsView .pb-compact-main-table tr.pb-bot-no-results td{
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
+<style>
+
+/* === Oct 23 approved pending functional/compact changes === */
+/* Bots inner scroll is sized to visible iPhone viewport, never 125vh. */
+body.dashboard-shell .all-bots-table-wrap{
+  max-height:clamp(220px,calc(100dvh - 390px),610px) !important;
+  height:auto !important;overflow-y:auto !important;overflow-x:hidden !important;
+  overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y !important;
+}
+body.dashboard-shell .pb-bot-column-head{position:sticky;top:0;z-index:3;background:#251e2b !important;}
+/* Never inflate the counts: only the final now count becomes gently lavender. */
+body.dashboard-shell .main-table.pb-compact-main-table tr:not(.total-row) td:nth-child(3){
+  color:#c1a3df!important;
+}
+/* One compact card with typography/dividers, no nested stat tiles. */
+body.dashboard-shell .pb-bots-stats-content{padding:11px 13px 13px !important}
+body.dashboard-shell .pb-bots-period{margin-bottom:12px!important}
+body.dashboard-shell .pb-summary-active{display:flex;align-items:baseline;gap:12px;
+  margin:0 0 10px;color:#c6b7c8;font-size:12px}
+body.dashboard-shell .pb-summary-active strong{font-size:15px;color:#efe3f0}
+body.dashboard-shell .pb-summary-pair{display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;border-top:1px solid #4c4051;padding:10px 0 9px}
+body.dashboard-shell .pb-summary-cell{min-width:0;}
+body.dashboard-shell .pb-summary-label{display:block;color:#d8c7db;font-size:11px;font-weight:600;margin-bottom:5px}
+body.dashboard-shell .pb-summary-measure{display:flex;align-items:baseline;gap:5px;white-space:nowrap;min-width:0}
+body.dashboard-shell .pb-summary-measure strong{font-size:clamp(13px,3.8vw,16px);font-weight:700;color:#f2e5f0;font-variant-numeric:tabular-nums}
+body.dashboard-shell .pb-summary-measure small{font-size:10px;font-weight:650;color:#bca9ba;white-space:nowrap}
+body.dashboard-shell .pb-pct-up{color:#b8d5ad!important}
+body.dashboard-shell .pb-pct-down{color:#edb5bd!important}
+body.dashboard-shell .pb-summary-bottom{display:grid;grid-template-columns:1.05fr 1.1fr 1fr .85fr;
+  gap:8px;border-top:1px solid #4c4051;padding-top:10px}
+body.dashboard-shell .pb-summary-bottom>div{min-width:0;display:flex;flex-direction:column;gap:4px}
+body.dashboard-shell .pb-summary-bottom span{font-size:10px;color:#cbb6cb;white-space:nowrap}
+body.dashboard-shell .pb-summary-bottom strong{font-size:clamp(11px,3.3vw,14px);font-weight:650;
+  color:#f0deed;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}
+body.dashboard-shell .pb-summary-bottom small{font-size:9px;color:#baa7bb;white-space:nowrap}
+body.dashboard-shell .pb-summary-bottom>div:last-child{text-align:right;align-items:flex-end}
+/* CV estimate four equal gentle tiles, without special effects. */
+body.dashboard-shell #cvFollowingSettlement{color:#ecc3c5!important}
+/* Ledger: legible compact rows, bounded scroll + sticky headings, no data truncated from storage. */
+body.dashboard-shell .cv-ledger-table-wrap{max-height:clamp(260px,55dvh,520px);
+  overflow:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+body.dashboard-shell .cv-ledger-table th,body.dashboard-shell .cv-ledger-table td{
+  padding:5px 6px!important;font-size:11px!important;line-height:1.25!important;
+}
+body.dashboard-shell .cv-ledger-table thead th{position:sticky;top:0;z-index:2;background:#231d29!important}
+body.dashboard-shell .subscriber-table-wrap{max-height:clamp(250px,55dvh,520px)!important;
+  overflow:auto!important;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+body.dashboard-shell .subscriber-table{width:100%!important;table-layout:auto!important;
+  min-width:0!important}
+body.dashboard-shell .subscriber-table th,body.dashboard-shell .subscriber-table td{
+  padding:5px 5px!important;line-height:1.2!important;font-size:11px!important}
+body.dashboard-shell .subscriber-table th:nth-child(1),body.dashboard-shell .subscriber-table td:nth-child(1){
+  width:35%;text-align:left!important;white-space:nowrap}
+body.dashboard-shell .subscriber-table th:nth-child(2),body.dashboard-shell .subscriber-table td:nth-child(2){width:24%}
+body.dashboard-shell .subscriber-table th:nth-child(3),body.dashboard-shell .subscriber-table td:nth-child(3){width:19%}
+body.dashboard-shell .subscriber-table thead th{position:sticky;top:0;z-index:3;background:#231d29!important}
+body.dashboard-shell .subscriber-table button,body.dashboard-shell .cv-ledger-table button{
+  padding:4px 5px!important;font-size:10px!important;min-height:0!important}
+@media(max-width:650px){
+ body.dashboard-shell .subscriber-table th:nth-child(4),body.dashboard-shell .subscriber-table td:nth-child(4),
+ body.dashboard-shell .cv-ledger-table th:nth-child(5),body.dashboard-shell .cv-ledger-table td:nth-child(5),
+ body.dashboard-shell .cv-ledger-table th:nth-child(6),body.dashboard-shell .cv-ledger-table td:nth-child(6),
+ body.dashboard-shell .cv-ledger-table th:nth-child(7),body.dashboard-shell .cv-ledger-table td:nth-child(7){display:none!important}
+ body.dashboard-shell .cv-ledger-table{min-width:0!important;width:100%!important}
+ body.dashboard-shell .cv-ledger-table th,body.dashboard-shell .cv-ledger-table td{padding:5px 3px!important}
+ body.dashboard-shell .subscriber-table td:last-child,body.dashboard-shell .cv-ledger-table td:last-child{white-space:nowrap}
+ body.dashboard-shell .pb-summary-bottom{gap:5px}
+ body.dashboard-shell .pb-bots-period select{font-size:11px!important}
+}
+
+</style>
 </head>
 
 <body>
@@ -6887,16 +6959,17 @@ body.dashboard-shell #pbBotsView .pb-compact-main-table tr.pb-bot-no-results td{
     <summary><span id="pbBotsStatsTitle">characters | statistics</span><span class="pb-details-chevron" aria-hidden="true">⌄</span></summary>
     <div class="pb-bots-stats-content">
       <div class="pb-bots-period"><span>date</span><select id="pbStatsFrom" aria-label="statistics start date"></select><span aria-hidden="true">→</span><select id="pbStatsTo" aria-label="statistics end date"></select></div>
-      <div class="pb-bots-stats-grid">
-        <div><span>active</span><strong id="pbStatActive">—</strong></div>
-        <div><span>messages</span><strong id="pbStatMessages">—</strong></div>
-        <div><span>%</span><strong id="pbStatPercent">—</strong></div>
-        <div><span>🔥</span><strong id="pbStatPopular">—</strong></div>
-        <div><span class="pb-collector-label" aria-label="collectors"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></span><strong id="pbStatCollectors">—</strong></div>
-        <div><span>CV</span><strong id="pbStatCv">—</strong></div>
-        <div class="pb-stat-winner"><span id="pbStatWinnerName">#1 —</span><strong id="pbStatWinnerGrowth">—</strong></div>
+      <div class="pb-summary-active"><span>active characters</span><strong id="pbStatActive">—</strong></div>
+      <div class="pb-summary-pair" aria-label="messages and collectors for selected period">
+        <div class="pb-summary-cell"><span class="pb-summary-label">messages</span><div class="pb-summary-measure"><strong id="pbStatMessages">—</strong><small id="pbStatPercent">—</small></div></div>
+        <div class="pb-summary-cell"><span class="pb-summary-label">collectors</span><div class="pb-summary-measure"><strong id="pbStatCollectors">—</strong><small id="pbStatCollectorPercent">—</small></div></div>
       </div>
-      <small id="pbStatsNote" class="pb-stats-note"></small>
+      <div class="pb-summary-bottom" aria-label="top bot, organic CV, adjustments and popularity score">
+        <div><span>#1</span><strong id="pbStatWinnerName">—</strong><small id="pbStatWinnerGrowth">—</small></div>
+        <div><span>CV · organic</span><strong id="pbStatCv">—</strong></div>
+        <div><span>CV · adj.</span><strong id="pbStatAdjustments">—</strong></div>
+        <div><span>🔥</span><strong id="pbStatPopular">—</strong></div>
+      </div>
     </div>
   </details>
 </section>
@@ -6954,7 +7027,7 @@ body.dashboard-shell #pbBotsView .pb-compact-main-table tr.pb-bot-no-results td{
   <button type="button" data-pb-jump="pbCharacterRecords">🏆 records <strong id="pbRecordCount">—</strong></button>
 </div>
 <details class="pb-bots-lower-card" id="pbBotsTopSlots" open>
-  <summary><span>👑 top slots</span><small id="pbTopSlotsDateLabel">—</small></summary>
+  <summary><span>top slots</span><small id="pbTopSlotsDateLabel">—</small></summary>
   <div class="pb-bots-lower-content">
     <div class="pb-slots-tools">
       <select id="pbSlotsDate" aria-label="saved top slots date"></select>
@@ -7268,6 +7341,10 @@ body.dashboard-shell #pbBotsView .pb-compact-main-table tr.pb-bot-no-results td{
       <div>
         <span>near cap</span>
         <strong id="cvNearCapCount">—</strong>
+      </div>
+      <div title="Estimated 5% settlement if current recorded CV were the settlement base; changes with the latest CV entry.">
+        <span>≈ settlement</span>
+        <strong id="cvFollowingSettlement">—</strong>
       </div>
     </div>
 
@@ -12142,6 +12219,12 @@ function renderCvDashboard(){
     document.querySelector('#cvSettlementLoss').textContent='—';
     document.querySelector('#cvSettlementFormula').textContent=
       'add an actual settlement entry from the 1st to calculate the next settlement correctly.';
+  }
+
+  const following=document.getElementById('cvFollowingSettlement');
+  if(following){
+    following.textContent=Number.isFinite(currentValue) && current
+      ? `≈ −${fmt.format(Math.round(Math.max(0,currentValue)*0.05))}` : '—';
   }
 
   const calibration=cvCalibration();
@@ -19081,19 +19164,29 @@ function pbPickDates(){
   el.value=pbPortfolioUi[key];
  }
 }
-function pbPortfolioCv(from,to){
- // Only recorded CV contributions are included; settlement and corrections do
- // not count as bot-earned CV. Unknown organic deltas stay unknown.
- const entries=cvSortedEntriesAsc();if(!entries.length)return null;
- const updates=[...new Set(entries.filter(e=>e.type==='update' && e.date>from&&e.date<=to).map(e=>e.date))];
- let organic=0;
- for(const date of updates){const context=cvDailyUpdateContext(date);
-  if(!context||!Number.isFinite(context.organicCv)||String(context.baseline?.date||'')<from)return null;
-  organic+=context.organicCv;
+function pbPortfolioCvParts(from,to){
+ // Split the CV daily update into organic growth (messages/UCU) and recorded
+ // adjustments since the previous daily CV update; don't add them together.
+ // This preserves same-day HQ/ban entries between two daily readings.
+ const entries=cvSortedEntriesAsc();
+ if(!entries.length)return {organic:null,adjustments:null};
+ const dates=[...new Set(entries.filter(e=>e.type==='update' && e.date>from && e.date<=to).map(e=>e.date))];
+ let organic=0,adjustments=0;
+ if(!dates.length){
+   // No complete update interval: do not claim organic growth; show registered
+   // adjustments only if there were any in the selected date window.
+   const separate=entries.filter(e=>e.date>from&&e.date<=to&&e.type!=='update'&&e.type!=='settlement'&&Number(e.adjustment));
+   return {organic:null,adjustments:separate.length?separate.reduce((n,e)=>n+Number(e.adjustment),0):null};
  }
- const creation=entries.filter(e=>e.date>from&&e.date<=to&&['hq_new','compliant_new'].includes(e.type));
- const bonuses=creation.reduce((sum,e)=>sum+(Number(e.adjustment)||cvDefaultAdjustment(e.type)),0);
- return updates.length||creation.length ? organic+bonuses:null;
+ for(const date of dates){
+  const ctx=cvDailyUpdateContext(date);
+  if(!ctx || !Number.isFinite(ctx.organicCv) || String(ctx.baseline?.date||'')<from){
+   return {organic:null,adjustments:null};
+  }
+  organic+=ctx.organicCv;
+  adjustments+=ctx.adjustments;
+ }
+ return {organic,adjustments};
 }
 function pbPortfolioSummary(rows){
  const {from,to}=pbPortfolioRange();
@@ -19103,17 +19196,27 @@ function pbPortfolioSummary(rows){
  const pct=usable.length && baseline>0?sum/baseline*100:null;
  const c=rows.filter(r=>Number.isFinite(r.collectorGrowth));
  const collectors=c.length?c.reduce((n,r)=>n+r.collectorGrowth,0):null;
+ const startingCollectors=c.reduce((n,r)=>n+r.startCollectors,0);
+ const cPct=c.length&&startingCollectors>0?collectors/startingCollectors*100:null;
  const top=active.slice().sort((a,b)=>b.growth-a.growth)[0];
  const signed=n=>Number.isFinite(n)?(n>0?'+':'')+fmt.format(Math.round(n)):'—';
  const put=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value};
+ const pctPut=(id,value)=>{
+  const el=document.getElementById(id);if(!el)return;
+  el.textContent=Number.isFinite(value)?analyticsPercentLabel(value):'—';
+  el.classList.toggle('pb-pct-up',Number.isFinite(value)&&value>0);
+  el.classList.toggle('pb-pct-down',Number.isFinite(value)&&value<0);
+ };
  put('pbBotsStatsTitle',`${state.meta.size} characters | statistics`);
- put('pbStatActive',String(active.length));put('pbStatMessages',usable.length?signed(sum):'—');
- const p=document.getElementById('pbStatPercent');if(p){p.textContent=Number.isFinite(pct)?analyticsPercentLabel(pct):'—';p.classList.toggle('pb-pct-up',pct>0);p.classList.toggle('pb-pct-down',pct<0)}
- put('pbStatPopular',usable.length?`${rankingsFloat(sum/Math.max(1,Number(rankingsConfig.coef)||4000))}`:'—');
- put('pbStatCollectors',signed(collectors));
- const cv=pbPortfolioCv(from,to);put('pbStatCv',Number.isFinite(cv)?signed(cv):'—');
- put('pbStatWinnerName',top?'#1 '+top.name:'#1 —');put('pbStatWinnerGrowth',top?signed(top.growth):'—');
- put('pbStatsNote',`${shortGraphDate(from)} → ${shortGraphDate(to)} · ${usable.length}/${rows.length} measured · 🔥 = messages ÷ ${fmt.format(rankingsConfig.coef||4000)}${cv===null?' · CV not confirmed for this period':''}`);
+ put('pbStatActive',String(active.length));
+ put('pbStatMessages',usable.length?signed(sum):'—');pctPut('pbStatPercent',pct);
+ put('pbStatCollectors',signed(collectors));pctPut('pbStatCollectorPercent',cPct);
+ put('pbStatPopular',usable.length?rankingsFloat(sum/Math.max(1,Number(rankingsConfig.coef)||4000)):'—');
+ const cv=pbPortfolioCvParts(from,to);
+ put('pbStatCv',Number.isFinite(cv.organic)?signed(cv.organic):'—');
+ put('pbStatAdjustments',Number.isFinite(cv.adjustments)?signed(cv.adjustments):'—');
+ put('pbStatWinnerName',top?top.name:'—');
+ put('pbStatWinnerGrowth',top?signed(top.growth):'—');
 }
 function pbPortfolioAchievements(rows){
  const {from,to}=pbPortfolioRange();
