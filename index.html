@@ -6831,6 +6831,15 @@ body.dashboard-shell .pb-home-hero-stack .dashboard-creator-panel::before{
  /* The approved crown artwork remains exactly as embedded in the source. */
 }
 
+
+/* 24 Oct follow-up: ranked growth matches its NOW highlight, one deeper shade. */
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(4).pb-growth-new{color:#9824ce!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(4).pb-growth-leader{color:#c02366!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(4).pb-growth-breakout{color:#cb8610!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(4).pb-growth-popular{color:#ce5108!important}
+/* Top Slots stays neutral; extra text is informational, not colored ranking ink. */
+body.dashboard-shell .pb-slot-row .pb-performance-tag,
+body.dashboard-shell .pb-slot-thumb-footer .pb-performance-tag{color:#b6a9b9!important;font-size:9px!important;font-weight:450!important}
 </style>
 
 <div class="pb-sticky-links" aria-label="quick links">
@@ -16458,6 +16467,7 @@ function topSlotsRenderHome(){
     return;
   }
 
+  const performance=pbPerformanceTags();
   box.innerHTML=slots.map((cid,index)=>{
     const name=state.meta.get(cid)?.name || cid;
     const messages=topSlotsMessagesForDate(date,cid);
@@ -16470,7 +16480,7 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
@@ -19555,22 +19565,25 @@ const pbTinyCrownSvg=(()=>{
 function pbPerformanceTags(){
  let limit=3;try{limit=Math.min(5,Math.max(3,Number(localStorage.getItem('pbRankingTagLimit')||3)))}catch(_){ }
  const map=new Map();
- const group=[['leader','leader'],['hot','popular'],['breakouts','breakout']];
- // New goes last, and is valid only for the recent/new cohort.
- for(const [tab,label] of group){
+ // Higher placement wins across rankings; category breaks *equal-rank* ties.
+ // A #1 popular therefore wins over a #4 leader.
+ const groups=[['leader','leader',0],['hot','popular',1],['breakouts','breakout',2]];
+ for(const [tab,label,weight] of groups){
   let r;try{r=rankingsBuild(tab,tab==='hot'?'7':'1',{minimum:0})}catch(_){r=null}
   (r?.rows||[]).slice(0,limit).forEach((bot,i)=>{
-    if(!map.has(String(bot.cid)))map.set(String(bot.cid),{text:`#${i+1} ${label}`,kind:label});
+   const id=String(bot.cid),position=i+1,previous=map.get(id);
+   if(!previous || position<previous.position || (position===previous.position && weight<previous.weight)){
+    map.set(id,{text:`#${position} ${label}`,kind:label,position,weight});
+   }
   });
  }
  try{
-  // A new bot retains its subtle new tag even if today's message count is 0.
   const latest=rankingsDays().at(-1)?.date;
   if(latest){
    for(const bot of rankingsPublicBots()){
     const published=rankingsPublication(bot).date;
     if(published && published<=latest && rankingsDateDelta(published,latest)<=30 && !map.has(String(bot.cid)))
-      map.set(String(bot.cid),{text:'• new',kind:'new'});
+     map.set(String(bot.cid),{text:'• new',kind:'new',position:Infinity,weight:3});
    }
   }
  }catch(_){ }
@@ -19591,15 +19604,21 @@ function pbAttentionStatus(cid,date){
   const history=(eventsState.events||[])
    .filter(e=>String(e.cid||'')===id && String(e.date||'')<=day)
    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')));
-  let violation=false,shadow=false;
+  let shadow=false,ongoingViolation=false,violationOnSelectedDay=false;
   for(const e of history){
    const tags=Array.isArray(e.tags)?e.tags:[];
-   if(tags.includes('violation'))violation=true;
-   if(e.status?.banned===true || tags.includes('banned'))shadow=true;
-   // An explicitly recorded unban clears the ban and resolved warning.
-   if(e.status?.banned===false){shadow=false;violation=false;}
+   // Ban is a persistent status until an explicitly recorded unban.
+   if(typeof e.status?.banned==='boolean')shadow=e.status.banned;
+   else if(tags.includes('banned'))shadow=true;
+   // Violation is a one-time event tag, *not* a persistent status.
+   // Historical violation events stay in the Events ledger, but do not
+   // permanently flag an otherwise normal bot (e.g. Rafik).
+   if(e.date===day && tags.includes('violation'))violationOnSelectedDay=true;
+   // Retain optional explicit status support if ever recorded by an importer.
+   if(typeof e.status?.violation==='boolean')ongoingViolation=e.status.violation;
+   if(e.status?.banned===false)ongoingViolation=false;
   }
-  if(violation)return 'violation';
+  if(ongoingViolation||violationOnSelectedDay)return 'violation';
   if(shadow)return 'shadow';
  }catch(_){ }
  return '';
@@ -19707,7 +19726,7 @@ function pbPortfolioSummary(rows){
  const cvHistory=cvSortedEntriesAsc();
  const cvBaseline=cvHistory.filter(e=>e.date<=from && Number.isFinite(Number(e.total))).at(-1);
  pctPut('pbStatCvPercent',Number.isFinite(cv.organic)&&Number(cvBaseline?.total)>0?cv.organic/Number(cvBaseline.total)*100:null);
- put('pbStatAdjustments',Number.isFinite(cv.adjustments)?signed(cv.adjustments):'—');
+ put('pbStatAdjustments',Number.isFinite(cv.adjustments)?(cv.adjustments===0?'+0':signed(cv.adjustments)):'—');
  put('pbStatCvTotal',Number.isFinite(cv.organic)&&Number.isFinite(cv.adjustments)?signed(cv.organic+cv.adjustments):'—');
  const crown=document.getElementById('pbWinnerCrown');
  if(crown && !crown.firstChild && pbTinyCrownSvg)crown.innerHTML=pbTinyCrownSvg;
@@ -19747,13 +19766,17 @@ function pbRenderSlots(){
  const signature=dates.join('|');if(sel.dataset.dates!==signature){sel.innerHTML=dates.length?dates.map(d=>`<option value="${d}">${shortGraphDate(d)}</option>`).join(''):'<option value="">no saved days</option>';sel.dataset.dates=signature;}
  sel.value=dates.includes(pbPortfolioUi.slotDate)?pbPortfolioUi.slotDate:'';
  const date=pbPortfolioUi.slotDate,slots=topSlotsSnapshot(date),box=document.getElementById('pbSlotsList');
+ const performance=pbPerformanceTags();
  const label=document.getElementById('pbTopSlotsDateLabel');if(label)label.textContent=dates.includes(date)?shortGraphDate(date):'not saved';
  document.querySelectorAll('[data-pb-slot-view]').forEach(b=>{const active=b.dataset.pbSlotView===pbPortfolioUi.slotView;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active))});
  const thumbs=pbPortfolioUi.slotView==='thumb';box.classList.toggle('pb-slot-grid',thumbs);
  box.innerHTML=slots.length?slots.map((cid,i)=>{
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
-  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture"><img src="${pbTopSlotsOriginalCard}" alt="" loading="lazy"><b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</strong><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
-  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}<small>${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
+  const messages=topSlotsMessagesForDate(date,cid);
+  const messageLabel=Number.isFinite(messages)?fmt.format(messages)+' messages':'— messages';
+  const tags=pbPerformanceInline(cid,performance)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
+  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture"><img src="${pbTopSlotsOriginalCard}" alt="" loading="lazy"><b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}${tags}</strong><small>${messageLabel}</small><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
+  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${tags}<small>${messageLabel} · ${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
  }).join(''):'<div class="dashboard-empty">no top slots saved for this day. Use edit to record positions.</div>';
 }
 function pbRenderBots(){if(!state.meta.size)return;
@@ -19763,7 +19786,11 @@ function pbRenderBots(){if(!state.meta.size)return;
  .filter(b=>pbPortfolioUi.filter==='all'||(pbPortfolioUi.filter==='active'?b.growth>0:b.growth===0));
  const performance=pbPerformanceTags();
  const rankPriority={leader:0,popular:1,breakout:2,new:3};
- const currentPriority=bot=>pbPortfolioUi.highlights?(rankPriority[performance.get(String(bot.cid))?.kind]??4):0;
+ const currentPriority=bot=>{
+  if(!pbPortfolioUi.highlights)return 0;
+  const tag=performance.get(String(bot.cid));
+  return tag?(tag.position*10+(rankPriority[tag.kind]??3)):999;
+ };
  filtered.sort((a,b)=>{
   const priority=currentPriority(a)-currentPriority(b);if(priority)return priority;
   return sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order;
@@ -19775,7 +19802,7 @@ function pbRenderBots(){if(!state.meta.size)return;
  <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
  <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
- <td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${signed(b.growth)}</td>
+ <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${signed(b.growth)}</td>
  <td aria-label="collectors">${pbCollectorSvg}${Number.isFinite(b.collectors)?fmt.format(b.collectors):'—'}</td></tr>`).join('')||'<tr class="pb-bot-no-results"><td colspan="5">no matching bots.</td></tr>';
  const total=allRows.filter(b=>Number.isFinite(b.growth));
  const totals=allRows.reduce((sum,b)=>({start:sum.start+(b.startMessages||0),now:sum.now+(b.messages||0),collectors:sum.collectors+(b.collectors||0)}),{start:0,now:0,collectors:0});
