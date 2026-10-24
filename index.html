@@ -6357,6 +6357,33 @@ body.dashboard-shell #pbBotsView .pb-compact-main-table tr.pb-bot-no-results td{
   body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(1){font-size:11px!important}
 }
 
+
+/* === 24 Oct follow-up: performance cards closer to Creator Level,
+   with the same soft mauve flow continuing into the two tiles. === */
+body.dashboard-shell .pb-level-placement{
+  margin:0 0 12px!important;
+}
+body.dashboard-shell #dashboardHome>.dashboard-performance{
+  margin-top:-2px;
+  gap:8px!important;
+}
+body.dashboard-shell .dashboard-performance .dashboard-stat-card{
+  background:
+    radial-gradient(ellipse at 14% 10%,rgba(239,165,205,.16),transparent 52%),
+    radial-gradient(ellipse at 100% 100%,rgba(134,86,122,.14),transparent 58%),
+    linear-gradient(110deg,rgba(81,52,75,.74) 0%,rgba(55,40,62,.71) 52%,rgba(48,38,60,.70) 73%,rgba(66,48,71,.74) 100%)!important;
+  border:1px solid rgba(145,109,145,.70)!important;
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  box-shadow:none!important;
+}
+body.dashboard-shell .dashboard-performance .dashboard-stat-card:last-child{
+  background:
+    radial-gradient(ellipse at 0% 100%,rgba(239,165,205,.10),transparent 52%),
+    radial-gradient(ellipse at 100% 10%,rgba(134,86,122,.18),transparent 58%),
+    linear-gradient(110deg,rgba(81,52,75,.72) 0%,rgba(55,40,62,.70) 52%,rgba(48,38,60,.70) 73%,rgba(66,48,71,.73) 100%)!important;
+}
+
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
