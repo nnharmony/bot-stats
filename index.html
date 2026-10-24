@@ -6705,6 +6705,97 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
  body.dashboard-shell .pb-summary-bottom .pb-cv-inline>span,body.dashboard-shell .pb-summary-bottom .pb-cv-character>span{font-size:9px!important}
  body.dashboard-shell .pb-summary-bottom strong{font-size:11px!important}
 }
+
+/* === 24 October: approved visual follow-up. Limited to home and Bots/CV surfaces. === */
+body.dashboard-shell .pb-home-hero-stack{position:relative;isolation:isolate;min-width:0;margin:0 0 0!important}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active{
+  background:var(--pb-lv-gradient)!important;
+  border-radius:18px;
+}
+body.dashboard-shell .pb-home-hero-stack .pb-level-placement{margin:0 0 6px!important}
+body.dashboard-shell .pb-home-hero-stack .dashboard-performance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;margin:0!important}
+body.dashboard-shell .pb-home-hero-stack .dashboard-performance[hidden]{display:none!important}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-creator-panel{
+  background:rgba(38,26,43,.12)!important;
+}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card{
+  /* One physical parent gradient visible through both pieces, not two gradients restarted. */
+  background:rgba(39,25,48,.13)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  border-color:#725772!important;
+  grid-template-rows: minmax(32px,1fr) 17px minmax(32px,1fr)!important;
+  min-height:101px!important;padding:9px 8px!important;
+}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card em{
+  grid-row:1;align-self:center;color:#efc3db!important;font-size:clamp(15px,4vw,18px)!important;
+  font-weight:700;font-style:normal;line-height:1.15!important;white-space:nowrap;
+}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card span{
+  grid-row:2;font-size:10px!important;color:#dac0d2!important;
+}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card strong{
+  grid-row:3;font-size:clamp(17px,4.8vw,21px)!important;font-weight:750;
+}
+body.dashboard-shell #dashboardHome .dashboard-overview-grid{margin-top:9px!important;margin-bottom:19px!important}
+body.dashboard-shell #dashboardHome .dashboard-top-bots-card{margin-top:0!important}
+body.dashboard-shell #dashboardHome>.dashboard-card,
+body.dashboard-shell #dashboardHome>.rankings-home-cards,
+body.dashboard-shell #dashboardHome>.dashboard-shortcuts{margin-bottom:18px!important}
+body.dashboard-shell #dashboardHome>.dashboard-section-title{margin-top:18px!important}
+/* CV metadata, visibly separate operands and daily result. */
+body.dashboard-shell #dashboardHeaderCvCard #dashboardCvMeta,
+body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-extra{
+ white-space:pre-line!important;line-height:1.45!important;display:block;
+}
+/* Align the GLYPHS, not their button boxes: LV5 starts at the 8.551 glyph top,
+   ends at the UCU baseline area, and shares x-start with 'creator level'. */
+body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left{
+  padding:14px 8px 6px 6px!important;gap:3px!important;justify-content:flex-start!important;
+}
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel,
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel[data-level="5"]{
+  display:block!important;height:auto!important;min-height:0!important;
+  margin:0!important;padding:0!important;align-self:flex-start!important;
+  font-size:clamp(55px,15.2vw,78px)!important;font-weight:800!important;
+  line-height:.98!important;letter-spacing:-.052em!important;
+}
+/* Strong, opaque ranking ink matches the user's marked iOS color grid. */
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-new{color:#b12ef2!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-leader{color:#e33283!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-breakout{color:#f7ae13!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-popular{color:#f06b08!important}
+/* Only violations and shadow bans get visual warning inks. */
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-violation{color:#f24c56!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-shadow{color:#9397ec!important}
+body.dashboard-shell #pbBotsView .pb-attention-mark{color:#f26871!important;font-size:12px!important;font-weight:850}
+body.dashboard-shell #pbBotsView .pb-moon-mark{color:#999de9!important;font-size:12px!important}
+body.dashboard-shell .pb-moon-mark,.pb-attention-mark{margin-left:4px;white-space:nowrap;font-size:10px;vertical-align:baseline}
+/* Line up the organic cv and character CV second-line columns with messages/collectors. */
+body.dashboard-shell .pb-summary-bottom{
+ display:grid!important;grid-template-columns:minmax(0,1.18fr) minmax(0,.73fr) minmax(0,.66fr)!important;
+ column-gap:7px!important;align-items:baseline!important;
+}
+body.dashboard-shell .pb-summary-bottom>span:nth-child(1){grid-column:1}
+body.dashboard-shell .pb-summary-bottom>span:nth-child(2){grid-column:2}
+body.dashboard-shell .pb-summary-bottom>span:nth-child(3){grid-column:3;justify-content:flex-end!important}
+body.dashboard-shell .pb-summary-bottom .pb-cv-inline>span,
+body.dashboard-shell .pb-summary-bottom .pb-cv-character>span{font-size:clamp(8px,2.2vw,10px)!important}
+body.dashboard-shell .pb-summary-bottom>span{gap:3px!important}
+@media(max-width:365px){
+ body.dashboard-shell .pb-summary-bottom{column-gap:4px!important}
+ body.dashboard-shell .pb-summary-bottom strong{font-size:11px!important}
+ body.dashboard-shell .pb-summary-bottom .pb-cv-inline>span,
+ body.dashboard-shell .pb-summary-bottom .pb-cv-character>span{font-size:8px!important}
+ body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card em{font-size:15px!important}
+}
+
+/* Follow-up: avoid dead air after removing redundant section titles. */
+body.dashboard-shell #dashboardHome .dashboard-overview-grid + .dashboard-card{margin-top:14px!important}
+body.dashboard-shell #dashboardHome .dashboard-card + .dashboard-card{margin-top:18px!important}
+body.dashboard-shell .pb-home-hero-stack .dashboard-creator-panel::before{
+ /* The approved crown artwork remains exactly as embedded in the source. */
+}
+
 </style>
 
 <div class="pb-sticky-links" aria-label="quick links">
@@ -6771,6 +6862,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
     <div class="dashboard-profile-footer"></div>
   </section>
 </div>
+<div id="pbHomeHeroStack" class="pb-home-hero-stack">
 <section class="pb-level-placement" id="pbLevelPlacement" aria-label="creator level">
     <div class="dashboard-level-section">
       <div class="dashboard-creator-panel">
@@ -6793,21 +6885,21 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
     </div>
 </section>
 
-
-<section id="dashboardHome" class="dashboard-home" data-dashboard-view="home">
-  <div class="dashboard-performance">
+<div class="dashboard-performance" id="pbHomePerformance">
     <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
+      <em id="dashboardMessagesDelta">—</em>
       <span>messages</span>
       <strong id="dashboardMessages">—</strong>
-      <em id="dashboardMessagesDelta">—</em>
     </button>
     <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
+      <em id="dashboardCollectorsDelta">—</em>
       <span>collectors</span>
       <strong id="dashboardCollectors">—</strong>
-      <em id="dashboardCollectorsDelta">—</em>
     </button>
-  </div>
+</div>
+</div><!-- / shared creator level and performance gradient -->
 
+<section id="dashboardHome" class="dashboard-home" data-dashboard-view="home">
   <div class="dashboard-overview-grid">
     <button class="dashboard-tile" type="button" data-open-dashboard-view="freeze">
       <span class="dashboard-tile-icon dashboard-pause-icon"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 8v8M14.5 8v8" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg></span><span class="dashboard-tile-label">freezes</span>
@@ -6845,7 +6937,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
     <section class="rankings-home-card" data-rank-home="hot"><div class="rankings-home-head"><strong>🔥 popular</strong><span>profile popularity · 7D</span></div><div id="rankingsHomeScore" class="rankings-home-score">—</div><div class="rankings-home-body" id="rankingsHomeHot">Loading…</div><div class="rankings-home-actions"><button type="button" data-rank-expand="hot" aria-expanded="false">show all ⌄</button><button type="button" data-rank-open="hot">full ranking ↗</button></div></section>
   </div>
 
-  <div class="dashboard-section-title">freeze monitor</div>
+  
   <section class="dashboard-card">
     <div class="dashboard-card-head">
       <strong>⏸️ pattern monitor</strong>
@@ -6854,7 +6946,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
     <div id="dashboardFreezes"><div class="dashboard-empty">loading…</div></div>
   </section>
 
-  <div class="dashboard-section-title">recent events</div>
+  
   <section class="dashboard-card">
     <div class="dashboard-card-head">
       <strong>latest 30 events</strong>
@@ -7086,7 +7178,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
 <section id="dashboardMore" class="dashboard-more" data-dashboard-view="more" hidden>
   <div class="dashboard-section-title" style="margin-top:0">tracker tools</div>
   <div class="dashboard-more-grid">
-    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="analytics"><span class="dashboard-shortcut-icon">▥</span><span><b>analytics</b><small>messages · collectors · subscribers · CV</small></span></button>
+    <button class="dashboard-shortcut" type="button" data-open-dashboard-view="analytics"><span class="dashboard-shortcut-icon">▥</span><span><b>analytics</b><small>messages · collectors · subscribers · cv</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="subscribers"><span class="dashboard-shortcut-icon">♡</span><span><b>subscriber counter</b><small>goal and full history</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="cv"><span class="dashboard-shortcut-icon">◇</span><span><b>creator value</b><small>ledger · settlement · estimates</small></span></button>
     <button class="dashboard-shortcut" type="button" data-open-dashboard-view="slots"><span class="dashboard-shortcut-icon">#</span><span><b>top slots</b><small>daily ranking · historical edits</small></span></button>
@@ -7185,7 +7277,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
 
   <div class="dashboard-section-title">daily data</div>
   <section class="archive-table-card">
-    <div class="archive-table-head"><span>date</span><span>messages</span><span>collectors</span><span>est. CV</span></div>
+    <div class="archive-table-head"><span>date</span><span>messages</span><span>collectors</span><span>est. cv</span></div>
     <div id="archiveDailyRows" class="archive-table-body"><div class="dashboard-empty">no data.</div></div>
   </section>
 
@@ -7383,7 +7475,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
       <summary><span>↗ 7-day rolling window</span><small>daily updates</small></summary>
       <div class="analytics-rolling-content">
         <div class="analytics-rolling-grid analytics-rolling-header" aria-hidden="true">
-          <span>D</span><span>messages</span><span>collectors</span><span>subs</span><span>CV</span><span>%</span>
+          <span>D</span><span>messages</span><span>collectors</span><span>subs</span><span>cv</span><span>%</span>
         </div>
         <div id="analyticsRollingRows" aria-label="Daily growth across the latest seven recorded calendar days">
           <div class="dashboard-empty">loading…</div>
@@ -7472,7 +7564,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
         <label><input type="checkbox" data-analytics-series="messages" checked> messages</label>
         <label><input type="checkbox" data-analytics-series="collectors" checked> collectors</label>
         <label><input type="checkbox" data-analytics-series="subscribers" checked> subscribers</label>
-        <label><input type="checkbox" data-analytics-series="cv" checked> CV</label>
+        <label><input type="checkbox" data-analytics-series="cv" checked> cv</label>
       </div>
 
       <div class="analytics-chart-wrap">
@@ -7480,7 +7572,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
       </div>
 
       <div class="analytics-chart-note">
-        indexed growth starts each selected series at 0%, so messages, collectors, subscribers and CV can be compared even though their absolute scales are very different.
+        indexed growth starts each selected series at 0%, so messages, collectors, subscribers and cv can be compared even though their absolute scales are very different.
       </div>
     </details>
 
@@ -7564,11 +7656,11 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
 
     <section class="cv-day-estimate" id="cvDayEstimate">
       <div class="cv-day-head">
-        <div><span>latest CV growth</span><strong id="cvDayTotal">—</strong></div>
+        <div><span>creator value update</span><strong id="cvDayTotal">—</strong></div>
         <small id="cvDayDate">—</small>
       </div>
       <div class="cv-day-grid">
-        <div><span>adjustments</span><strong id="cvDayAdjustments">—</strong><small>recorded corrections</small></div>
+        <div><span>characters</span><strong id="cvDayAdjustments">—</strong><small>recorded corrections</small></div>
         <div><span>messages</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
         <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small>historical ratio</small></div>
         <div><span>UCU</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
@@ -7582,7 +7674,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
 
     <div class="cv-estimate-summary">
       <div>
-        <span>≈ uncapped CV</span>
+        <span>≈ uncapped cv</span>
         <strong id="cvUncappedEstimated">—</strong>
       </div>
       <div>
@@ -7607,7 +7699,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
           <span class="cv-slash">/</span>
           <input id="cvNextLevelTarget" type="number" min="1" step="1" value="15000" aria-label="next level target">
         </div>
-        <div id="cvToNext" class="cv-to-next">add your first CV update</div>
+        <div id="cvToNext" class="cv-to-next">add your first cv update</div>
       </div>
 
       <div class="cv-progress-track" aria-hidden="true">
@@ -7619,13 +7711,13 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
     <details class="cv-bot-estimator">
       <summary>uncapped bot estimate</summary>
       <div class="cv-estimator-note">
-        message CV = 0.0025 per message. UCU CV = 0.05 per UCU. The creation bonus (+30 HQ / +10 compliant) is included in the 500 character cap.
+        message cv = 0.0025 per message. UCU cv = 0.05 per UCU. The creation bonus (+30 HQ / +10 compliant) is included in the 500 character cap.
       </div>
       <div id="cvBotEstimatorRows" class="cv-bot-estimator-rows"></div>
     </details>
 
     <details class="cv-ledger" open>
-      <summary>CV ledger</summary>
+      <summary>cv ledger</summary>
 
       <div class="cv-entry-form">
         <div class="cv-field cv-date-field">
@@ -7634,14 +7726,14 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
         </div>
 
         <div class="cv-field">
-          <label for="cvTotal">CV total</label>
+          <label for="cvTotal">cv total</label>
           <input id="cvTotal" type="number" min="0" step="1" placeholder="creator value">
         </div>
 
         <div class="cv-field">
           <label for="cvType">type</label>
           <select id="cvType">
-            <option value="update">CV update</option>
+            <option value="update">cv update</option>
             <option value="hq_new">HQ character (+30)</option>
             <option value="unbanned">unbanned (+20)</option>
             <option value="compliant_new">compliant character (+10)</option>
@@ -7679,7 +7771,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
       </div>
 
       <div class="cv-ledger-help">
-        No event time is used. The selected date is the CV date. Multiple updates on the same date are kept in entry order.
+        No event time is used. The selected date is the cv date. Multiple updates on the same date are kept in entry order.
       </div>
 
       <div class="cv-ledger-table-wrap">
@@ -7687,7 +7779,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
           <thead>
             <tr>
               <th>date</th>
-              <th>CV</th>
+              <th>cv</th>
               <th>Δ</th>
               <th>type</th>
               <th>bot</th>
@@ -7697,7 +7789,7 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
             </tr>
           </thead>
           <tbody id="cvLedgerRows">
-            <tr><td colspan="8">no CV updates yet</td></tr>
+            <tr><td colspan="8">no cv updates yet</td></tr>
           </tbody>
         </table>
       </div>
@@ -12063,8 +12155,8 @@ function renderCvEstimator(){
       : '';
 
     const detail=known
-      ? `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message CV + ≈${fmt.format(row.ucuCv)} UCU CV`
-      : `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message CV · UCU estimate needs calibration`;
+      ? `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message cv + ≈${fmt.format(row.ucuCv)} ucu cv`
+      : `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message cv · ucu estimate needs calibration`;
 
     return `
       <div class="cv-bot-estimator-row ${cvCapClass(row.estimatedCv)}">
@@ -12088,7 +12180,7 @@ function renderCvLedger(){
   const asc=cvSortedEntriesAsc();
 
   if(!asc.length){
-    rows.innerHTML='<tr><td colspan="8">no CV updates yet</td></tr>';
+    rows.innerHTML='<tr><td colspan="8">no cv updates yet</td></tr>';
     return;
   }
 
@@ -12276,7 +12368,7 @@ function cvDailyEstimate(date=''){
   const actualMessages=cvUncappedMessagesForDate(context.target.date,context.target);
 
   // Once the message snapshot for this CV date is loaded, the message part is
-  // known. The remaining organic CV is therefore the UCU contribution.
+  // known. The remaining organic cv is therefore the UCU contribution.
   if(actualMessages){
     const messageCv=actualMessages.uncappedMessages*CV_PER_MESSAGE;
     const ucuCv=context.organicCv-messageCv;
@@ -12298,7 +12390,7 @@ function cvDailyEstimate(date=''){
     };
   }
 
-  // CV arrived before the message snapshot. Keep the real organic CV total as
+  // CV arrived before the message snapshot. Keep the real organic cv total as
   // the anchor and temporarily split it using the calibrated messages/UCU ratio.
   if(Number.isFinite(ratio) && ratio>0 && context.organicCv>=0){
     const cvPerMessageEquivalent=CV_PER_MESSAGE+(CV_PER_UCU/ratio);
@@ -12354,14 +12446,14 @@ function renderCvDayEstimate(){
   if(!estimate){
     set('#cvDayTotal','—');
     set('#cvLatestTop','—');
-    set('#cvDayDate','waiting for CV update');
+    set('#cvDayDate','waiting for cv update');
     set('#cvDayMessageCv','—');
     set('#cvDayMessages','—');
     set('#cvDayUcuCv','—');
     set('#cvDayUcu','—');
     set('#cvDayAdjustments','—');
     set('#cvDayExpected','—');
-    set('#cvDayFormula','enter a CV update to see its breakdown.');
+    set('#cvDayFormula','enter a cv update to see its breakdown.');
     return;
   }
 
@@ -12378,11 +12470,11 @@ function renderCvDayEstimate(){
     set('#cvDayUcu',`${estimate.estimatedUcu>=0?'≈ ':''}${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
 
     const warning=estimate.ucuCv<0
-      ? ' · ⚠ message CV is higher than organic CV; check timing/cap data'
+      ? ' · ⚠ message cv is higher than organic cv; check timing/cap data'
       : '';
 
     set('#cvDayFormula',
-      `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} CV${warning}`
+      `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
     );
     return;
   }
@@ -12394,7 +12486,7 @@ function renderCvDayEstimate(){
     set('#cvDayUcuCv',`≈ ${cvFormatEstimateSigned(estimate.ucuCv)}`);
     set('#cvDayUcu',`≈ ${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
     set('#cvDayFormula',
-      `≈ ${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} CV`
+      `≈ ${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv`
     );
     return;
   }
@@ -12404,7 +12496,7 @@ function renderCvDayEstimate(){
   set('#cvDayMessages','message snapshot not loaded');
   set('#cvDayUcuCv','—');
   set('#cvDayUcu','—');
-  set('#cvDayFormula','CV growth is known, but the message/UCU split needs either the matching message snapshot or enough calibration data.');
+  set('#cvDayFormula','cv growth is known, but the message/ucu split needs either the matching message snapshot or enough calibration data.');
 }
 
 function renderCvDashboard(){
@@ -12438,7 +12530,7 @@ function renderCvDashboard(){
     document.querySelector('#cvProgressBar').style.width=`${progress}%`;
   }else{
     document.querySelector('#cvCurrent').textContent='—';
-    document.querySelector('#cvToNext').textContent='add your first CV update';
+    document.querySelector('#cvToNext').textContent='add your first cv update';
     document.querySelector('#cvProgressBar').style.width='0%';
   }
 
@@ -12570,7 +12662,7 @@ async function saveCvEntry(){
   const note=document.querySelector('#cvNote').value.trim();
 
   if(!date || !document.querySelector('#cvTotal').value.trim() || !Number.isFinite(total)){
-    status.textContent='choose date and CV total';
+    status.textContent='choose date and cv total';
     status.className='error';
     return;
   }
@@ -15742,10 +15834,10 @@ function dashboardUpdateProfileCard(cvValue=null){
   if(Number.isFinite(cvValue)){
     if(Number.isFinite(range.max) && range.max>range.min){
       progress=Math.max(0,Math.min(100,((cvValue-range.min)/(range.max-range.min))*100));
-      text=`${fmt.format(cvValue)} / ${fmt.format(range.max)} CV`;
+      text=`${fmt.format(cvValue)} / ${fmt.format(range.max)} cv`;
     }else{
       progress=100;
-      text=`${fmt.format(cvValue)} CV`;
+      text=`${fmt.format(cvValue)} cv`;
     }
   }
   if(bar) bar.style.width=`${progress}%`;
@@ -15755,7 +15847,7 @@ function dashboardUpdateProfileCard(cvValue=null){
   if(bar) bar.style.background='linear-gradient(90deg,#f5a9d1 0%, #cc96ff 52%, #a877ff 100%)';
   if(metaEl){
     if(Number.isFinite(cvValue) && Number.isFinite(range.max) && range.max>cvValue){
-      metaEl.textContent=`${fmt.format(cvValue)} / ${fmt.format(range.max)} CV · ${fmt.format(range.max-cvValue)} to LV ${range.level ? range.level+1 : 1}`;
+      metaEl.textContent=`${fmt.format(cvValue)} / ${fmt.format(range.max)} cv · ${fmt.format(range.max-cvValue)} to LV ${range.level ? range.level+1 : 1}`;
     }else{
       metaEl.textContent=text;
     }
@@ -16313,7 +16405,7 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}${pbStatusInline(cid,date)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
@@ -17208,7 +17300,7 @@ function renderDashboardArchive(){
       const msgDelta=prev?archiveSnapshotTotal(day,'messages')-archiveSnapshotTotal(prev,'messages'):null;
       const colDelta=prev?archiveSnapshotTotal(day,'collectors')-archiveSnapshotTotal(prev,'collectors'):null;
       const estimate=cvDailyEstimate(day.date);
-      return `<div class="archive-daily-row"><span>${shortGraphDate(day.date)}</span><span>${Number.isFinite(msgDelta)?dashboardSigned(msgDelta):'—'}</span><span>${Number.isFinite(colDelta)?dashboardSigned(colDelta):'—'}</span><span>${estimate?`${cvFormatEstimateSigned(estimate.actualDelta)} CV`:'—'}</span></div>`;
+      return `<div class="archive-daily-row"><span>${shortGraphDate(day.date)}</span><span>${Number.isFinite(msgDelta)?dashboardSigned(msgDelta):'—'}</span><span>${Number.isFinite(colDelta)?dashboardSigned(colDelta):'—'}</span><span>${estimate?`${cvFormatEstimateSigned(estimate.actualDelta)} cv`:'—'}</span></div>`;
     }).reverse().join('') : '<div class="dashboard-empty">no daily snapshots for this month.</div>';
   }
 
@@ -17248,9 +17340,9 @@ function dashboardRefresh(){
 
   const setText=(selector,value)=>{const el=document.querySelector(selector);if(el)el.textContent=value};
   setText('#dashboardMessages',state.bots.length?fmt.format(totalMessages):'—');
-  setText('#dashboardMessagesDelta',state.bots.length?`${dashboardSigned(dailyMessages)} latest update${partialText}`:'—');
+  setText('#dashboardMessagesDelta',state.bots.length?`${dashboardSigned(dailyMessages)}`:'—');
   setText('#dashboardCollectors',state.bots.length?fmt.format(totalCollectors):'—');
-  setText('#dashboardCollectorsDelta',Number.isFinite(collectorDelta)?`${dashboardSigned(collectorDelta)} latest update${partialText}`:(staleCount?`${staleCount} unavailable`:'—'));
+  setText('#dashboardCollectorsDelta',Number.isFinite(collectorDelta)?`${dashboardSigned(collectorDelta)}`:(staleCount?`${staleCount} unavailable`:'—'));
 
   let cvValue=null;
   try{cvValue=Number(cvCurrentEntry()?.total)}catch(_){}
@@ -17260,7 +17352,7 @@ function dashboardRefresh(){
   try{
     const dayCv=cvDailyEstimate();
     setText('#dashboardCvMeta',dayCv
-      ? `${cvFormatEstimateSigned(dayCv.actualDelta)} today · ${dayCv.mode==='exact'?'calc':'est'} ${Number.isFinite(dayCv.messageCv)?cvFormatEstimate(dayCv.messageCv):'—'} msg · ${Number.isFinite(dayCv.ucuCv)?cvFormatEstimate(dayCv.ucuCv):'—'} UCU`
+      ? `${Number.isFinite(dayCv.messageCv)?cvFormatEstimate(dayCv.messageCv):'—'} msg • ${Number.isFinite(dayCv.ucuCv)?cvFormatEstimate(dayCv.ucuCv):'—'} ucu\n${cvFormatEstimateSigned(dayCv.actualDelta)} today`
       : 'current');
   }catch(_){setText('#dashboardCvMeta','current')}
 
@@ -17861,7 +17953,7 @@ function backfillCreationLabel(cid,date){
   const creation=backfillEffectiveCreationDate(cid);
   if(!creation) return {text:'created: unknown',className:'unknown-created',active:true};
   return {
-    text:`created ${shortGraphDate(creation)}${String(date)===String(creation)?' · +30 CV':''}`,
+    text:`created ${shortGraphDate(creation)}${String(date)===String(creation)?' · +30 cv':''}`,
     className:String(date)<String(creation)?'future-bot':'',
     active:String(date)>=String(creation)
   };
@@ -19279,7 +19371,7 @@ function analyticsRenderRollingAndRecords(){
       ['best daily messages',records.profile.messages,'number'],
       ['best daily collectors',records.profile.collectors,'number'],
       ['best daily subscribers',records.profile.subs,'number'],
-      ['best daily CV',records.profile.cv,'number'],
+      ['best daily cv',records.profile.cv,'number'],
       ['highest 7D popularity',records.profile.popularity,'popularity'],
       ['biggest 7D score jump',records.profile.percent,'percent']
     ].map(([title,r,kind])=>formatRecord(title,r,kind)).join('');
@@ -19428,6 +19520,31 @@ function pbBotStatus(cid,date){
  }catch(_){ }
  return '';
 }
+function pbAttentionStatus(cid,date){
+ const id=String(cid||''),day=String(date||topSlotsDefaultDate()||'');
+ try{
+  const history=(eventsState.events||[])
+   .filter(e=>String(e.cid||'')===id && String(e.date||'')<=day)
+   .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')) || String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')));
+  let violation=false,shadow=false;
+  for(const e of history){
+   const tags=Array.isArray(e.tags)?e.tags:[];
+   if(tags.includes('violation'))violation=true;
+   if(e.status?.banned===true || tags.includes('banned'))shadow=true;
+   // An explicitly recorded unban clears the ban and resolved warning.
+   if(e.status?.banned===false){shadow=false;violation=false;}
+  }
+  if(violation)return 'violation';
+  if(shadow)return 'shadow';
+ }catch(_){ }
+ return '';
+}
+function pbAttentionInline(cid,date){
+ const status=pbAttentionStatus(cid,date);
+ if(status==='violation')return '<span class="pb-status-inline pb-attention-mark" title="violation" aria-label="violation">!</span>';
+ if(status==='shadow')return '<span class="pb-status-inline pb-moon-mark" title="shadow ban" aria-label="shadow ban">☾</span>';
+ return '';
+}
 function pbStatusInline(cid,date){
  const status=pbBotStatus(cid,date);
  if(status==='freeze')return '<span class="pb-status-inline" title="freeze" aria-label="freeze">*</span>';
@@ -19569,8 +19686,8 @@ function pbRenderSlots(){
  const thumbs=pbPortfolioUi.slotView==='thumb';box.classList.toggle('pb-slot-grid',thumbs);
  box.innerHTML=slots.length?slots.map((cid,i)=>{
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
-  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture">${pbSlotAvatar(cid)||'<span>♕</span>'}<b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}${pbStatusInline(cid,date)}</strong><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
-  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${pbStatusInline(cid,date)}<small>${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
+  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture">${pbSlotAvatar(cid)||'<span>♕</span>'}<b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</strong><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
+  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}<small>${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
  }).join(''):'<div class="dashboard-empty">no top slots saved for this day. Use edit to record positions.</div>';
 }
 function pbRenderBots(){if(!state.meta.size)return;
@@ -19589,9 +19706,9 @@ function pbRenderBots(){if(!state.meta.size)return;
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}</td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
- <td class="${b.stale?'stale':''} ${performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
+ <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
  <td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${signed(b.growth)}</td>
  <td aria-label="collectors">${pbCollectorSvg}${Number.isFinite(b.collectors)?fmt.format(b.collectors):'—'}</td></tr>`).join('')||'<tr class="pb-bot-no-results"><td colspan="5">no matching bots.</td></tr>';
  const total=allRows.filter(b=>Number.isFinite(b.growth));
@@ -19603,7 +19720,12 @@ function pbRenderBots(){if(!state.meta.size)return;
 }
 function pbInitUpgrade(){
  const level=document.getElementById('pbLevelPlacement');
- function updateLevelVisibility(){if(level)level.hidden=!['home','analytics','cv'].includes(dashboardCurrentView)}
+ function updateLevelVisibility(){
+  if(level)level.hidden=!['home','analytics','cv'].includes(dashboardCurrentView);
+  const perf=document.getElementById('pbHomePerformance');
+  if(perf)perf.hidden=dashboardCurrentView!=='home';
+  document.getElementById('pbHomeHeroStack')?.classList.toggle('pb-home-hero-active',dashboardCurrentView==='home');
+ }
  const oldRefresh=dashboardRefresh;
  dashboardRefresh=function(){oldRefresh();if(dashboardCurrentView==='bots')pbRenderBots()};
  const oldView=dashboardShowView;
