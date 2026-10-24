@@ -6595,6 +6595,116 @@ body.dashboard-shell .pb-week-choice>strong{flex:none;color:#e1b4a7!important;fo
 /* Top Slots status marks stay unobtrusive in list AND thumbs. */
 body.dashboard-shell .pb-slot-thumb-footer .pb-status-inline,
 body.dashboard-shell .pb-slot-row .pb-status-inline{font-size:9px!important}
+/* === 24 October: targeted Bots Hub fixes ===
+   The NOW value's general color rule previously overrode the ranking colors.
+   Match the NOW column's specificity so ONLY eligible bots are highlighted. */
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-leader{color:#dbadc9!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-popular{color:#eab19c!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-breakout{color:#e5c79b!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(3).pb-now-new{color:#c3adea!important}
+/* iOS fullscreen: real, viewport-contained scroll surface.
+   Native <details> does not reliably shrink flex children to its own height.
+   A bounded scroll region is therefore required inside the fixed overlay. */
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen .all-bots-table-wrap{
+  display:block!important;
+  flex:none!important;
+  min-height:0!important;
+  height:calc(100dvh - 185px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+  max-height:calc(100dvh - 185px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))!important;
+  overflow-y:scroll!important;
+  overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+  touch-action:pan-y!important;
+  overscroll-behavior-y:contain!important;
+}
+
+
+/* === 24 October: final compact toolbar, refreshed dashboard and Statistics. === */
+/* Two separate level-matched panels; soft gradual tones without gloss or new art. */
+body.dashboard-shell .pb-level-placement{margin-bottom:11px!important}
+body.dashboard-shell #dashboardHome>.dashboard-performance{gap:8px!important;margin:0!important}
+body.dashboard-shell #dashboardHome .dashboard-performance .dashboard-stat-card:first-child{
+ background:linear-gradient(110deg,#51344b 0%,#3f2c43 52%,#37283e 100%)!important;
+ border-color:#725772!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+body.dashboard-shell #dashboardHome .dashboard-performance .dashboard-stat-card:last-child{
+ background:linear-gradient(110deg,#37283e 0%,#30263c 55%,#423047 100%)!important;
+ border-color:#725772!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+/* Four shortcuts inherit the former dark muted performance-card surface. */
+body.dashboard-shell #dashboardHome .dashboard-overview-grid .dashboard-tile{
+ background:#2b2230!important;border:1px solid #69516d!important;box-shadow:none!important;
+}
+/* Compact filters: ALWAYS a single row; no orphan fullscreen button. */
+body.dashboard-shell #pbBotsView .pb-bots-filters{
+ display:grid!important;grid-template-columns:minmax(39px,1fr) repeat(3,minmax(34px,.72fr)) minmax(38px,.85fr) minmax(36px,.75fr)!important;
+ gap:6px!important;align-items:center!important;flex-wrap:nowrap!important;
+ margin:8px 0 7px!important;width:100%;min-width:0;
+}
+body.dashboard-shell #pbBotsView .pb-bots-filters>button,
+body.dashboard-shell #pbBotsView .pb-bots-filters>select{
+ box-sizing:border-box!important;width:100%!important;min-width:0!important;
+ height:33px!important;min-height:33px!important;margin:0!important;
+ padding:0 5px!important;border:1px solid #58495d!important;
+ border-radius:11px!important;color:#ccbbce!important;
+ background:#292330!important;font-size:12px!important;display:grid!important;place-items:center!important;
+}
+body.dashboard-shell #pbBotsView .pb-bots-filters>select{
+ display:block!important;text-align:center!important;text-align-last:center!important;
+ padding:0 3px!important;appearance:none!important;-webkit-appearance:none!important;
+ font-size:13px!important;font-weight:650!important;color:#e5d7e8!important;
+}
+body.dashboard-shell #pbBotsView .pb-bots-filters>button.active{
+ background:#57415d!important;border-color:#9c7597!important;color:#fff3f8!important;
+}
+body.dashboard-shell #pbBotsView .pb-bots-filters>button svg{display:block;width:16px!important;height:16px!important}
+body.dashboard-shell #pbBotsView .pb-bots-filters #pbBotsFullscreen{
+ font-size:18px!important;line-height:1!important;margin:0!important;padding:0!important;
+}
+body.dashboard-shell .pb-ghost-filter-icon{width:18px!important;height:18px!important;display:block;object-fit:contain}
+body.dashboard-shell #pbAllBots>summary{font-weight:700!important}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen .pb-bots-filters{flex:none!important}
+/* Three statistical rows: prominent active count, three-column growth, single-line CV total. */
+body.dashboard-shell .pb-summary-active{
+ font-size:13px!important;gap:5px!important;align-items:center!important;padding:8px 0 12px!important;
+}
+body.dashboard-shell .pb-summary-active>strong{font-size:20px!important;font-weight:750!important;margin-right:auto!important}
+body.dashboard-shell .pb-summary-winner{gap:4px!important;font-size:12px!important}
+body.dashboard-shell .pb-summary-winner b{font-size:13px!important;max-width:98px!important}
+body.dashboard-shell .pb-summary-winner small{font-size:11px!important}
+body.dashboard-shell #pbWinnerCrown,body.dashboard-shell #pbWinnerCrown svg{width:17px!important;height:17px!important}
+body.dashboard-shell .pb-summary-trio{
+ display:grid!important;grid-template-columns:minmax(0,1.18fr) minmax(0,.73fr) minmax(0,.66fr)!important;
+ column-gap:7px!important;padding:9px 0 10px!important;
+}
+body.dashboard-shell .pb-summary-trio .pb-summary-cell:last-child{text-align:right!important;min-width:0}
+body.dashboard-shell .pb-summary-trio .pb-summary-cell:last-child .pb-summary-measure{justify-content:flex-end}
+body.dashboard-shell .pb-summary-trio .pb-summary-measure{gap:4px!important}
+body.dashboard-shell .pb-summary-trio .pb-summary-measure strong{font-size:clamp(12px,3.2vw,14px)!important}
+body.dashboard-shell .pb-summary-trio .pb-summary-measure small{font-size:9px!important;letter-spacing:-.02em}
+body.dashboard-shell .pb-summary-trio .pb-summary-label{font-size:11px!important;font-weight:600!important}
+body.dashboard-shell .pb-pop-fire{font-size:12px!important}
+body.dashboard-shell .pb-summary-bottom{
+ display:grid!important;grid-template-columns:minmax(0,1.25fr) minmax(0,1.25fr) minmax(0,.56fr)!important;
+ gap:5px!important;align-items:baseline!important;padding:10px 0 0!important;
+ border-top:0!important;white-space:nowrap!important;
+}
+body.dashboard-shell .pb-summary-bottom>span{display:inline-flex!important;align-items:baseline;min-width:0;gap:3px!important;white-space:nowrap!important}
+body.dashboard-shell .pb-summary-bottom>span:last-child{justify-content:flex-end}
+body.dashboard-shell .pb-summary-bottom strong{font-size:13px!important;white-space:nowrap}
+body.dashboard-shell .pb-summary-bottom small{font-size:9px!important;color:#b8d5ad!important;white-space:nowrap}
+body.dashboard-shell .pb-summary-bottom .pb-cv-inline>span,
+body.dashboard-shell .pb-summary-bottom .pb-cv-character>span{font-size:10px!important;color:#d5bfce!important;white-space:nowrap}
+body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!important;color:#eec6dd!important}
+@media(max-width:365px){
+ body.dashboard-shell #pbBotsView .pb-bots-filters{gap:4px!important;grid-template-columns:minmax(34px,1fr) repeat(3,minmax(30px,.7fr)) minmax(34px,.8fr) minmax(32px,.7fr)!important}
+ body.dashboard-shell .pb-summary-trio{column-gap:5px!important}
+ body.dashboard-shell .pb-summary-trio .pb-summary-measure strong{font-size:12px!important}
+ body.dashboard-shell .pb-summary-active{font-size:12px!important}
+ body.dashboard-shell .pb-summary-winner b{max-width:66px!important;font-size:11px!important}
+ body.dashboard-shell .pb-summary-bottom .pb-cv-inline>span,body.dashboard-shell .pb-summary-bottom .pb-cv-character>span{font-size:9px!important}
+ body.dashboard-shell .pb-summary-bottom strong{font-size:11px!important}
+}
 </style>
 
 <div class="pb-sticky-links" aria-label="quick links">
@@ -6713,12 +6823,11 @@ body.dashboard-shell .pb-slot-row .pb-status-inline{font-size:9px!important}
     </button>
   </div>
 
-  <div class="dashboard-section-title">top bots</div>
   <section class="dashboard-card dashboard-top-bots-card">
     <div class="dashboard-card-head">
       <div class="dashboard-top-tabs" role="tablist" aria-label="top bots view">
-        <button id="dashboardTopModeSlots" class="dashboard-top-tab active" type="button" data-top-home-mode="slots">top slots</button>
-        <button id="dashboardTopModeGrowth" class="dashboard-top-tab" type="button" data-top-home-mode="growth">top growth</button>
+        <button id="dashboardTopModeGrowth" class="dashboard-top-tab active" type="button" data-top-home-mode="growth">top bots</button>
+        <button id="dashboardTopModeSlots" class="dashboard-top-tab" type="button" data-top-home-mode="slots">top slots</button>
       </div>
       <div class="dashboard-top-actions">
         <button id="dashboardTopViewAll" type="button" data-open-dashboard-view="bots">view all</button>
@@ -7100,22 +7209,21 @@ body.dashboard-shell .pb-slot-row .pb-status-inline{font-size:9px!important}
     <div class="pb-bots-stats-content">
       <div class="pb-bots-period"><span>date</span><select id="pbStatsFrom" aria-label="statistics start date"></select><span aria-hidden="true">→</span><select id="pbStatsTo" aria-label="statistics end date"></select></div>
       <div class="pb-summary-active"><span>active characters</span><strong id="pbStatActive">—</strong><span class="pb-summary-winner"><span id="pbWinnerCrown" aria-hidden="true"></span><b id="pbStatWinnerName">—</b><small id="pbStatWinnerGrowth">—</small></span></div>
-      <div class="pb-summary-pair" aria-label="messages and collectors for selected period">
+      <div class="pb-summary-pair pb-summary-trio" aria-label="messages, collectors and popularity for selected period">
         <div class="pb-summary-cell"><span class="pb-summary-label">messages</span><div class="pb-summary-measure"><strong id="pbStatMessages">—</strong><small id="pbStatPercent">—</small></div></div>
         <div class="pb-summary-cell"><span class="pb-summary-label">collectors</span><div class="pb-summary-measure"><strong id="pbStatCollectors">—</strong><small id="pbStatCollectorPercent">—</small></div></div>
+        <div class="pb-summary-cell"><span class="pb-summary-label">popularity</span><div class="pb-summary-measure"><strong id="pbStatPopular">—</strong><span aria-hidden="true" class="pb-pop-fire">🔥</span></div></div>
       </div>
-      <div class="pb-summary-bottom" aria-label="creator value and popularity">
-        <span class="pb-cv-inline">cv <strong id="pbStatCv">—</strong><small id="pbStatCvPercent">—</small></span>
-        <span class="pb-stats-separator" aria-hidden="true">|</span>
-        <span class="pb-cv-character"><strong id="pbStatAdjustments">—</strong> character value</span>
-        <span class="pb-stats-separator" aria-hidden="true">|</span>
-        <span class="pb-cv-popularity"><strong id="pbStatPopular">—</strong> 🔥</span>
+      <div class="pb-summary-bottom" aria-label="creator value breakdown and total">
+        <span class="pb-cv-inline"><strong id="pbStatCv">—</strong><small id="pbStatCvPercent">—</small> <span>creator value</span></span>
+        <span class="pb-cv-character"><strong id="pbStatAdjustments">—</strong> <span>character value</span></span>
+        <span class="pb-cv-total"><strong id="pbStatCvTotal">—</strong></span>
       </div>
     </div>
   </details>
 </section>
 <details class="all-bots" id="pbAllBots" open>
-  <summary>all bots</summary>
+  <summary><span id="pbAllBotsHeading">45 characters</span></summary>
 
   <div class="all-bots-content">
 
@@ -7137,12 +7245,12 @@ body.dashboard-shell .pb-slot-row .pb-status-inline{font-size:9px!important}
       <button id="copyAllBots" class="copy-table-button" type="button">copy</button>
     </div>
 
-    <div class="pb-bots-filters" role="group" aria-label="filter growth">
-      <button type="button" data-pb-bot-filter="all" class="active" aria-pressed="true">all</button>
-      <button type="button" data-pb-bot-filter="active" aria-pressed="false">active</button>
-      <button type="button" data-pb-bot-filter="zero" aria-pressed="false">no growth</button>
-      <small id="pbVisibleBotCount" aria-live="polite"></small>
-      <select id="pbRankingTagLimit" aria-label="ranking highlights" title="ranking highlights"><option value="3">top 3</option><option value="5">top 5</option></select>
+    <div class="pb-bots-filters" role="group" aria-label="portfolio filters and view">
+      <button type="button" data-pb-bot-filter="all" class="active" aria-pressed="true" title="All bots">all</button>
+      <button type="button" data-pb-bot-filter="active" aria-label="Active bots (growth)" title="Active bots" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 18 12 8 18.5Z" fill="currentColor"/></svg></button>
+      <button type="button" data-pb-bot-filter="zero" aria-label="No growth" title="No growth" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13M16 5.5v13" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/></svg></button>
+      <button id="pbBotsHighlights" type="button" aria-label="Highlight performers first" title="Highlight performers first" aria-pressed="false"><img class="pb-ghost-filter-icon" src="data:image/png;base64,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" alt=""/></button>
+      <select id="pbRankingTagLimit" aria-label="Top 3 or Top 5 ranking highlights" title="Top 3 or Top 5 ranking highlights"><option value="3">3</option><option value="5">5</option></select>
       <button id="pbBotsFullscreen" type="button" aria-label="Open all bots fullscreen" aria-pressed="false" title="Fullscreen bots">⛶</button>
     </div>
     <div class="all-bots-table-wrap">
@@ -16045,7 +16153,7 @@ const topSlotsState={
   editDate:'',
   draft:[],
   dirty:false,
-  homeMode:'slots'
+  homeMode:'growth'
 };
 
 function topSlotsStorageKey(){
@@ -19281,7 +19389,7 @@ function analyticsInitPersonalRecordControls(){
 
 
 /* === 23 October: portfolio presentation, retaining underlying data and editor === */
-const pbPortfolioUi={filter:'all',slotView:'list',slotDate:'',from:'',to:'',lastRecordKey:'',recordCache:[]};
+const pbPortfolioUi={filter:'all',highlights:false,slotView:'list',slotDate:'',from:'',to:'',lastRecordKey:'',recordCache:[]};
 // A single small inline ranking tag per bot. Never recolor Home Top Growth.
 // Freeze/watching use separate, monochrome status marks, also in Top Slots.
 const pbTinyCrownSvg=(()=>{
@@ -19418,10 +19526,11 @@ function pbPortfolioSummary(rows){
  const cvBaseline=cvHistory.filter(e=>e.date<=from && Number.isFinite(Number(e.total))).at(-1);
  pctPut('pbStatCvPercent',Number.isFinite(cv.organic)&&Number(cvBaseline?.total)>0?cv.organic/Number(cvBaseline.total)*100:null);
  put('pbStatAdjustments',Number.isFinite(cv.adjustments)?signed(cv.adjustments):'—');
+ put('pbStatCvTotal',Number.isFinite(cv.organic)&&Number.isFinite(cv.adjustments)?signed(cv.organic+cv.adjustments):'—');
  const crown=document.getElementById('pbWinnerCrown');
  if(crown && !crown.firstChild && pbTinyCrownSvg)crown.innerHTML=pbTinyCrownSvg;
  put('pbStatWinnerName',top?top.name:'—');
- put('pbStatWinnerGrowth',top?signed(top.growth):'—');
+ put('pbStatWinnerGrowth',top?((top.growth>=1000)?'+'+(top.growth/1000).toLocaleString('nl-NL',{maximumFractionDigits:1})+'K':signed(top.growth)):'—');
 }
 function pbPortfolioAchievements(rows){
  const {from,to}=pbPortfolioRange();
@@ -19469,9 +19578,15 @@ function pbRenderBots(){if(!state.meta.size)return;
  const query=(document.getElementById('search')?.value||'').toLowerCase(),sort=document.getElementById('sort')?.value||'creation';
  const filtered=allRows.filter(b=>(b.name+' '+b.cid).toLowerCase().includes(query))
  .filter(b=>pbPortfolioUi.filter==='all'||(pbPortfolioUi.filter==='active'?b.growth>0:b.growth===0));
- filtered.sort((a,b)=>sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order);
+ const performance=pbPerformanceTags();
+ const rankPriority={leader:0,popular:1,breakout:2,new:3};
+ const currentPriority=bot=>pbPortfolioUi.highlights?(rankPriority[performance.get(String(bot.cid))?.kind]??4):0;
+ filtered.sort((a,b)=>{
+  const priority=currentPriority(a)-currentPriority(b);if(priority)return priority;
+  return sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order;
+ });
  const label=cid=>tableDisplayLabel(cid),signed=n=>Number.isFinite(n)?(n>0?'+':'')+fmt.format(n):'—';
- const performance=pbPerformanceTags();const statusDate=pbPortfolioRange().to;
+ const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
  <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}</td>
@@ -19482,7 +19597,8 @@ function pbRenderBots(){if(!state.meta.size)return;
  const total=allRows.filter(b=>Number.isFinite(b.growth));
  const totals=allRows.reduce((sum,b)=>({start:sum.start+(b.startMessages||0),now:sum.now+(b.messages||0),collectors:sum.collectors+(b.collectors||0)}),{start:0,now:0,collectors:0});
  box.innerHTML+=`<tr class="total-row"><td>total</td><td>${fmt.format(totals.start)}</td><td>${fmt.format(totals.now)}</td><td>${total.length?signed(total.reduce((sum,b)=>sum+b.growth,0)):'—'}</td><td>${pbCollectorSvg}${fmt.format(totals.collectors)}</td></tr>`;
- const visible=document.getElementById('pbVisibleBotCount');if(visible)visible.textContent=`${filtered.length} / ${allRows.length}`;
+ const heading=document.getElementById('pbAllBotsHeading');if(heading)heading.textContent=`${allRows.length} characters`;
+ const highlight=document.getElementById('pbBotsHighlights');if(highlight){highlight.classList.toggle('active',pbPortfolioUi.highlights);highlight.setAttribute('aria-pressed',String(pbPortfolioUi.highlights));}
  document.querySelectorAll('[data-pb-bot-filter]').forEach(el=>{let on=el.dataset.pbBotFilter===pbPortfolioUi.filter;el.classList.toggle('active',on);el.setAttribute('aria-pressed',String(on))});
 }
 function pbInitUpgrade(){
@@ -19504,6 +19620,7 @@ function pbInitUpgrade(){
   });
  }
  document.querySelectorAll('[data-pb-bot-filter]').forEach(b=>b.addEventListener('click',()=>{pbPortfolioUi.filter=b.dataset.pbBotFilter;pbRenderBots()}));
+ document.getElementById('pbBotsHighlights')?.addEventListener('click',()=>{pbPortfolioUi.highlights=!pbPortfolioUi.highlights;pbRenderBots()});
  for(const key of ['from','to']){document.getElementById('pbStats'+(key==='from'?'From':'To'))?.addEventListener('change',e=>{
   pbPortfolioUi[key]=e.target.value;if(pbPortfolioUi.from>pbPortfolioUi.to){pbPortfolioUi[key==='from'?'to':'from']=e.target.value;}
   pbRenderBots();
@@ -19518,6 +19635,16 @@ function pbInitUpgrade(){
  rankLimit?.addEventListener('change',()=>{try{localStorage.setItem('pbRankingTagLimit',rankLimit.value)}catch(_){ }pbRenderBots();topSlotsRenderHome()});
  const fullscreen=document.getElementById('pbBotsFullscreen');
  const allBots=document.getElementById('pbAllBots');
+ // Keep the fullscreen scroller strictly inside the visible overlay, even
+ // when toolbar controls wrap or the iPhone viewport changes size.
+ function fitBotsFullscreen(){
+  if(!allBots?.classList.contains('pb-bots-fullscreen'))return;
+  const list=allBots.querySelector('.all-bots-table-wrap');if(!list)return;
+  const viewportBottom=Math.min(window.innerHeight,window.visualViewport?.height||window.innerHeight);
+  const available=Math.max(120,Math.floor(Math.min(viewportBottom-5,allBots.getBoundingClientRect().bottom)-list.getBoundingClientRect().top-8));
+  list.style.setProperty('height',available+'px','important');
+  list.style.setProperty('max-height',available+'px','important');
+ }
  function setBotsFullscreen(active){
   if(!allBots||!fullscreen)return;
   allBots.classList.toggle('pb-bots-fullscreen',active);
@@ -19526,8 +19653,18 @@ function pbInitUpgrade(){
   fullscreen.textContent=active?'×':'⛶';
   fullscreen.setAttribute('aria-pressed',String(active));
   fullscreen.setAttribute('aria-label',active?'Close fullscreen bots':'Open all bots fullscreen');
+  const list=allBots.querySelector('.all-bots-table-wrap');
+  if(active){
+   if(list)list.scrollTop=0;
+   requestAnimationFrame(fitBotsFullscreen);
+  }else if(list){
+   list.style.removeProperty('height');
+   list.style.removeProperty('max-height');
+  }
  }
  fullscreen?.addEventListener('click',()=>setBotsFullscreen(!allBots?.classList.contains('pb-bots-fullscreen')));
+ window.addEventListener('resize',()=>requestAnimationFrame(fitBotsFullscreen));
+ window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitBotsFullscreen));
  document.addEventListener('keydown',event=>{if(event.key==='Escape')setBotsFullscreen(false)});
  document.querySelectorAll('[data-dashboard-nav]').forEach(el=>el.addEventListener('click',()=>setBotsFullscreen(false)));
  const back=document.getElementById('pbBackToTop');
