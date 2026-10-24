@@ -6709,22 +6709,33 @@ body.dashboard-shell .pb-summary-bottom .pb-cv-total strong{font-size:15px!impor
 /* === 24 October: approved visual follow-up. Limited to home and Bots/CV surfaces. === */
 body.dashboard-shell .pb-home-hero-stack{position:relative;isolation:isolate;min-width:0;margin:0 0 0!important}
 body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active{
-  background:var(--pb-lv-gradient)!important;
+  background:transparent!important;
   border-radius:18px;
 }
 body.dashboard-shell .pb-home-hero-stack .pb-level-placement{margin:0 0 6px!important}
 body.dashboard-shell .pb-home-hero-stack .dashboard-performance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;margin:0!important}
 body.dashboard-shell .pb-home-hero-stack .dashboard-performance[hidden]{display:none!important}
 body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-creator-panel{
-  background:rgba(38,26,43,.12)!important;
+  background:var(--pb-lv-gradient)!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+  background-position:center top!important;
 }
 body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card{
-  /* One physical parent gradient visible through both pieces, not two gradients restarted. */
-  background:rgba(39,25,48,.13)!important;
+  /* Keep the gradient INSIDE the cards only. The page background stays dark. */
+  background-image:var(--pb-lv-gradient)!important;
+  background-repeat:no-repeat!important;
+  background-size:calc(200% + 8px) 100%!important;
   backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
   border-color:#725772!important;
   grid-template-rows: minmax(32px,1fr) 17px minmax(32px,1fr)!important;
   min-height:101px!important;padding:9px 8px!important;
+}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card:first-child{
+  background-position:left center!important;
+}
+body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card:last-child{
+  background-position:right center!important;
 }
 body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card em{
   grid-row:1;align-self:center;color:#efc3db!important;font-size:clamp(15px,4vw,18px)!important;
