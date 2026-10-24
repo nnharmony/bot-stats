@@ -6458,6 +6458,118 @@ body.dashboard-shell .subscriber-table button,body.dashboard-shell .cv-ledger-ta
 
 <main id="app" hidden>
 
+<style>
+/* === 24 October: compact visual refinement, existing art & data preserved === */
+body.dashboard-shell .pb-sticky-links{padding:5px 7px 5px!important;border-radius:16px!important;}
+body.dashboard-shell .pb-sticky-links .dashboard-profile-shortcuts{
+ display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;
+ gap:5px!important;margin:0!important;padding:0!important;
+}
+body.dashboard-shell .pb-sticky-links .dashboard-header-action{
+ box-sizing:border-box;display:grid!important;place-items:center;
+ width:100%!important;min-width:0!important;min-height:34px!important;height:34px!important;
+ padding:0!important;border-radius:10px!important;text-decoration:none;
+}
+body.dashboard-shell .pb-sticky-links .dashboard-header-action svg{width:16px!important;height:16px!important;}
+body.dashboard-shell .pb-link-initial{font-size:15px;font-weight:700;color:#d9cfde;line-height:1}
+body.dashboard-shell .pb-reddit-initial{font-size:13px;font-weight:700;letter-spacing:-.08em}
+@media(max-width:360px){body.dashboard-shell .pb-sticky-links .dashboard-profile-shortcuts{gap:3px!important}
+ body.dashboard-shell .pb-sticky-links{padding-left:5px!important;padding-right:5px!important}}
+/* No extra navigation text above dashboard content. The bottom bar remains. */
+body.dashboard-shell #dashboardBack,body.dashboard-shell #analyticsRangeLabel{display:none!important}
+/* Main bot list: at least seven narrow rows and a scroller fitting a phone viewport. */
+body.dashboard-shell #pbBotsView .all-bots-table-wrap{max-height:min(54dvh,540px)!important;height:auto!important;overscroll-behavior-y:auto;}
+body.dashboard-shell #pbBotsView .pb-bots-filters #pbBotsFullscreen{
+ flex:none;margin-left:4px;padding:4px 8px!important;min-height:31px!important;
+ font-size:18px!important;line-height:1!important;color:#d7bfd7!important;}
+/* Subtle NOW highlights ONLY in Bots Hub. No homepage color changes. */
+body.dashboard-shell #pbBotsView .pb-compact-main-table td.pb-now-leader{color:#dbadc9!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table td.pb-now-popular{color:#eab19c!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table td.pb-now-breakout{color:#e5c79b!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table td.pb-now-new{color:#c3adea!important}
+body.dashboard-shell .pb-performance-tag,body.dashboard-shell .pb-status-inline{
+ display:inline-flex;align-items:center;vertical-align:baseline;margin-left:5px;
+ padding:0!important;border:0!important;background:none!important;
+ color:#baaaba!important;font-size:9px!important;line-height:1!important;font-weight:450!important;
+ letter-spacing:0!important;white-space:nowrap;
+}
+body.dashboard-shell .pb-status-inline{font-size:10px!important;color:#aca4af!important}
+body.dashboard-shell .pb-watching{font-size:12px!important;letter-spacing:-.09em!important}
+body.dashboard-shell .dashboard-bot-name .pb-performance-tag{font-size:9px!important;color:#bbaabb!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr td:nth-child(1){gap:0!important}
+body.dashboard-shell #pbBotsView .pb-compact-main-table .pb-bot-identity{flex:0 1 auto;max-width:100%}
+/* Fullscreen is the SAME bot table and existing filters, no duplicate data view. */
+body.pb-bots-screen-active{overflow:hidden!important}
+body.pb-bots-screen-active #dashboardBottomNav{display:none!important}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen{
+ position:fixed!important;inset:calc(env(safe-area-inset-top,0px) + 4px) 7px calc(env(safe-area-inset-bottom,0px) + 5px)!important;
+ width:auto!important;height:auto!important;max-height:none!important;
+ z-index:1000!important;margin:0!important;display:flex!important;flex-direction:column!important;
+ overflow:hidden!important;background:#211b27!important;border:1px solid #66536b!important;
+ box-shadow:0 0 0 100vmax rgba(9,6,12,.65)!important;
+}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen>summary{flex:none!important;padding:10px 14px!important}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen #pbBotsFullscreen{
+ position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 8px)!important;right:17px!important;
+ z-index:1003!important;min-width:30px!important;min-height:30px!important;
+ border:1px solid #68536b!important;background:#342a3a!important;
+ font-size:23px!important;line-height:1!important;
+}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen .all-bots-content{
+ display:flex!important;flex-direction:column!important;flex:1 1 auto!important;
+ min-height:0!important;overflow:hidden!important;padding-bottom:5px!important;
+}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen .table-controls-row,
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen .pb-bots-filters{flex:none!important}
+body.dashboard-shell #pbAllBots.pb-bots-fullscreen .all-bots-table-wrap{
+ flex:1 1 auto!important;max-height:none!important;height:auto!important;min-height:0!important;
+ overflow-y:auto!important;overscroll-behavior:contain!important;
+}
+/* Compact three-line Statistics layout with the existing crown icon. */
+body.dashboard-shell .pb-bots-stats-content{padding:10px 12px 12px!important}
+body.dashboard-shell .pb-bots-period{margin-bottom:9px!important}
+body.dashboard-shell .pb-summary-active{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:6px!important;margin:0!important;padding:4px 0 10px!important;
+ font-size:11px!important;white-space:nowrap;
+}
+body.dashboard-shell .pb-summary-active>strong{font-size:12px!important;margin-right:auto!important}
+body.dashboard-shell .pb-summary-winner{display:inline-flex!important;align-items:center;gap:3px;min-width:0;overflow:hidden;
+ font-size:11px!important;color:#ead8e8}
+body.dashboard-shell .pb-summary-winner b{font-size:11px!important;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.dashboard-shell .pb-summary-winner small{font-size:10px;color:#d8bad1;white-space:nowrap}
+body.dashboard-shell #pbWinnerCrown{display:inline-flex;width:14px;height:14px;flex:none}
+body.dashboard-shell #pbWinnerCrown svg{width:14px!important;height:14px!important;display:block}
+body.dashboard-shell .pb-summary-pair{gap:12px!important;border-top:1px solid #504354!important;border-bottom:1px solid #504354!important;padding:8px 0!important}
+body.dashboard-shell .pb-summary-label{font-size:10px!important;margin-bottom:3px!important}
+body.dashboard-shell .pb-summary-measure strong{font-size:13px!important}
+body.dashboard-shell .pb-summary-measure small{font-size:9px!important}
+body.dashboard-shell .pb-summary-bottom{display:flex!important;align-items:baseline!important;justify-content:space-between!important;
+ gap:5px!important;border:0!important;padding:10px 0 0!important;white-space:nowrap;
+ font-size:11px!important;color:#dbc8d7!important}
+body.dashboard-shell .pb-summary-bottom strong{font-size:12px!important;color:#f4dfea!important}
+body.dashboard-shell .pb-summary-bottom small{font-size:9px!important;margin-left:2px;white-space:nowrap}
+body.dashboard-shell .pb-cv-inline,body.dashboard-shell .pb-cv-character,body.dashboard-shell .pb-cv-popularity{min-width:0;white-space:nowrap}
+body.dashboard-shell .pb-cv-popularity{color:#dbb2a2!important}
+body.dashboard-shell .pb-stats-separator{color:#816d84;flex:none;font-size:10px}
+@media(max-width:360px){body.dashboard-shell .pb-summary-bottom{font-size:10px!important;gap:2px!important}
+body.dashboard-shell .pb-summary-bottom strong{font-size:11px!important}}
+/* Archive: native list of weeks (normal ranking aesthetic), not native iOS selector. */
+body.dashboard-shell .pb-week-list{max-height:54dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+ border:1px solid rgba(192,146,186,.3);border-radius:12px;margin:11px 1px 12px;
+ scrollbar-width:thin;overscroll-behavior:contain}
+body.dashboard-shell .pb-week-choice{display:flex!important;width:100%!important;align-items:center;justify-content:space-between;
+ gap:8px!important;text-align:left!important;padding:9px 10px!important;min-height:41px!important;
+ background:transparent!important;border:0!important;border-bottom:1px solid rgba(201,163,191,.17)!important;
+ border-radius:0!important;color:#d7c2d2!important;font-size:11px!important;}
+body.dashboard-shell .pb-week-choice:last-child{border-bottom:0!important}
+body.dashboard-shell .pb-week-choice.selected{background:rgba(135,97,134,.18)!important}
+body.dashboard-shell .pb-week-choice>strong{flex:none;color:#e1b4a7!important;font-size:11px!important;font-weight:700!important}
+/* Top Slots status marks stay unobtrusive in list AND thumbs. */
+body.dashboard-shell .pb-slot-thumb-footer .pb-status-inline,
+body.dashboard-shell .pb-slot-row .pb-status-inline{font-size:9px!important}
+</style>
+
 <div class="pb-sticky-links" aria-label="quick links">
     <div class="dashboard-header-actions dashboard-profile-shortcuts" aria-label="profile shortcuts">
         <button id="dashboardExtraShortcut" class="dashboard-header-action" type="button" aria-label="open extra shortcut" title="extra shortcut">
@@ -6475,6 +6587,8 @@ body.dashboard-shell .subscriber-table button,body.dashboard-shell .cv-ledger-ta
         <button id="dashboardGithubShortcut" class="dashboard-header-action" type="button" aria-label="open GitHub Update characters" title="GitHub">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-fill" d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.51-1.11-1.51-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.92a9.3 9.3 0 0 1 2.5.35c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.79-4.58 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.25 10.25 0 0 0 22 12.23C22 6.58 17.52 2 12 2Z"/></svg>
           </button>
+        <a class="dashboard-header-action pb-extra-link" href="https://www.polybuzz.ai/" target="_blank" rel="noopener noreferrer" aria-label="PolyBuzz website" title="PolyBuzz"><span aria-hidden="true" class="pb-link-initial">P</span></a>
+        <a class="dashboard-header-action pb-extra-link" href="https://www.reddit.com/" target="_blank" rel="noopener noreferrer" aria-label="Reddit" title="Reddit"><span aria-hidden="true" class="pb-link-initial pb-reddit-initial">r/</span></a>
         <button id="dashboardRefreshButton" class="dashboard-header-action" type="button" aria-label="refresh page" title="refresh">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path class="icon-stroke" d="M20 6v5h-5"/><path class="icon-stroke" d="M18.2 15.5a7 7 0 1 1-.2-7.2L20 11"/></svg>
           </button>
@@ -6541,10 +6655,9 @@ body.dashboard-shell .subscriber-table button,body.dashboard-shell .cv-ledger-ta
       </div>
     </div>
 </section>
-<button id="dashboardBack" type="button" hidden>← home</button>
+
 
 <section id="dashboardHome" class="dashboard-home" data-dashboard-view="home">
-  <div class="dashboard-section-title">performance</div>
   <div class="dashboard-performance">
     <button class="dashboard-stat-card" type="button" data-open-dashboard-view="analytics">
       <span>messages</span>
@@ -6959,16 +7072,17 @@ body.dashboard-shell .subscriber-table button,body.dashboard-shell .cv-ledger-ta
     <summary><span id="pbBotsStatsTitle">characters | statistics</span><span class="pb-details-chevron" aria-hidden="true">⌄</span></summary>
     <div class="pb-bots-stats-content">
       <div class="pb-bots-period"><span>date</span><select id="pbStatsFrom" aria-label="statistics start date"></select><span aria-hidden="true">→</span><select id="pbStatsTo" aria-label="statistics end date"></select></div>
-      <div class="pb-summary-active"><span>active characters</span><strong id="pbStatActive">—</strong></div>
+      <div class="pb-summary-active"><span>active characters</span><strong id="pbStatActive">—</strong><span class="pb-summary-winner"><span id="pbWinnerCrown" aria-hidden="true"></span><b id="pbStatWinnerName">—</b><small id="pbStatWinnerGrowth">—</small></span></div>
       <div class="pb-summary-pair" aria-label="messages and collectors for selected period">
         <div class="pb-summary-cell"><span class="pb-summary-label">messages</span><div class="pb-summary-measure"><strong id="pbStatMessages">—</strong><small id="pbStatPercent">—</small></div></div>
         <div class="pb-summary-cell"><span class="pb-summary-label">collectors</span><div class="pb-summary-measure"><strong id="pbStatCollectors">—</strong><small id="pbStatCollectorPercent">—</small></div></div>
       </div>
-      <div class="pb-summary-bottom" aria-label="top bot, organic CV, adjustments and popularity score">
-        <div><span>#1</span><strong id="pbStatWinnerName">—</strong><small id="pbStatWinnerGrowth">—</small></div>
-        <div><span>CV · organic</span><strong id="pbStatCv">—</strong></div>
-        <div><span>CV · adj.</span><strong id="pbStatAdjustments">—</strong></div>
-        <div><span>🔥</span><strong id="pbStatPopular">—</strong></div>
+      <div class="pb-summary-bottom" aria-label="creator value and popularity">
+        <span class="pb-cv-inline">cv <strong id="pbStatCv">—</strong><small id="pbStatCvPercent">—</small></span>
+        <span class="pb-stats-separator" aria-hidden="true">|</span>
+        <span class="pb-cv-character"><strong id="pbStatAdjustments">—</strong> character value</span>
+        <span class="pb-stats-separator" aria-hidden="true">|</span>
+        <span class="pb-cv-popularity"><strong id="pbStatPopular">—</strong> 🔥</span>
       </div>
     </div>
   </details>
@@ -7001,6 +7115,8 @@ body.dashboard-shell .subscriber-table button,body.dashboard-shell .cv-ledger-ta
       <button type="button" data-pb-bot-filter="active" aria-pressed="false">active</button>
       <button type="button" data-pb-bot-filter="zero" aria-pressed="false">no growth</button>
       <small id="pbVisibleBotCount" aria-live="polite"></small>
+      <select id="pbRankingTagLimit" aria-label="ranking highlights" title="ranking highlights"><option value="3">top 3</option><option value="5">top 5</option></select>
+      <button id="pbBotsFullscreen" type="button" aria-label="Open all bots fullscreen" aria-pressed="false" title="Fullscreen bots">⛶</button>
     </div>
     <div class="all-bots-table-wrap">
     <div class="pb-bot-column-head" aria-label="Bot columns: start, growth, now">
@@ -16026,11 +16142,12 @@ function topSlotsRenderHome(){
       .filter(bot=>Number.isFinite(bot.growth))
       .sort((a,b)=>(b.growth??-Infinity)-(a.growth??-Infinity))
       .slice(0,10);
+    const performance=pbPerformanceTags();
     box.innerHTML=top.length ? top.map((bot,index)=>`
       <div class="dashboard-bot-row">
         <span class="dashboard-rank">${index+1}</span>
         <div>
-          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}</div>
+          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}</div>
           <div class="dashboard-bot-meta ${bot.stale?'stale':''}">${bot.stale?'⚠ ':''}${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
         </div>
         <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>
@@ -16061,7 +16178,7 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbStatusInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
@@ -18589,9 +18706,7 @@ function rankingsRenderWeeklyExtras(){
   const i=history.findIndex(h=>h.end===active.end);
   const wasOpen=archive.querySelector('details')?.open??!!rankingsConfig.archiveOpen;
   archive.innerHTML=`<details ${wasOpen?'open':''}><summary>📅 weekly archive <small>${history.length} ${history.length===1?'week':'weeks'} · browse past scores</small></summary>
-    <div class="rankings-weekly-nav"><button type="button" data-rank-week-step="-1" ${i===0?'disabled':''} aria-label="Previous week">‹</button>
-      <select id="rankingsWeeklyArchiveSelect" aria-label="Choose a historical week">${history.slice().reverse().map(h=>`<option value="${h.end}" ${h.end===active.end?'selected':''}>${archiveEscape(h.label)}</option>`).join('')}</select>
-      <button type="button" data-rank-week-step="1" ${i===history.length-1?'disabled':''} aria-label="Next week">›</button></div>
+    <div class="pb-week-list" role="list" aria-label="Weekly archived scores">${history.slice().reverse().map(h=>`<button type="button" role="listitem" class="pb-week-choice ${h.end===active.end?'selected':''}" data-pb-archive-week="${h.end}" aria-expanded="${h.end===active.end?'true':'false'}"><span>week ${h.iso.week} · ${rankingsDateLabel(h.displayStart)} – ${rankingsDateLabel(h.displayEnd)}</span><strong>${h.res.score===null?'—':rankingsFloat(h.res.score)+' 🔥'}</strong></button>`).join('')}</div>
     <div class="rankings-weekly-note">Monday ${rankingsDateLabel(active.end)} · snapshots ${rankingsDateLabel(active.start)} → ${rankingsDateLabel(active.end)}</div>
     <span class="rankings-weekly-score">${active.res.score===null?'Unknown':rankingsFloat(active.res.score)+' 🔥'}</span>
     <div class="rankings-weekly-note">${active.res.measured?`+${fmt.format(active.res.totalGrowth)} known messages`:'No comparable readings'} · ${active.res.publicCount} public characters then${active.res.incomplete?' · partial/Unknown':''}</div>
@@ -18720,6 +18835,16 @@ function rankingsInit(){rankingsLoad();
  document.addEventListener('click',event=>{
  const open=event.target.closest('[data-rank-open]');if(open){rankingsConfig.tab=open.dataset.rankOpen;dashboardShowView('rankings');return;}
  const expand=event.target.closest('[data-rank-expand]');if(expand){const tab=expand.dataset.rankExpand,card=expand.closest('.rankings-home-card');rankingsConfig.expanded[tab]=!rankingsConfig.expanded[tab];card?.classList.toggle('expanded',rankingsConfig.expanded[tab]);expand.setAttribute('aria-expanded',String(rankingsConfig.expanded[tab]));expand.textContent=rankingsConfig.expanded[tab]?'show less ⌃':'show all ⌄';return;}
+ const selectedWeek=event.target.closest('[data-pb-archive-week]');
+ if(selectedWeek){
+   const list=document.querySelector('.pb-week-list');
+   const offset=list?.scrollTop||0;
+   rankingsConfig.weeklyArchiveEnd=selectedWeek.dataset.pbArchiveWeek;
+   rankingsConfig.archiveOpen=true;
+   rankingsRenderWeeklyExtras();
+   const updated=document.querySelector('.pb-week-list');if(updated)updated.scrollTop=offset;
+   return;
+ }
  const step=event.target.closest('[data-rank-week-step]');if(step){
     const history=rankingsWeeklyHistory(),pos=history.findIndex(h=>h.end===rankingsConfig.weeklyArchiveEnd);
     const next=history[pos+Number(step.dataset.rankWeekStep)];
@@ -19130,6 +19255,54 @@ function analyticsInitPersonalRecordControls(){
 
 /* === 23 October: portfolio presentation, retaining underlying data and editor === */
 const pbPortfolioUi={filter:'all',slotView:'list',slotDate:'',from:'',to:'',lastRecordKey:'',recordCache:[]};
+// A single small inline ranking tag per bot. Never recolor Home Top Growth.
+// Freeze/watching use separate, monochrome status marks, also in Top Slots.
+const pbTinyCrownSvg=(()=>{
+ const icon=document.querySelector('#pbBackToTop svg');return icon?icon.outerHTML:'';
+})();
+function pbPerformanceTags(){
+ let limit=3;try{limit=Math.min(5,Math.max(3,Number(localStorage.getItem('pbRankingTagLimit')||3)))}catch(_){ }
+ const map=new Map();
+ const group=[['leader','leader'],['hot','popular'],['breakouts','breakout']];
+ // New goes last, and is valid only for the recent/new cohort.
+ for(const [tab,label] of group){
+  let r;try{r=rankingsBuild(tab,tab==='hot'?'7':'1',{minimum:0})}catch(_){r=null}
+  (r?.rows||[]).slice(0,limit).forEach((bot,i)=>{
+    if(!map.has(String(bot.cid)))map.set(String(bot.cid),{text:`#${i+1} ${label}`,kind:label});
+  });
+ }
+ try{
+  // A new bot retains its subtle new tag even if today's message count is 0.
+  const latest=rankingsDays().at(-1)?.date;
+  if(latest){
+   for(const bot of rankingsPublicBots()){
+    const published=rankingsPublication(bot).date;
+    if(published && published<=latest && rankingsDateDelta(published,latest)<=30 && !map.has(String(bot.cid)))
+      map.set(String(bot.cid),{text:'• new',kind:'new'});
+   }
+  }
+ }catch(_){ }
+ return map;
+}
+function pbBotStatus(cid,date){
+ try{
+  const f=freezePatternForCid(cid,date||topSlotsDefaultDate());
+  if(!f||f.insufficient)return '';
+  if(f.active||['total','partial','verified'].includes(f.status))return 'freeze';
+  if(['suspected','watching'].includes(f.status))return 'watch';
+ }catch(_){ }
+ return '';
+}
+function pbStatusInline(cid,date){
+ const status=pbBotStatus(cid,date);
+ if(status==='freeze')return '<span class="pb-status-inline" title="freeze" aria-label="freeze">*</span>';
+ if(status==='watch')return '<span class="pb-status-inline pb-watching" title="watching" aria-label="watching">⌐⌐</span>';
+ return '';
+}
+function pbPerformanceInline(cid,tags){
+ const data=tags?.get(String(cid));
+ return data?`<span class="pb-performance-tag">${archiveEscape(data.text)}</span>`:'';
+}
 const pbCollectorSvg='<svg class="pb-col-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg>';
 function pbPortfolioDates(){return graphSourceDays().map(item=>item.date).filter(Boolean).sort();}
 function pbPortfolioRange(){
@@ -19214,7 +19387,12 @@ function pbPortfolioSummary(rows){
  put('pbStatPopular',usable.length?rankingsFloat(sum/Math.max(1,Number(rankingsConfig.coef)||4000)):'—');
  const cv=pbPortfolioCvParts(from,to);
  put('pbStatCv',Number.isFinite(cv.organic)?signed(cv.organic):'—');
+ const cvHistory=cvSortedEntriesAsc();
+ const cvBaseline=cvHistory.filter(e=>e.date<=from && Number.isFinite(Number(e.total))).at(-1);
+ pctPut('pbStatCvPercent',Number.isFinite(cv.organic)&&Number(cvBaseline?.total)>0?cv.organic/Number(cvBaseline.total)*100:null);
  put('pbStatAdjustments',Number.isFinite(cv.adjustments)?signed(cv.adjustments):'—');
+ const crown=document.getElementById('pbWinnerCrown');
+ if(crown && !crown.firstChild && pbTinyCrownSvg)crown.innerHTML=pbTinyCrownSvg;
  put('pbStatWinnerName',top?top.name:'—');
  put('pbStatWinnerGrowth',top?signed(top.growth):'—');
 }
@@ -19255,8 +19433,8 @@ function pbRenderSlots(){
  const thumbs=pbPortfolioUi.slotView==='thumb';box.classList.toggle('pb-slot-grid',thumbs);
  box.innerHTML=slots.length?slots.map((cid,i)=>{
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
-  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture">${pbSlotAvatar(cid)||'<span>♕</span>'}<b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}</strong><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
-  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}<small>${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
+  return thumbs?`<div class="pb-slot-thumb"><div class="pb-slot-thumb-picture">${pbSlotAvatar(cid)||'<span>♕</span>'}<b>#${i+1}</b></div><div class="pb-slot-thumb-footer"><strong>${archiveEscape(name)}${pbStatusInline(cid,date)}</strong><small>${Number.isFinite(growth)?dashboardSigned(growth):'—'}${move.label?' · '+move.label:''}</small></div></div>`:
+  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${pbStatusInline(cid,date)}<small>${move.label?'slot '+move.label+' · ':''}${shortGraphDate(date)}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
  }).join(''):'<div class="dashboard-empty">no top slots saved for this day. Use edit to record positions.</div>';
 }
 function pbRenderBots(){if(!state.meta.size)return;
@@ -19266,11 +19444,12 @@ function pbRenderBots(){if(!state.meta.size)return;
  .filter(b=>pbPortfolioUi.filter==='all'||(pbPortfolioUi.filter==='active'?b.growth>0:b.growth===0));
  filtered.sort((a,b)=>sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order);
  const label=cid=>tableDisplayLabel(cid),signed=n=>Number.isFinite(n)?(n>0?'+':'')+fmt.format(n):'—';
+ const performance=pbPerformanceTags();const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><span class="pb-bot-tag-slot"></span></td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
- <td class="${b.stale?'stale':''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
+ <td class="${b.stale?'stale':''} ${performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
  <td class="${b.growth>0?'positive':b.growth<0?'negative':''}">${signed(b.growth)}</td>
  <td aria-label="collectors">${pbCollectorSvg}${Number.isFinite(b.collectors)?fmt.format(b.collectors):'—'}</td></tr>`).join('')||'<tr class="pb-bot-no-results"><td colspan="5">no matching bots.</td></tr>';
  const total=allRows.filter(b=>Number.isFinite(b.growth));
@@ -19307,6 +19486,23 @@ function pbInitUpgrade(){
  document.getElementById('pbSlotsEdit')?.addEventListener('click',()=>{topSlotsPrepareEditor(pbPortfolioUi.slotDate||topSlotsDefaultDate());dashboardShowView('slots')});
  document.querySelectorAll('[data-pb-jump]').forEach(b=>b.addEventListener('click',()=>{const el=document.getElementById(b.dataset.pbJump);if(!el)return;el.open=true;el.scrollIntoView({behavior:'smooth',block:'start'})}));
  document.getElementById('pbRecordDetails')?.addEventListener('click',e=>{const b=e.target.closest('[data-pb-record-date]');if(!b)return;rankingsConfig.tab='breakouts';rankingsConfig.breakoutsDate=b.dataset.pbRecordDate;rankingsConfig.minimum.breakouts=0;rankingsConfig.minimumMode.breakouts='0';dashboardShowView('rankings')});
+ const rankLimit=document.getElementById('pbRankingTagLimit');
+ try{if(rankLimit)rankLimit.value=localStorage.getItem('pbRankingTagLimit')==='5'?'5':'3'}catch(_){ }
+ rankLimit?.addEventListener('change',()=>{try{localStorage.setItem('pbRankingTagLimit',rankLimit.value)}catch(_){ }pbRenderBots();topSlotsRenderHome()});
+ const fullscreen=document.getElementById('pbBotsFullscreen');
+ const allBots=document.getElementById('pbAllBots');
+ function setBotsFullscreen(active){
+  if(!allBots||!fullscreen)return;
+  allBots.classList.toggle('pb-bots-fullscreen',active);
+  document.body.classList.toggle('pb-bots-screen-active',active);
+  if(active)allBots.open=true;
+  fullscreen.textContent=active?'×':'⛶';
+  fullscreen.setAttribute('aria-pressed',String(active));
+  fullscreen.setAttribute('aria-label',active?'Close fullscreen bots':'Open all bots fullscreen');
+ }
+ fullscreen?.addEventListener('click',()=>setBotsFullscreen(!allBots?.classList.contains('pb-bots-fullscreen')));
+ document.addEventListener('keydown',event=>{if(event.key==='Escape')setBotsFullscreen(false)});
+ document.querySelectorAll('[data-dashboard-nav]').forEach(el=>el.addEventListener('click',()=>setBotsFullscreen(false)));
  const back=document.getElementById('pbBackToTop');
  const links=document.querySelector('.pb-sticky-links');
  const spacer=document.createElement('div');spacer.className='pb-links-spacer';links?.after(spacer);
