@@ -8006,6 +8006,18 @@ body.dashboard-shell #cvHubBadgeImage{
       <div id="cvBotEstimatorRows" class="cv-bot-estimator-rows"></div>
     </details>
 
+    <details class="cv-cap-recon" id="cvCapReconstructionPanel">
+      <summary><span>cap reconstruction</span><span class="cv-cap-recon-mini" id="cvCapReconstructionShort">cv + messages</span></summary>
+      <div class="cv-cap-recon-body">
+        <div class="cv-cap-recon-toolbar">
+          <label for="cvCapReconDate">historical cv update</label>
+          <select id="cvCapReconDate" aria-label="select historical cv date"></select>
+        </div>
+        <div id="cvCapReconResult" aria-live="polite">select a cv update to inspect cap estimates.</div>
+        <p class="cv-cap-recon-footnote">Estimated from real cv updates, message snapshots and the historical message / ucu ratio. A suggested cap is not a confirmed PolyBuzz event. Existing manual capped dates remain authoritative and are never overwritten.</p>
+      </div>
+    </details>
+
     <details class="cv-ledger" open>
       <summary>cv ledger</summary>
 
@@ -12651,6 +12663,159 @@ function cvUncappedMessagesForDate(date,targetEntry=null){
   };
 }
 
+/* Cap reconstruction uses the real CV reading as a consistency constraint.
+   It does not create or modify Events. Dates/positions are batch estimates,
+   never a claim to know the exact time of a PolyBuzz cap. */
+function cvCapReconstruct(date=''){
+  const context=cvDailyUpdateContext(date);
+  if(!context || !Number.isFinite(context.organicCv)){
+    return {state:'no-cv',date};
+  }
+  const interval=cvUncappedMessagesForDate(context.target.date,context.target);
+  if(!interval){
+    return {state:'no-snapshot',date:context.target.date};
+  }
+  // A daily message delta cannot be matched to a longer gap in the CV ledger.
+  if(context.baseline?.date && context.baseline.date!==interval.fromDate){
+    return {state:'interval-mismatch',date:context.target.date,fromDate:interval.fromDate,
+      cvFromDate:context.baseline.date};
+  }
+  const ratio=cvCalibration().rolling;
+  const blendedRate=Number.isFinite(ratio)&&ratio>0
+    ? CV_PER_MESSAGE+CV_PER_UCU/ratio : null;
+  const raw=interval.uncappedMessages;
+  const messageCv=raw*CV_PER_MESSAGE;
+  const organic=context.organicCv;
+  const excessCv=Math.max(0,messageCv-organic);
+  const minExcluded=Math.max(0,Math.ceil(excessCv/CV_PER_MESSAGE-1e-8));
+  const bestExcluded=blendedRate && organic>=0
+    ? Math.max(minExcluded,Math.round(raw-Math.max(0,organic)/blendedRate))
+    : minExcluded;
+  const fromDay=cvExactDailyEntry(interval.fromDate);
+  const toDay=cvExactDailyEntry(interval.date);
+  const beforeMap=new Map((fromDay?.snapshot?.bots||[]).map(b=>[String(b.cid),b]));
+  const afterMap=new Map((toDay?.snapshot?.bots||[]).map(b=>[String(b.cid),b]));
+  const candidates=[];
+
+  for(const [cid,after] of afterMap){
+    if(!Number.isFinite(after?.messages)) continue;
+    const before=beforeMap.get(cid);
+    const start=Number.isFinite(before?.messages)?before.messages:0;
+    const count=Math.max(0,after.messages-start);
+    if(!count || (cvCappedDate(cid) && cvCappedDate(cid)<interval.date)) continue;
+
+    // A saved cap on this date signals a possible within-batch cap.
+    const manuallyDated=cvCappedDate(cid)===interval.date;
+    const creation=cvCreationBonusForCid(cid,interval.fromDate);
+    const startCv=Number.isFinite(blendedRate)?creation+start*blendedRate:null;
+    const endCv=Number.isFinite(blendedRate)?creation+after.messages*blendedRate:null;
+    const hardMinimum=cvCreationBonusForCid(cid,interval.date)+after.messages*CV_PER_MESSAGE;
+    const crosses=Number.isFinite(startCv)&&Number.isFinite(endCv)&&endCv>=500;
+    const certainAtLeast=hardMinimum>=500;
+    if(!manuallyDated && !crosses && !certainAtLeast) continue;
+
+    const theoreticalExcess=Number.isFinite(blendedRate)
+      ? Math.max(0,Math.min(count,Math.round((endCv-500)/blendedRate)))
+      : 0;
+    candidates.push({cid,name:state.meta.get(cid)?.name||cid,
+      count,start,end:after.messages,startCv,endCv,
+      manuallyDated,theoreticalExcess,certainAtLeast});
+  }
+  candidates.sort((a,b)=>b.theoreticalExcess-a.theoreticalExcess||b.count-a.count);
+
+  let excluded=0;
+  let reconciled=false;
+  let reason='';
+  if(excessCv<=1e-7){
+    reason='No negative ucu residual in this cv update; no cap correction needed.';
+  }else if(organic<0){
+    reason='Organic cv is negative; check settlements / adjustments before cap reconstruction.';
+  }else if(!candidates.length){
+    reason='Message cv exceeds actual organic cv, but no plausible cap candidate was found in this interval.';
+  }else{
+    const available=candidates.reduce((sum,bot)=>sum+bot.count,0);
+    if(available<minExcluded){
+      reason='Potential cap candidates cannot explain the full excess. Check other capped bots, cv timing and adjustments.';
+    }else{
+      // The historical ratio estimates UCU contribution. Exclusions cannot be
+      // fewer than the message-only lower bound (otherwise UCU would be negative).
+      excluded=Math.max(minExcluded,Math.min(available,bestExcluded));
+      reconciled=true;
+      reason='Reconstructed message / ucu split using the actual cv total.';
+    }
+  }
+  const remaining=raw-excluded;
+  const recalculatedMessageCv=remaining*CV_PER_MESSAGE;
+  const remainingUcuCv=organic-recalculatedMessageCv;
+  const estimatedUcu=reconciled?remainingUcuCv/CV_PER_UCU:null;
+  // A bot-by-bot threshold is only estimable when there is a unique candidate.
+  // Multiple candidates have an aggregate exclusion, not an identifiable split.
+  let suggested=null;
+  if(reconciled && candidates.length===1){
+    const bot=candidates[0];
+    if(excluded<=bot.count){
+      const beforeCap=Math.max(0,bot.count-excluded);
+      suggested={...bot,excluded,beforeCap,
+        capAtMessages:bot.start+beforeCap,
+        fraction:bot.count>0?beforeCap/bot.count:null};
+    }
+  }
+  return {state:'ready',date:interval.date,fromDate:interval.fromDate,
+    organic,raw,messageCv,ratio,minExcluded,bestExcluded,
+    excluded,reconciled,remaining,recalculatedMessageCv,remainingUcuCv,estimatedUcu,
+    candidates,suggested,reason};
+}
+
+function cvCapReconEsc(value){
+  return String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function renderCvCapReconstruction(){
+  const select=document.querySelector('#cvCapReconDate');
+  const box=document.querySelector('#cvCapReconResult');
+  if(!select || !box) return;
+  const dates=[...new Set(cvSortedEntriesAsc()
+    .filter(entry=>entry.type==='update'&&entry.date)
+    .map(entry=>entry.date))].reverse();
+  const old=select.value;
+  select.innerHTML=dates.map(date=>`<option value="${cvCapReconEsc(date)}">${shortGraphDate(date)}</option>`).join('');
+  select.value=dates.includes(old)?old:(dates[0]||'');
+  if(!dates.length){box.textContent='Add a cv update first.';return;}
+  const r=cvCapReconstruct(select.value);
+  const status=document.querySelector('#cvCapReconstructionShort');
+  if(r.state!=='ready'){
+    box.innerHTML=`<p class="cv-cap-recon-muted">${r.state==='no-snapshot'?'The matching message snapshot is not available yet.':r.state==='interval-mismatch'?'The cv comparison spans a different period from the daily message snapshot; reconstruct this cap only after matching the same date interval.':'A previous cv update is needed for comparison.'}</p>`;
+    if(status) status.textContent='awaiting data';
+    return;
+  }
+  if(status) status.textContent=r.reconciled?`≈ ${fmt.format(r.excluded)} messages excluded`:
+    r.minExcluded?`≥ ${fmt.format(r.minExcluded)} to check`:'no cap excess';
+  const n=v=>fmt.format(Math.round(v));
+  const money=v=>cvFormatEstimate(v);
+  const main=`<div class="cv-cap-recon-score">
+    <div><small>organic cv</small><strong>${cvFormatEstimateSigned(r.organic)}</strong></div>
+    <div><small>message cv before cap check</small><strong>${cvFormatEstimateSigned(r.messageCv)}</strong></div>
+    <div><small>minimum excluded messages</small><strong>${r.minExcluded?`≥ ${n(r.minExcluded)}`:'0'}</strong></div>
+  </div>`;
+  const result=r.reconciled?`<div class="cv-cap-recon-answer">
+      <strong>≈ ${n(r.excluded)} messages not contributing to cv</strong>
+      <span>${n(r.raw)} → ≈ ${n(r.remaining)} eligible messages</span>
+      <span>≈ ${money(r.recalculatedMessageCv)} message cv + ≈ ${money(r.remainingUcuCv)} ucu cv = ${money(r.organic)} organic cv</span>
+    </div>`:'';
+  const beforeThreshold=r.suggested && Number.isFinite(r.suggested.startCv) && r.suggested.startCv>=500;
+  const info=r.suggested?`<p class="cv-cap-recon-timing"><b>${cvCapReconEsc(r.suggested.name)}</b> · ${beforeThreshold?'cap possibly already reached before this interval':`estimated cap in batch ${shortGraphDate(r.fromDate)} → ${shortGraphDate(r.date)}`}
+    <br>${beforeThreshold?`≈ ${n(r.suggested.excluded)} messages in this interval excluded by reconciliation`:`≈ ${n(r.suggested.capAtMessages)} total messages at cap · ≈ ${n(r.suggested.beforeCap)} messages into this bot's interval`}
+    <br><span>${r.suggested.manuallyDated?'Manual capped event on this date; this model only estimates the contribution within the daily batch.':'Inferred from cv reconciliation; not an actual saved capped event.'}</span>
+  </p>`:'';
+  const candidates=r.candidates.length?`<div class="cv-cap-recon-candidates">
+    <small>possible cap contributors</small>
+    ${r.candidates.map(c=>`<div><span>${cvCapReconEsc(c.name)}${c.manuallyDated?' · manually tagged capped':''}</span><span>+${n(c.count)} msg</span></div>`).join('')}
+    ${r.candidates.length>1?'<em>Several possible contributors: the total is reconstructable, but per-bot attribution is not uniquely determined.</em>':''}
+  </div>`:'';
+  const why=`<p class="cv-cap-recon-muted">${cvCapReconEsc(r.reason)}</p>`;
+  box.innerHTML=main+result+info+candidates+why;
+}
+
 function cvDailyEstimate(date=''){
   const context=cvDailyUpdateContext(date);
   if(!context || !Number.isFinite(context.actualDelta) || !Number.isFinite(context.organicCv)){
@@ -12663,18 +12828,22 @@ function cvDailyEstimate(date=''){
   // Once the message snapshot for this CV date is loaded, the message part is
   // known. The remaining organic cv is therefore the UCU contribution.
   if(actualMessages){
-    const messageCv=actualMessages.uncappedMessages*CV_PER_MESSAGE;
+    const cap=cvCapReconstruct(context.target.date);
+    const inferred=cap.state==='ready' && cap.reconciled && cap.excluded>0;
+    const countedMessages=inferred?cap.remaining:actualMessages.uncappedMessages;
+    const messageCv=countedMessages*CV_PER_MESSAGE;
     const ucuCv=context.organicCv-messageCv;
     const ucu=ucuCv/CV_PER_UCU;
 
     return {
-      mode:'exact',
+      mode:inferred?'cap-reconstructed':'exact',
+      capReconstruction:inferred?cap:null,
       date:context.target.date,
       fromDate:actualMessages.fromDate,
       actualDelta:context.actualDelta,
       adjustments:context.adjustments,
       organicCv:context.organicCv,
-      uncappedMessages:actualMessages.uncappedMessages,
+      uncappedMessages:countedMessages,
       bots:actualMessages.bots,
       messageCv,
       ucuCv,
@@ -12755,16 +12924,17 @@ function renderCvDayEstimate(){
   set('#cvDayAdjustments',cvFormatEstimateSigned(estimate.adjustments,0));
   set('#cvDayExpected',cvFormatEstimateSigned(estimate.organicCv));
 
-  if(estimate.mode==='exact'){
-    set('#cvDayDate',`${shortGraphDate(estimate.date)} · calculated`);
-    set('#cvDayMessageCv',cvFormatEstimateSigned(estimate.messageCv));
-    set('#cvDayMessages',`${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
-    set('#cvDayUcuCv',cvFormatEstimateSigned(estimate.ucuCv));
-    set('#cvDayUcu',`${estimate.estimatedUcu>=0?'≈ ':''}${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
+  if(estimate.mode==='exact' || estimate.mode==='cap-reconstructed'){
+    const inferred=estimate.mode==='cap-reconstructed';
+    set('#cvDayDate',`${shortGraphDate(estimate.date)} · ${inferred?'≈ cap-adjusted':'calculated'}`);
+    set('#cvDayMessageCv',`${inferred?'≈ ':''}${cvFormatEstimateSigned(estimate.messageCv)}`);
+    set('#cvDayMessages',`${inferred?'≈ ':''}${fmt.format(Math.round(estimate.uncappedMessages))} eligible messages`);
+    set('#cvDayUcuCv',`${inferred?'≈ ':''}${cvFormatEstimateSigned(estimate.ucuCv)}`);
+    set('#cvDayUcu',`${inferred?'≈ ':estimate.estimatedUcu>=0?'≈ ':''}${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
 
     const warning=estimate.ucuCv<0
-      ? ' · ⚠ message cv is higher than organic cv; check timing/cap data'
-      : '';
+      ? ' · ⚠ message cv is higher than organic cv; inspect cap reconstruction'
+      : inferred?' · estimated cap exclusion; see cap reconstruction':'';
 
     set('#cvDayFormula',
       `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
@@ -12873,6 +13043,7 @@ function renderCvDashboard(){
     fmt.format(calibration.points.length);
 
   renderCvEstimator();
+  renderCvCapReconstruction();
   renderCvLedger();
 
   if(document.querySelector('#analyticsPanel')){
@@ -13086,6 +13257,9 @@ function initCvTracker(){
   document.querySelector('#cvClear')
     .addEventListener('click',clearCvForm);
 
+
+  document.querySelector('#cvCapReconDate')
+    ?.addEventListener('change',renderCvCapReconstruction);
 
   document.querySelector('#cvLedgerRows')
     .addEventListener('click',event=>{
@@ -20283,6 +20457,35 @@ body.dashboard-shell #dashboardLevelBadgeImage{
 body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left .dashboard-level-label{
   font-size:15px!important;
 }
+/* CV cap diagnostics remain a separate, compact collapsible card. */
+body.dashboard-shell #cvPanel .cv-cap-recon{
+  box-sizing:border-box;width:100%;margin:0!important;padding:0;
+  background:#261e2b;border:1px solid #705674;border-radius:17px;
+  color:#e9d8e8;overflow:hidden;
+}
+body.dashboard-shell #cvPanel .cv-cap-recon>summary{
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  gap:12px;padding:15px 16px;font-weight:750;font-size:14px;
+}
+body.dashboard-shell #cvPanel .cv-cap-recon-mini{font-weight:500;color:#be9fb7;font-size:11px;text-align:right}
+body.dashboard-shell #cvPanel .cv-cap-recon-body{padding:14px 15px 16px;border-top:1px solid #544458}
+body.dashboard-shell #cvPanel .cv-cap-recon-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;color:#c6b0c3;font-size:11px}
+body.dashboard-shell #cvPanel #cvCapReconDate{width:auto;min-width:125px;max-width:60%;background:#32283a;border:1px solid #735c78;color:#eadbeb;border-radius:11px;padding:9px;font-size:12px}
+body.dashboard-shell #cvPanel .cv-cap-recon-score{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+body.dashboard-shell #cvPanel .cv-cap-recon-score>div{background:#1d1927;border:1px solid #51425d;border-radius:12px;padding:9px 7px;min-width:0}
+body.dashboard-shell #cvPanel .cv-cap-recon-score small{display:block;color:#c4abc4;font-size:10px;min-height:29px;line-height:1.35}
+body.dashboard-shell #cvPanel .cv-cap-recon-score strong{display:block;font-size:15px;line-height:1.35;color:#efd6ea;white-space:nowrap}
+body.dashboard-shell #cvPanel .cv-cap-recon-answer{display:flex;flex-direction:column;gap:7px;padding:12px;margin-top:12px;border:1px solid #8b638c;background:#392a3e;border-radius:12px;font-size:12px;color:#e8d3e7}
+body.dashboard-shell #cvPanel .cv-cap-recon-answer strong{font-size:15px;color:#f3c5e7}
+body.dashboard-shell #cvPanel .cv-cap-recon-timing{background:#32283a;border-left:3px solid #c18fb7;padding:11px 12px;margin:12px 0 0;border-radius:5px 11px 11px 5px;font-size:12px;line-height:1.6}
+body.dashboard-shell #cvPanel .cv-cap-recon-timing span{color:#c2aec2}
+body.dashboard-shell #cvPanel .cv-cap-recon-candidates{display:flex;flex-direction:column;gap:7px;margin-top:13px;font-size:12px}
+body.dashboard-shell #cvPanel .cv-cap-recon-candidates>small{color:#c4afc3}
+body.dashboard-shell #cvPanel .cv-cap-recon-candidates>div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #46384c;padding:4px 0}
+body.dashboard-shell #cvPanel .cv-cap-recon-candidates>div span:first-child{overflow-wrap:anywhere}
+body.dashboard-shell #cvPanel .cv-cap-recon-candidates>div span:last-child{white-space:nowrap;color:#d6c1d4}
+body.dashboard-shell #cvPanel .cv-cap-recon-candidates em{color:#c9adc1;font-size:11px;line-height:1.5}
+body.dashboard-shell #cvPanel .cv-cap-recon-muted,body.dashboard-shell #cvPanel .cv-cap-recon-footnote{font-size:11px;color:#b7a2b7;line-height:1.55;margin:12px 0 0}
 </style>
 </body>
 </html>
