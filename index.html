@@ -583,14 +583,6 @@ th:first-child,td:first-child{text-align:left}
 .graph-panel{
   margin-top:10px;
 }
-.graph-panel>summary{
-  cursor:pointer;
-  font-weight:700;
-  padding:10px 0;
-}
-.graph-panel[open]>summary{
-  margin-bottom:6px;
-}
 .graph-fullscreen-button{
   width:100%;
   margin-top:8px;
@@ -7205,7 +7197,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
         <div class="dashboard-subs-controls" aria-label="quick subscriber update">
           <button id="dashboardSubscriberMinus" type="button" aria-label="subtract 1 subscriber">−</button>
           <button id="dashboardHeaderSubscribersCard" class="dashboard-subs-link" type="button" data-open-dashboard-view="subscribers" title="open Subscriber Hub" aria-label="open Subscriber Hub">
-            <strong id="dashboardSubscribers">—</strong>
+            <img alt="" aria-hidden="true" class="subscriber-ghost-art" src="data:image/png;base64,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"/><strong id="dashboardSubscribers">—</strong>
           </button>
           <button id="dashboardSubscriberPlus" type="button" aria-label="add 1 subscriber">+</button>
         </div>
@@ -8304,8 +8296,8 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
   </details>
 
 
-  <details class="graph-panel" id="graphPanel">
-    <summary>graph</summary>
+  <section aria-label="graph" class="graph-panel" id="graphPanel">
+<div class="graph-fixed-label">graph</div>
 <div class="chart-area">
       <canvas id="compareChart"></canvas>
     </div>
@@ -8346,8 +8338,8 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
         </tr>
       </thead>
       <tbody id="compareRows"></tbody>
-    </table>
-  </details>
+</table>
+</section>
 
   <div id="newOverview" class="new-overview" hidden></div>
   <div id="freezeOverview" class="freeze-overview" hidden></div>
@@ -8983,23 +8975,17 @@ function getGraphDays(){
 function compactAxisValue(value){
   const n=Number(value);
   if(!Number.isFinite(n)) return value;
-
   const abs=Math.abs(n);
   const sign=n<0?'-':'';
-
-  if(abs>=1000000){
-    const v=abs/1000000;
-    const digits=v<10 ? 1 : 0;
-    return sign+v.toFixed(digits).replace(/\.0$/,'')+'M';
-  }
-
-  if(abs>=1000){
-    const v=abs/1000;
-    const digits=v<10 && !Number.isInteger(v) ? 1 : 0;
-    return sign+v.toFixed(digits).replace(/\.0$/,'')+'K';
-  }
-
-  return String(Math.round(n));
+  const truncated=(unit,decimals)=>{
+    const factor=10**decimals;
+    const result=Math.floor((abs/unit)*factor+1e-9)/factor;
+    return sign+String(result).replace(/\.0$/,'');
+  };
+  if(abs>=1e9)return truncated(1e9,abs<1e10?1:0)+'B';
+  if(abs>=1e6)return truncated(1e6,abs<1e7?1:0)+'M';
+  if(abs>=1e3)return truncated(1e3,abs<1e4?1:0)+'K';
+  return String(Math.trunc(n));
 }
 
 function shortGraphDate(date){
@@ -15866,12 +15852,7 @@ document.querySelector('#fsPeriod')
     requestAnimationFrame(buildFullscreenChart);
   });
 
-document.querySelector('#graphPanel')
-  .addEventListener('toggle',()=>{
-    if(document.querySelector('#graphPanel').open){
-      setTimeout(()=>compareChart?.resize(),30);
-    }
-  });
+// The graph is a permanently visible section, so no details toggle listener is needed.
 
 // freezeOverviewRepair
 document.querySelector('#compareBots')?.addEventListener('click',()=>{
@@ -16075,8 +16056,7 @@ function dashboardShowView(view,{scroll=true}={}){
   if(back) back.hidden=view==='home';
 
   if(view==='chart'){
-    const graph=document.querySelector('#graphPanel');
-    if(graph) graph.open=true;
+    // The graph is always expanded and does not use a details.open state.
     setTimeout(()=>compareChart?.resize?.(),40);
   }
 
@@ -17640,11 +17620,9 @@ function freezeGrowthSeriesForCid(cid){
 
 function freezePatternCompact(value){
   if(!Number.isFinite(value)) return '—';
-  const abs=Math.abs(value);
-  const sign=value>0?'+':value<0?'-':'';
-  if(abs>=1000000) return sign+(abs/1000000).toFixed(abs<10000000?1:0).replace(/\.0$/,'')+'M';
-  if(abs>=1000) return sign+(abs/1000).toFixed(abs<10000?1:0).replace(/\.0$/,'')+'K';
-  return sign+String(Math.round(abs));
+  const sign=value>0?'+':value<0?'−':'';
+  const formatted=compactAxisValue(Math.abs(value));
+  return sign+formatted;
 }
 
 function freezePatternForCid(cid,date=topSlotsDefaultDate()){
@@ -20217,7 +20195,7 @@ function pbPortfolioSummary(rows){
  const crown=document.getElementById('pbWinnerCrown');
  if(crown && !crown.firstChild && pbTinyCrownSvg)crown.innerHTML=pbTinyCrownSvg;
  put('pbStatWinnerName',top?top.name:'—');
- put('pbStatWinnerGrowth',top?((top.growth>=1000)?'+'+(top.growth/1000).toLocaleString('nl-NL',{maximumFractionDigits:1})+'K':signed(top.growth)):'—');
+ put('pbStatWinnerGrowth',top?((top.growth>=1000)?'+'+compactAxisValue(top.growth):signed(top.growth)):'—');
 }
 function pbPortfolioAchievements(rows){
  const {from,to}=pbPortfolioRange();
@@ -20550,6 +20528,69 @@ body.dashboard-shell #cvPanel .cv-cap-recon-candidates>div span:first-child{over
 body.dashboard-shell #cvPanel .cv-cap-recon-candidates>div span:last-child{white-space:nowrap;color:#d6c1d4}
 body.dashboard-shell #cvPanel .cv-cap-recon-candidates em{color:#c9adc1;font-size:11px;line-height:1.5}
 body.dashboard-shell #cvPanel .cv-cap-recon-muted,body.dashboard-shell #cvPanel .cv-cap-recon-footnote{font-size:11px;color:#b7a2b7;line-height:1.55;margin:12px 0 0}
+
+/* === 26 October: targeted completion of pending layout requests === */
+/* Creator Level: original PolyBuzz badge art, smaller and centered; no pill patch. */
+body.dashboard-shell .dashboard-level-title-line>.dashboard-level-left{
+  align-items:flex-start!important;justify-content:flex-start!important;
+  padding:12px 8px 6px 7px!important;gap:3px!important;
+}
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel,
+body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel[data-level="5"]{
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  transform:none!important;width:min(100%,119px)!important;min-height:0!important;height:78px!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;text-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+body.dashboard-shell #dashboardLevelBadgeImage{
+  display:block!important;width:108px!important;max-width:100%!important;height:auto!important;
+  position:static!important;top:auto!important;filter:none!important;
+  object-fit:contain!important;opacity:1!important;
+}
+body.dashboard-shell #dashboardLevelBadgeImage[hidden]{display:none!important}
+@media(max-width:355px){body.dashboard-shell #dashboardLevelBadgeImage{width:94px!important}
+  body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel{height:74px!important}}
+/* Original subscriber ghost outline, no second rectangular counter. */
+body.dashboard-shell .dashboard-subs-card>.dashboard-subs-controls{align-items:center!important;}
+body.dashboard-shell .dashboard-subs-card #dashboardHeaderSubscribersCard{
+  display:grid!important;place-items:center!important;position:relative!important;
+  width:100%!important;min-height:68px!important;height:68px!important;
+  padding:0!important;margin:0!important;border:0!important;border-radius:0!important;
+  background:none!important;box-shadow:none!important;overflow:visible!important;
+}
+body.dashboard-shell .dashboard-subs-card #dashboardHeaderSubscribersCard .subscriber-ghost-art{
+  display:block!important;width:100%;height:100%;object-fit:contain;
+  grid-area:1/1;pointer-events:none;
+}
+body.dashboard-shell .dashboard-subs-card #dashboardHeaderSubscribersCard #dashboardSubscribers{
+  grid-area:1/1;position:relative;z-index:1;
+  font-size:18px!important;line-height:1!important;font-weight:750!important;
+  transform:translateY(13px);color:#f0d3eb!important;
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 2px #24172a;
+}
+body.dashboard-shell .dashboard-subs-controls #dashboardSubscriberMinus,
+body.dashboard-shell .dashboard-subs-controls #dashboardSubscriberPlus{
+  align-self:center!important;min-height:36px!important;height:36px!important;
+}
+/* Ten compact bot rows can fit in the Bots Hub scroller; full-screen unchanged. */
+body.dashboard-shell #pbBotsView #pbAllBots:not(.pb-bots-fullscreen) .all-bots-table-wrap{
+  max-height:clamp(380px,68dvh,600px)!important;
+  overflow-y:auto!important;
+}
+body.dashboard-shell #pbBotsView .pb-compact-main-table tr:not(.total-row){
+  padding-top:4px!important;padding-bottom:4px!important;row-gap:1px!important;
+}
+/* The graph is a standalone section below the bot selector; no disclosure control. */
+body.dashboard-shell .comparebox #graphPanel.graph-panel{
+  display:block!important;max-width:100%;overflow:visible;
+}
+body.dashboard-shell #graphPanel .graph-fixed-label{
+  font-weight:700;font-size:13px;color:#e1c6dc;margin:9px 0 6px;
+}
+/* Collapsible Analytics and Events sections retain their own native details state. */
+body.dashboard-shell #analyticsPanel>summary,
+body.dashboard-shell #eventsPanel>summary{cursor:pointer;}
 </style>
 </body>
 </html>
