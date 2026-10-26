@@ -6588,6 +6588,7 @@ body.dashboard-shell .cv-hero #cvNextLevelTarget.cv-level-fixed-target{
 body.dashboard-shell .pb-sticky-links .dashboard-header-action .pb-link-ghost-icon{
   width:19px!important;height:19px!important;max-width:72%;max-height:72%;
   display:block!important;object-fit:contain;
+  filter:grayscale(1) brightness(1.38) contrast(.92);
 }
 body.dashboard-shell .pb-sticky-links .dashboard-header-action.pb-extra-link>svg{
   width:19px!important;height:19px!important;max-width:72%;max-height:72%;
@@ -16577,7 +16578,10 @@ function dashboardMilestoneRows(){
     {label:'20K+',value:20000},
     {label:'15K+',value:15000},
     {label:'10K+',value:10000},
-    {label:'5K+',value:5000}
+    {label:'7.5K+',value:7500},
+    {label:'5K+',value:5000},
+    {label:'2.5K+',value:2500},
+    {label:'1K+',value:1000}
   ];
 }
 
@@ -16602,9 +16606,9 @@ function dashboardRenderMilestones(bots,totalBots){
     ...tier,
     count:bots.filter(bot=>Number.isFinite(bot?.messages) && bot.messages>=tier.value).length
   }));
-  const bottomCount=bots.filter(bot=>Number.isFinite(bot?.messages) && bot.messages<5000).length;
-  const all=[...counts,{label:'<5K',value:0,count:bottomCount}];
-  // Deduplication applies only to cumulative + tiers. The <5K remainder is not a cumulative tier.
+  const bottomCount=bots.filter(bot=>Number.isFinite(bot?.messages) && bot.messages<1000).length;
+  const all=[...counts,{label:'<1K',value:0,count:bottomCount}];
+  // Deduplication applies only to cumulative + tiers. The <1K remainder is not a cumulative tier.
   let higherCount=0;
   const meaningful=counts.filter(item=>{
     if(item.count===0 || item.count===higherCount) return false;
@@ -20860,11 +20864,11 @@ body.dashboard-shell .dashboard-level-title-line #dashboardCreatorLevel img#dash
 }
 /* User-drawn, directly cropped graphics from the final reference screenshot. */
 body.dashboard-shell #pbBotsView .pb-bots-filters .pb-status-filter-icon{
-  display:block!important;width:24px!important;height:24px!important;
+  display:block!important;width:18px!important;height:18px!important;
   margin:auto!important;object-fit:contain!important;
 }
 body.dashboard-shell #pbBotsView .pb-bots-filters .pb-status-filter-crown{
-  width:25px!important;height:25px!important;
+  width:19px!important;height:19px!important;
 }
 @media(max-width:365px){
   body.dashboard-shell #updated.dashboard-identity-updated{font-size:7px!important;}
