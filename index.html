@@ -6595,6 +6595,75 @@ body.dashboard-shell .pb-sticky-links .dashboard-header-action.pb-extra-link>svg
   color:#d6cbd9;
 }
 </style>
+
+<style id="pb-chart-navigation-rework-26oct">
+/* Chart first; settings underneath. No change to underlying CV/events/storage keys. */
+body.dashboard-shell #graphPanel.pb-graph-standalone{
+  margin:10px 0 12px!important;padding:13px 12px 15px!important;
+  background:#211b27!important;border:1px solid #5d4c61!important;border-radius:18px!important;
+}
+body.dashboard-shell #graphPanel .chart-area{height:clamp(260px,39svh,410px)!important;min-height:260px!important;}
+body.dashboard-shell .comparebox{margin:0 0 12px!important;padding:13px 12px 14px!important;}
+body.dashboard-shell .pb-chart-periods{display:grid;grid-template-columns:minmax(65px,.95fr) minmax(0,1fr) minmax(0,1fr) auto;gap:7px;align-items:end;margin-bottom:10px;}
+body.dashboard-shell .pb-chart-periods>*,body.dashboard-shell .pb-chart-metric-row>*{min-width:0;}
+body.dashboard-shell .pb-chart-periods select,body.dashboard-shell .pb-chart-periods input,body.dashboard-shell .pb-chart-periods button,
+body.dashboard-shell .pb-chart-quick-actions button,body.dashboard-shell .pb-chart-metric-row select,body.dashboard-shell .pb-chart-metric-row button{
+  box-sizing:border-box;width:100%;height:38px!important;min-height:38px!important;font-size:12px!important;
+  color:#eee0ec!important;background:#2b2532!important;border:1px solid #5e5264!important;border-radius:11px!important;padding:0 7px!important;
+}
+body.dashboard-shell .pb-chart-date{display:flex;flex-direction:column;gap:2px;min-width:0;}
+body.dashboard-shell .pb-graph-date small{display:block;font-size:10px;color:#b6a4b9;padding-left:3px;margin-bottom:4px;text-align:center;}
+body.dashboard-shell .pb-chart-periods input{padding:0 2px!important;font-size:10px!important;color-scheme:dark;min-width:0;}
+body.dashboard-shell .pb-chart-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 0 10px;}
+body.dashboard-shell .pb-chart-quick-actions button.active{background:#563e5a!important;border-color:#ab80a7!important;color:#f7d0ed!important;}
+body.dashboard-shell .pb-chart-metric-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.9fr) auto;gap:7px;margin:0 0 10px;}
+body.dashboard-shell .pb-chart-folds{display:grid;gap:7px;margin-top:5px;}
+body.dashboard-shell .pb-chart-fold{border:1px solid #55475b;border-radius:12px;background:rgba(37,31,44,.8);overflow:hidden;}
+body.dashboard-shell .pb-chart-fold>summary{padding:12px 13px;cursor:pointer;color:#ebdbed;font-size:13px;font-weight:700;list-style:none;display:flex;align-items:center;justify-content:space-between;}
+body.dashboard-shell .pb-chart-fold>summary::-webkit-details-marker{display:none;}
+body.dashboard-shell .pb-chart-fold>summary::after{content:'⌄';color:#caa8c3;}
+body.dashboard-shell .pb-chart-fold[open]>summary::after{content:'⌃';}
+body.dashboard-shell .pb-chart-fold summary small{font-size:10px;color:#b8a6b6;font-weight:400;}
+body.dashboard-shell .pb-chart-fold-body{padding:0 10px 12px;border-top:1px solid #493d50;}
+body.dashboard-shell #pbGraphBotSearch{display:block;box-sizing:border-box;width:100%;height:38px;min-height:38px;padding:8px 10px;margin:9px 0;background:#1c1a24;border:1px solid #5d5361;color:#f5e7f3;font-size:13px;border-radius:10px;}
+body.dashboard-shell .pb-chart-bot-list{max-height:230px;overflow-y:auto;overscroll-behavior:contain;display:grid;gap:0;}
+body.dashboard-shell .pb-chart-bot-list label{padding:6px 4px!important;min-height:34px!important;color:#e7d9e6!important;font-size:12px!important;display:flex!important;align-items:center!important;gap:10px;}
+body.dashboard-shell .pb-chart-bot-list input{accent-color:#c992b4;flex:0 0 auto;}
+body.dashboard-shell .pb-chart-bot-option[hidden]{display:none!important;}
+body.dashboard-shell .pb-chart-tag-simple,body.dashboard-shell .pb-chart-tag-chip-list,body.dashboard-shell .pb-chart-ranking-buttons{display:flex;flex-wrap:wrap;gap:7px;padding-top:9px;}
+body.dashboard-shell .pb-chart-tag-simple>.graph-event-filter,body.dashboard-shell .pb-chart-tag-chip-list>.graph-event-filter,
+body.dashboard-shell .pb-chart-ranking-buttons>.graph-event-filter,body.dashboard-shell .pb-chart-planned{
+  width:auto!important;height:auto!important;min-height:34px!important;display:inline-flex!important;gap:5px!important;align-items:center!important;
+  margin:0!important;padding:6px 10px!important;color:#d9c6da!important;border:1px solid #68556e!important;border-radius:9px!important;background:#302737!important;font-size:12px!important;
+}
+body.dashboard-shell .pb-chart-ranking-buttons>.graph-event-filter{flex:1 1 42%;justify-content:center;}
+body.dashboard-shell .pb-chart-tag-simple>.graph-event-filter span,body.dashboard-shell .pb-chart-tag-chip-list>.graph-event-filter span,
+body.dashboard-shell .pb-chart-ranking-buttons>.graph-event-filter span{font-size:11px;white-space:nowrap;}
+body.dashboard-shell .pb-chart-tag-simple>.graph-event-filter.active,body.dashboard-shell .pb-chart-tag-chip-list>.graph-event-filter.active,
+body.dashboard-shell .pb-chart-ranking-buttons>.graph-event-filter.active{background:#604b67!important;border-color:#b894bc!important;color:#fff!important;}
+body.dashboard-shell .pb-chart-planned:disabled{opacity:.55;cursor:default;}
+body.dashboard-shell .pb-chart-planned small{font-size:9px;}
+body.dashboard-shell .pb-chart-subfold{margin-top:9px;border:1px solid #544657;border-radius:9px;}
+body.dashboard-shell .pb-chart-subfold>summary{padding:9px 10px;cursor:pointer;color:#e1cfe4;font-size:12px;}
+body.dashboard-shell .pb-chart-subfold .pb-chart-tag-chip-list{padding:0 9px 10px;}
+body.dashboard-shell #pbGraphEventTimeline{border:1px solid #56495c;border-radius:11px;margin-top:12px;background:#231d2a;}
+body.dashboard-shell #pbGraphEventTimeline>summary{padding:11px 12px;font-size:12px;color:#dfcee1;cursor:pointer;}
+body.dashboard-shell .pb-event-timeline-scroll{max-height:220px;overflow-y:auto;overscroll-behavior:contain;padding:0 10px 10px;}
+body.dashboard-shell #pbGraphEventTimeline .event-analysis-overview{margin:0!important;}
+body.dashboard-shell #pbGraphTables[hidden]{display:none!important;}
+body.dashboard-shell .pb-graph-tables{display:grid;gap:13px;margin:0 0 16px;}
+body.dashboard-shell .pb-chart-table-card{border:1px solid #55465c;border-radius:17px;padding:12px;background:rgba(36,28,42,.84);}
+body.dashboard-shell .pb-chart-table-card>.daily-growth-panel{border:0!important;padding:0!important;margin:0!important;}
+body.dashboard-shell .pb-chart-compare-fold>summary{font-size:13px;font-weight:700;color:#e1c8df;cursor:pointer;padding:3px 0 8px;}
+body.dashboard-shell .pb-chart-compare-fold>.pb-chart-table-inner{max-height:360px;overflow:auto;}
+body.dashboard-shell .pb-chart-compare-fold .compare-table{margin-top:0;}
+body.dashboard-shell .pb-chart-bottom-shortcut{display:flex;align-items:center;justify-content:center;width:100%;min-height:40px;margin:12px 0 0;border:1px solid #7a5a76;border-radius:12px;background:#312738;color:#efcae9;font-size:12px;font-weight:650;cursor:pointer;}
+body.dashboard-shell .pb-chart-mini-link{border:none;background:transparent;color:#c5a5ca;padding:1px 4px;font-size:11px;cursor:pointer;}
+body.dashboard-shell .pb-chart-rank-shortcut{background:#35283d;color:#e8cbec;border:1px solid #796180;border-radius:12px;padding:10px 12px;margin:7px 0 12px;font-size:12px;}
+@media(max-width:365px){body.dashboard-shell .pb-chart-periods{gap:4px;grid-template-columns:minmax(59px,1fr) minmax(0,1fr) minmax(0,1fr) 57px;}
+body.dashboard-shell .pb-chart-periods select,body.dashboard-shell .pb-chart-periods button{font-size:11px!important;padding:0 4px!important;}}
+</style>
+
 </head>
 
 <body>
@@ -7330,6 +7399,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
   </nav>
   <section class="rankings-hub-card">
     <div class="rankings-current-heading"><h3 id="rankingsHubTitle">new &amp; hot</h3><p id="rankingsHubDescription"></p></div>
+    <button type="button" class="pb-chart-rank-shortcut" data-pb-open-rank-graph>⌁ open in graph ↗</button>
     <div class="rankings-settings">
       <label id="rankingsNewSelectionWrap">selection<select id="rankingsNewSelection"><option value="latest5">latest 5</option><option value="last30">last 30 days</option></select></label>
       <label id="rankingsNewSortWrap">sort by<select id="rankingsNewSort"><option value="relative">relative growth (%)</option><option value="absolute">absolute growth</option></select></label>
@@ -7711,6 +7781,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     </table>
     </div>
 
+  <button class="pb-chart-bottom-shortcut" type="button" data-pb-graph-preset="active">⌁ graph · active bots ↗</button>
   </div>
 </details>
 <div class="pb-bots-jump-grid" aria-label="character achievements">
@@ -7746,7 +7817,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 </section><!-- pbBotsView -->
 
 <section class="analytics-panel" id="analyticsPanel" aria-label="analytics">
-  <h2 class="pb-page-section-title">analytics</h2>
 
   <div class="analytics-content">
 
@@ -8165,7 +8235,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 </section>
 
 <section class="events-panel" id="eventsPanel" aria-label="events tracker">
-  <h2 class="pb-page-section-title" id="eventsSummary">events tracker</h2>
 
   <div class="events-content">
 
@@ -8239,50 +8308,50 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 
 
+  <section aria-label="graph" class="graph-panel pb-graph-standalone" id="graphPanel" hidden>
+<div class="graph-fixed-label">graph</div>
+<div class="chart-area">
+      <canvas id="compareChart"></canvas>
+    </div>
+    <div id="compareChartLegend" class="html-chart-legend"></div>
+</section>
+
 <div class="comparebox">
 
-  <div class="date-labels">
-    <span>From</span>
-    <span>To</span>
-    <span></span>
+  <div class="pb-chart-periods">
+    <label class="pb-period-select" aria-label="period">
+      <select id="comparePeriod" aria-label="graph period">
+        <option value="1">1-day</option>
+        <option value="7" selected>7-day</option>
+        <option value="30">30-day</option>
+        <option value="all">all</option>
+      </select>
+    </label>
+    <label class="pb-graph-date"><small>from</small><input id="fromDate" type="date" aria-label="from date"></label>
+    <label class="pb-graph-date"><small>to</small><input id="toDate" type="date" aria-label="to date"></label>
+    <button id="latestDate" type="button">latest</button>
   </div>
 
-  <div class="date-controls">
-    <div class="date-box">
-      <input id="fromDate" type="date">
-    </div>
-
-    <div class="date-box">
-      <input id="toDate" type="date">
-    </div>
-
-    <button id="latestDate">latest</button>
+  <div class="pb-chart-quick-actions" role="group" aria-label="graph quick selection">
+    <button id="graphSelectToggle" type="button" aria-pressed="false" title="select all characters">select all</button>
+    <button id="graphCappedToggle" type="button" aria-pressed="false" title="filter capped bots">capped</button>
+    <button id="graphTotalToggle" type="button" aria-pressed="false" title="total/profile line">total/profile</button>
   </div>
 
-  <div class="compare-controls">
-
-    <select id="displayMode">
+  <div class="pb-chart-metric-row">
+    <select id="compareMetric" aria-label="graph metric">
+      <option value="messages">messages</option>
+      <option value="growth" selected>growth</option>
+      <option value="collectors">collectors</option>
+      <option value="rankRelative">❤️‍🔥 relative %</option>
+      <option value="rankBreakouts">⚡ breakouts</option>
+      <option value="rankHot">🔥 popularity</option>
+    </select>
+    <select id="displayMode" aria-label="label style">
       <option value="name">name</option>
       <option value="cid">cid</option>
     </select>
-
-    <select id="compareMetric">
-      <option value="messages">messages</option>
-      <option value="growth">growth</option>
-      <option value="collectors">collectors</option>
-      <option value="rankRelative">❤️‍🔥 relative growth % · 1D</option>
-      <option value="rankBreakouts">⚡ breakout factor × · 1D</option>
-      <option value="rankHot">🔥 popularity score · choose period</option>
-    </select>
-
-    <select id="comparePeriod">
-      <option value="all">all</option>
-      <option value="30">30 day</option>
-      <option value="7">7 day</option>
-      <option value="1">1 day</option>
-    </select>
-
-    <button id="openGraphFullscreen">full</button>
+    <button id="openGraphFullscreen" type="button">full ⛶</button>
   </div>
 
   <div id="graphHotRangeButtons" class="graph-hot-periods" role="group" aria-label="🔥 graph period" title="24H: daily · WEEK: since Monday update · FINAL: completed weeks · 7D: rolling" hidden>
@@ -8292,32 +8361,23 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <button type="button" data-graph-hot-range="7" class="active">7D</button>
   </div>
 
-  <details class="bot-picker">
-    <summary id="compareSummary">bots</summary>
-    <div class="graph-selection-tools" role="group" aria-label="graph bot selection">
-      <button type="button" id="graphTotalToggle" aria-pressed="false" title="Toggle total/profile line">total/profile</button>
-      <button type="button" id="graphSelectToggle" aria-pressed="false" title="Select or deselect all characters">select all</button>
-    </div>
-    <div id="compareBots"></div>
-  </details>
-
-
-  
+  <div id="compareBots" class="pb-chart-folds" aria-label="bot selection and grouped tags"></div>
 
   <div id="newOverview" class="new-overview" hidden></div>
   <div id="freezeOverview" class="freeze-overview" hidden></div>
-  <div id="eventAnalysisOverview" class="event-analysis-overview" hidden></div>
-
+  <details id="pbGraphEventTimeline" class="pb-event-timeline-fold">
+    <summary>event timeline</summary>
+    <div class="pb-event-timeline-scroll"><div id="eventAnalysisOverview" class="event-analysis-overview" hidden></div></div>
+  </details>
 
 </div>
-  <section aria-label="graph" class="graph-panel pb-graph-standalone" id="graphPanel" hidden>
-<div class="graph-fixed-label">graph</div>
-<div class="chart-area">
-      <canvas id="compareChart"></canvas>
-    </div>
-    <div id="compareChartLegend" class="html-chart-legend"></div>
 
 
+
+
+
+<section id="pbGraphTables" class="pb-graph-tables" hidden aria-label="chart tables">
+  <div class="pb-chart-table-card">
     <details class="daily-growth-panel" id="dailyGrowthPanel" open>
       <summary>daily growth</summary>
       <div class="daily-growth-controls">
@@ -8338,7 +8398,12 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       </div>
     </details>
 
-    <div class="table-copy-row">
+
+  </div>
+  <details class="pb-chart-table-card pb-chart-compare-fold">
+    <summary>compare table</summary>
+    <div class="pb-chart-table-inner">
+      <div class="table-copy-row">
       <button id="copyCompareTable" class="copy-table-button" type="button">copy</button>
     </div>
 
@@ -8353,10 +8418,9 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       </thead>
       <tbody id="compareRows"></tbody>
 </table>
+</div>
+  </details>
 </section>
-
-
-
 
 <button id="pbBackToTop" type="button" aria-label="terug naar boven" title="back to top">
   <svg viewBox="0 0 56 54" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true" focusable="false">
@@ -8449,6 +8513,7 @@ const state={
 };
 
 let compareChart=null;
+let graphUiInteracted=false;
 
 
 const htmlLegendPlugin={
@@ -9200,48 +9265,68 @@ async function loadStatsData(){
       '#compareBots'
     );
 
+  const graphBotLabels=[...bots].sort((a,b)=>(b.creation_order??9999)-(a.creation_order??9999))
+      .map(b=>`<label class="pb-chart-bot-option"><input type="checkbox" value="${b.cid}"> ${displayLabel(b.cid)}</label>`).join('');
+  const graphTagButton=(tag,icon,title)=>`<button type="button" class="graph-event-filter" data-graph-tag="${tag}" title="${title}" aria-label="${title}" aria-pressed="false">${icon}<span>${title}</span></button>`;
   compareBots.innerHTML=`
-    <div class="graph-event-filters" data-graph-event-filters>
-      <button type="button" class="graph-event-filter" data-graph-tag="new" title="new" aria-label="new">💟</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="edit" title="edit" aria-label="edit">☑️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="avatar" title="avatar" aria-label="avatar">👤</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="capped" title="capped" aria-label="capped">🔄</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="freeze" title="freeze" aria-label="freeze">⏸️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="tagged" title="tagged" aria-label="tagged">⬆️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="alert" title="alert" aria-label="alert">⚠️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="banned" title="banned" aria-label="banned">🚫</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="violation" title="violation" aria-label="violation">⛔️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="suspected" title="suspected freeze" aria-label="suspected freeze">⏳</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="verified" title="verified discrepancy" aria-label="verified discrepancy">⭕️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="partial" title="partial freeze" aria-label="partial freeze">❄️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="total" title="total freeze" aria-label="total freeze">⏹️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="watching" title="watching" aria-label="watching">⏺️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="recovering" title="recovered" aria-label="recovered">▶️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="rankRelative" title="leaderboard · relative growth" aria-label="leaderboard relative growth">❤️‍🔥</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="rankBreakouts" title="breakouts · times normal growth" aria-label="breakouts">⚡️</button>
-      <button type="button" class="graph-event-filter" data-graph-tag="rankHot" title="popular · portfolio popularity score" aria-label="popular">🔥</button>
-    </div>
     <div class="graph-checkbox-internals" aria-hidden="true">
       <input type="checkbox" id="selectAllBots" tabindex="-1">
-      <input type="checkbox" id="totalProfile" value="__total__" tabindex="-1">
+      <input type="checkbox" id="totalProfile" value="__total__" tabindex="-1" checked>
     </div>
-  ` +
-  [...bots]
-    .sort(
-      (a,b)=>
-        (b.creation_order??9999)-
-        (a.creation_order??9999)
-    )
-    .map(b=>`
-      <label>
-        <input
-          type="checkbox"
-          value="${b.cid}"
-        >
-        ${displayLabel(b.cid)}
-      </label>
-    `)
-    .join('');
+    <details class="pb-chart-fold pb-chart-bots-fold" id="pbChartBotFold">
+      <summary>bots <small id="pbGraphBotCount">all characters</small></summary>
+      <div class="pb-chart-fold-body">
+        <input type="search" id="pbGraphBotSearch" placeholder="search bot" aria-label="search graph bots" autocomplete="off">
+        <div class="pb-chart-bot-list">
+          ${graphBotLabels}
+        </div>
+      </div>
+    </details>
+    <details class="pb-chart-fold pb-chart-tags-fold" id="pbChartTagFold">
+      <summary>tags</summary>
+      <div class="pb-chart-fold-body">
+        <div class="pb-chart-tag-simple">
+          <button class="pb-chart-planned" type="button" disabled title="Website Hub will provide this status later">🌐 web <small>later</small></button>
+          ${graphTagButton('capped','🔄','capped')}
+          ${graphTagButton('alert','⚠️','alert')}
+          ${graphTagButton('banned','🚫','banned')}
+          ${graphTagButton('violation','⛔','violation')}
+          ${graphTagButton('tagged','⬆️','booster (tagged)')}
+        </div>
+        <details class="pb-chart-subfold">
+          <summary>❄️ freeze</summary>
+          <div class="pb-chart-tag-chip-list">
+            ${graphTagButton('freeze','❄️','all freeze')}
+            ${graphTagButton('watching','⏺','watching')}
+            ${graphTagButton('suspected','⏳','suspected')}
+            ${graphTagButton('verified','⭕','verified')}
+            ${graphTagButton('partial','◩','partial')}
+            ${graphTagButton('total','⏹','total')}
+            ${graphTagButton('recovering','▶','recovering')}
+          </div>
+        </details>
+        <details class="pb-chart-subfold">
+          <summary>✎ edit</summary>
+          <div class="pb-chart-tag-chip-list">
+            ${graphTagButton('edit','✎','edit')}
+            ${graphTagButton('avatar','👤','avatar')}
+          </div>
+        </details>
+      </div>
+    </details>
+    <details class="pb-chart-fold pb-chart-rankings-fold" id="pbChartRankFold">
+      <summary>rankings</summary>
+      <div class="pb-chart-fold-body pb-chart-ranking-buttons">
+        ${graphTagButton('new','💟','new & hot')}
+        ${graphTagButton('rankRelative','❤️‍🔥','leaderboard')}
+        ${graphTagButton('rankBreakouts','⚡','breakouts')}
+        ${graphTagButton('rankHot','🔥','popular')}
+      </div>
+    </details>
+  `;
+  // Preserve the existing chart's first useful state: one portfolio growth line.
+  if(!graphUiInteracted) document.querySelector('#totalProfile').checked=true;
+  syncGraphSelectionTools();
 
 
   const eventBot=
@@ -10794,6 +10879,18 @@ document.querySelector('#compareBots')
       return;
     }
 
+    const freezeSubtags=['watching','suspected','verified','partial','total','recovering'];
+    if(tag==='freeze'){
+      document.querySelectorAll('#compareBots .graph-event-filter').forEach(other=>{
+        if(freezeSubtags.includes(other.dataset.graphTag))other.classList.remove('active');
+      });
+    }else if(freezeSubtags.includes(tag)){
+      document.querySelector('#compareBots [data-graph-tag="freeze"]')?.classList.remove('active');
+      document.querySelectorAll('#compareBots .graph-event-filter').forEach(other=>{
+        if(other!==button&&freezeSubtags.includes(other.dataset.graphTag))other.classList.remove('active');
+      });
+    }
+
     if(tag==='capped'){
       // 🔄 cycles: off → capped → uncapped → off
       if(cappedFilterMode==='off'){
@@ -10828,6 +10925,7 @@ document.querySelector('#graphTotalToggle')?.addEventListener('click',()=>{
 document.querySelector('#graphSelectToggle')?.addEventListener('click',()=>{
   const cb=document.querySelector('#selectAllBots');if(!cb)return;
   cb.checked=!cb.checked;
+  if(cb.checked){const total=document.querySelector('#totalProfile');if(total)total.checked=false;}
   cb.dispatchEvent(new Event('change',{bubbles:true}));
 });
 
@@ -16047,6 +16145,8 @@ function dashboardShowView(view,{scroll=true}={}){
   dashboardCurrentView=view;
   const chartCard=document.querySelector('#graphPanel');
   if(chartCard) chartCard.hidden=view!=='chart';
+  const chartTables=document.querySelector('#pbGraphTables');
+  if(chartTables)chartTables.hidden=view!=='chart';
   Object.entries(targets).forEach(([key,el])=>{
     if(!el) return;
     el.dataset.dashboardView=key;
@@ -20356,7 +20456,7 @@ function pbRenderBots(){if(!state.meta.size)return;
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
  <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
  <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${signed(b.growth)}</td>
@@ -20468,6 +20568,66 @@ dashboardInit();
 analyticsInitPersonalRecordControls();
 
 restoreSiteSession();
+
+
+/* Chart navigation and presets: presentation/state selection only; original datasets and storage untouched. */
+function pbGraphOpenPreset(kind='total',cid=''){
+  const inputs=[...document.querySelectorAll('#compareBots .pb-chart-bot-list input[type="checkbox"]')];
+  if(!inputs.length){dashboardShowView('chart');return;}
+  graphUiInteracted=true;
+  const period=document.getElementById('comparePeriod');
+  const metric=document.getElementById('compareMetric');
+  const from=document.getElementById('fromDate'),to=document.getElementById('toDate');
+  if(from)from.value='';if(to)to.value='';if(period){period.value='7';period.disabled=false;}
+  if(metric)metric.value='growth';
+  document.querySelectorAll('#compareBots .graph-event-filter.active').forEach(b=>{b.classList.remove('active','uncapped');b.setAttribute('aria-pressed','false');});
+  cappedFilterMode='off';
+  inputs.forEach(input=>{input.checked=false;});
+  const total=document.getElementById('totalProfile');if(total)total.checked=false;
+  if(kind==='single'){
+    const one=inputs.find(input=>input.value===cid);if(one)one.checked=true;
+  }else if(kind==='active'){
+    const active=new Set((state.bots||[]).filter(b=>Number.isFinite(b.growth)&&b.growth>0&&(!b.stale)).map(b=>String(b.cid)));
+    inputs.forEach(input=>{input.checked=active.has(input.value);});
+  }else if(kind==='new'){
+    document.querySelector('#compareBots [data-graph-tag="new"]')?.classList.add('active');
+    const current=recentGraphCreationCids(graphEventDateRange().to || topSlotsDefaultDate());
+    inputs.forEach(input=>{input.checked=current.has(input.value);});
+  }else if(['leader','breakouts','hot'].includes(kind)){
+    if(metric)metric.value=kind==='leader'?'rankRelative':kind==='breakouts'?'rankBreakouts':'rankHot';
+    // Keep the existing working ranking calculations; select public characters with data.
+    const current=new Set(rankingsPublicBots().filter(b=>Number.isFinite(b.messages)).map(b=>String(b.cid)));
+    inputs.forEach(input=>{input.checked=current.has(input.value);});
+  }else if(total){total.checked=true;}
+  dashboardShowView('chart');
+  syncGraphSelectionTools();syncGraphRankingButtons();
+  drawCompareChart();
+  setTimeout(()=>compareChart?.resize?.(),80);
+}
+document.addEventListener('click',e=>{
+  const fromBot=e.target.closest('[data-pb-graph-cid]');
+  if(fromBot){e.preventDefault();pbGraphOpenPreset('single',fromBot.dataset.pbGraphCid||'');return;}
+  const fromList=e.target.closest('[data-pb-graph-preset]');
+  if(fromList){e.preventDefault();pbGraphOpenPreset(fromList.dataset.pbGraphPreset||'active');return;}
+  const fromRanking=e.target.closest('[data-pb-open-rank-graph]');
+  if(fromRanking){e.preventDefault();pbGraphOpenPreset(rankingsConfig.tab||'new');return;}
+  const cap=e.target.closest('#graphCappedToggle');
+  if(cap){e.preventDefault();graphUiInteracted=true;document.querySelector('#compareBots [data-graph-tag="capped"]')?.click();
+    cap.classList.toggle('active',!!document.querySelector('#compareBots [data-graph-tag="capped"].active'));
+    cap.setAttribute('aria-pressed',String(cap.classList.contains('active')));
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id!=='pbGraphBotSearch')return;
+  const q=String(e.target.value||'').trim().toLowerCase();
+  document.querySelectorAll('#compareBots .pb-chart-bot-option').forEach(label=>{
+    label.hidden=!!q&&!label.textContent.toLowerCase().includes(q);
+  });
+});
+// Mark selection activity; never make the user's edits turn into fake historical records.
+document.addEventListener('change',e=>{
+  if(e.target.closest('.comparebox') && e.target.id!=='pbGraphBotSearch')graphUiInteracted=true;
+});
 
 </script>
 
