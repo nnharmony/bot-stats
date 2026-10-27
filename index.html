@@ -8342,6 +8342,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
   <section aria-label="graph" class="graph-panel pb-graph-standalone" id="graphPanel" hidden>
 <div class="graph-fixed-label">graph</div>
+<button id="openGraphFullscreen" class="graph-fullscreen-corner" type="button" aria-label="fullscreen graph" title="fullscreen">⛶</button>
 <div class="chart-area">
       <canvas id="compareChart"></canvas>
     </div>
@@ -8351,6 +8352,12 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 <div class="comparebox">
 
   <div class="pb-chart-periods">
+    <button id="latestDate" type="button">latest</button>
+    <label class="pb-graph-date"><span class="pb-chart-date-placeholder" aria-hidden="true">from</span><input id="fromDate" type="date" required aria-label="from date"></label>
+    <label class="pb-graph-date"><span class="pb-chart-date-placeholder" aria-hidden="true">to</span><input id="toDate" type="date" required aria-label="to date"></label>
+  </div>
+
+  <div class="pb-chart-metric-row">
     <label class="pb-period-select" aria-label="period">
       <select id="comparePeriod" aria-label="graph period">
         <option value="1">1-day</option>
@@ -8359,13 +8366,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
         <option value="all">all</option>
       </select>
     </label>
-    <label class="pb-graph-date"><span class="pb-chart-date-placeholder" aria-hidden="true">from</span><input id="fromDate" type="date" required aria-label="from date"></label>
-    <label class="pb-graph-date"><span class="pb-chart-date-placeholder" aria-hidden="true">to</span><input id="toDate" type="date" required aria-label="to date"></label>
-    <button id="latestDate" type="button">latest</button>
-  </div>
-
-  <div class="pb-chart-metric-row">
-    <button id="openGraphFullscreen" type="button">full ⛶</button>
     <select id="displayMode" aria-label="label style">
       <option value="name">name</option>
       <option value="cid">cid</option>
@@ -10533,8 +10533,8 @@ function drawCompareChart(){
             tooltip:{
               mode:'nearest',
               intersect:false,
-              titleFont:{size:11},
-              bodyFont:{size:11}
+              titleFont:{size:9},
+              bodyFont:{size:9}
             },
             zoom:{
               pan:{
@@ -10557,14 +10557,14 @@ function drawCompareChart(){
           scales:{
             x:{
               ticks:{
-                font:{size:11}
+                font:{size:9}
               }
             },
             y:{
               min:0,
               beginAtZero:true,
               ticks:{
-                font:{size:11},
+                font:{size:9},
                 callback:value=>rankingsMetric?graphRankingFormat(value,metric):compactAxisValue(value)
               }
             }
@@ -15810,7 +15810,7 @@ function buildFullscreenChart(){
       scales:{
         x:{
           ticks:{
-            font:{size:11},
+            font:{size:9},
             maxRotation:50,
             minRotation:50
           }
@@ -15819,7 +15819,7 @@ function buildFullscreenChart(){
           min:0,
           beginAtZero:true,
           ticks:{
-            font:{size:11},
+            font:{size:9},
             callback:value=>['rankRelative','rankBreakouts','rankHot'].includes(document.querySelector('#compareMetric')?.value)
               ? graphRankingFormat(value,document.querySelector('#compareMetric').value):compactAxisValue(value)
           }
@@ -15836,8 +15836,8 @@ function buildFullscreenChart(){
           enabled:true,
           mode:'nearest',
           intersect:false,
-          titleFont:{size:11},
-          bodyFont:{size:11}
+          titleFont:{size:9},
+          bodyFont:{size:9}
         },
         zoom:{
           pan:{
@@ -21124,17 +21124,14 @@ body.dashboard-shell #pbBotsView .pb-bots-filters .pb-status-filter-crown{
 </style>
 
 <style id="pb-chart-user-exact-compact-menu-26oct">
-/* Compact chart menu — latest user layout. */
+/* Compact chart menu — corrected to the user's intended layout. */
 body.dashboard-shell .comparebox{padding:10px 10px 12px!important;}
-body.dashboard-shell .comparebox .pb-chart-periods{
- display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
- align-items:center!important;gap:6px!important;margin:0 0 8px!important;
-}
+body.dashboard-shell .comparebox .pb-chart-periods,
 body.dashboard-shell .comparebox .pb-chart-metric-row,
 body.dashboard-shell .comparebox .pb-chart-quick-actions,
 body.dashboard-shell #compareBots .pb-chart-menu-row{
  display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
- gap:6px!important;margin:0 0 8px!important;
+ align-items:center!important;gap:6px!important;margin:0 0 8px!important;
 }
 body.dashboard-shell .comparebox .pb-chart-periods select,
 body.dashboard-shell .comparebox .pb-chart-periods button,
@@ -21149,20 +21146,31 @@ body.dashboard-shell #pbGraphEventTimeline{
  border-radius:10px!important;font-size:11px!important;line-height:1.1!important;
  white-space:nowrap!important;margin:0!important;
  background:#2b2532!important;color:#eee0ec!important;
- border:1px solid rgba(205,170,202,.42)!important;
+ border:1px solid rgba(225,154,197,.78)!important;
  box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods button,
+body.dashboard-shell .comparebox .pb-chart-metric-row button,
+body.dashboard-shell .comparebox .pb-chart-quick-actions button,
+body.dashboard-shell #compareBots .pb-chart-menu-trigger,
+body.dashboard-shell #pbGraphEventTimeline{
+ outline:none!important;
 }
 body.dashboard-shell .comparebox .pb-chart-quick-actions button.active,
 body.dashboard-shell #compareBots .pb-chart-menu-trigger.active{
- background:#563e5a!important;border-color:#dc8fc1!important;color:#f7d0ed!important;
+ background:#563e5a!important;border-color:#f09ccf!important;color:#f7d0ed!important;
 }
+body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select,
+body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select{display:block!important;min-width:0!important;margin:0!important;}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select select,
+body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select select{display:block!important;width:100%!important;}
 body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
  position:relative!important;display:block!important;min-width:0!important;height:34px!important;
  margin:0!important;cursor:pointer;
 }
 body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input{
  display:block!important;width:100%!important;height:34px!important;min-height:34px!important;
- padding:0 5px!important;font-size:10px!important;text-align:center!important;color-scheme:dark;
+ padding:0 8px!important;font-size:10px!important;text-align:center!important;color-scheme:dark;
 }
 body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder{
  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
@@ -21178,7 +21186,7 @@ body.dashboard-shell #compareBots .pb-chart-menu-trigger{padding:0 10px!importan
 body.dashboard-shell #compareBots .pb-chart-menu-trigger>span{flex:none;color:#bea3c0;font-size:14px;}
 body.dashboard-shell #compareBots .pb-chart-menu-panels{margin-top:0!important;min-width:0;}
 body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold:not([open]){display:none!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold{border-radius:10px!important;border:1px solid rgba(205,170,202,.28)!important;background:rgba(37,31,44,.82)!important;overflow:hidden!important;margin:0 0 8px!important;}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold{border-radius:10px!important;border:1px solid rgba(225,154,197,.52)!important;background:rgba(37,31,44,.82)!important;overflow:hidden!important;margin:0 0 8px!important;}
 body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>summary{display:none!important;}
 body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart-fold-body{
  padding:6px 10px 8px!important;border-top:0!important;
@@ -21187,9 +21195,8 @@ body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart
 body.dashboard-shell #compareBots .pb-chart-bot-list{max-height:195px!important;}
 body.dashboard-shell #compareBots #pbGraphBotSearch{
  height:32px!important;min-height:32px!important;margin:4px 0 6px!important;
- border:1px solid rgba(205,170,202,.34)!important;border-radius:9px!important;
+ border:1px solid rgba(225,154,197,.52)!important;border-radius:9px!important;
 }
-/* Tag lists stay list-like, not giant blocks. */
 body.dashboard-shell #compareBots .pb-chart-tag-simple,
 body.dashboard-shell #compareBots .pb-chart-tag-chip-list,
 body.dashboard-shell #compareBots .pb-chart-ranking-buttons{
@@ -21218,6 +21225,16 @@ body.dashboard-shell #compareBots .pb-chart-subfold>summary{padding:7px 9px!impo
 body.dashboard-shell #compareBots .pb-chart-subfold .pb-chart-tag-chip-list{padding:0 0 4px 14px!important;}
 body.dashboard-shell #compareBots .pb-chart-capped-internal[hidden],
 body.dashboard-shell #compareBots .graph-checkbox-internals .pb-chart-capped-internal{display:none!important;visibility:hidden!important;}
+body.dashboard-shell #graphPanel.graph-panel{position:relative!important;}
+body.dashboard-shell #graphPanel .graph-fullscreen-corner{
+ position:absolute!important;top:10px!important;right:10px!important;z-index:6!important;
+ width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ padding:0!important;border-radius:8px!important;background:rgba(43,37,50,.92)!important;
+ color:#f3edf3!important;border:1px solid rgba(225,154,197,.78)!important;
+ font-size:15px!important;line-height:1!important;box-shadow:0 1px 4px rgba(0,0,0,.18)!important;
+}
+body.dashboard-shell #graphPanel .graph-fixed-label{padding-right:38px!important;}
 /* subscriber counter behaves like a normal card, not a fold */
 body.dashboard-shell #subscriberPanel[open]>summary,
 body.dashboard-shell #subscriberPanel>summary{
@@ -21234,6 +21251,38 @@ body.dashboard-shell #subscriberPanel>summary::marker{content:"";}
  body.dashboard-shell .comparebox .pb-chart-metric-row select,
  body.dashboard-shell .comparebox .pb-chart-quick-actions button,
  body.dashboard-shell #compareBots .pb-chart-menu-trigger{font-size:10px!important;padding:0 5px!important;}
+}
+</style>
+
+<style id="pb-27oct-subscriber-ghost-visual-tweak">
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress{
+  overflow:visible!important;
+}
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::before,
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::after{
+  content:"";
+  position:absolute!important;
+  top:39%!important;
+  width:8px!important;
+  height:13px!important;
+  border-radius:2px!important;
+  background:rgba(191,141,169,.75)!important;
+  box-shadow:0 0 0 .35px rgba(191,141,169,.42)!important;
+  z-index:2!important;
+  pointer-events:none!important;
+}
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::before{left:42.6%!important;}
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::after{left:53.9%!important;}
+body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
+  color:rgba(242,220,233,.92)!important;
+  -webkit-text-stroke:.45px rgba(42,28,48,.62)!important;
+  text-shadow:
+    -1px 0 0 rgba(42,28,48,.36),
+    1px 0 0 rgba(42,28,48,.36),
+    0 -1px 0 rgba(42,28,48,.36),
+    0 1px 0 rgba(42,28,48,.36),
+    0 2px 4px rgba(33,21,39,.28)!important;
 }
 </style>
 </body>
