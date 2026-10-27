@@ -8383,7 +8383,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
   <div class="pb-chart-quick-actions" role="group" aria-label="graph quick selection">
     <button id="graphSelectToggle" type="button" aria-pressed="false" title="select all characters">select all</button>
     <button id="graphCappedToggle" type="button" aria-pressed="false" title="filter capped bots">capped</button>
-    <button id="graphTotalToggle" type="button" aria-pressed="false" title="total/profile line">total/profile</button>
+    <button id="graphTotalToggle" type="button" aria-pressed="false" title="total/profile line">profile</button>
   </div>
 
   <div id="graphHotRangeButtons" class="graph-hot-periods" role="group" aria-label="🔥 graph period" title="24H: daily · WEEK: since Monday update · FINAL: completed weeks · 7D: rolling" hidden>
@@ -21283,6 +21283,89 @@ body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashb
     0 -1px 0 rgba(42,28,48,.36),
     0 1px 0 rgba(42,28,48,.36),
     0 2px 4px rgba(33,21,39,.28)!important;
+}
+</style>
+
+<style id="pb-27oct-final-chart-menu-fix">
+/* final chart menu cleanup per user spec */
+body.dashboard-shell .comparebox{padding:10px 10px 12px!important;}
+body.dashboard-shell .comparebox .pb-chart-periods,
+body.dashboard-shell .comparebox .pb-chart-metric-row,
+body.dashboard-shell .comparebox .pb-chart-quick-actions,
+body.dashboard-shell #compareBots .pb-chart-menu-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+  align-items:center!important;
+  margin:0 0 8px!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods select,
+body.dashboard-shell .comparebox .pb-chart-periods button,
+body.dashboard-shell .comparebox .pb-chart-periods input,
+body.dashboard-shell .comparebox .pb-chart-metric-row select,
+body.dashboard-shell .comparebox .pb-chart-quick-actions button,
+body.dashboard-shell #compareBots .pb-chart-menu-trigger,
+body.dashboard-shell #pbGraphEventTimeline{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  padding:0 10px!important;
+  border-radius:10px!important;
+  font-size:11px!important;
+  line-height:1.1!important;
+  white-space:nowrap!important;
+  margin:0!important;
+  background:#2b2532!important;
+  color:#eee0ec!important;
+  border:1px solid rgba(112,98,121,.42)!important;
+  box-shadow:none!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
+  position:relative!important;display:block!important;min-width:0!important;height:34px!important;margin:0!important;cursor:pointer;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input{
+  display:block!important;width:100%!important;height:34px!important;min-height:34px!important;
+  padding:0 8px!important;font-size:10px!important;text-align:center!important;color-scheme:dark;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder{
+  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;color:#c7b8c9;font-size:11px!important;letter-spacing:.01em;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select,
+body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select{display:block!important;min-width:0!important;margin:0!important;}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select select,
+body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select select{display:block!important;width:100%!important;}
+/* pink outline only for the three quick buttons */
+body.dashboard-shell .comparebox .pb-chart-quick-actions button{
+  border:1px solid rgba(225,154,197,.78)!important;
+}
+body.dashboard-shell .comparebox .pb-chart-quick-actions button.active{
+  background:#563e5a!important;
+  border-color:#f09ccf!important;
+  color:#f7d0ed!important;
+}
+/* keep menu triggers calm, not pink outlined */
+body.dashboard-shell #compareBots .pb-chart-menu-trigger,
+body.dashboard-shell #pbGraphEventTimeline{
+  border-color:rgba(112,98,121,.42)!important;
+}
+/* fullscreen icon smaller, icon only */
+body.dashboard-shell #graphPanel .graph-fullscreen-corner{
+  position:absolute!important;top:10px!important;right:10px!important;z-index:6!important;
+  width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:0!important;border-radius:0!important;background:transparent!important;color:#f3edf3!important;
+  border:0!important;box-shadow:none!important;font-size:13px!important;line-height:1!important;
+}
+body.dashboard-shell #graphPanel .graph-fixed-label{padding-right:22px!important;}
+/* subscriber ghost numerals more subtle */
+body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
+  color:rgba(242,220,233,.88)!important;
+  -webkit-text-stroke:.2px rgba(42,28,48,.34)!important;
+  text-shadow:0 1px 2px rgba(33,21,39,.18)!important;
 }
 </style>
 </body>
