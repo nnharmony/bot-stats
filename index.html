@@ -7451,7 +7451,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 <section id="dashboardFreeze" class="freeze-center" data-dashboard-view="freeze" hidden>
   <div class="freeze-center-top">
-    <div><h2>⏸️ freeze center</h2><small>patterns · freeze history · actions · message verification</small></div>
+    <div><h2>freeze center</h2><small>patterns · freeze history · actions · message verification</small></div>
     <button type="button" class="freeze-center-small-button" data-open-dashboard-view="chart">graph ↗</button>
   </div>
   <section class="freeze-center-card">
@@ -7464,11 +7464,16 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <div id="freezeCenterGrowth" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-card">
-    <div class="freeze-center-head"><strong>⚠️ pattern monitor</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyPatterns">copy</button></div>
+    <div class="freeze-center-head"><strong>check activity</strong></div>
+    <div class="freeze-center-muted">check when you've chatted or noticed collectors · then the next two daily updates are checked.</div>
+    <div id="freezeCenterCheckActivity" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>pattern monitor</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyPatterns">copy</button></div>
     <div id="freezeCenterPatterns" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-card">
-    <div class="freeze-center-head"><strong>⏸️ active freezes</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyActive">copy</button></div>
+    <div class="freeze-center-head"><strong>active freezes</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyActive">copy</button></div>
     <div id="freezeCenterActive" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-card">
@@ -7518,8 +7523,8 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <div class="freeze-center-head"><strong>freeze timeline</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyTimeline">copy</button></div>
     <div id="freezeCenterTimeline" class="freeze-center-list"></div>
   </section>
-  <section class="freeze-center-links"><button type="button" id="freezeCenterManual">+ manual freeze event</button><button type="button" data-open-dashboard-view="backfill">historical backfill</button></section>
-  <p class="freeze-center-note">Freeze assessments are indications from historical counts, patterns and verified tests. Actions are observations, not proof of cause. A missing, carried or rounded measurement is not a confirmed zero-growth day.</p>
+  <section class="freeze-center-links"><button type="button" data-open-dashboard-view="backfill">historical backfill</button></section>
+  <p class="freeze-center-note">Suspected stalls stay inactive until you use check activity. Two subsequent exact daily updates with zero growth confirm a freeze. Activity checks are saved on this device; old events are retained for later cleanup.</p>
 </section>
 
 <section id="dashboardTopSlots" class="dashboard-slots" data-dashboard-view="slots" hidden>
@@ -7618,7 +7623,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <button id="backfillDeleteDay" type="button">delete date</button>
     </div>
     <div class="backfill-editor-note">
-      Values start from the last known historical stand so you only need to change what changed. Unsaved M/C and event edits stay in place when you switch sorting, search, or show/hide later bots. Tap <b>+ event</b> on a bot to add avatar, violation, edit, alert, capped, banned, freeze or tagged on this date. <b>new</b> follows the creation date automatically. Saving confirms the date and syncs event edits when Events is unlocked. Blank M/C means unknown — never 0. Exact values like <b>802</b> stay exact. On mobile, <b>1,8</b> is read as ≈1.8K, or ≈1.8M when K would move backwards.
+      Values start from the last known historical stand so you only need to change what changed. Unsaved M/C and event edits stay in place when you switch sorting, search, or show/hide later bots. Tap <b>+ event</b> on a bot to add violation, ban, edit, avatar, web or booster on this date. <b>new</b> follows the creation date automatically. Saving confirms the date and syncs event edits when Events is unlocked. Blank M/C means unknown — never 0. Exact values like <b>802</b> stay exact. On mobile, <b>1,8</b> is read as ≈1.8K, or ≈1.8M when K would move backwards.
     </div>
     <div id="backfillSaveStatus" class="backfill-status" style="padding:0 12px 12px"></div>
   </section>
@@ -9347,8 +9352,8 @@ async function loadStatsData(){
           </div>
         </details>
         <div class="pb-chart-tag-simple">
-          ${graphTagButton('tagged','⬆️','booster (tagged)')}
-          ${graphTagButton('alert','⚠️','alert')}
+          ${graphTagButton('tagged','🌐','web')}
+          ${graphTagButton('alert','🔝','booster')}
           ${graphTagButton('banned','🚫','banned')}
           ${graphTagButton('violation','⛔','violation')}
         </div>
@@ -9836,11 +9841,10 @@ function freezePeriodsForCid(cid){
 function freezeHistory(){
   const result=[];
   state.meta.forEach((meta,cid)=>{
-    const manual=manualFreezePeriodsForCid(cid).filter(item=>!item.active);
+    // Count-based history only; legacy manual entries remain in the Events archive.
     const automatic=freezeComputedPeriodsForCid(cid,{includeSuspected:true})
-      .filter(item=>!item.active)
-      .filter(item=>!manual.some(manualItem=>freezePeriodsOverlap(item,manualItem)));
-    [...manual,...automatic].forEach(item=>result.push({...item,name:meta?.name||cid}));
+      .filter(item=>!item.active);
+    automatic.forEach(item=>result.push({...item,name:meta?.name||cid}));
   });
   return result.sort((a,b)=>
     String(b.end||'').localeCompare(String(a.end||''))||
@@ -9934,7 +9938,7 @@ function renderEventAnalysisOverview(){
 
             const label=matching.map(tag=>{
               if(tag==='tagged' && event.status?.tagged===false){
-                return '⬇️';
+                return '○';
               }
               return eventTagIcon(tag);
             }).join(' ');
@@ -10134,7 +10138,7 @@ function renderFreezeOverview(){
     </div>
 
     <div class="freeze-overview-head">
-      <span>⏸️ active freezes</span>
+      <span>active freezes</span>
       <div style="display:flex;align-items:center;gap:8px">
         <span class="freeze-overview-sub">${infos.length} ${infos.length===1?'bot':'bots'}</span>
         <button type="button" class="freeze-copy-button" id="copyActiveFreezes">copy</button>
@@ -11139,16 +11143,15 @@ document.querySelector('#displayMode')
 const EVENTS_API='https://bot-events.nnharmony.workers.dev';
 const EVENTS_PROFILE='main';
 
+/* Six manual controls. Keep original persisted IDs ('tagged' and 'alert')
+   so old records, filters and on/off transitions remain readable. */
 const EVENT_TAGS=[
-  {id:'new',label:'💟 new'},
-  {id:'capped',label:'🔄 capped'},
-  {id:'alert',label:'⚠️ alert'},
-  {id:'avatar',label:'👤 avatar'},
-  {id:'freeze',label:'⏸️ freeze'},
-  {id:'banned',label:'🚫 banned'},
+  {id:'violation',label:'🆘 violation'},
+  {id:'banned',label:'🌙 ban'},
   {id:'edit',label:'☑️ edit'},
-  {id:'tagged',label:'⬆️ tagged'},
-  {id:'violation',label:'⛔️ violation'}
+  {id:'avatar',label:'👤 avatar'},
+  {id:'tagged',label:'🌐 web'},
+  {id:'alert',label:'🔝 booster'}
 ];
 
 const PERSISTENT_TAGS=new Set(['banned','freeze','tagged']);
@@ -13570,19 +13573,19 @@ function eventTagIcon(tag){
   const icons={
     new:'💟',
     capped:'🔄',
-    alert:'⚠️',
+    alert:'🔝',
     action:'🧪',
     avatar:'👤',
     freeze:'⏸️',
-    banned:'🚫',
+    banned:'🌙',
     edit:'☑️',
-    tagged:'⬆️',
-    violation:'⛔️',
+    tagged:'🌐',
+    violation:'🆘',
     created:'💟',
     unbanned:'📴',
     __banned_off__:'📴',
     __freeze_off__:'▶️',
-    __tagged_off__:'⬇️',
+    __tagged_off__:'🌐',
     top:'🔝'
   };
 
@@ -14241,8 +14244,8 @@ async function loadEvents(){
 
     await Promise.all([loadActions(),loadFreezeEvents()]);
     await syncActionVerificationResults();
-    const autoChanged=await syncAutomaticFreezeEvents();
-    if(autoChanged) await loadFreezeEvents();
+    // Legacy auto-detector is now read-only. Activity checks control live freezes;
+    // don't silently add old-style 'freeze detected' events to the cloud ledger.
 
     topSlotsSyncFromEvents();
     backfillSyncFromEvents();
@@ -14320,12 +14323,12 @@ function eventCopyLabels(event){
     return freezeAutoEventLabel(event);
   }
   const labels=[...(event.tags || [])].map(eventTagLabel);
-  if(event.status?.banned===true) labels.push('🚫 banned');
+  if(event.status?.banned===true) labels.push('🌙 ban');
   if(event.status?.freeze===true) labels.push('⏸️ freeze started');
-  if(event.status?.tagged===true) labels.push('⬆️ tagged');
-  if(event.status?.banned===false) labels.push('🔘 unbanned');
+  if(event.status?.tagged===true) labels.push('🌐 web');
+  if(event.status?.banned===false) labels.push('🌙 ban off');
   if(event.status?.freeze===false) labels.push('▶️ freeze ended');
-  if(event.status?.tagged===false) labels.push('⬇️ untagged');
+  if(event.status?.tagged===false) labels.push('🌐 web off');
   return [...new Set(labels)].join(', ') || '—';
 }
 
@@ -14477,7 +14480,7 @@ function renderEvents(){
       .map(tag=>{
         if(tag==='__banned_off__') return `<span class="tag-chip">📴</span>`;
         if(tag==='__freeze_off__') return `<span class="tag-chip">▶️</span>`;
-        if(tag==='__tagged_off__') return `<span class="tag-chip">⬇️</span>`;
+        if(tag==='__tagged_off__') return `<span class="tag-chip" title="web off">🌐</span>`;
         return `<span class="tag-chip">${eventTagIcon(tag)}</span>`;
       })
       .join('');
@@ -14760,9 +14763,12 @@ async function saveEvent(){
   const date=document.querySelector('#eventDate').value;
   const cid=document.querySelector('#eventBot').value;
   const selected=selectedEventTags();
-  let tags=selected.filter(tag=>!PERSISTENT_TAGS.has(tag));
-
   const existingToday=currentSelectionEvent();
+  const allowedUi=new Set(EVENT_TAGS.map(tag=>tag.id));
+  let tags=[
+    ...(existingToday?.tags||[]).filter(tag=>!allowedUi.has(tag)),
+    ...selected.filter(tag=>!PERSISTENT_TAGS.has(tag))
+  ];
   const inheritedNew=
     selected.includes('new') &&
     newStatusActiveAtSelection() &&
@@ -14775,7 +14781,8 @@ async function saveEvent(){
   const before=persistentStateBeforeSelection();
   const current={
     banned:selected.includes('banned'),
-    freeze:selected.includes('freeze'),
+    // Keep an old manual freeze status in storage without exposing/editing it here.
+    freeze:before.freeze,
     tagged:selected.includes('tagged')
   };
 
@@ -14817,7 +14824,11 @@ async function saveEvent(){
           date,
           cid,
           tags,
-          status:persistent,
+          status:{
+            ...Object.fromEntries(Object.entries(existing?.status||{}).filter(([tag])=>!PERSISTENT_TAGS.has(tag))),
+            ...(Object.prototype.hasOwnProperty.call(existing?.status||{},'freeze')?{freeze:existing.status.freeze}:{}),
+            ...persistent
+          },
           note
         })
       }
@@ -15464,8 +15475,8 @@ function fullscreenPersistentTimelineEntries(tag,cids){
     if(!type) return;
 
     const icons=tag==='tagged'
-      ? {on:'⬆️',off:'⬇️'}
-      : {on:'🚫',off:'📴'};
+      ? {on:'🌐',off:'○'}
+      : {on:'🌙',off:'📴'};
 
     result.push({
       type,
@@ -15620,12 +15631,12 @@ function renderFullscreenTimelines(){
       fullscreenPersistentFilters('freeze','⏸️','▶️')
     ),
     fullscreenTimelineDetails(
-      '⬆️ tagged',
+      '🌐 web',
       tagged,
-      fullscreenPersistentFilters('tagged','⬆️','⬇️')
+      fullscreenPersistentFilters('tagged','🌐','○')
     ),
     fullscreenTimelineDetails(
-      '⚠️ alert',
+      '🔝 booster',
       fullscreenSimpleTimelineEntries('alert',cids)
     ),
     fullscreenTimelineDetails(
@@ -15747,7 +15758,7 @@ function renderFullscreenBots(){
     <div class="graph-event-filters" data-fs-graph-event-filters>
       ${[
         ['new','💟'],['edit','☑️'],['avatar','👤'],['capped','🔄'],
-        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️'],
+        ['freeze','👻'],['tagged','🌐'],['alert','🔝'],['banned','🌙'],['violation','🆘'],
         ['suspected','⏳'],['verified','⭕️'],['partial','❄️'],['total','⏹️'],['watching','⏺️'],['recovering','▶️'],
         ['rankRelative','❤️‍🔥'],['rankBreakouts','⚡️'],['rankHot','🔥']
       ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${(activeTags.includes(tag)||document.querySelector('#compareMetric')?.value===tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
@@ -16135,10 +16146,10 @@ function freezeCenterRender(){
   const timeline=[...(freezeAutoState.events||[]).filter(relevant),...manual]
     .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
   const summary=[
-    ['total',subset.filter(item=>item.status==='total').length],
-    ['partial',subset.filter(item=>item.status==='partial').length],
-    ['suspected',subset.filter(item=>item.status==='suspected').length],
-    ['verified',subset.filter(item=>item.status==='verified').length]
+    ['inactive',subset.filter(item=>item.status==='inactive').length],
+    ['checking',subset.filter(item=>item.status==='checking').length],
+    ['freeze',subset.filter(item=>item.status==='total').length],
+    ['watching',subset.filter(item=>item.status==='watching').length]
   ];
   const counter=document.querySelector('#freezeCenterSummary');
   if(counter)counter.innerHTML=summary.map(([label,value])=>`<div class="freeze-center-stat"><strong>${value}</strong><small>${label}</small></div>`).join('');
@@ -16155,18 +16166,31 @@ function freezeCenterRender(){
       </div>`).join(''):'<div class="freeze-center-muted">Not enough consecutive exact readings yet.</div>';
     }
   }
+  const checkBox=document.querySelector('#freezeCenterCheckActivity');
+  if(checkBox){
+    const checks=subset.filter(item=>['inactive','checking','total'].includes(item.status));
+    checkBox.innerHTML=checks.length?checks.map(item=>{
+      const name=archiveEscape(names.get(item.cid)||item.cid);
+      const checked=pbFreezeActivityResult(item.cid,latest);
+      const label=item.status==='inactive'?'inactive · check activity':
+        item.status==='checking'?`checking · ${checked.updates}/2 updates`:'freeze confirmed';
+      const detail=Number.isFinite(item.growth)?`latest growth ${freezePatternCompact(item.growth)}`:'no exact growth';
+      const control=item.status==='inactive'?`<button type="button" class="freeze-center-small-button pb-activity-check-btn" data-freeze-activity-check="${archiveEscape(item.cid)}">check activity</button>`:'';
+      return `<div class="freeze-center-row pb-freeze-check-row"><div><b>${name}</b><div class="freeze-center-row-meta">${archiveEscape(label+' · '+detail)}</div></div>${control}</div>`;
+    }).join(''):'<div class="freeze-center-muted">no activity checks needed.</div>';
+  }
   const patternBox=document.querySelector('#freezeCenterPatterns');
   if(patternBox)patternBox.innerHTML=patterns.length?patterns.map(item=>freezeCenterRow(names.get(item.cid)||item.cid,
-    ({total:'⏸️ total',partial:'⚠️ partial',verified:'🧪 verified',suspected:'⭕ suspected',watching:'watching',recovering:'recovering'})[item.status]||item.status,
+    ({total:'freeze',checking:'checking',inactive:'inactive',watching:'watching',recovering:'recovering'})[item.status]||item.status,
     [Number.isFinite(item.growth)?'growth '+freezePatternCompact(item.growth):'',Number.isFinite(item.baseline)?'7d median '+freezePatternCompact(item.baseline):'',(item.reasons||[]).slice(0,2).join(' · ')].filter(Boolean).join(' · '),item.cid)).join(''):'<div class="freeze-center-muted">no suspicious patterns in this selection.</div>';
   const activeBox=document.querySelector('#freezeCenterActive');
   if(activeBox)activeBox.innerHTML=active.length?active.map(item=>freezeCenterRow(item.name,
-    item.status==='verified'?'🧪 verified':item.type==='partial'?'⚠️ partial':'⏸️ total',
+    'confirmed freeze',
     `${item.startKnown===false?'start uncertain':'since '+freezeCenterDate(item.since)} · ${item.days} ${item.days===1?'day':'days'} · ${(item.reasons||[]).slice(0,2).join(' · ')}`.trim(),item.cid)).join(''):'<div class="freeze-center-muted">no active freezes.</div>';
   const historyBox=document.querySelector('#freezeCenterHistory');
   if(historyBox)historyBox.innerHTML=history.length?history.map(item=>freezeCenterRow(item.name,
     `${item.days} ${item.days===1?'day':'days'}`,
-    `${item.type||item.status||'freeze'} · ${item.startKnown===false?'start uncertain':freezeCenterDate(item.start)} → ${freezeCenterDate(item.end)}`,
+    `${item.source==='historical-pattern'?'estimated '+(item.type||'freeze'):(item.type||item.status||'freeze')} · ${item.startKnown===false?'start uncertain':freezeCenterDate(item.start)} → ${freezeCenterDate(item.end)}`,
     item.cid)).join(''):'<div class="freeze-center-muted">no completed freezes in this selection.</div>';
   const actionsBox=document.querySelector('#freezeCenterActions');
   if(actionsBox)actionsBox.innerHTML=actions.length?actions.map(item=>{
@@ -16199,6 +16223,14 @@ function freezeCenterInit(){
   if(!root)return;
   root.querySelector('#freezeCenterBot')?.addEventListener('change',e=>freezeCenterSetBot(e.target.value));
   root.addEventListener('click',e=>{
+    const checking=e.target.closest('[data-freeze-activity-check]');
+    if(checking){
+      const cid=checking.dataset.freezeActivityCheck;
+      if(!pbFreezeActivityMark(cid)){
+        checking.textContent='no exact baseline';
+      }
+      return;
+    }
     const cid=e.target.closest('[data-freeze-center-cid]');
     if(cid){freezeCenterSetBot(cid.dataset.freezeCenterCid);return}
     const edit=e.target.closest('[data-freeze-action-edit]');
@@ -16212,12 +16244,7 @@ function freezeCenterInit(){
     const item=e.target.closest('[data-freeze-center-cid]');
     if(item&&(e.key==='Enter'||e.key===' ')){e.preventDefault();freezeCenterSetBot(item.dataset.freezeCenterCid)}
   });
-  root.querySelector('#freezeCenterManual')?.addEventListener('click',()=>{
-    dashboardShowView('events');
-    const input=document.querySelector('#eventBot');
-    if(input && freezeCenterCid)input.value=freezeCenterCid;
-    loadEventForSelection();
-  });
+
 }
 
 /* ===== dashboard shell controller ===== */
@@ -17191,7 +17218,7 @@ function topSlotsRenderHome(){
       <div class="dashboard-bot-row">
         <span class="dashboard-rank">${index+1}</span>
         <div>
-          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}</div>
+          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}${pbManualBoosterInline(bot.cid)}</div>
           <div class="dashboard-bot-meta ${bot.stale?'stale':''}">${bot.stale?'⚠ ':''}${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
         </div>
         <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>
@@ -17223,7 +17250,7 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbManualBoosterInline(cid)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
@@ -17603,15 +17630,72 @@ function freezeRecentVerified(cid,date){
     .sort((a,b)=>String(b.endDate||'').localeCompare(String(a.endDate||'')))[0] || null;
 }
 
+/* Lightweight freeze confirmation (not the research / test center).
+   Stored separately from old Events to preserve legacy records and CV dates.
+   Only exact, consecutive daily message batches are valid verification data. */
+const PB_ACTIVITY_CHECK_KEY='pbFreezeActivityChecks:main:v1';
+let pbActivityChecks=null;
+function pbLoadActivityChecks(){
+  if(pbActivityChecks) return pbActivityChecks;
+  try{
+    const value=JSON.parse(localStorage.getItem(PB_ACTIVITY_CHECK_KEY)||'{}');
+    pbActivityChecks=value && typeof value==='object' && !Array.isArray(value)?value:{};
+  }catch(_){pbActivityChecks={}}
+  return pbActivityChecks;
+}
+function pbSaveActivityChecks(){
+  try{localStorage.setItem(PB_ACTIVITY_CHECK_KEY,JSON.stringify(pbLoadActivityChecks()))}catch(_){ }
+}
+function pbFreezeActivityResult(cid,date){
+  const record=pbLoadActivityChecks()[String(cid)];
+  if(!record?.date || !/^\d{4}-\d{2}-\d{2}$/.test(record.date) || date<record.date)return {status:'unchecked',updates:0};
+  const rows=freezeGrowthSeriesForCid(cid).filter(row=>row.date>record.date&&row.date<=date);
+  let last=record.date,valid=[];
+  for(const row of rows){
+    if(freezeDateDiffDays(last,row.date)!==1)break; // no inferred zero for missing dates
+    if(!Number.isFinite(row.growth)||row.growth<0)break;
+    valid.push(row);last=row.date;
+    if(valid.length>=2)break;
+  }
+  if(valid.some(row=>row.growth>0))return {status:'recovered',updates:valid.length,startDate:record.date};
+  if(valid.length>=2){
+    // A later positive batch ends a confirmed freeze; don't leave it active forever.
+    const later=rows.filter(row=>row.date>valid[1].date);
+    if(later.some(row=>row.growth>0))return {status:'recovered',updates:2,startDate:record.date};
+    return {status:'confirmed',updates:2,startDate:record.date,confirmedDate:valid[1].date};
+  }
+  return {status:'pending',updates:valid.length,startDate:record.date};
+}
+function pbFreezeActivityMark(cid){
+  const date=topSlotsDefaultDate();
+  if(!cid||!date)return false;
+  const row=freezeGrowthSeriesForCid(cid).find(item=>item.date===date);
+  // Don't start a check without an exact current baseline to count two future batches from.
+  if(!row || !Number.isFinite(row.now))return false;
+  const records=pbLoadActivityChecks();
+  records[String(cid)]={date,messages:row.now};
+  pbSaveActivityChecks();
+  freezeCenterRender();
+  freezePatternRenderHome();
+  try{dashboardRenderHome()}catch(_){ }
+  try{render()}catch(_){ }
+  return true;
+}
+function pbFinishActivityCheck(cid,date){
+  const checks=pbLoadActivityChecks();
+  if(!checks[cid])return;
+  delete checks[cid];
+  const closed=checks.__resolved||{};
+  closed[cid]=date;
+  checks.__resolved=closed;
+  pbSaveActivityChecks();
+}
 function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
   const full=freezeGrowthSeriesForCid(cid).filter(row=>row.date<=date);
   const current=full.at(-1);
-  const manual=freezeManualStateAtDate(cid,date);
-  const openAuto=options.ignoreAuto?null:freezeAutoOpenPeriodForCid(cid);
+  const manual={active:false,startDate:''}; // Legacy manual flags do not drive live freeze state.
+  const openAuto=null; // Legacy automatic events are history, not activity confirmation.
   if(!current || current.date!==date){
-    if(manual.active){
-      return {cid,date,status:'total',freezeType:'total',active:true,score:5,reasons:['manual freeze active'],sequence:[],baseline:null,growth:null,slotRank:null,startDate:manual.startDate,startKnown:true,verified:false,recovered:false};
-    }
     return {cid,date,status:'watching',freezeType:'watching',active:false,score:0,reasons:['insufficient exact data for this date'],sequence:[],baseline:null,growth:null,slotRank:null,startDate:'',startKnown:true,verified:false,recovered:false,insufficient:true};
   }
 
@@ -17736,6 +17820,31 @@ function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
   else if(startRow?.date) startDate=startRow.date;
   else if(active) startDate=date;
 
+  // Pattern-only historical reconstruction remains possible, but is never
+  // silently promoted to a verified current freeze.
+  if(!options.historical){
+    const check=pbFreezeActivityResult(cid,date);
+    const suspicious=['total','partial','verified','suspected'].includes(status) ||
+      (currentGrowth===0 && score>=1);
+    const resolved=pbLoadActivityChecks().__resolved?.[String(cid)];
+    if(check.status==='confirmed'){
+      status='total';freezeType='total';active=true;
+      startDate=check.startDate;
+      reasons.push('activity checked · 2 daily updates with 0 messages');
+    }else if(check.status==='pending'){
+      status='checking';freezeType='checking';active=false;
+      reasons.push(`activity checked · ${check.updates}/2 updates`);
+    }else{
+      if(check.status==='recovered')pbFinishActivityCheck(String(cid),date);
+      if(suspicious && !(resolved && current.date<=resolved)){
+        status='inactive';freezeType='inactive';active=false;
+        reasons.push('check activity required');
+      }else{
+        status='normal';freezeType='normal';active=false;
+      }
+    }
+  }
+
   return {
     cid,date,status,freezeType,active,score,reasons,signals,sequence,baseline,growth:currentGrowth,ratio,slotRank,
     collectorGrowth,zeroStreak,legacyThreshold,suspectThreshold,confirmThreshold,startDate,startKnown:true,startMessages,
@@ -17755,7 +17864,7 @@ function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
   let current=null;
 
   rows.forEach(row=>{
-    const assessment=freezeAssessmentForCid(cid,row.date,{ignoreAuto:true});
+    const assessment=freezeAssessmentForCid(cid,row.date,{ignoreAuto:true,historical:true});
     const qualifies=assessment.active || (includeSuspected && assessment.status==='suspected');
     const type=assessment.status==='verified'?'verified':assessment.freezeType;
     if(!qualifies){
@@ -17764,7 +17873,7 @@ function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
     }
 
     if(!current){
-      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:assessment.status,source:'computed',startKnown:true};
+      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:'historical estimate',source:'historical-pattern',startKnown:true};
       return;
     }
 
@@ -17775,16 +17884,17 @@ function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
       if(type==='verified') current.type='verified';
       else if(type==='total' && current.type!=='verified') current.type='total';
       else if(current.type==='suspected' && type==='partial') current.type='partial';
-      current.status=assessment.status;
+      current.status='historical estimate';
     }else{
       current.active=false;periods.push(current);
-      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:assessment.status,source:'computed',startKnown:true};
+      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:'historical estimate',source:'historical-pattern',startKnown:true};
     }
   });
 
   if(current){
     const latest=rows.at(-1)?.date;
-    current.active=latest===topSlotsDefaultDate() && freezeAssessmentForCid(cid,latest,{ignoreAuto:true}).active;
+    current.active=latest===topSlotsDefaultDate() && freezeAssessmentForCid(cid,latest).active;
+    if(!current.active){current.source='historical-pattern';current.status='historical estimate';}
     periods.push(current);
   }
 
@@ -17908,7 +18018,7 @@ function freezePatternForCid(cid,date=topSlotsDefaultDate()){
 
 function freezePatternLatest(){
   const date=topSlotsDefaultDate();
-  const priority={verified:8,total:7,partial:6,suspected:5,recovering:2,watching:1,normal:0};
+  const priority={total:7,checking:6,inactive:5,recovering:2,watching:1,normal:0};
   const results=[];
   state.meta.forEach((meta,cid)=>{
     const item=freezePatternForCid(cid,date);
@@ -17928,8 +18038,8 @@ function freezePatternRenderHome(){
     return;
   }
   box.innerHTML=items.map(item=>{
-    const icon=item.status==='total'?'⏸️':item.status==='partial'?'⚠️':item.status==='verified'?'🧪':item.status==='suspected'?'⭕️':item.status==='watching'?'👁':'⚠️';
-    const label=item.status==='total'?'total freeze':item.status==='partial'?'partial freeze':item.status==='verified'?'verified discrepancy':item.status==='suspected'?'suspected freeze':item.status;
+    const icon=item.status==='total'?'👻':item.status==='inactive'?'○':item.status==='checking'?'◌':item.status==='watching'?'·':'○';
+    const label=item.status==='total'?'freeze':item.status==='checking'?'checking activity':item.status==='inactive'?'inactive':item.status;
     const baseline=Number.isFinite(item.baseline)?`7d median ${freezePatternCompact(item.baseline)}`:'';
     const reason=item.reasons.slice(0,2).join(' · ') || baseline || 'watching early pattern';
     const sequence=item.sequence.map(freezePatternCompact).join(' · ');
@@ -17940,7 +18050,7 @@ function freezePatternRenderHome(){
         <div class="dashboard-freeze-pattern-reason">${archiveEscape([baseline,reason].filter(Boolean).join(' · '))}</div>
         <div class="dashboard-freeze-sequence">${archiveEscape(sequence)}</div>
       </div>
-      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering'].includes(item.status)?'':` · ${item.score}`}</span>
+      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering','inactive','checking'].includes(item.status)?'':` · ${item.score}`}</span>
     </div>`;
   }).join('');
 }
@@ -18950,7 +19060,7 @@ function backfillEventSummaryItems(cid,date){
   PERSISTENT_TAGS.forEach(tag=>{
     if(Object.prototype.hasOwnProperty.call(event?.status||{},tag)){
       if(event.status[tag]===true) items.push({tag,label:eventTagLabel(tag),draft:false});
-      else items.push({tag:`__${tag}_off__`,label:`${eventTagIcon(`__${tag}_off__`)} ${tag} off`,draft:false});
+      else items.push({tag:`__${tag}_off__`,label:`${eventTagIcon(`__${tag}_off__`)} ${tag==='tagged'?'web':tag==='banned'?'ban':tag} off`,draft:false});
     }
   });
   if(String(backfillEffectiveCreationDate(cid)||'')===String(date)) items.unshift({tag:'new',label:'💟 new',draft:false,auto:true});
@@ -18995,6 +19105,7 @@ async function backfillSaveEventDrafts(date,entries){
     const before=backfillPersistentStateAt(cid,date,{before:true});
     const status={};
     PERSISTENT_TAGS.forEach(tag=>{
+      if(tag==='freeze') return; // Historical freeze entries stay archived, not edited by six-tag picker.
       const desired=selected.has(tag);
       if(desired!==before[tag]) status[tag]=desired;
     });
@@ -19011,7 +19122,7 @@ async function backfillSaveEventDrafts(date,entries){
 
     const preservedStatus={};
     Object.entries(existing?.status||{}).forEach(([key,value])=>{
-      if(!PERSISTENT_TAGS.has(key)) preservedStatus[key]=value;
+      if(!PERSISTENT_TAGS.has(key) || key==='freeze') preservedStatus[key]=value;
     });
     const finalStatus={...preservedStatus,...status};
     const note=existing?.note || '';
@@ -19175,7 +19286,7 @@ function backfillRenderEditor(){
       </div>
       <div class="backfill-event-picker" ${eventOpen?'':'hidden'}>
         ${eventButtons}${autoNew}
-        <small class="backfill-event-help">banned, freeze and tagged are persistent states from this date; new follows the creation date automatically.</small>
+        <small class="backfill-event-help">ban and web are on/off states · new, freeze and capped are automatic.</small>
       </div>
     </div>`;
   }).join('') : '<div class="dashboard-empty">no bots match this date/search. use “show later / unknown” if you need to correct a creation date.</div>';
@@ -20335,8 +20446,9 @@ function pbBotStatus(cid,date){
  try{
   const f=freezePatternForCid(cid,date||topSlotsDefaultDate());
   if(!f||f.insufficient)return '';
-  if(f.active||['total','partial','verified'].includes(f.status))return 'freeze';
-  if(['suspected','watching'].includes(f.status))return 'watch';
+  if(f.active && f.status==='total')return 'freeze';
+  if(f.status==='inactive')return 'inactive';
+  if(f.status==='checking')return 'checking';
  }catch(_){ }
  return '';
 }
@@ -20373,9 +20485,15 @@ function pbAttentionInline(cid,date){
 }
 function pbStatusInline(cid,date){
  const status=pbBotStatus(cid,date);
- if(status==='freeze')return '<span class="pb-status-inline" title="freeze" aria-label="freeze">*</span>';
- if(status==='watch')return '<span class="pb-status-inline pb-watching" title="watching" aria-label="watching">⌐⌐</span>';
+ if(status==='freeze')return '<span class="pb-status-inline" title="confirmed freeze" aria-label="confirmed freeze">*</span>';
+ if(status==='inactive')return '<span class="pb-status-inline pb-inactive-tag" title="inactive · check activity in freeze center">inactive</span>';
+ if(status==='checking')return '<span class="pb-status-inline pb-checking-tag" title="checking activity · 2 updates">checking</span>';
  return '';
+}
+function pbManualBoosterInline(cid){
+  // Show a small app-like arrow when this bot has a booster tag in Events.
+  const boosted=(eventsState.events||[]).some(event=>String(event.cid)===String(cid) && (event.tags||[]).includes('alert'));
+  return boosted?'<span class="pb-booster-mark" title="booster" aria-label="booster">⬆</span>':'';
 }
 function pbPerformanceInline(cid,tags){
  const data=tags?.get(String(cid));
@@ -20563,7 +20681,7 @@ function pbRenderSlots(){
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
   const messages=topSlotsMessagesForDate(date,cid),collectors=pbSlotCollectorsForDate(date,cid);
   const messageLabel=Number.isFinite(messages)?fmt.format(messages)+' messages':'— messages';
-  const tags=pbPerformanceInline(cid,performance)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
+  const tags=pbPerformanceInline(cid,performance)+pbManualBoosterInline(cid)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
   const extra=pbSlotAwardsExtra(cid,allAwards);
   return thumbs?`<div class="pb-slot-thumb">
     <div class="pb-slot-thumb-picture"><img src="${pbTopSlotsOriginalCard}" alt="" loading="lazy"><b>#${i+1}</b><span class="pb-thumb-name" title="${archiveEscape(name)}">${archiveEscape(name)}</span></div>
@@ -20595,7 +20713,7 @@ function pbRenderBots(){if(!state.meta.size)return;
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbManualBoosterInline(b.cid)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
  <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
  <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${signed(b.growth)}</td>
@@ -21483,6 +21601,15 @@ body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-advance{
 body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-advance{display:block!important;}
 body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers{z-index:4!important;}
 @media(prefers-reduced-motion:reduce){body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-advance{transition:none!important;}}
+</style>
+<style id="pb-27oct-events-freeze-check">
+body.dashboard-shell #freezeCenterCheckActivity{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+body.dashboard-shell .pb-freeze-check-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+body.dashboard-shell .pb-freeze-check-row>div{min-width:0;flex:1}
+body.dashboard-shell .pb-activity-check-btn{flex:none;white-space:nowrap;padding:6px 9px!important;min-height:32px!important}
+body.dashboard-shell .pb-inactive-tag, body.dashboard-shell .pb-checking-tag{display:inline-block;margin-left:4px;color:#948c9d!important;font-size:10px!important;font-weight:400!important;letter-spacing:0!important}
+body.dashboard-shell .pb-checking-tag{color:#b9a9bb!important}
+body.dashboard-shell .pb-booster-mark{display:inline-flex;vertical-align:baseline;align-items:center;justify-content:center;margin-left:4px;padding:2px 4px;background:#3e2b1d;border-radius:5px;color:#efa66b;font-size:13px;font-weight:750;line-height:1}
 </style>
 </body>
 </html>
