@@ -7295,7 +7295,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       </div>
 
       <div class="dashboard-subs-card" aria-label="subscriber overview">
-        <div class="dashboard-subs-caption">subscribers</div>
         <div class="dashboard-subs-controls" aria-label="quick subscriber update">
           <button id="dashboardSubscriberMinus" type="button" aria-label="subtract 1 subscriber">−</button>
           <button id="dashboardHeaderSubscribersCard" class="dashboard-subs-link" type="button" data-open-dashboard-view="subscribers" title="open Subscriber Hub" aria-label="open Subscriber Hub">
@@ -8167,7 +8166,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <details class="cv-bot-estimator">
       <summary>uncapped bot estimate</summary>
       <div class="cv-estimator-note">
-        message cv = 0.0025 per message. UCU cv = 0.05 per UCU. The creation bonus (+30 HQ / +10 compliant) is included in the 500 character cap.
+        message cv = 0.0025 per message. UCU cv = 0.05 per UCU. Character creation value is included in the 500 character cap.
       </div>
       <div id="cvBotEstimatorRows" class="cv-bot-estimator-rows"></div>
     </details>
@@ -8409,6 +8408,26 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 
 <section id="pbGraphTables" class="pb-graph-tables" hidden aria-label="chart tables">
+  <details class="pb-chart-table-card pb-chart-compare-fold">
+    <summary>compare table <span id="graphSelectedTotal" class="pb-chart-total-summary" aria-live="polite">select bots to compare</span></summary>
+    <div class="pb-chart-table-inner">
+      <div class="table-copy-row">
+      <button id="copyCompareTable" class="copy-table-button" type="button">copy</button>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>bot</th>
+          <th>start</th>
+          <th>now</th>
+          <th>growth</th>
+        </tr>
+      </thead>
+      <tbody id="compareRows"></tbody>
+</table>
+</div>
+  </details>
   <div class="pb-chart-table-card">
     <details class="daily-growth-panel" id="dailyGrowthPanel" open>
       <summary>daily growth</summary>
@@ -8432,26 +8451,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 
   </div>
-  <details class="pb-chart-table-card pb-chart-compare-fold">
-    <summary>compare table</summary>
-    <div class="pb-chart-table-inner">
-      <div class="table-copy-row">
-      <button id="copyCompareTable" class="copy-table-button" type="button">copy</button>
-    </div>
-
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>bot</th>
-          <th>start</th>
-          <th>now</th>
-          <th>growth</th>
-        </tr>
-      </thead>
-      <tbody id="compareRows"></tbody>
-</table>
-</div>
-  </details>
 </section>
 
 <button id="pbBackToTop" type="button" aria-label="terug naar boven" title="back to top">
@@ -9139,8 +9138,9 @@ function renderDailyGrowth(){
   ].map(input=>input.value);
 
   if(!selected.length){
-    panel.hidden=true;
-    rows.innerHTML='';
+    panel.hidden=false;
+    select.innerHTML='<option value="">select bot</option>';
+    rows.innerHTML='<tr><td colspan="3">select a bot to see daily growth</td></tr>';
     return;
   }
 
@@ -10337,6 +10337,16 @@ function syncGraphSelectionTools(){
   const allOn=all.length>0&&all.every(input=>input.checked);
   const totalOn=!!document.querySelector('#totalProfile')?.checked;
   const select=document.querySelector('#selectAllBots');if(select)select.checked=allOn;
+  const selectButton=document.getElementById('graphSelectToggle');
+  if(selectButton){selectButton.textContent=allOn?'deselect':'select all';selectButton.title=allOn?'deselect all bots':'select all bots';}
+  const capButton=document.getElementById('graphCappedToggle');
+  if(capButton){
+    const nextText=cappedFilterMode==='capped'?'uncapped':cappedFilterMode==='uncapped'?'all growth':'capped';
+    capButton.textContent=nextText;
+    capButton.title=`next selection: ${nextText}`;
+    capButton.classList.toggle('active',cappedFilterMode!=='off');
+    capButton.setAttribute('aria-pressed',String(cappedFilterMode!=='off'));
+  }
   for(const [id,pressed] of [['graphTotalToggle',totalOn],['graphSelectToggle',allOn],['fsTotalToggle',totalOn],['fsSelectToggle',allOn]]){
     const b=document.getElementById(id);if(b){b.classList.toggle('active',pressed);b.setAttribute('aria-pressed',String(pressed));}
   }
@@ -10406,6 +10416,9 @@ function drawCompareChart(){
     selected.length===0 ||
     !state.history
   ){
+    const badge=document.getElementById('graphSelectedTotal');
+    if(badge) badge.textContent='select bots to compare';
+    document.querySelector('#compareRows').innerHTML='<tr><td colspan="4">select bots to compare</td></tr>';
     document.querySelector('.chart-area')?.classList.add('chart-empty');
     document.querySelector('.compare-table')?.classList.add('graph-empty');
     return;
@@ -10683,6 +10696,16 @@ function drawCompareChart(){
       0
     );
 
+  const selectedBadge=document.getElementById('graphSelectedTotal');
+  if(selectedBadge){
+    const label=realCompareData.length===1?'1 bot':`${realCompareData.length} bots`;
+    const signed=Number.isFinite(totalGrowth)?`${totalGrowth>0?'+':''}${fmt.format(totalGrowth)}`:'—';
+    const shown=rankingsMetric?graphRankingFormat(totalGrowth,metric):signed;
+    selectedBadge.textContent=realCompareData.length
+      ? `selected total · ${label} · ${shown} ${rankingsMetric?'change':'growth'}`
+      : (totalSelected?'profile selected · no individual bots':'select bots to compare');
+  }
+
   const rankingTableHead=document.querySelector('.compare-table thead tr');
   if(rankingTableHead) rankingTableHead.innerHTML=rankingsMetric
     ? '<th>bot</th><th>first value</th><th>latest value</th><th>change</th>'
@@ -10812,6 +10835,7 @@ document.querySelector('#compareBots')
     'change',
     e=>{
 
+      if(e.target.matches('input[type="checkbox"]')) cappedFilterMode='off';
       if(e.target.id==='selectAllBots'){
         document.querySelectorAll(
           '#compareBots input[type="checkbox"]:not(#selectAllBots):not(#totalProfile)'
@@ -10934,6 +10958,7 @@ document.querySelector('#compareBots')
     if(!button) return;
 
     const tag=button.dataset.graphTag;
+    if(tag!=='capped' && !['rankRelative','rankBreakouts','rankHot'].includes(tag))cappedFilterMode='off';
     if(['rankRelative','rankBreakouts','rankHot'].includes(tag)){
       graphRankTagChange(tag);
       return;
@@ -10980,6 +11005,7 @@ document.querySelector('#compareBots')
 
 document.querySelector('#graphTotalToggle')?.addEventListener('click',()=>{
   const cb=document.querySelector('#totalProfile');if(!cb)return;
+  cappedFilterMode='off';
   cb.checked=!cb.checked;drawCompareChart();
 });
 document.querySelector('#graphSelectToggle')?.addEventListener('click',()=>{
@@ -13048,6 +13074,20 @@ function cvDailyEstimate(date=''){
     const countedMessages=inferred?cap.remaining:actualMessages.uncappedMessages;
     const messageCv=countedMessages*CV_PER_MESSAGE;
     const ucuCv=context.organicCv-messageCv;
+    // The remainder is unknown if this exceeds actual organic CV. Negative UCU
+    // are not a possible explanation. Keep the split explicitly unresolved and
+    // preserve the genuine discrepancy for cap reconstruction, rather than
+    // masking it with zero or treating it as a negative contribution.
+    if(!Number.isFinite(ucuCv) || ucuCv < -1e-7 || context.organicCv < 0){
+      return {
+        mode:'unresolved-cap',date:context.target.date,fromDate:actualMessages.fromDate,
+        actualDelta:context.actualDelta,adjustments:context.adjustments,
+        organicCv:context.organicCv,rawMessages:actualMessages.uncappedMessages,
+        minimumExcluded:cap.state==='ready'?cap.minExcluded:null,
+        capReconstruction:cap,uncappedMessages:null,bots:actualMessages.bots,
+        messageCv:null,ucuCv:null,estimatedUcu:null,ratio
+      };
+    }
     const ucu=ucuCv/CV_PER_UCU;
 
     return {
@@ -13147,13 +13187,23 @@ function renderCvDayEstimate(){
     set('#cvDayUcuCv',`${inferred?'≈ ':''}${cvFormatEstimateSigned(estimate.ucuCv)}`);
     set('#cvDayUcu',`${inferred?'≈ ':estimate.estimatedUcu>=0?'≈ ':''}${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
 
-    const warning=estimate.ucuCv<0
-      ? ' · ⚠ message cv is higher than organic cv; inspect cap reconstruction'
-      : inferred?' · estimated cap exclusion; see cap reconstruction':'';
+    const warning=inferred?' · estimated cap exclusion; see cap reconstruction':'';
 
     set('#cvDayFormula',
       `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
     );
+    return;
+  }
+
+  if(estimate.mode==='unresolved-cap'){
+    set('#cvDayDate',`${shortGraphDate(estimate.date)} · cap split unresolved`);
+    set('#cvDayMessageCv','—');
+    set('#cvDayMessages',`${fmt.format(Math.round(estimate.rawMessages))} observed messages · cap check needed`);
+    set('#cvDayUcuCv','—');
+    set('#cvDayUcu','—');
+    const minimum=Number.isFinite(estimate.minimumExcluded)&&estimate.minimumExcluded>0
+      ? ` At least ${fmt.format(estimate.minimumExcluded)} messages require cap exclusion.`:'';
+    set('#cvDayFormula',`${cvFormatEstimateSigned(estimate.organicCv)} organic cv confirmed. Message / UCU split unresolved; negative UCU is impossible.${minimum}`);
     return;
   }
 
@@ -16377,7 +16427,9 @@ function pbRenderSubscriberGhostMeter(){
   artButton.classList.toggle('has-goal-meter',show);
   let fraction=0;
   if(show){
-    fraction=Math.max(0,Math.min(1,Number(count)/Number(target)));
+    const start=pbSubscriberGoalStart(target,Number(count));
+    const range=Math.max(1,target-start);
+    fraction=Math.max(0,Math.min(1,(Number(count)-start)/range));
   }
   artButton.style.setProperty('--ghost-unfilled',(100-fraction*100).toFixed(3)+'%');
   artButton.setAttribute('title',show
@@ -16385,6 +16437,13 @@ function pbRenderSubscriberGhostMeter(){
     : 'open Subscriber Hub');
   const layer=artButton.querySelector('.subscriber-ghost-progress');
   if(layer)layer.setAttribute('aria-hidden','true');
+  const original=artButton.querySelector('img.subscriber-ghost-art');
+  if(original && !artButton.querySelector('.subscriber-ghost-advance')){
+    const overlay=original.cloneNode(false);
+    overlay.className='subscriber-ghost-advance';
+    overlay.setAttribute('aria-hidden','true');overlay.alt='';
+    original.after(overlay);
+  }
 }
 
 function dashboardCurrentSubscribers(){
@@ -20692,9 +20751,21 @@ document.addEventListener('click',e=>{
   const fromRanking=e.target.closest('[data-pb-open-rank-graph]');
   if(fromRanking){e.preventDefault();pbGraphOpenPreset(rankingsConfig.tab||'new');return;}
   const cap=e.target.closest('#graphCappedToggle');
-  if(cap){e.preventDefault();graphUiInteracted=true;document.querySelector('#compareBots [data-graph-tag="capped"]')?.click();
-    cap.classList.toggle('active',!!document.querySelector('#compareBots [data-graph-tag="capped"].active'));
-    cap.setAttribute('aria-pressed',String(cap.classList.contains('active')));
+  if(cap){
+    e.preventDefault();graphUiInteracted=true;
+    // Button label advertises the NEXT choice: capped -> uncapped -> all growth -> capped.
+    cappedFilterMode=cappedFilterMode==='capped'?'uncapped':cappedFilterMode==='uncapped'?'all':'capped';
+    // Quick choices replace, not mix with, previous manual tag selections.
+    document.querySelectorAll('#compareBots .graph-event-filter.active:not([data-graph-tag^="rank"])').forEach(b=>{
+      b.classList.remove('active','uncapped');b.setAttribute('aria-pressed','false');
+    });
+    const all=document.querySelectorAll('#compareBots .pb-chart-bot-list input[type="checkbox"]');
+    all.forEach(input=>{
+      const isCapped=cidMatchesGraphTag(input.value,'capped');
+      input.checked=cappedFilterMode==='all'||(cappedFilterMode==='capped'?isCapped:!isCapped);
+    });
+    const profile=document.querySelector('#totalProfile');if(profile)profile.checked=false;
+    drawCompareChart();
   }
 });
 document.addEventListener('input',e=>{
@@ -21254,38 +21325,6 @@ body.dashboard-shell #subscriberPanel>summary::marker{content:"";}
 }
 </style>
 
-<style id="pb-27oct-subscriber-ghost-visual-tweak">
-body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress{
-  overflow:visible!important;
-}
-body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::before,
-body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::after{
-  content:"";
-  position:absolute!important;
-  top:39%!important;
-  width:8px!important;
-  height:13px!important;
-  border-radius:2px!important;
-  background:rgba(191,141,169,.75)!important;
-  box-shadow:0 0 0 .35px rgba(191,141,169,.42)!important;
-  z-index:2!important;
-  pointer-events:none!important;
-}
-body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::before{left:42.6%!important;}
-body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress::after{left:53.9%!important;}
-body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
-body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
-  color:rgba(242,220,233,.92)!important;
-  -webkit-text-stroke:.45px rgba(42,28,48,.62)!important;
-  text-shadow:
-    -1px 0 0 rgba(42,28,48,.36),
-    1px 0 0 rgba(42,28,48,.36),
-    0 -1px 0 rgba(42,28,48,.36),
-    0 1px 0 rgba(42,28,48,.36),
-    0 2px 4px rgba(33,21,39,.28)!important;
-}
-</style>
-
 <style id="pb-27oct-final-chart-menu-fix">
 /* final chart menu cleanup per user spec */
 body.dashboard-shell .comparebox{padding:10px 10px 12px!important;}
@@ -21367,6 +21406,83 @@ body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashb
   -webkit-text-stroke:.2px rgba(42,28,48,.34)!important;
   text-shadow:0 1px 2px rgba(33,21,39,.18)!important;
 }
+</style>
+
+<script id="pb-27okt-dates-viewport-fix">
+(function(){
+  function label(){
+    ['fromDate','toDate'].forEach(id=>{
+      const field=document.getElementById(id);
+      const caption=field?.parentElement?.querySelector('.pb-chart-date-placeholder');
+      if(!field || !caption)return;
+      const [year,month,day]=String(field.value||'').split('-');
+      caption.textContent=year&&month&&day?`${day}/${month}/${year.slice(-2)}`:(id==='fromDate'?'from':'to');
+    });
+  }
+  document.addEventListener('change',e=>{if(['fromDate','toDate'].includes(e.target.id))label();});
+  document.addEventListener('input',e=>{if(['fromDate','toDate'].includes(e.target.id))label();});
+  document.getElementById('latestDate')?.addEventListener('click',()=>setTimeout(label,0));
+  label();
+})();
+</script>
+
+<style id="pb-27okt-consolidated-corrections">
+/* All mobile chart controls keep equal columns; iOS date inputs cannot widen them. */
+body.dashboard-shell .comparebox .pb-chart-periods{grid-template-columns:repeat(3,minmax(0,1fr))!important;overflow:hidden!important;}
+body.dashboard-shell .comparebox .pb-chart-periods>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important;}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
+ display:flex!important;position:relative!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;max-width:100%!important;height:34px!important;overflow:hidden!important;
+ border:1px solid rgba(112,98,121,.42)!important;border-radius:10px!important;background:#2b2532!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input[type=date]{
+ position:absolute!important;inset:0!important;width:100%!important;min-width:0!important;
+ max-width:100%!important;height:100%!important;min-height:0!important;padding:0!important;margin:0!important;
+ opacity:0!important;z-index:3!important;cursor:pointer!important;appearance:none!important;-webkit-appearance:none!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder,
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:has(input:valid) .pb-chart-date-placeholder,
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:focus-within .pb-chart-date-placeholder{
+ display:flex!important;position:absolute!important;inset:0!important;align-items:center!important;justify-content:center!important;
+ font-size:11px!important;white-space:nowrap!important;pointer-events:none!important;z-index:2!important;
+ color:#c7b8c9!important;
+}
+/* The three menu triggers stay visible; only the open panel scrolls. */
+body.dashboard-shell #compareBots .pb-chart-menu-row{position:relative!important;z-index:3!important;}
+body.dashboard-shell #compareBots .pb-chart-menu-panels{position:relative!important;z-index:1!important;clear:both!important;overflow:visible!important;}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold[open]{position:relative!important;display:block!important;overflow:hidden!important;}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart-fold-body{
+ max-height:min(42vh,330px)!important;overflow-y:auto!important;overflow-x:hidden!important;
+ overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important;
+ padding-bottom:22px!important;
+}
+body.dashboard-shell #compareBots .pb-chart-bot-list{
+ max-height:none!important;overflow:visible!important;touch-action:pan-y!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-panels .pb-chart-fold-body .pb-chart-subfold{overflow:visible!important;}
+/* Selected total stays above the long comparison list. */
+body.dashboard-shell .pb-chart-compare-fold .pb-chart-table-inner{max-height:min(48vh,400px)!important;overflow:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;}
+body.dashboard-shell .pb-chart-total-summary{
+ display:block!important;margin:8px 0 2px 0!important;padding:8px 10px!important;border-radius:10px!important;
+ border:1px solid rgba(225,154,197,.37)!important;background:rgba(112,72,110,.19)!important;
+ color:#efd3e8!important;font-size:12px!important;line-height:1.35!important;
+}
+/* Subscriber artwork: original outline + advancing highlight ONLY ON THE OUTLINE. */
+body.dashboard-shell .dashboard-subs-card{transform:translateY(-5px)!important;}
+body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-progress,
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-progress{display:none!important;}
+body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-advance{
+ position:absolute!important;inset:0!important;display:none!important;
+ width:100%!important;height:59px!important;object-fit:contain!important;
+ padding:0!important;margin:0!important;border:0!important;background:transparent!important;
+ z-index:3!important;pointer-events:none!important;
+ filter:brightness(1.17) saturate(1.35) hue-rotate(-13deg)!important;
+ clip-path:inset(var(--ghost-unfilled,100%) 0 0 0)!important;
+ transition:clip-path .3s ease!important;
+}
+body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-advance{display:block!important;}
+body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers{z-index:4!important;}
+@media(prefers-reduced-motion:reduce){body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-advance{transition:none!important;}}
 </style>
 </body>
 </html>
