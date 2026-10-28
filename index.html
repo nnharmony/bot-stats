@@ -17192,7 +17192,7 @@ function topSlotsRenderHome(){
       <div class="dashboard-bot-row">
         <span class="dashboard-rank">${index+1}</span>
         <div>
-          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}${pbManualBoosterInline(bot.cid)}</div>
+          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}${pbManualBoosterInline(bot.cid,topSlotsDefaultDate())}</div>
           <div class="dashboard-bot-meta ${bot.stale?'stale':''}">${bot.stale?'⚠ ':''}${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
         </div>
         <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>
@@ -17224,7 +17224,7 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbManualBoosterInline(cid)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbManualBoosterInline(cid,date)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
@@ -20464,10 +20464,10 @@ function pbStatusInline(cid,date){
  if(status==='checking')return '<span class="pb-status-inline pb-checking-tag" title="checking activity · 2 updates">checking</span>';
  return '';
 }
-function pbManualBoosterInline(cid){
-  // Show a small app-like arrow when this bot has a booster tag in Events.
-  const boosted=(eventsState.events||[]).some(event=>String(event.cid)===String(cid) && (event.tags||[]).includes('alert'));
-  return boosted?`<span title="booster" aria-label="booster">${PB_ORANGE_BOOSTER_ARROW}</span>`:'';
+function pbManualBoosterInline(cid,date){
+  // A booster is a dated event, not a permanent bot status.
+  const boosted=(eventsState.events||[]).some(event=>String(event.cid)===String(cid) && String(event.date||'')===String(date||'') && (event.tags||[]).includes('alert'));
+  return boosted?`<span class="pb-bot-booster-inline" title="booster" aria-label="booster">${PB_ORANGE_BOOSTER_ARROW}</span>`:'';
 }
 function pbPerformanceInline(cid,tags){
  const data=tags?.get(String(cid));
@@ -20655,7 +20655,7 @@ function pbRenderSlots(){
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
   const messages=topSlotsMessagesForDate(date,cid),collectors=pbSlotCollectorsForDate(date,cid);
   const messageLabel=Number.isFinite(messages)?fmt.format(messages)+' messages':'— messages';
-  const tags=pbPerformanceInline(cid,performance)+pbManualBoosterInline(cid)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
+  const tags=pbPerformanceInline(cid,performance)+pbManualBoosterInline(cid,date)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
   const extra=pbSlotAwardsExtra(cid,allAwards);
   return thumbs?`<div class="pb-slot-thumb">
     <div class="pb-slot-thumb-picture"><img src="${pbTopSlotsOriginalCard}" alt="" loading="lazy"><b>#${i+1}</b><span class="pb-thumb-name" title="${archiveEscape(name)}">${archiveEscape(name)}</span></div>
@@ -20687,7 +20687,7 @@ function pbRenderBots(){if(!state.meta.size)return;
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbManualBoosterInline(b.cid)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbManualBoosterInline(b.cid,statusDate)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
  <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
  <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${signed(b.growth)}</td>
@@ -21648,6 +21648,8 @@ body.dashboard-shell .pb-orange-booster-arrow{
   font-size:0!important;
 }
 body.dashboard-shell .pb-orange-booster-arrow svg{width:16px!important;height:16px!important;display:block!important;flex:none!important;}
+body.dashboard-shell .pb-bot-booster-inline .pb-orange-booster-arrow{width:14px!important;height:14px!important;padding:1px!important;border-radius:3px!important;}
+body.dashboard-shell .pb-bot-booster-inline .pb-orange-booster-arrow svg{width:11px!important;height:11px!important;}
 body.dashboard-shell #eventTags .pb-event-booster-icon{display:block!important;height:21px!important;line-height:21px!important;}
 body.dashboard-shell .graph-event-filter .pb-orange-booster-arrow{margin-right:4px!important;}
 </style>
