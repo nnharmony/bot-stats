@@ -123,8 +123,9 @@ th:first-child,td:first-child{text-align:left}
 }
 
 #compareBots{
-  max-height:250px;
-  overflow-y:auto;
+  /* Only the open menu panel scrolls, never the entire selector. */
+  max-height:none;
+  overflow:visible;
   margin-top:10px;
 }
 
@@ -6666,35 +6667,7 @@ body.dashboard-shell .pb-chart-rank-shortcut{background:#35283d;color:#e8cbec;bo
 @media(max-width:365px){body.dashboard-shell .pb-chart-periods{gap:4px;grid-template-columns:minmax(59px,1fr) minmax(0,1fr) minmax(0,1fr) 57px;}
 body.dashboard-shell .pb-chart-periods select,body.dashboard-shell .pb-chart-periods button{font-size:11px!important;padding:0 4px!important;}}
 </style>
-<style id="pb-chart-three-menu-row-fix-26oct">
-/* Only the layout of the three grouped graph menus changes. All filters remain intact. */
-body.dashboard-shell #compareBots.pb-chart-folds{display:block!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-row{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;align-items:stretch;
-}
-body.dashboard-shell #compareBots .pb-chart-menu-trigger{
-  display:flex!important;align-items:center;justify-content:space-between;gap:3px;
-  box-sizing:border-box;width:100%!important;min-width:0!important;
-  height:42px!important;min-height:42px!important;padding:0 9px!important;
-  margin:0!important;border:1px solid #68576d!important;border-radius:12px!important;
-  background:#2b2332!important;color:#e9d6e8!important;
-  font-size:12px!important;font-weight:700!important;line-height:1.2!important;
-  text-align:left!important;white-space:nowrap;cursor:pointer;
-}
-body.dashboard-shell #compareBots .pb-chart-menu-trigger>span{flex:none;color:#bea3c0;font-size:15px;}
-body.dashboard-shell #compareBots .pb-chart-menu-trigger.active{
-  border-color:#ad86ab!important;background:#4a3b50!important;
-}
-body.dashboard-shell #compareBots .pb-chart-menu-panels{margin-top:7px;min-width:0;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>summary{display:none!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart-fold-body{
-  padding:8px 10px 12px;border-top:0;min-width:0;
-}
-@media(max-width:365px){
-  body.dashboard-shell #compareBots .pb-chart-menu-row{gap:5px;}
-  body.dashboard-shell #compareBots .pb-chart-menu-trigger{padding:0 7px!important;font-size:11px!important;}
-}
-</style>
+
 
 </head>
 
@@ -7451,7 +7424,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 <section id="dashboardFreeze" class="freeze-center" data-dashboard-view="freeze" hidden>
   <div class="freeze-center-top">
-    <div><h2>⏸️ freeze center</h2><small>patterns · freeze history · actions · message verification</small></div>
+    <div><h2>freeze center</h2><small>patterns · freeze history · actions · message verification</small></div>
     <button type="button" class="freeze-center-small-button" data-open-dashboard-view="chart">graph ↗</button>
   </div>
   <section class="freeze-center-card">
@@ -7464,11 +7437,16 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <div id="freezeCenterGrowth" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-card">
-    <div class="freeze-center-head"><strong>⚠️ pattern monitor</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyPatterns">copy</button></div>
+    <div class="freeze-center-head"><strong>check activity</strong></div>
+    <div class="freeze-center-muted">check when you've chatted or noticed collectors · then the next two daily updates are checked.</div>
+    <div id="freezeCenterCheckActivity" class="freeze-center-list"></div>
+  </section>
+  <section class="freeze-center-card">
+    <div class="freeze-center-head"><strong>pattern monitor</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyPatterns">copy</button></div>
     <div id="freezeCenterPatterns" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-card">
-    <div class="freeze-center-head"><strong>⏸️ active freezes</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyActive">copy</button></div>
+    <div class="freeze-center-head"><strong>active freezes</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyActive">copy</button></div>
     <div id="freezeCenterActive" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-card">
@@ -7518,8 +7496,8 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <div class="freeze-center-head"><strong>freeze timeline</strong><button type="button" class="freeze-center-small-button" id="freezeCenterCopyTimeline">copy</button></div>
     <div id="freezeCenterTimeline" class="freeze-center-list"></div>
   </section>
-  <section class="freeze-center-links"><button type="button" id="freezeCenterManual">+ manual freeze event</button><button type="button" data-open-dashboard-view="backfill">historical backfill</button></section>
-  <p class="freeze-center-note">Freeze assessments are indications from historical counts, patterns and verified tests. Actions are observations, not proof of cause. A missing, carried or rounded measurement is not a confirmed zero-growth day.</p>
+  <section class="freeze-center-links"><button type="button" data-open-dashboard-view="backfill">historical backfill</button></section>
+  <p class="freeze-center-note">Suspected stalls stay inactive until you use check activity. Two subsequent exact daily updates with zero growth confirm a freeze. Activity checks are saved on this device; old events are retained for later cleanup.</p>
 </section>
 
 <section id="dashboardTopSlots" class="dashboard-slots" data-dashboard-view="slots" hidden>
@@ -7618,7 +7596,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <button id="backfillDeleteDay" type="button">delete date</button>
     </div>
     <div class="backfill-editor-note">
-      Values start from the last known historical stand so you only need to change what changed. Unsaved M/C and event edits stay in place when you switch sorting, search, or show/hide later bots. Tap <b>+ event</b> on a bot to add avatar, violation, edit, alert, capped, banned, freeze or tagged on this date. <b>new</b> follows the creation date automatically. Saving confirms the date and syncs event edits when Events is unlocked. Blank M/C means unknown — never 0. Exact values like <b>802</b> stay exact. On mobile, <b>1,8</b> is read as ≈1.8K, or ≈1.8M when K would move backwards.
+      Values start from the last known historical stand so you only need to change what changed. Unsaved M/C and event edits stay in place when you switch sorting, search, or show/hide later bots. Tap <b>+ event</b> on a bot to add violation, ban, edit, avatar, web or booster on this date. <b>new</b> follows the creation date automatically. Saving confirms the date and syncs event edits when Events is unlocked. Blank M/C means unknown — never 0. Exact values like <b>802</b> stay exact. On mobile, <b>1,8</b> is read as ≈1.8K, or ≈1.8M when K would move backwards.
     </div>
     <div id="backfillSaveStatus" class="backfill-status" style="padding:0 12px 12px"></div>
   </section>
@@ -9324,9 +9302,6 @@ async function loadStatsData(){
     <details class="pb-chart-fold pb-chart-tags-fold" id="pbChartTagFold">
       <summary>tags</summary>
       <div class="pb-chart-fold-body">
-        <div class="pb-chart-tag-simple">
-          <button class="pb-chart-planned" type="button" disabled title="Website Hub will provide this status later">🌐 web <small>later</small></button>
-        </div>
         <details class="pb-chart-subfold">
           <summary>❄️ freeze</summary>
           <div class="pb-chart-tag-chip-list">
@@ -9347,10 +9322,10 @@ async function loadStatsData(){
           </div>
         </details>
         <div class="pb-chart-tag-simple">
-          ${graphTagButton('tagged','⬆️','booster (tagged)')}
-          ${graphTagButton('alert','⚠️','alert')}
-          ${graphTagButton('banned','🚫','banned')}
-          ${graphTagButton('violation','⛔','violation')}
+          ${graphTagButton('tagged','🌐','web')}
+          ${graphTagButton('alert',PB_ORANGE_BOOSTER_ARROW,'booster')}
+          ${graphTagButton('banned','🌙','banned')}
+          ${graphTagButton('violation','🆘','violation')}
         </div>
       </div>
     </details>
@@ -9836,11 +9811,10 @@ function freezePeriodsForCid(cid){
 function freezeHistory(){
   const result=[];
   state.meta.forEach((meta,cid)=>{
-    const manual=manualFreezePeriodsForCid(cid).filter(item=>!item.active);
+    // Count-based history only; legacy manual entries remain in the Events archive.
     const automatic=freezeComputedPeriodsForCid(cid,{includeSuspected:true})
-      .filter(item=>!item.active)
-      .filter(item=>!manual.some(manualItem=>freezePeriodsOverlap(item,manualItem)));
-    [...manual,...automatic].forEach(item=>result.push({...item,name:meta?.name||cid}));
+      .filter(item=>!item.active);
+    automatic.forEach(item=>result.push({...item,name:meta?.name||cid}));
   });
   return result.sort((a,b)=>
     String(b.end||'').localeCompare(String(a.end||''))||
@@ -9934,7 +9908,7 @@ function renderEventAnalysisOverview(){
 
             const label=matching.map(tag=>{
               if(tag==='tagged' && event.status?.tagged===false){
-                return '⬇️';
+                return '○';
               }
               return eventTagIcon(tag);
             }).join(' ');
@@ -10134,7 +10108,7 @@ function renderFreezeOverview(){
     </div>
 
     <div class="freeze-overview-head">
-      <span>⏸️ active freezes</span>
+      <span>active freezes</span>
       <div style="display:flex;align-items:center;gap:8px">
         <span class="freeze-overview-sub">${infos.length} ${infos.length===1?'bot':'bots'}</span>
         <button type="button" class="freeze-copy-button" id="copyActiveFreezes">copy</button>
@@ -11136,19 +11110,20 @@ document.querySelector('#displayMode')
   );
 
 
+// Orange booster arrow inspired by the PolyBuzz badge, reused on buttons and bots.
+const PB_ORANGE_BOOSTER_ARROW='<span class="pb-booster-mark pb-orange-booster-arrow"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true"><path d="M7 18V10.4H3.8L10 3.1l6.2 7.3H13V18H7Z" fill="currentColor"/></svg></span>';
 const EVENTS_API='https://bot-events.nnharmony.workers.dev';
 const EVENTS_PROFILE='main';
 
+/* Six manual controls. Keep original persisted IDs ('tagged' and 'alert')
+   so old records, filters and on/off transitions remain readable. */
 const EVENT_TAGS=[
-  {id:'new',label:'💟 new'},
-  {id:'capped',label:'🔄 capped'},
-  {id:'alert',label:'⚠️ alert'},
-  {id:'avatar',label:'👤 avatar'},
-  {id:'freeze',label:'⏸️ freeze'},
-  {id:'banned',label:'🚫 banned'},
+  {id:'violation',label:'🆘 violation'},
+  {id:'banned',label:'🌙 ban'},
   {id:'edit',label:'☑️ edit'},
-  {id:'tagged',label:'⬆️ tagged'},
-  {id:'violation',label:'⛔️ violation'}
+  {id:'avatar',label:'👤 avatar'},
+  {id:'tagged',label:'🌐 web'},
+  {id:'alert',label:'⬆ booster'}
 ];
 
 const PERSISTENT_TAGS=new Set(['banned','freeze','tagged']);
@@ -13570,19 +13545,19 @@ function eventTagIcon(tag){
   const icons={
     new:'💟',
     capped:'🔄',
-    alert:'⚠️',
+    alert:'⬆',
     action:'🧪',
     avatar:'👤',
     freeze:'⏸️',
-    banned:'🚫',
+    banned:'🌙',
     edit:'☑️',
-    tagged:'⬆️',
-    violation:'⛔️',
+    tagged:'🌐',
+    violation:'🆘',
     created:'💟',
     unbanned:'📴',
     __banned_off__:'📴',
     __freeze_off__:'▶️',
-    __tagged_off__:'⬇️',
+    __tagged_off__:'🌐',
     top:'🔝'
   };
 
@@ -13612,6 +13587,7 @@ function setSelectedEventTags(tags){
       'active',
       selected.has(button.dataset.tag)
     );
+    button.setAttribute('aria-pressed',String(selected.has(button.dataset.tag)));
   });
 }
 
@@ -14241,8 +14217,8 @@ async function loadEvents(){
 
     await Promise.all([loadActions(),loadFreezeEvents()]);
     await syncActionVerificationResults();
-    const autoChanged=await syncAutomaticFreezeEvents();
-    if(autoChanged) await loadFreezeEvents();
+    // Legacy auto-detector is now read-only. Activity checks control live freezes;
+    // don't silently add old-style 'freeze detected' events to the cloud ledger.
 
     topSlotsSyncFromEvents();
     backfillSyncFromEvents();
@@ -14320,12 +14296,12 @@ function eventCopyLabels(event){
     return freezeAutoEventLabel(event);
   }
   const labels=[...(event.tags || [])].map(eventTagLabel);
-  if(event.status?.banned===true) labels.push('🚫 banned');
+  if(event.status?.banned===true) labels.push('🌙 ban');
   if(event.status?.freeze===true) labels.push('⏸️ freeze started');
-  if(event.status?.tagged===true) labels.push('⬆️ tagged');
-  if(event.status?.banned===false) labels.push('🔘 unbanned');
+  if(event.status?.tagged===true) labels.push('🌐 web');
+  if(event.status?.banned===false) labels.push('🌙 ban off');
   if(event.status?.freeze===false) labels.push('▶️ freeze ended');
-  if(event.status?.tagged===false) labels.push('⬇️ untagged');
+  if(event.status?.tagged===false) labels.push('🌐 web off');
   return [...new Set(labels)].join(', ') || '—';
 }
 
@@ -14477,7 +14453,7 @@ function renderEvents(){
       .map(tag=>{
         if(tag==='__banned_off__') return `<span class="tag-chip">📴</span>`;
         if(tag==='__freeze_off__') return `<span class="tag-chip">▶️</span>`;
-        if(tag==='__tagged_off__') return `<span class="tag-chip">⬇️</span>`;
+        if(tag==='__tagged_off__') return `<span class="tag-chip" title="web off">🌐</span>`;
         return `<span class="tag-chip">${eventTagIcon(tag)}</span>`;
       })
       .join('');
@@ -14760,9 +14736,12 @@ async function saveEvent(){
   const date=document.querySelector('#eventDate').value;
   const cid=document.querySelector('#eventBot').value;
   const selected=selectedEventTags();
-  let tags=selected.filter(tag=>!PERSISTENT_TAGS.has(tag));
-
   const existingToday=currentSelectionEvent();
+  const allowedUi=new Set(EVENT_TAGS.map(tag=>tag.id));
+  let tags=[
+    ...(existingToday?.tags||[]).filter(tag=>!allowedUi.has(tag)),
+    ...selected.filter(tag=>!PERSISTENT_TAGS.has(tag))
+  ];
   const inheritedNew=
     selected.includes('new') &&
     newStatusActiveAtSelection() &&
@@ -14775,7 +14754,8 @@ async function saveEvent(){
   const before=persistentStateBeforeSelection();
   const current={
     banned:selected.includes('banned'),
-    freeze:selected.includes('freeze'),
+    // Keep an old manual freeze status in storage without exposing/editing it here.
+    freeze:before.freeze,
     tagged:selected.includes('tagged')
   };
 
@@ -14817,7 +14797,11 @@ async function saveEvent(){
           date,
           cid,
           tags,
-          status:persistent,
+          status:{
+            ...Object.fromEntries(Object.entries(existing?.status||{}).filter(([tag])=>!PERSISTENT_TAGS.has(tag))),
+            ...(Object.prototype.hasOwnProperty.call(existing?.status||{},'freeze')?{freeze:existing.status.freeze}:{}),
+            ...persistent
+          },
           note
         })
       }
@@ -14981,16 +14965,16 @@ function initEventsTracker(){
     return;
   }
 
-  tagBox.innerHTML=
-    EVENT_TAGS
-      .map(tag=>`
-        <button
-          class="event-tag"
-          type="button"
-          data-tag="${tag.id}"
-        >${tag.label}</button>
-      `)
-      .join('');
+  // One compact row in the user's chosen order. Keep original event IDs and
+  // visible text labels; the booster uses the same orange arrow as bot lists.
+  const glyphById={violation:'🆘',banned:'🌙',edit:'☑️',avatar:'👤',tagged:'🌐'};
+  tagBox.innerHTML=EVENT_TAGS.map(tag=>{
+    const name=tag.id==='banned'?'ban':tag.id==='tagged'?'web':tag.id==='alert'?'booster':tag.id;
+    const glyph=tag.id==='alert'
+      ? `<span class="pb-event-booster-icon" aria-hidden="true">${PB_ORANGE_BOOSTER_ARROW}</span>`
+      : `<span class="pb-event-tag-icon" aria-hidden="true">${glyphById[tag.id]||''}</span>`;
+    return `<button class="event-tag" type="button" data-tag="${tag.id}" aria-label="${name}" title="${name}" aria-pressed="false">${glyph}<span class="pb-event-tag-text">${name}</span></button>`;
+  }).join('');
 
   const today=
     new Date()
@@ -15025,6 +15009,7 @@ function initEventsTracker(){
       button.classList.toggle(
         'active'
       );
+      button.setAttribute('aria-pressed',String(button.classList.contains('active')));
 
       if(eventsState.filterAll){
         renderEvents();
@@ -15464,8 +15449,8 @@ function fullscreenPersistentTimelineEntries(tag,cids){
     if(!type) return;
 
     const icons=tag==='tagged'
-      ? {on:'⬆️',off:'⬇️'}
-      : {on:'🚫',off:'📴'};
+      ? {on:'🌐',off:'○'}
+      : {on:'🌙',off:'📴'};
 
     result.push({
       type,
@@ -15620,12 +15605,12 @@ function renderFullscreenTimelines(){
       fullscreenPersistentFilters('freeze','⏸️','▶️')
     ),
     fullscreenTimelineDetails(
-      '⬆️ tagged',
+      '🌐 web',
       tagged,
-      fullscreenPersistentFilters('tagged','⬆️','⬇️')
+      fullscreenPersistentFilters('tagged','🌐','○')
     ),
     fullscreenTimelineDetails(
-      '⚠️ alert',
+      '⬆ booster',
       fullscreenSimpleTimelineEntries('alert',cids)
     ),
     fullscreenTimelineDetails(
@@ -15747,7 +15732,7 @@ function renderFullscreenBots(){
     <div class="graph-event-filters" data-fs-graph-event-filters>
       ${[
         ['new','💟'],['edit','☑️'],['avatar','👤'],['capped','🔄'],
-        ['freeze','⏸️'],['tagged','⬆️'],['alert','⚠️'],['banned','🚫'],['violation','⛔️'],
+        ['freeze','👻'],['tagged','🌐'],['alert','🔝'],['banned','🌙'],['violation','🆘'],
         ['suspected','⏳'],['verified','⭕️'],['partial','❄️'],['total','⏹️'],['watching','⏺️'],['recovering','▶️'],
         ['rankRelative','❤️‍🔥'],['rankBreakouts','⚡️'],['rankHot','🔥']
       ].map(([tag,icon])=>`<button type="button" class="graph-event-filter ${(activeTags.includes(tag)||document.querySelector('#compareMetric')?.value===tag)?'active':''}" data-fs-graph-tag="${tag}" title="${tag}" aria-label="${tag}">${icon}</button>`).join('')}
@@ -16135,10 +16120,10 @@ function freezeCenterRender(){
   const timeline=[...(freezeAutoState.events||[]).filter(relevant),...manual]
     .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
   const summary=[
-    ['total',subset.filter(item=>item.status==='total').length],
-    ['partial',subset.filter(item=>item.status==='partial').length],
-    ['suspected',subset.filter(item=>item.status==='suspected').length],
-    ['verified',subset.filter(item=>item.status==='verified').length]
+    ['inactive',subset.filter(item=>item.status==='inactive').length],
+    ['checking',subset.filter(item=>item.status==='checking').length],
+    ['freeze',subset.filter(item=>item.status==='total').length],
+    ['watching',subset.filter(item=>item.status==='watching').length]
   ];
   const counter=document.querySelector('#freezeCenterSummary');
   if(counter)counter.innerHTML=summary.map(([label,value])=>`<div class="freeze-center-stat"><strong>${value}</strong><small>${label}</small></div>`).join('');
@@ -16155,18 +16140,31 @@ function freezeCenterRender(){
       </div>`).join(''):'<div class="freeze-center-muted">Not enough consecutive exact readings yet.</div>';
     }
   }
+  const checkBox=document.querySelector('#freezeCenterCheckActivity');
+  if(checkBox){
+    const checks=subset.filter(item=>['inactive','checking','total'].includes(item.status));
+    checkBox.innerHTML=checks.length?checks.map(item=>{
+      const name=archiveEscape(names.get(item.cid)||item.cid);
+      const checked=pbFreezeActivityResult(item.cid,latest);
+      const label=item.status==='inactive'?'inactive · check activity':
+        item.status==='checking'?`checking · ${checked.updates}/2 updates`:'freeze confirmed';
+      const detail=Number.isFinite(item.growth)?`latest growth ${freezePatternCompact(item.growth)}`:'no exact growth';
+      const control=item.status==='inactive'?`<button type="button" class="freeze-center-small-button pb-activity-check-btn" data-freeze-activity-check="${archiveEscape(item.cid)}">check activity</button>`:'';
+      return `<div class="freeze-center-row pb-freeze-check-row"><div><b>${name}</b><div class="freeze-center-row-meta">${archiveEscape(label+' · '+detail)}</div></div>${control}</div>`;
+    }).join(''):'<div class="freeze-center-muted">no activity checks needed.</div>';
+  }
   const patternBox=document.querySelector('#freezeCenterPatterns');
   if(patternBox)patternBox.innerHTML=patterns.length?patterns.map(item=>freezeCenterRow(names.get(item.cid)||item.cid,
-    ({total:'⏸️ total',partial:'⚠️ partial',verified:'🧪 verified',suspected:'⭕ suspected',watching:'watching',recovering:'recovering'})[item.status]||item.status,
+    ({total:'freeze',checking:'checking',inactive:'inactive',watching:'watching',recovering:'recovering'})[item.status]||item.status,
     [Number.isFinite(item.growth)?'growth '+freezePatternCompact(item.growth):'',Number.isFinite(item.baseline)?'7d median '+freezePatternCompact(item.baseline):'',(item.reasons||[]).slice(0,2).join(' · ')].filter(Boolean).join(' · '),item.cid)).join(''):'<div class="freeze-center-muted">no suspicious patterns in this selection.</div>';
   const activeBox=document.querySelector('#freezeCenterActive');
   if(activeBox)activeBox.innerHTML=active.length?active.map(item=>freezeCenterRow(item.name,
-    item.status==='verified'?'🧪 verified':item.type==='partial'?'⚠️ partial':'⏸️ total',
+    'confirmed freeze',
     `${item.startKnown===false?'start uncertain':'since '+freezeCenterDate(item.since)} · ${item.days} ${item.days===1?'day':'days'} · ${(item.reasons||[]).slice(0,2).join(' · ')}`.trim(),item.cid)).join(''):'<div class="freeze-center-muted">no active freezes.</div>';
   const historyBox=document.querySelector('#freezeCenterHistory');
   if(historyBox)historyBox.innerHTML=history.length?history.map(item=>freezeCenterRow(item.name,
     `${item.days} ${item.days===1?'day':'days'}`,
-    `${item.type||item.status||'freeze'} · ${item.startKnown===false?'start uncertain':freezeCenterDate(item.start)} → ${freezeCenterDate(item.end)}`,
+    `${item.source==='historical-pattern'?'estimated '+(item.type||'freeze'):(item.type||item.status||'freeze')} · ${item.startKnown===false?'start uncertain':freezeCenterDate(item.start)} → ${freezeCenterDate(item.end)}`,
     item.cid)).join(''):'<div class="freeze-center-muted">no completed freezes in this selection.</div>';
   const actionsBox=document.querySelector('#freezeCenterActions');
   if(actionsBox)actionsBox.innerHTML=actions.length?actions.map(item=>{
@@ -16199,6 +16197,14 @@ function freezeCenterInit(){
   if(!root)return;
   root.querySelector('#freezeCenterBot')?.addEventListener('change',e=>freezeCenterSetBot(e.target.value));
   root.addEventListener('click',e=>{
+    const checking=e.target.closest('[data-freeze-activity-check]');
+    if(checking){
+      const cid=checking.dataset.freezeActivityCheck;
+      if(!pbFreezeActivityMark(cid)){
+        checking.textContent='no exact baseline';
+      }
+      return;
+    }
     const cid=e.target.closest('[data-freeze-center-cid]');
     if(cid){freezeCenterSetBot(cid.dataset.freezeCenterCid);return}
     const edit=e.target.closest('[data-freeze-action-edit]');
@@ -16212,12 +16218,7 @@ function freezeCenterInit(){
     const item=e.target.closest('[data-freeze-center-cid]');
     if(item&&(e.key==='Enter'||e.key===' ')){e.preventDefault();freezeCenterSetBot(item.dataset.freezeCenterCid)}
   });
-  root.querySelector('#freezeCenterManual')?.addEventListener('click',()=>{
-    dashboardShowView('events');
-    const input=document.querySelector('#eventBot');
-    if(input && freezeCenterCid)input.value=freezeCenterCid;
-    loadEventForSelection();
-  });
+
 }
 
 /* ===== dashboard shell controller ===== */
@@ -17191,7 +17192,7 @@ function topSlotsRenderHome(){
       <div class="dashboard-bot-row">
         <span class="dashboard-rank">${index+1}</span>
         <div>
-          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}</div>
+          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}${pbManualBoosterInline(bot.cid)}</div>
           <div class="dashboard-bot-meta ${bot.stale?'stale':''}">${bot.stale?'⚠ ':''}${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
         </div>
         <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>
@@ -17223,7 +17224,7 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbManualBoosterInline(cid)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
@@ -17603,15 +17604,72 @@ function freezeRecentVerified(cid,date){
     .sort((a,b)=>String(b.endDate||'').localeCompare(String(a.endDate||'')))[0] || null;
 }
 
+/* Lightweight freeze confirmation (not the research / test center).
+   Stored separately from old Events to preserve legacy records and CV dates.
+   Only exact, consecutive daily message batches are valid verification data. */
+const PB_ACTIVITY_CHECK_KEY='pbFreezeActivityChecks:main:v1';
+let pbActivityChecks=null;
+function pbLoadActivityChecks(){
+  if(pbActivityChecks) return pbActivityChecks;
+  try{
+    const value=JSON.parse(localStorage.getItem(PB_ACTIVITY_CHECK_KEY)||'{}');
+    pbActivityChecks=value && typeof value==='object' && !Array.isArray(value)?value:{};
+  }catch(_){pbActivityChecks={}}
+  return pbActivityChecks;
+}
+function pbSaveActivityChecks(){
+  try{localStorage.setItem(PB_ACTIVITY_CHECK_KEY,JSON.stringify(pbLoadActivityChecks()))}catch(_){ }
+}
+function pbFreezeActivityResult(cid,date){
+  const record=pbLoadActivityChecks()[String(cid)];
+  if(!record?.date || !/^\d{4}-\d{2}-\d{2}$/.test(record.date) || date<record.date)return {status:'unchecked',updates:0};
+  const rows=freezeGrowthSeriesForCid(cid).filter(row=>row.date>record.date&&row.date<=date);
+  let last=record.date,valid=[];
+  for(const row of rows){
+    if(freezeDateDiffDays(last,row.date)!==1)break; // no inferred zero for missing dates
+    if(!Number.isFinite(row.growth)||row.growth<0)break;
+    valid.push(row);last=row.date;
+    if(valid.length>=2)break;
+  }
+  if(valid.some(row=>row.growth>0))return {status:'recovered',updates:valid.length,startDate:record.date};
+  if(valid.length>=2){
+    // A later positive batch ends a confirmed freeze; don't leave it active forever.
+    const later=rows.filter(row=>row.date>valid[1].date);
+    if(later.some(row=>row.growth>0))return {status:'recovered',updates:2,startDate:record.date};
+    return {status:'confirmed',updates:2,startDate:record.date,confirmedDate:valid[1].date};
+  }
+  return {status:'pending',updates:valid.length,startDate:record.date};
+}
+function pbFreezeActivityMark(cid){
+  const date=topSlotsDefaultDate();
+  if(!cid||!date)return false;
+  const row=freezeGrowthSeriesForCid(cid).find(item=>item.date===date);
+  // Don't start a check without an exact current baseline to count two future batches from.
+  if(!row || !Number.isFinite(row.now))return false;
+  const records=pbLoadActivityChecks();
+  records[String(cid)]={date,messages:row.now};
+  pbSaveActivityChecks();
+  freezeCenterRender();
+  freezePatternRenderHome();
+  try{dashboardRenderHome()}catch(_){ }
+  try{render()}catch(_){ }
+  return true;
+}
+function pbFinishActivityCheck(cid,date){
+  const checks=pbLoadActivityChecks();
+  if(!checks[cid])return;
+  delete checks[cid];
+  const closed=checks.__resolved||{};
+  closed[cid]=date;
+  checks.__resolved=closed;
+  pbSaveActivityChecks();
+}
 function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
   const full=freezeGrowthSeriesForCid(cid).filter(row=>row.date<=date);
   const current=full.at(-1);
-  const manual=freezeManualStateAtDate(cid,date);
-  const openAuto=options.ignoreAuto?null:freezeAutoOpenPeriodForCid(cid);
+  const manual={active:false,startDate:''}; // Legacy manual flags do not drive live freeze state.
+  const openAuto=null; // Legacy automatic events are history, not activity confirmation.
   if(!current || current.date!==date){
-    if(manual.active){
-      return {cid,date,status:'total',freezeType:'total',active:true,score:5,reasons:['manual freeze active'],sequence:[],baseline:null,growth:null,slotRank:null,startDate:manual.startDate,startKnown:true,verified:false,recovered:false};
-    }
     return {cid,date,status:'watching',freezeType:'watching',active:false,score:0,reasons:['insufficient exact data for this date'],sequence:[],baseline:null,growth:null,slotRank:null,startDate:'',startKnown:true,verified:false,recovered:false,insufficient:true};
   }
 
@@ -17736,6 +17794,31 @@ function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
   else if(startRow?.date) startDate=startRow.date;
   else if(active) startDate=date;
 
+  // Pattern-only historical reconstruction remains possible, but is never
+  // silently promoted to a verified current freeze.
+  if(!options.historical){
+    const check=pbFreezeActivityResult(cid,date);
+    const suspicious=['total','partial','verified','suspected'].includes(status) ||
+      (currentGrowth===0 && score>=1);
+    const resolved=pbLoadActivityChecks().__resolved?.[String(cid)];
+    if(check.status==='confirmed'){
+      status='total';freezeType='total';active=true;
+      startDate=check.startDate;
+      reasons.push('activity checked · 2 daily updates with 0 messages');
+    }else if(check.status==='pending'){
+      status='checking';freezeType='checking';active=false;
+      reasons.push(`activity checked · ${check.updates}/2 updates`);
+    }else{
+      if(check.status==='recovered')pbFinishActivityCheck(String(cid),date);
+      if(suspicious && !(resolved && current.date<=resolved)){
+        status='inactive';freezeType='inactive';active=false;
+        reasons.push('check activity required');
+      }else{
+        status='normal';freezeType='normal';active=false;
+      }
+    }
+  }
+
   return {
     cid,date,status,freezeType,active,score,reasons,signals,sequence,baseline,growth:currentGrowth,ratio,slotRank,
     collectorGrowth,zeroStreak,legacyThreshold,suspectThreshold,confirmThreshold,startDate,startKnown:true,startMessages,
@@ -17755,7 +17838,7 @@ function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
   let current=null;
 
   rows.forEach(row=>{
-    const assessment=freezeAssessmentForCid(cid,row.date,{ignoreAuto:true});
+    const assessment=freezeAssessmentForCid(cid,row.date,{ignoreAuto:true,historical:true});
     const qualifies=assessment.active || (includeSuspected && assessment.status==='suspected');
     const type=assessment.status==='verified'?'verified':assessment.freezeType;
     if(!qualifies){
@@ -17764,7 +17847,7 @@ function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
     }
 
     if(!current){
-      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:assessment.status,source:'computed',startKnown:true};
+      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:'historical estimate',source:'historical-pattern',startKnown:true};
       return;
     }
 
@@ -17775,16 +17858,17 @@ function freezeComputedPeriodsForCid(cid,{includeSuspected=false}={}){
       if(type==='verified') current.type='verified';
       else if(type==='total' && current.type!=='verified') current.type='total';
       else if(current.type==='suspected' && type==='partial') current.type='partial';
-      current.status=assessment.status;
+      current.status='historical estimate';
     }else{
       current.active=false;periods.push(current);
-      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:assessment.status,source:'computed',startKnown:true};
+      current={cid,start:assessment.startDate||row.date,end:row.date,days:1,active:false,type,status:'historical estimate',source:'historical-pattern',startKnown:true};
     }
   });
 
   if(current){
     const latest=rows.at(-1)?.date;
-    current.active=latest===topSlotsDefaultDate() && freezeAssessmentForCid(cid,latest,{ignoreAuto:true}).active;
+    current.active=latest===topSlotsDefaultDate() && freezeAssessmentForCid(cid,latest).active;
+    if(!current.active){current.source='historical-pattern';current.status='historical estimate';}
     periods.push(current);
   }
 
@@ -17908,7 +17992,7 @@ function freezePatternForCid(cid,date=topSlotsDefaultDate()){
 
 function freezePatternLatest(){
   const date=topSlotsDefaultDate();
-  const priority={verified:8,total:7,partial:6,suspected:5,recovering:2,watching:1,normal:0};
+  const priority={total:7,checking:6,inactive:5,recovering:2,watching:1,normal:0};
   const results=[];
   state.meta.forEach((meta,cid)=>{
     const item=freezePatternForCid(cid,date);
@@ -17928,8 +18012,8 @@ function freezePatternRenderHome(){
     return;
   }
   box.innerHTML=items.map(item=>{
-    const icon=item.status==='total'?'⏸️':item.status==='partial'?'⚠️':item.status==='verified'?'🧪':item.status==='suspected'?'⭕️':item.status==='watching'?'👁':'⚠️';
-    const label=item.status==='total'?'total freeze':item.status==='partial'?'partial freeze':item.status==='verified'?'verified discrepancy':item.status==='suspected'?'suspected freeze':item.status;
+    const icon=item.status==='total'?'👻':item.status==='inactive'?'○':item.status==='checking'?'◌':item.status==='watching'?'·':'○';
+    const label=item.status==='total'?'freeze':item.status==='checking'?'checking activity':item.status==='inactive'?'inactive':item.status;
     const baseline=Number.isFinite(item.baseline)?`7d median ${freezePatternCompact(item.baseline)}`:'';
     const reason=item.reasons.slice(0,2).join(' · ') || baseline || 'watching early pattern';
     const sequence=item.sequence.map(freezePatternCompact).join(' · ');
@@ -17940,7 +18024,7 @@ function freezePatternRenderHome(){
         <div class="dashboard-freeze-pattern-reason">${archiveEscape([baseline,reason].filter(Boolean).join(' · '))}</div>
         <div class="dashboard-freeze-sequence">${archiveEscape(sequence)}</div>
       </div>
-      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering'].includes(item.status)?'':` · ${item.score}`}</span>
+      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering','inactive','checking'].includes(item.status)?'':` · ${item.score}`}</span>
     </div>`;
   }).join('');
 }
@@ -18950,7 +19034,7 @@ function backfillEventSummaryItems(cid,date){
   PERSISTENT_TAGS.forEach(tag=>{
     if(Object.prototype.hasOwnProperty.call(event?.status||{},tag)){
       if(event.status[tag]===true) items.push({tag,label:eventTagLabel(tag),draft:false});
-      else items.push({tag:`__${tag}_off__`,label:`${eventTagIcon(`__${tag}_off__`)} ${tag} off`,draft:false});
+      else items.push({tag:`__${tag}_off__`,label:`${eventTagIcon(`__${tag}_off__`)} ${tag==='tagged'?'web':tag==='banned'?'ban':tag} off`,draft:false});
     }
   });
   if(String(backfillEffectiveCreationDate(cid)||'')===String(date)) items.unshift({tag:'new',label:'💟 new',draft:false,auto:true});
@@ -18995,6 +19079,7 @@ async function backfillSaveEventDrafts(date,entries){
     const before=backfillPersistentStateAt(cid,date,{before:true});
     const status={};
     PERSISTENT_TAGS.forEach(tag=>{
+      if(tag==='freeze') return; // Historical freeze entries stay archived, not edited by six-tag picker.
       const desired=selected.has(tag);
       if(desired!==before[tag]) status[tag]=desired;
     });
@@ -19011,7 +19096,7 @@ async function backfillSaveEventDrafts(date,entries){
 
     const preservedStatus={};
     Object.entries(existing?.status||{}).forEach(([key,value])=>{
-      if(!PERSISTENT_TAGS.has(key)) preservedStatus[key]=value;
+      if(!PERSISTENT_TAGS.has(key) || key==='freeze') preservedStatus[key]=value;
     });
     const finalStatus={...preservedStatus,...status};
     const note=existing?.note || '';
@@ -19175,7 +19260,7 @@ function backfillRenderEditor(){
       </div>
       <div class="backfill-event-picker" ${eventOpen?'':'hidden'}>
         ${eventButtons}${autoNew}
-        <small class="backfill-event-help">banned, freeze and tagged are persistent states from this date; new follows the creation date automatically.</small>
+        <small class="backfill-event-help">ban and web are on/off states · new, freeze and capped are automatic.</small>
       </div>
     </div>`;
   }).join('') : '<div class="dashboard-empty">no bots match this date/search. use “show later / unknown” if you need to correct a creation date.</div>';
@@ -20335,8 +20420,9 @@ function pbBotStatus(cid,date){
  try{
   const f=freezePatternForCid(cid,date||topSlotsDefaultDate());
   if(!f||f.insufficient)return '';
-  if(f.active||['total','partial','verified'].includes(f.status))return 'freeze';
-  if(['suspected','watching'].includes(f.status))return 'watch';
+  if(f.active && f.status==='total')return 'freeze';
+  if(f.status==='inactive')return 'inactive';
+  if(f.status==='checking')return 'checking';
  }catch(_){ }
  return '';
 }
@@ -20373,9 +20459,15 @@ function pbAttentionInline(cid,date){
 }
 function pbStatusInline(cid,date){
  const status=pbBotStatus(cid,date);
- if(status==='freeze')return '<span class="pb-status-inline" title="freeze" aria-label="freeze">*</span>';
- if(status==='watch')return '<span class="pb-status-inline pb-watching" title="watching" aria-label="watching">⌐⌐</span>';
+ if(status==='freeze')return '<span class="pb-status-inline" title="confirmed freeze" aria-label="confirmed freeze">*</span>';
+ if(status==='inactive')return '';
+ if(status==='checking')return '<span class="pb-status-inline pb-checking-tag" title="checking activity · 2 updates">checking</span>';
  return '';
+}
+function pbManualBoosterInline(cid){
+  // Show a small app-like arrow when this bot has a booster tag in Events.
+  const boosted=(eventsState.events||[]).some(event=>String(event.cid)===String(cid) && (event.tags||[]).includes('alert'));
+  return boosted?`<span title="booster" aria-label="booster">${PB_ORANGE_BOOSTER_ARROW}</span>`:'';
 }
 function pbPerformanceInline(cid,tags){
  const data=tags?.get(String(cid));
@@ -20563,7 +20655,7 @@ function pbRenderSlots(){
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
   const messages=topSlotsMessagesForDate(date,cid),collectors=pbSlotCollectorsForDate(date,cid);
   const messageLabel=Number.isFinite(messages)?fmt.format(messages)+' messages':'— messages';
-  const tags=pbPerformanceInline(cid,performance)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
+  const tags=pbPerformanceInline(cid,performance)+pbManualBoosterInline(cid)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
   const extra=pbSlotAwardsExtra(cid,allAwards);
   return thumbs?`<div class="pb-slot-thumb">
     <div class="pb-slot-thumb-picture"><img src="${pbTopSlotsOriginalCard}" alt="" loading="lazy"><b>#${i+1}</b><span class="pb-thumb-name" title="${archiveEscape(name)}">${archiveEscape(name)}</span></div>
@@ -20595,7 +20687,7 @@ function pbRenderBots(){if(!state.meta.size)return;
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbManualBoosterInline(b.cid)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
  <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
  <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${signed(b.growth)}</td>
@@ -21194,140 +21286,15 @@ body.dashboard-shell #pbBotsView .pb-bots-filters .pb-status-filter-crown{
 }
 </style>
 
-<style id="pb-chart-user-exact-compact-menu-26oct">
-/* Compact chart menu — corrected to the user's intended layout. */
-body.dashboard-shell .comparebox{padding:10px 10px 12px!important;}
-body.dashboard-shell .comparebox .pb-chart-periods,
-body.dashboard-shell .comparebox .pb-chart-metric-row,
-body.dashboard-shell .comparebox .pb-chart-quick-actions,
-body.dashboard-shell #compareBots .pb-chart-menu-row{
- display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
- align-items:center!important;gap:6px!important;margin:0 0 8px!important;
+<style id="pb-chart-ui-single-owner">
+/* Chart UI: one authoritative compact/mobile control module.
+   The outer selector must NEVER be an overflow scroller. Its original
+   #compareBots {max-height:250px; overflow-y:auto} scrolled the button row
+   offscreen and fought the inner menu scroller. */
+body.dashboard-shell .comparebox{
+  padding:10px 10px 12px!important;
+  overflow:visible!important;
 }
-body.dashboard-shell .comparebox .pb-chart-periods select,
-body.dashboard-shell .comparebox .pb-chart-periods button,
-body.dashboard-shell .comparebox .pb-chart-periods input,
-body.dashboard-shell .comparebox .pb-chart-metric-row select,
-body.dashboard-shell .comparebox .pb-chart-metric-row button,
-body.dashboard-shell .comparebox .pb-chart-quick-actions button,
-body.dashboard-shell #compareBots .pb-chart-menu-trigger,
-body.dashboard-shell #pbGraphEventTimeline{
- box-sizing:border-box!important;width:100%!important;min-width:0!important;
- height:34px!important;min-height:34px!important;padding:0 8px!important;
- border-radius:10px!important;font-size:11px!important;line-height:1.1!important;
- white-space:nowrap!important;margin:0!important;
- background:#2b2532!important;color:#eee0ec!important;
- border:1px solid rgba(225,154,197,.78)!important;
- box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)!important;
-}
-body.dashboard-shell .comparebox .pb-chart-periods button,
-body.dashboard-shell .comparebox .pb-chart-metric-row button,
-body.dashboard-shell .comparebox .pb-chart-quick-actions button,
-body.dashboard-shell #compareBots .pb-chart-menu-trigger,
-body.dashboard-shell #pbGraphEventTimeline{
- outline:none!important;
-}
-body.dashboard-shell .comparebox .pb-chart-quick-actions button.active,
-body.dashboard-shell #compareBots .pb-chart-menu-trigger.active{
- background:#563e5a!important;border-color:#f09ccf!important;color:#f7d0ed!important;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select,
-body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select{display:block!important;min-width:0!important;margin:0!important;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select select,
-body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select select{display:block!important;width:100%!important;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
- position:relative!important;display:block!important;min-width:0!important;height:34px!important;
- margin:0!important;cursor:pointer;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input{
- display:block!important;width:100%!important;height:34px!important;min-height:34px!important;
- padding:0 8px!important;font-size:10px!important;text-align:center!important;color-scheme:dark;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder{
- position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
- pointer-events:none;color:#c7b8c9;font-size:11px;letter-spacing:.01em;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:has(input:valid) .pb-chart-date-placeholder,
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:focus-within .pb-chart-date-placeholder{display:none;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input:invalid::-webkit-datetime-edit{opacity:0;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input:invalid{color:transparent!important;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input:focus{color:#eee0ec!important;}
-body.dashboard-shell #compareBots.pb-chart-folds{display:block!important;margin-top:0!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-trigger{padding:0 10px!important;font-size:11px!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-trigger>span{flex:none;color:#bea3c0;font-size:14px;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels{margin-top:0!important;min-width:0;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold:not([open]){display:none!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold{border-radius:10px!important;border:1px solid rgba(225,154,197,.52)!important;background:rgba(37,31,44,.82)!important;overflow:hidden!important;margin:0 0 8px!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>summary{display:none!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart-fold-body{
- padding:6px 10px 8px!important;border-top:0!important;
- max-height:280px;overflow-y:auto;overscroll-behavior:contain;
-}
-body.dashboard-shell #compareBots .pb-chart-bot-list{max-height:195px!important;}
-body.dashboard-shell #compareBots #pbGraphBotSearch{
- height:32px!important;min-height:32px!important;margin:4px 0 6px!important;
- border:1px solid rgba(225,154,197,.52)!important;border-radius:9px!important;
-}
-body.dashboard-shell #compareBots .pb-chart-tag-simple,
-body.dashboard-shell #compareBots .pb-chart-tag-chip-list,
-body.dashboard-shell #compareBots .pb-chart-ranking-buttons{
- display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
- gap:0!important;padding:0!important;align-items:stretch!important;
-}
-body.dashboard-shell #compareBots .pb-chart-tag-simple>.graph-event-filter,
-body.dashboard-shell #compareBots .pb-chart-tag-chip-list>.graph-event-filter,
-body.dashboard-shell #compareBots .pb-chart-ranking-buttons>.graph-event-filter,
-body.dashboard-shell #compareBots .pb-chart-tag-simple>.pb-chart-planned{
- box-sizing:border-box!important;display:flex!important;justify-content:flex-start!important;
- width:100%!important;min-height:32px!important;height:auto!important;
- border:0!important;border-bottom:1px solid rgba(159,130,162,.19)!important;
- border-radius:0!important;background:transparent!important;margin:0!important;
- padding:5px 9px!important;text-align:left!important;gap:7px!important;
- font-size:12px!important;font-weight:400!important;flex:none!important;
-}
-body.dashboard-shell #compareBots .pb-chart-tag-simple>.graph-event-filter.active,
-body.dashboard-shell #compareBots .pb-chart-tag-chip-list>.graph-event-filter.active,
-body.dashboard-shell #compareBots .pb-chart-ranking-buttons>.graph-event-filter.active{
- background:rgba(145,103,149,.24)!important;color:#f6dcef!important;
- border-bottom-color:#765d77!important;
-}
-body.dashboard-shell #compareBots .pb-chart-subfold{margin-top:5px!important;border:0!important;border-bottom:1px solid rgba(159,130,162,.24)!important;border-radius:0!important;}
-body.dashboard-shell #compareBots .pb-chart-subfold>summary{padding:7px 9px!important;font-size:12px!important;font-weight:600!important;}
-body.dashboard-shell #compareBots .pb-chart-subfold .pb-chart-tag-chip-list{padding:0 0 4px 14px!important;}
-body.dashboard-shell #compareBots .pb-chart-capped-internal[hidden],
-body.dashboard-shell #compareBots .graph-checkbox-internals .pb-chart-capped-internal{display:none!important;visibility:hidden!important;}
-body.dashboard-shell #graphPanel.graph-panel{position:relative!important;}
-body.dashboard-shell #graphPanel .graph-fullscreen-corner{
- position:absolute!important;top:10px!important;right:10px!important;z-index:6!important;
- width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
- display:flex!important;align-items:center!important;justify-content:center!important;
- padding:0!important;border-radius:8px!important;background:rgba(43,37,50,.92)!important;
- color:#f3edf3!important;border:1px solid rgba(225,154,197,.78)!important;
- font-size:15px!important;line-height:1!important;box-shadow:0 1px 4px rgba(0,0,0,.18)!important;
-}
-body.dashboard-shell #graphPanel .graph-fixed-label{padding-right:38px!important;}
-/* subscriber counter behaves like a normal card, not a fold */
-body.dashboard-shell #subscriberPanel[open]>summary,
-body.dashboard-shell #subscriberPanel>summary{
- pointer-events:none!important;cursor:default!important;list-style:none!important;
-}
-body.dashboard-shell #subscriberPanel>summary::-webkit-details-marker{display:none!important;}
-body.dashboard-shell #subscriberPanel>summary::marker{content:"";}
-@media(max-width:350px){
- body.dashboard-shell .comparebox .pb-chart-periods,
- body.dashboard-shell .comparebox .pb-chart-metric-row,
- body.dashboard-shell .comparebox .pb-chart-quick-actions,
- body.dashboard-shell #compareBots .pb-chart-menu-row{gap:4px!important;}
- body.dashboard-shell .comparebox .pb-chart-periods select,
- body.dashboard-shell .comparebox .pb-chart-metric-row select,
- body.dashboard-shell .comparebox .pb-chart-quick-actions button,
- body.dashboard-shell #compareBots .pb-chart-menu-trigger{font-size:10px!important;padding:0 5px!important;}
-}
-</style>
-
-<style id="pb-27oct-final-chart-menu-fix">
-/* final chart menu cleanup per user spec */
-body.dashboard-shell .comparebox{padding:10px 10px 12px!important;}
 body.dashboard-shell .comparebox .pb-chart-periods,
 body.dashboard-shell .comparebox .pb-chart-metric-row,
 body.dashboard-shell .comparebox .pb-chart-quick-actions,
@@ -21335,77 +21302,228 @@ body.dashboard-shell #compareBots .pb-chart-menu-row{
   display:grid!important;
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
   gap:8px!important;
-  align-items:center!important;
+  align-items:stretch!important;
   margin:0 0 8px!important;
+  min-width:0!important;
 }
-body.dashboard-shell .comparebox .pb-chart-periods select,
+body.dashboard-shell .comparebox .pb-chart-periods>* ,
+body.dashboard-shell .comparebox .pb-chart-metric-row>* ,
+body.dashboard-shell .comparebox .pb-chart-quick-actions>*{
+  min-width:0!important;max-width:100%!important;box-sizing:border-box!important;
+}
 body.dashboard-shell .comparebox .pb-chart-periods button,
-body.dashboard-shell .comparebox .pb-chart-periods input,
 body.dashboard-shell .comparebox .pb-chart-metric-row select,
 body.dashboard-shell .comparebox .pb-chart-quick-actions button,
-body.dashboard-shell #compareBots .pb-chart-menu-trigger,
-body.dashboard-shell #pbGraphEventTimeline{
-  box-sizing:border-box!important;
-  width:100%!important;
-  min-width:0!important;
-  height:34px!important;
-  min-height:34px!important;
-  padding:0 10px!important;
-  border-radius:10px!important;
-  font-size:11px!important;
-  line-height:1.1!important;
-  white-space:nowrap!important;
-  margin:0!important;
-  background:#2b2532!important;
-  color:#eee0ec!important;
-  border:1px solid rgba(112,98,121,.42)!important;
-  box-shadow:none!important;
+body.dashboard-shell #compareBots .pb-chart-menu-trigger{
+  box-sizing:border-box!important;width:100%!important;min-width:0!important;
+  height:34px!important;min-height:34px!important;padding:0 10px!important;
+  border-radius:10px!important;font-size:11px!important;line-height:1.1!important;
+  white-space:nowrap!important;margin:0!important;
+  background:#2b2532!important;color:#eee0ec!important;
+  border:1px solid rgba(112,98,121,.42)!important;box-shadow:none!important;
 }
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
-  position:relative!important;display:block!important;min-width:0!important;height:34px!important;margin:0!important;cursor:pointer;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input{
-  display:block!important;width:100%!important;height:34px!important;min-height:34px!important;
-  padding:0 8px!important;font-size:10px!important;text-align:center!important;color-scheme:dark;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder{
-  position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;color:#c7b8c9;font-size:11px!important;letter-spacing:.01em;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select,
-body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select{display:block!important;min-width:0!important;margin:0!important;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-period-select select,
-body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select select{display:block!important;width:100%!important;}
-/* pink outline only for the three quick buttons */
 body.dashboard-shell .comparebox .pb-chart-quick-actions button{
-  border:1px solid rgba(225,154,197,.78)!important;
+  border-color:rgba(225,154,197,.78)!important;
+}
+body.dashboard-shell .comparebox .pb-chart-quick-actions button.active,
+body.dashboard-shell #compareBots .pb-chart-menu-trigger.active{
+  background:#563e5a!important;color:#f7d0ed!important;
 }
 body.dashboard-shell .comparebox .pb-chart-quick-actions button.active{
-  background:#563e5a!important;
   border-color:#f09ccf!important;
-  color:#f7d0ed!important;
 }
-/* keep menu triggers calm, not pink outlined */
-body.dashboard-shell #compareBots .pb-chart-menu-trigger,
-body.dashboard-shell #pbGraphEventTimeline{
-  border-color:rgba(112,98,121,.42)!important;
+body.dashboard-shell #compareBots .pb-chart-menu-trigger.active{
+  border-color:#a888ae!important;
 }
-/* fullscreen icon smaller, icon only */
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
+  box-sizing:border-box!important;display:flex!important;position:relative!important;
+  min-width:0!important;max-width:100%!important;width:100%!important;
+  align-items:center!important;justify-content:center!important;
+  height:34px!important;margin:0!important;overflow:hidden!important;
+  border:1px solid rgba(112,98,121,.42)!important;
+  border-radius:10px!important;background:#2b2532!important;
+  cursor:pointer!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input[type=date]{
+  box-sizing:border-box!important;position:absolute!important;inset:0!important;
+  display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+  height:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+  opacity:0!important;z-index:3!important;cursor:pointer!important;
+  appearance:none!important;-webkit-appearance:none!important;
+}
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder,
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:has(input:valid) .pb-chart-date-placeholder,
+body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:focus-within .pb-chart-date-placeholder{
+  display:flex!important;position:absolute!important;inset:0!important;
+  align-items:center!important;justify-content:center!important;
+  pointer-events:none!important;z-index:2!important;
+  color:#c7b8c9!important;font-size:11px!important;white-space:nowrap!important;
+}
+body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select{
+  display:block!important;min-width:0!important;margin:0!important;
+}
+body.dashboard-shell .comparebox .pb-chart-metric-row .pb-period-select select{
+  display:block!important;width:100%!important;min-width:0!important;
+}
+
+/* Menu row is in normal layout and NEVER inside a scrolling parent.
+   Only the contents of the currently open panel may scroll. */
+body.dashboard-shell #compareBots,
+body.dashboard-shell #compareBots.pb-chart-folds{
+  display:block!important;position:relative!important;overflow:visible!important;
+  max-height:none!important;height:auto!important;min-height:0!important;
+  margin-top:0!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-row{
+  position:relative!important;z-index:2!important;overflow:visible!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-trigger{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  padding:0 10px!important;font-weight:700!important;cursor:pointer!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-trigger>span{
+  flex:none!important;color:#bea3c0!important;font-size:14px!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-panels{
+  display:block!important;position:relative!important;z-index:1!important;
+  margin:0!important;overflow:visible!important;max-height:none!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold:not([open]){
+  display:none!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold[open]{
+  display:block!important;position:relative!important;
+  box-sizing:border-box!important;max-width:100%!important;
+  margin:0 0 9px!important;overflow:hidden!important;
+  border:1px solid rgba(225,154,197,.52)!important;
+  border-radius:10px!important;background:rgba(37,31,44,.82)!important;
+}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>summary{display:none!important;}
+body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart-fold-body{
+  display:block!important;box-sizing:border-box!important;
+  min-width:0!important;max-height:min(47dvh,390px)!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:contain!important;
+  touch-action:pan-y!important;
+  padding:8px 10px 16px!important;
+}
+body.dashboard-shell #compareBots .pb-chart-bot-list{
+  display:grid!important;gap:0!important;
+  max-height:none!important;overflow:visible!important;touch-action:auto!important;
+}
+body.dashboard-shell #compareBots .pb-chart-subfold{
+  overflow:visible!important;margin-top:5px!important;
+  border:0!important;border-bottom:1px solid rgba(159,130,162,.24)!important;
+  border-radius:0!important;
+}
+body.dashboard-shell #compareBots .pb-chart-subfold>summary{
+  padding:7px 9px!important;font-size:12px!important;font-weight:600!important;
+}
+body.dashboard-shell #compareBots .pb-chart-subfold .pb-chart-tag-chip-list{
+  padding:0 0 4px 14px!important;
+}
+body.dashboard-shell #compareBots .pb-chart-tag-simple,
+body.dashboard-shell #compareBots .pb-chart-tag-chip-list,
+body.dashboard-shell #compareBots .pb-chart-ranking-buttons{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  flex-wrap:nowrap!important;gap:0!important;
+}
+body.dashboard-shell #compareBots .pb-chart-tag-simple>.graph-event-filter,
+body.dashboard-shell #compareBots .pb-chart-tag-chip-list>.graph-event-filter,
+body.dashboard-shell #compareBots .pb-chart-ranking-buttons>.graph-event-filter,
+body.dashboard-shell #compareBots .pb-chart-tag-simple>.pb-chart-planned{
+  display:flex!important;box-sizing:border-box!important;
+  justify-content:flex-start!important;align-items:center!important;
+  flex:none!important;width:100%!important;min-height:34px!important;height:auto!important;
+  padding:6px 9px!important;margin:0!important;gap:7px!important;
+  border:0!important;border-bottom:1px solid rgba(159,130,162,.19)!important;
+  border-radius:0!important;background:transparent!important;
+  font-size:12px!important;font-weight:400!important;text-align:left!important;
+}
+body.dashboard-shell #compareBots .pb-chart-tag-simple>.graph-event-filter.active,
+body.dashboard-shell #compareBots .pb-chart-tag-chip-list>.graph-event-filter.active,
+body.dashboard-shell #compareBots .pb-chart-ranking-buttons>.graph-event-filter.active{
+  background:rgba(145,103,149,.24)!important;color:#f6dcef!important;
+}
+body.dashboard-shell #compareBots .pb-chart-capped-internal[hidden],
+body.dashboard-shell #compareBots .graph-checkbox-internals .pb-chart-capped-internal{
+  display:none!important;visibility:hidden!important;
+}
+
+/* The event timeline is a disclosure, NOT a 34px form field.
+   Its header remains above its independently scrollable content. */
+body.dashboard-shell #pbGraphEventTimeline,
+body.dashboard-shell #pbGraphEventTimeline[open]{
+  display:block!important;box-sizing:border-box!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;padding:0!important;margin:8px 0 0!important;
+  border:1px solid rgba(112,98,121,.42)!important;
+  border-radius:10px!important;background:#2b2532!important;
+}
+body.dashboard-shell #pbGraphEventTimeline>summary{
+  display:flex!important;align-items:center!important;
+  box-sizing:border-box!important;min-height:34px!important;height:auto!important;
+  margin:0!important;padding:8px 12px!important;
+  cursor:pointer!important;white-space:normal!important;
+  font-size:12px!important;line-height:1.25!important;
+  color:#eee0ec!important;
+}
+body.dashboard-shell #pbGraphEventTimeline .pb-event-timeline-scroll{
+  display:block!important;box-sizing:border-box!important;
+  height:auto!important;max-height:min(47dvh,390px)!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:contain!important;
+  touch-action:pan-y!important;
+  padding:0 10px 14px!important;
+}
+body.dashboard-shell #pbGraphEventTimeline:not([open]) .pb-event-timeline-scroll{display:none!important;}
+body.dashboard-shell #pbGraphEventTimeline .event-analysis-overview{margin:0!important;}
+
+/* Compare table: scroll within table content, header/selected total above it. */
+body.dashboard-shell .pb-chart-compare-fold .pb-chart-table-inner{
+  display:block!important;box-sizing:border-box!important;
+  height:auto!important;max-height:min(50dvh,440px)!important;
+  overflow-y:auto!important;overflow-x:auto!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior-y:contain!important;
+  touch-action:pan-y!important;
+  padding-bottom:12px!important;
+}
+body.dashboard-shell .pb-chart-total-summary{
+  display:block!important;margin:8px 0 2px 0!important;padding:8px 10px!important;
+  border:1px solid rgba(225,154,197,.37)!important;border-radius:10px!important;
+  background:rgba(112,72,110,.19)!important;color:#efd3e8!important;
+  font-size:12px!important;line-height:1.35!important;
+}
 body.dashboard-shell #graphPanel .graph-fullscreen-corner{
   position:absolute!important;top:10px!important;right:10px!important;z-index:6!important;
   width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;
+  padding:0!important;border:0!important;border-radius:0!important;
   display:flex!important;align-items:center!important;justify-content:center!important;
-  padding:0!important;border-radius:0!important;background:transparent!important;color:#f3edf3!important;
-  border:0!important;box-shadow:none!important;font-size:13px!important;line-height:1!important;
+  background:transparent!important;color:#f3edf3!important;box-shadow:none!important;
+  font-size:13px!important;line-height:1!important;
 }
 body.dashboard-shell #graphPanel .graph-fixed-label{padding-right:22px!important;}
-/* subscriber ghost numerals more subtle */
+@media(max-width:350px){
+  body.dashboard-shell .comparebox .pb-chart-periods,
+  body.dashboard-shell .comparebox .pb-chart-metric-row,
+  body.dashboard-shell .comparebox .pb-chart-quick-actions,
+  body.dashboard-shell #compareBots .pb-chart-menu-row{gap:5px!important;}
+  body.dashboard-shell #compareBots .pb-chart-menu-trigger,
+  body.dashboard-shell .comparebox .pb-chart-quick-actions button{padding:0 5px!important;font-size:10px!important;}
+}
+</style>
+
+<style id="pb-subscriber-and-panel-appearance">
 body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
 body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
   color:rgba(242,220,233,.88)!important;
   -webkit-text-stroke:.2px rgba(42,28,48,.34)!important;
   text-shadow:0 1px 2px rgba(33,21,39,.18)!important;
 }
+body.dashboard-shell #subscriberPanel[open]>summary,
+body.dashboard-shell #subscriberPanel>summary{pointer-events:none!important;cursor:default!important;list-style:none!important;}
+body.dashboard-shell #subscriberPanel>summary::-webkit-details-marker{display:none!important;}
+body.dashboard-shell #subscriberPanel>summary::marker{content:"";}
 </style>
 
 <script id="pb-27okt-dates-viewport-fix">
@@ -21426,47 +21544,7 @@ body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter strong#dashb
 })();
 </script>
 
-<style id="pb-27okt-consolidated-corrections">
-/* All mobile chart controls keep equal columns; iOS date inputs cannot widen them. */
-body.dashboard-shell .comparebox .pb-chart-periods{grid-template-columns:repeat(3,minmax(0,1fr))!important;overflow:hidden!important;}
-body.dashboard-shell .comparebox .pb-chart-periods>*{min-width:0!important;max-width:100%!important;box-sizing:border-box!important;}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date{
- display:flex!important;position:relative!important;align-items:center!important;justify-content:center!important;
- width:100%!important;max-width:100%!important;height:34px!important;overflow:hidden!important;
- border:1px solid rgba(112,98,121,.42)!important;border-radius:10px!important;background:#2b2532!important;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date input[type=date]{
- position:absolute!important;inset:0!important;width:100%!important;min-width:0!important;
- max-width:100%!important;height:100%!important;min-height:0!important;padding:0!important;margin:0!important;
- opacity:0!important;z-index:3!important;cursor:pointer!important;appearance:none!important;-webkit-appearance:none!important;
-}
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date .pb-chart-date-placeholder,
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:has(input:valid) .pb-chart-date-placeholder,
-body.dashboard-shell .comparebox .pb-chart-periods .pb-graph-date:focus-within .pb-chart-date-placeholder{
- display:flex!important;position:absolute!important;inset:0!important;align-items:center!important;justify-content:center!important;
- font-size:11px!important;white-space:nowrap!important;pointer-events:none!important;z-index:2!important;
- color:#c7b8c9!important;
-}
-/* The three menu triggers stay visible; only the open panel scrolls. */
-body.dashboard-shell #compareBots .pb-chart-menu-row{position:relative!important;z-index:3!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels{position:relative!important;z-index:1!important;clear:both!important;overflow:visible!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold[open]{position:relative!important;display:block!important;overflow:hidden!important;}
-body.dashboard-shell #compareBots .pb-chart-menu-panels>.pb-chart-fold>.pb-chart-fold-body{
- max-height:min(42vh,330px)!important;overflow-y:auto!important;overflow-x:hidden!important;
- overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important;
- padding-bottom:22px!important;
-}
-body.dashboard-shell #compareBots .pb-chart-bot-list{
- max-height:none!important;overflow:visible!important;touch-action:pan-y!important;
-}
-body.dashboard-shell #compareBots .pb-chart-menu-panels .pb-chart-fold-body .pb-chart-subfold{overflow:visible!important;}
-/* Selected total stays above the long comparison list. */
-body.dashboard-shell .pb-chart-compare-fold .pb-chart-table-inner{max-height:min(48vh,400px)!important;overflow:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;}
-body.dashboard-shell .pb-chart-total-summary{
- display:block!important;margin:8px 0 2px 0!important;padding:8px 10px!important;border-radius:10px!important;
- border:1px solid rgba(225,154,197,.37)!important;background:rgba(112,72,110,.19)!important;
- color:#efd3e8!important;font-size:12px!important;line-height:1.35!important;
-}
+<style id="pb-subscriber-outline-progress">
 /* Subscriber artwork: original outline + advancing highlight ONLY ON THE OUTLINE. */
 body.dashboard-shell .dashboard-subs-card{transform:translateY(-5px)!important;}
 body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-progress,
@@ -21483,6 +21561,95 @@ body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-advance{
 body.dashboard-shell #dashboardHeaderSubscribersCard.has-goal-meter .subscriber-ghost-advance{display:block!important;}
 body.dashboard-shell #dashboardHeaderSubscribersCard strong#dashboardSubscribers{z-index:4!important;}
 @media(prefers-reduced-motion:reduce){body.dashboard-shell #dashboardHeaderSubscribersCard .subscriber-ghost-advance{transition:none!important;}}
+</style>
+<style id="pb-27oct-events-freeze-check">
+body.dashboard-shell #freezeCenterCheckActivity{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+body.dashboard-shell .pb-freeze-check-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+body.dashboard-shell .pb-freeze-check-row>div{min-width:0;flex:1}
+body.dashboard-shell .pb-activity-check-btn{flex:none;white-space:nowrap;padding:6px 9px!important;min-height:32px!important}
+body.dashboard-shell .pb-inactive-tag, body.dashboard-shell .pb-checking-tag{display:inline-block;margin-left:4px;color:#948c9d!important;font-size:10px!important;font-weight:400!important;letter-spacing:0!important}
+body.dashboard-shell .pb-checking-tag{color:#b9a9bb!important}
+body.dashboard-shell .pb-booster-mark{display:inline-flex;vertical-align:baseline;align-items:center;justify-content:center;margin-left:4px;padding:2px 4px;background:#3e2b1d;border-radius:5px;color:#efa66b;font-size:13px;font-weight:750;line-height:1}
+</style>
+
+<style id="pb-27oct-six-inline-event-icons">
+/* Six icon+name buttons in the exact specified order, including small iPhones. */
+body.dashboard-shell #eventTags{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:5px!important;
+  width:100%!important;
+  min-width:0!important;
+}
+body.dashboard-shell #eventTags .event-tag{
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  min-width:0!important;
+  width:100%!important;
+  height:51px!important;
+  min-height:51px!important;
+  padding:4px 1px!important;
+  border-radius:11px!important;
+  white-space:nowrap!important;
+  text-align:center!important;
+  line-height:1!important;
+  background:var(--dash-panel-3,#29252e)!important;
+  color:var(--dash-text,#f4f0f5)!important;
+  border:1px solid var(--dash-border,#37313d)!important;
+  box-shadow:none!important;
+  cursor:pointer!important;
+}
+body.dashboard-shell #eventTags .event-tag.active{
+  background:#563e5a!important;
+  border-color:#dc9bbd!important;
+  color:#f8e9f3!important;
+}
+body.dashboard-shell #eventTags .event-tag:focus-visible{
+  outline:2px solid #d9a4cc!important;
+  outline-offset:2px!important;
+}
+body.dashboard-shell #eventTags .pb-event-tag-icon{
+  display:block!important;
+  flex:0 0 auto!important;
+  line-height:20px!important;
+  height:20px!important;
+  font-size:18px!important;
+}
+body.dashboard-shell #eventTags .pb-event-tag-text{
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  font-size:clamp(7px,1.98vw,10px)!important;
+  letter-spacing:-.025em!important;
+  line-height:12px!important;
+  text-align:center!important;
+  font-weight:500!important;
+  overflow:hidden!important;
+  text-overflow:clip!important;
+}
+body.dashboard-shell .pb-orange-booster-arrow{
+  margin:0!important;
+  padding:2px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  vertical-align:middle!important;
+  border-radius:5px!important;
+  width:21px!important;
+  height:21px!important;
+  box-sizing:border-box!important;
+  color:#e58b28!important;
+  background:#392715!important;
+  line-height:1!important;
+  font-size:0!important;
+}
+body.dashboard-shell .pb-orange-booster-arrow svg{width:16px!important;height:16px!important;display:block!important;flex:none!important;}
+body.dashboard-shell #eventTags .pb-event-booster-icon{display:block!important;height:21px!important;line-height:21px!important;}
+body.dashboard-shell .graph-event-filter .pb-orange-booster-arrow{margin-right:4px!important;}
 </style>
 </body>
 </html>
