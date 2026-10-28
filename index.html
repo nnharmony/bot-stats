@@ -9353,7 +9353,7 @@ async function loadStatsData(){
         </details>
         <div class="pb-chart-tag-simple">
           ${graphTagButton('tagged','🌐','web')}
-          ${graphTagButton('alert',PB_ORANGE_BOOSTER_ARROW,'booster')}
+          ${graphTagButton('alert','🔝','booster')}
           ${graphTagButton('banned','🚫','banned')}
           ${graphTagButton('violation','⛔','violation')}
         </div>
@@ -11140,8 +11140,6 @@ document.querySelector('#displayMode')
   );
 
 
-// Orange booster arrow inspired by the PolyBuzz badge, reused on buttons and bots.
-const PB_ORANGE_BOOSTER_ARROW='<span class="pb-booster-mark pb-orange-booster-arrow"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" aria-hidden="true"><path d="M7 18V10.4H3.8L10 3.1l6.2 7.3H13V18H7Z" fill="currentColor"/></svg></span>';
 const EVENTS_API='https://bot-events.nnharmony.workers.dev';
 const EVENTS_PROFILE='main';
 
@@ -11153,7 +11151,7 @@ const EVENT_TAGS=[
   {id:'edit',label:'☑️ edit'},
   {id:'avatar',label:'👤 avatar'},
   {id:'tagged',label:'🌐 web'},
-  {id:'alert',label:'⬆ booster'}
+  {id:'alert',label:'🔝 booster'}
 ];
 
 const PERSISTENT_TAGS=new Set(['banned','freeze','tagged']);
@@ -13575,7 +13573,7 @@ function eventTagIcon(tag){
   const icons={
     new:'💟',
     capped:'🔄',
-    alert:'⬆',
+    alert:'🔝',
     action:'🧪',
     avatar:'👤',
     freeze:'⏸️',
@@ -13617,7 +13615,6 @@ function setSelectedEventTags(tags){
       'active',
       selected.has(button.dataset.tag)
     );
-    button.setAttribute('aria-pressed',String(selected.has(button.dataset.tag)));
   });
 }
 
@@ -14995,16 +14992,16 @@ function initEventsTracker(){
     return;
   }
 
-  // One compact row in the user's chosen order. Keep original event IDs and
-  // visible text labels; the booster uses the same orange arrow as bot lists.
-  const glyphById={violation:'🆘',banned:'🌙',edit:'☑️',avatar:'👤',tagged:'🌐'};
-  tagBox.innerHTML=EVENT_TAGS.map(tag=>{
-    const name=tag.id==='banned'?'ban':tag.id==='tagged'?'web':tag.id==='alert'?'booster':tag.id;
-    const glyph=tag.id==='alert'
-      ? `<span class="pb-event-booster-icon" aria-hidden="true">${PB_ORANGE_BOOSTER_ARROW}</span>`
-      : `<span class="pb-event-tag-icon" aria-hidden="true">${glyphById[tag.id]||''}</span>`;
-    return `<button class="event-tag" type="button" data-tag="${tag.id}" aria-label="${name}" title="${name}" aria-pressed="false">${glyph}<span class="pb-event-tag-text">${name}</span></button>`;
-  }).join('');
+  tagBox.innerHTML=
+    EVENT_TAGS
+      .map(tag=>`
+        <button
+          class="event-tag"
+          type="button"
+          data-tag="${tag.id}"
+        >${tag.label}</button>
+      `)
+      .join('');
 
   const today=
     new Date()
@@ -15039,7 +15036,6 @@ function initEventsTracker(){
       button.classList.toggle(
         'active'
       );
-      button.setAttribute('aria-pressed',String(button.classList.contains('active')));
 
       if(eventsState.filterAll){
         renderEvents();
@@ -15640,7 +15636,7 @@ function renderFullscreenTimelines(){
       fullscreenPersistentFilters('tagged','🌐','○')
     ),
     fullscreenTimelineDetails(
-      '⬆ booster',
+      '🔝 booster',
       fullscreenSimpleTimelineEntries('alert',cids)
     ),
     fullscreenTimelineDetails(
@@ -20497,7 +20493,7 @@ function pbStatusInline(cid,date){
 function pbManualBoosterInline(cid){
   // Show a small app-like arrow when this bot has a booster tag in Events.
   const boosted=(eventsState.events||[]).some(event=>String(event.cid)===String(cid) && (event.tags||[]).includes('alert'));
-  return boosted?`<span title="booster" aria-label="booster">${PB_ORANGE_BOOSTER_ARROW}</span>`:'';
+  return boosted?'<span class="pb-booster-mark" title="booster" aria-label="booster">⬆</span>':'';
 }
 function pbPerformanceInline(cid,tags){
  const data=tags?.get(String(cid));
@@ -21614,72 +21610,6 @@ body.dashboard-shell .pb-activity-check-btn{flex:none;white-space:nowrap;padding
 body.dashboard-shell .pb-inactive-tag, body.dashboard-shell .pb-checking-tag{display:inline-block;margin-left:4px;color:#948c9d!important;font-size:10px!important;font-weight:400!important;letter-spacing:0!important}
 body.dashboard-shell .pb-checking-tag{color:#b9a9bb!important}
 body.dashboard-shell .pb-booster-mark{display:inline-flex;vertical-align:baseline;align-items:center;justify-content:center;margin-left:4px;padding:2px 4px;background:#3e2b1d;border-radius:5px;color:#efa66b;font-size:13px;font-weight:750;line-height:1}
-</style>
-
-<style id="pb-27oct-six-inline-event-icons">
-/* Six icon+name buttons in the exact specified order, including small iPhones. */
-body.dashboard-shell #eventTags{
-  display:grid!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
-  gap:5px!important;
-  width:100%!important;
-  min-width:0!important;
-}
-body.dashboard-shell #eventTags .event-tag{
-  box-sizing:border-box!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:3px!important;
-  min-width:0!important;
-  width:100%!important;
-  height:51px!important;
-  min-height:51px!important;
-  padding:4px 1px!important;
-  border-radius:11px!important;
-  white-space:nowrap!important;
-  text-align:center!important;
-  line-height:1!important;
-}
-body.dashboard-shell #eventTags .pb-event-tag-icon{
-  display:block!important;
-  flex:0 0 auto!important;
-  line-height:20px!important;
-  height:20px!important;
-  font-size:18px!important;
-}
-body.dashboard-shell #eventTags .pb-event-tag-text{
-  display:block!important;
-  width:100%!important;
-  min-width:0!important;
-  font-size:clamp(7px,1.98vw,10px)!important;
-  letter-spacing:-.025em!important;
-  line-height:12px!important;
-  text-align:center!important;
-  font-weight:500!important;
-  overflow:hidden!important;
-  text-overflow:clip!important;
-}
-body.dashboard-shell .pb-orange-booster-arrow{
-  margin:0!important;
-  padding:2px!important;
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  vertical-align:middle!important;
-  border-radius:5px!important;
-  width:21px!important;
-  height:21px!important;
-  box-sizing:border-box!important;
-  color:#e58b28!important;
-  background:#392715!important;
-  line-height:1!important;
-  font-size:0!important;
-}
-body.dashboard-shell .pb-orange-booster-arrow svg{width:16px!important;height:16px!important;display:block!important;flex:none!important;}
-body.dashboard-shell #eventTags .pb-event-booster-icon{display:block!important;height:21px!important;line-height:21px!important;}
-body.dashboard-shell .graph-event-filter .pb-orange-booster-arrow{margin-right:4px!important;}
 </style>
 </body>
 </html>
