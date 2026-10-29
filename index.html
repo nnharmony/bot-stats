@@ -7074,9 +7074,23 @@ body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-move{
   line-height:1.1!important;color:#f0d3e8!important;z-index:3!important;
   text-shadow:0 1px 2px rgba(12,8,19,.7);
 }
+body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-name-group{
+  position:absolute!important;z-index:3!important;left:7px!important;right:5px!important;
+  bottom:6px!important;display:flex!important;flex-direction:column!important;
+  gap:4px!important;min-width:0!important;
+}
+body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-name-group .pb-thumb-awards{
+  display:flex!important;align-items:center!important;flex-wrap:wrap!important;
+  gap:3px!important;min-height:0!important;line-height:1.15!important;
+  font-size:9px!important;color:#d9bbd4!important;
+}
+body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-awards .pb-performance-tag{
+  font-size:9px!important;font-weight:500!important;
+  text-overflow:ellipsis;overflow:hidden;white-space:nowrap;min-width:0;
+}
 body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-name{
-  position:absolute!important;z-index:3!important;left:7px!important;right:5px!important;bottom:6px!important;
-  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;
+  position:static!important;display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;
   max-height:3.4em!important;overflow:hidden!important;
   font-size:11px!important;font-weight:700!important;line-height:1.12!important;
   color:#f7e6f3!important;white-space:normal!important;overflow-wrap:break-word!important;
@@ -7111,7 +7125,7 @@ body.dashboard-shell .pb-slot-thumb-footer .pb-thumb-growth{
   color:#edc8e4!important;font-size:11px!important;font-weight:700!important;
   line-height:1.2!important;white-space:nowrap!important;
 }
-body.dashboard-shell .pb-slot-thumb-footer .pb-slot-awards-button{
+body.dashboard-shell .pb-slot-thumb-picture .pb-slot-awards-button{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   min-width:23px!important;min-height:18px!important;height:18px!important;
   padding:0 4px!important;margin-left:2px!important;
@@ -7128,6 +7142,12 @@ body.dashboard-shell .pb-slot-thumb-footer .pb-slot-awards-button{
   body.dashboard-shell .pb-slot-thumb-picture{height:98px!important}
   body.dashboard-shell .pb-slot-thumb-footer{padding:6px 5px 8px!important}
   body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-name{font-size:10px!important}
+  body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-awards{flex-wrap:nowrap!important;gap:1px!important}
+  body.dashboard-shell .pb-slot-thumb-picture .pb-thumb-awards .pb-performance-tag{font-size:8px!important;letter-spacing:-.01em!important}
+  body.dashboard-shell .pb-slot-thumb-picture .pb-slot-awards-button{
+    min-width:17px!important;width:17px!important;min-height:15px!important;height:15px!important;
+    margin-left:0!important;padding:0!important;font-size:8px!important
+  }
 }
 body.dashboard-shell .pb-slot-row .pb-slot-awards-button{margin-left:5px;vertical-align:middle}
 .pb-slot-awards-popover{
@@ -7960,7 +7980,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <div id="analyticsMilestoneRows" class="analytics-milestone-rows"><div class="dashboard-empty">loading…</div></div>
       <div id="analyticsMilestoneFullPanel" class="analytics-milestone-full-panel" hidden>
         <div id="analyticsMilestoneFullRows" class="analytics-milestone-rows"></div>
-        <div class="analytics-milestone-footnote">Milestones are cumulative; the &lt;5K group counts bots with known totals below 5,000.</div>
       </div>
       <div id="analyticsMilestoneCompactHint" class="analytics-milestone-footnote" hidden></div>
     </div>
@@ -8112,14 +8131,10 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
   <div class="cv-content">
 
         <div class="cv-summary-grid">
-      <div class="cv-stat"><span>latest</span><strong id="cvLatestTop">—</strong></div>
-      <div class="cv-stat"><span>new</span><strong id="cvEarnedMonth">—</strong></div>
-      <div class="cv-stat"><span>next</span><strong id="cvNextSettlement">—</strong></div>
-      <div class="cv-stat"><span>loss</span><strong id="cvSettlementLoss">—</strong></div>
-      <div class="cv-stat" title="Historical intervals used to calibrate messages per UCU">
-        <span>intervals</span><strong id="cvCalibrationCount">—</strong>
-      </div>
-      <div class="cv-stat"><span>rest</span><strong id="cvSettlementEstimate">—</strong></div>
+      <div class="cv-stat"><span id="cvSettlementStartDate">—</span><strong id="cvSettlementStartValue">—</strong></div>
+      <div class="cv-stat"><span>new cv</span><strong id="cvEarnedMonth">—</strong></div>
+      <div class="cv-stat"><span id="cvNextSettlement">—</span><strong id="cvSettlementLoss">—</strong></div>
+      <div class="cv-stat"><span>next</span><strong id="cvSettlementEstimate">—</strong></div>
     </div>
 
     <section class="cv-day-estimate" id="cvDayEstimate">
@@ -13286,7 +13301,11 @@ function renderCvDashboard(){
 
   const forecast=cvSettlementForecast();
 
+  const startDate=document.querySelector('#cvSettlementStartDate');
+  const startValue=document.querySelector('#cvSettlementStartValue');
   if(forecast){
+    if(startDate)startDate.textContent=new Date(`${forecast.settlement.date}T12:00:00`).toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+    if(startValue)startValue.textContent=fmt.format(forecast.base);
     document.querySelector('#cvEarnedMonth').textContent=
       cvFormatSigned(forecast.net);
 
@@ -13299,6 +13318,8 @@ function renderCvDashboard(){
     document.querySelector('#cvSettlementFormula').textContent=
       `≈ (${fmt.format(forecast.base)} × 95%) + ${cvFormatSigned(forecast.net)} net CV since settlement = ${fmt.format(Math.round(forecast.estimated))}`;
   }else{
+    if(startDate)startDate.textContent='—';
+    if(startValue)startValue.textContent='—';
     document.querySelector('#cvEarnedMonth').textContent='—';
     document.querySelector('#cvSettlementEstimate').textContent='—';
     document.querySelector('#cvSettlementLoss').textContent='—';
@@ -13319,8 +13340,8 @@ function renderCvDashboard(){
       ? `≈ ${calibration.rolling.toFixed(1)}`
       : '—';
 
-  document.querySelector('#cvCalibrationCount').textContent=
-    fmt.format(calibration.points.length);
+  const calibrationDisplay=document.querySelector('#cvCalibrationCount');
+  if(calibrationDisplay)calibrationDisplay.textContent=fmt.format(calibration.points.length);
 
   renderCvEstimator();
   renderCvCapReconstruction();
@@ -20767,10 +20788,12 @@ function pbRenderSlots(){
       <img src="${pbTopSlotsOriginalCard}" alt="" loading="lazy">
       <b class="pb-thumb-rank">#${i+1}</b>
       ${movement?`<span class="pb-thumb-move">${archiveEscape(movement)}</span>`:''}
-      <span class="pb-thumb-name" title="${archiveEscape(name)}">${archiveEscape(name)}</span>
+      <div class="pb-thumb-name-group">
+        <div class="pb-thumb-awards">${tags}${extra}</div>
+        <span class="pb-thumb-name" title="${archiveEscape(name)}">${archiveEscape(name)}</span>
+      </div>
     </div>
     <div class="pb-slot-thumb-footer">
-      <div class="pb-thumb-awards">${tags}${extra}</div>
       <div class="pb-thumb-stat" title="collectors">${pbCollectorSvg}<span>${Number.isFinite(collectors)?fmt.format(collectors):'—'}</span></div>
       <div class="pb-thumb-stat" title="messages">${pbMessageOutlineSvg}<span>${Number.isFinite(messages)?fmt.format(messages):'—'}</span></div>
       <div class="pb-thumb-growth">${Number.isFinite(growth)?dashboardSigned(growth):'—'}</div>
@@ -21974,20 +21997,23 @@ body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscri
 body.dashboard-shell .dashboard-profile-identity .dashboard-identity-title-line h1,
 body.dashboard-shell #dashboardProfileName{
   font-family:"Poppins","Avenir Next",system-ui,sans-serif!important;
-  font-size:22px!important;font-weight:600!important;
-  line-height:1.05!important;letter-spacing:-.035em!important;
+  font-size:22px!important;font-weight:700!important;
+  line-height:1.06!important;letter-spacing:-.025em!important;
 }
 body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid,
-body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy,
+body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy{
+  font-family:"Avenir Next",system-ui,sans-serif!important;
+  font-weight:500!important;letter-spacing:0!important;
+}
 body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{
-  font-family:"Poppins","Avenir Next",system-ui,sans-serif!important;
-  font-weight:400!important;letter-spacing:-.015em!important;
+  font-family:"Avenir Next",system-ui,sans-serif!important;
+  font-weight:400!important;letter-spacing:0!important;
 }
 body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid{
-  font-size:10.2px!important;
+  font-size:11px!important;
 }
 body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{
-  font-size:8px!important;
+  font-size:8.7px!important;
 }
 /* Rounded, quiet labels; numbers still distinguishable, never extra-bold. */
 body.dashboard-shell .dashboard-profile-stats .dashboard-identity-characters,
