@@ -21907,5 +21907,44 @@ body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscri
   body.dashboard-shell .dashboard-subscriber-meter-marker{transition:none!important;}
 }
 </style>
+<style id="pb-header-typefaces-29oct">
+/* Typography-only adjustment, scoped to the approved three-row header.
+   On iOS: Avenir Next for identity/meta; native rounded UI for stat labels. */
+body.dashboard-shell .dashboard-profile-identity .dashboard-identity-title-line h1,
+body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid,
+body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{
+  font-family:"Avenir Next", "Trebuchet MS", system-ui, sans-serif!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-identity-title-line h1{
+  font-weight:750!important;
+  letter-spacing:-.015em!important;
+  line-height:1.07!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid{
+  font-weight:500!important;
+  letter-spacing:-.01em!important;
+}
+body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{
+  font-weight:400!important;
+  letter-spacing:0!important;
+}
+/* Softer and rounder than the identity text, with emphasized numbers. */
+body.dashboard-shell .dashboard-profile-stats .dashboard-identity-characters,
+body.dashboard-shell .dashboard-profile-subscriber-total,
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard,
+body.dashboard-shell .dashboard-profile-stats-divider{
+  font-family:ui-rounded,"Arial Rounded MT","Avenir Next",system-ui,sans-serif!important;
+  font-weight:400!important;
+  letter-spacing:0!important;
+}
+body.dashboard-shell #dashboardHeaderCharacters .dashboard-character-count{
+  font-weight:600!important;
+}
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
+  font-family:inherit!important;
+  font-weight:600!important;
+}
+</style>
 </body>
 </html>
