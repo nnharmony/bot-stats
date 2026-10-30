@@ -7149,7 +7149,34 @@ body.dashboard-shell .pb-slot-thumb-picture .pb-slot-awards-button{
     margin-left:0!important;padding:0!important;font-size:8px!important
   }
 }
-body.dashboard-shell .pb-slot-row .pb-slot-awards-button{margin-left:5px;vertical-align:middle}
+/* Keep the ranking achievements control as the SAME compact lilac button in list and thumbs. */
+body.dashboard-shell .pb-slot-row .pb-slot-awards-button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  box-sizing:border-box!important;
+  width:25px!important;
+  min-width:25px!important;
+  max-width:25px!important;
+  height:19px!important;
+  min-height:19px!important;
+  max-height:19px!important;
+  padding:0 4px!important;
+  margin:0 0 0 5px!important;
+  border:1px solid #67516a!important;
+  border-radius:6px!important;
+  background:#3b2c42!important;
+  color:#e9c4de!important;
+  box-shadow:none!important;
+  font-size:10px!important;
+  font-weight:500!important;
+  line-height:1!important;
+  text-align:center!important;
+  vertical-align:middle!important;
+  flex:0 0 auto!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+}
 .pb-slot-awards-popover{
   position:fixed;z-index:999999;min-width:112px;max-width:min(220px,75vw);
   padding:8px 10px;border-radius:11px;border:1px solid #806182;
