@@ -8159,8 +8159,8 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
         <div class="cv-summary-grid">
       <div class="cv-stat"><span id="cvSettlementStartDate">—</span><strong id="cvSettlementStartValue">—</strong></div>
-      <div class="cv-stat"><span>new cv</span><strong id="cvEarnedMonth">—</strong></div>
       <div class="cv-stat"><span id="cvNextSettlement">—</span><strong id="cvSettlementLoss">—</strong></div>
+      <div class="cv-stat"><span>new cv</span><strong id="cvEarnedMonth">—</strong></div>
       <div class="cv-stat"><span>next</span><strong id="cvSettlementEstimate">—</strong></div>
     </div>
 
@@ -8172,7 +8172,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <div class="cv-day-grid">
         <div><span>characters</span><strong id="cvDayAdjustments">—</strong><small>recorded corrections</small></div>
         <div><span>messages</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
-        <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small>historical ratio</small></div>
+        <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small id="cvMessagesPerUcuSource">—</small></div>
         <div><span>UCU</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
       </div>
       <div id="cvDayFormula" class="cv-day-formula">—</div>
@@ -13217,6 +13217,27 @@ function renderCvDayEstimate(){
   const estimate=cvDailyEstimate();
   const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
 
+  // Use the current daily figures once its message batch has arrived.
+  // The historical ratio is shown only while that batch is missing.
+  const hasActualMessageBatch=estimate &&
+    (estimate.mode==='exact' || estimate.mode==='cap-reconstructed');
+  const currentRatio=hasActualMessageBatch &&
+    Number.isFinite(estimate.uncappedMessages) &&
+    Number.isFinite(estimate.estimatedUcu) && estimate.estimatedUcu>0
+      ? estimate.uncappedMessages/estimate.estimatedUcu : null;
+  if(hasActualMessageBatch){
+    set('#cvMessagesPerUcu',Number.isFinite(currentRatio)?`≈ ${currentRatio.toFixed(1)}`:'—');
+    set('#cvMessagesPerUcuSource',Number.isFinite(currentRatio)
+      ? (estimate.mode==='cap-reconstructed'?'≈ cap-adjusted':'calculated')
+      : 'no UCU ratio');
+  }else if(estimate?.mode==='estimated' && Number.isFinite(estimate.ratio) && estimate.ratio>0){
+    set('#cvMessagesPerUcu',`≈ ${estimate.ratio.toFixed(1)}`);
+    set('#cvMessagesPerUcuSource','historical estimate');
+  }else{
+    set('#cvMessagesPerUcu','—');
+    set('#cvMessagesPerUcuSource','awaiting data');
+  }
+
   if(!estimate){
     set('#cvDayTotal','—');
     set('#cvLatestTop','—');
@@ -13361,11 +13382,6 @@ function renderCvDashboard(){
   }
 
   const calibration=cvCalibration();
-
-  document.querySelector('#cvMessagesPerUcu').textContent=
-    Number.isFinite(calibration.rolling)
-      ? `≈ ${calibration.rolling.toFixed(1)}`
-      : '—';
 
   const calibrationDisplay=document.querySelector('#cvCalibrationCount');
   if(calibrationDisplay)calibrationDisplay.textContent=fmt.format(calibration.points.length);
