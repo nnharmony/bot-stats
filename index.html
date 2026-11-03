@@ -22228,6 +22228,36 @@ body.dashboard-shell #analyticsPanel .analytics-date-control{
   border:1px solid rgba(177,147,184,.42)!important;
   box-shadow:none!important;
 }
+
+/* 03 Nov final correction: remove inherited 41px picker offset and match pink/lilac outlines. */
+body.dashboard-shell #analyticsPanel .analytics-range-picker{
+  padding-top:0!important;
+  height:34px!important;
+  min-height:34px!important;
+  gap:0!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-picker::before{
+  top:0!important;
+  height:34px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-label{display:none!important;}
+body.dashboard-shell #analyticsPanel .analytics-custom-dates{
+  height:34px!important;
+  min-height:34px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-row{
+  align-items:center!important;
+  margin-bottom:12px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-content > .analytics-info-strip{
+  margin-bottom:12px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-picker::before,
+body.dashboard-shell #analyticsPanel .analytics-date-control{
+  border:1px solid #bd8eb9!important;
+  background:rgba(48,42,55,.36)!important;
+  box-shadow:none!important;
+}
 </style>
 </body>
 </html>
