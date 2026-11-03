@@ -2,6 +2,15 @@ name: Update characters
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Update mode"
+        required: true
+        type: choice
+        default: normal
+        options:
+          - normal
+          - retry
 
 permissions:
   contents: write
@@ -13,6 +22,8 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 350
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -23,6 +34,8 @@ jobs:
           node-version: "24"
 
       - name: Collect statistics
+        env:
+          TRACK_MODE: ${{ inputs.mode }}
         run: npm run track
 
       - name: Commit updated history
