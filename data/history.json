@@ -37187,9 +37187,7 @@
           "name": "David",
           "url": "https://www.polybuzz.ai/character/profile/david-XQXYf?pre_source=1",
           "messages": 597,
-          "collectors": 1,
-          "stale": true,
-          "error": "No interaction statistics found"
+          "collectors": 1
         },
         {
           "cid": "XQ5RC",
@@ -37272,10 +37270,8 @@
           "cid": "XKK4Q",
           "name": "Xander",
           "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
-          "messages": 398762,
-          "collectors": 159,
-          "stale": true,
-          "error": "No interaction statistics found"
+          "messages": 400012,
+          "collectors": 161
         },
         {
           "cid": "XYqtB",
