@@ -7912,6 +7912,11 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
   <div class="analytics-content">
 
+    <div id="analyticsInfoStrip" class="analytics-info-strip">
+      <span id="analyticsInfoSummary">—</span>
+      <span id="analyticsStripPopularity" class="analytics-strip-popularity" title="popularity for selected analytics period">—</span>
+    </div>
+
     <div class="analytics-range-row">
       <div class="analytics-range-picker">
       <label for="analyticsPeriod" class="visually-hidden-pb">range</label>
@@ -7931,10 +7936,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       </div>
     </div>
 
-    <div id="analyticsInfoStrip" class="analytics-info-strip">
-      <span id="analyticsInfoSummary">—</span>
-      <span id="analyticsStripPopularity" class="analytics-strip-popularity" title="7-day popularity score">—</span>
-    </div>
+
 
     <div class="analytics-cards">
       <div class="analytics-card">
@@ -7982,9 +7984,19 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
         <strong id="analyticsAveragePerBot">—</strong>
         <em id="analyticsAveragePerBotMeta">messages</em>
       </div>
+      <div class="analytics-card analytics-compact-card">
+        <span>milestones</span>
+        <strong id="analyticsNewMilestones">—</strong>
+        <em id="analyticsNewMilestonesMeta">new in selected range</em>
+      </div>
+      <div class="analytics-card analytics-compact-card">
+        <span>unique users</span>
+        <strong id="analyticsEstimatedUcu">—</strong>
+        <em id="analyticsEstimatedUcuMeta">estimated UCU</em>
+      </div>
     </div>
 
-    <details class="analytics-rolling-card" id="analyticsRollingWindow" open>
+    <details class="analytics-rolling-card" id="analyticsRollingWindow">
       <summary><span>↗ 7-day rolling window</span><small>daily updates</small></summary>
       <div class="analytics-rolling-content">
         <div class="analytics-rolling-grid analytics-rolling-header" aria-hidden="true">
@@ -11822,6 +11834,52 @@ function renderSubscriberLedger(){
   }).join('');
 }
 
+function analyticsNewMilestonesForRange(fromDate,toDate,fromDay,toDay){
+  if(!fromDay?.snapshot?.bots || !toDay?.snapshot?.bots)return null;
+  const previous=new Map((fromDay.snapshot.bots||[]).map(bot=>[String(bot.cid||''),bot]));
+  const thresholds=dashboardMilestoneRows().map(tier=>tier.value).filter(value=>value>0);
+  let count=0;
+  for(const bot of (toDay.snapshot.bots||[])){
+    if(bot.stale || !Number.isFinite(bot.messages))continue;
+    const before=previous.get(String(bot.cid||''));
+    let starting=Number.isFinite(before?.messages)&&!before.stale ? before.messages : null;
+    if(starting===null){
+      // Only assume a zero start for a bot that can be dated as newly published
+      // within this selected period. Do not invent missing historical readings.
+      let published='';
+      try{published=rankingsPublication(bot).date||'';}catch(_){ }
+      if(published>fromDate && published<=toDate)starting=0;
+      else continue;
+    }
+    if(bot.messages<starting)continue;
+    count+=thresholds.filter(value=>starting<value&&bot.messages>=value).length;
+  }
+  return count;
+}
+
+function analyticsRenderNewOverviewCards(range,fromDay,toDay,totalMessages){
+  const milestones=document.getElementById('analyticsNewMilestones');
+  const milestoneMeta=document.getElementById('analyticsNewMilestonesMeta');
+  const ucu=document.getElementById('analyticsEstimatedUcu');
+  const ucuMeta=document.getElementById('analyticsEstimatedUcuMeta');
+  if(milestones){
+    const count=analyticsNewMilestonesForRange(range.from,range.to,fromDay,toDay);
+    milestones.textContent=Number.isFinite(count)?fmt.format(count):'—';
+    if(milestoneMeta)milestoneMeta.textContent=Number.isFinite(count)?'new in selected range':'insufficient message data';
+  }
+  if(ucu){
+    // Calibrate messages per UCU ONLY from uncapped message/CV observations,
+    // then apply that same ratio to ALL profile messages, capped included.
+    const ratio=cvCalibration().rolling;
+    const valid=Number.isFinite(totalMessages)&&Number.isFinite(ratio)&&ratio>0;
+    ucu.textContent=valid?'≈ '+fmt.format(Math.floor(totalMessages/ratio)):'—';
+    if(ucuMeta){
+      ucuMeta.textContent=valid?'estimated · all messages':'historical ratio unavailable';
+      ucuMeta.title=valid?`All messages ÷ ${ratio.toLocaleString('nl-NL',{maximumFractionDigits:2})} messages per UCU (historical ratio). UCU estimate, not deduplicated people.`:'';
+    }
+  }
+}
+
 function renderAnalyticsDashboard(){
   const panel=document.querySelector('#analyticsPanel');
   if(!panel) return;
@@ -11926,9 +11984,9 @@ function renderAnalyticsDashboard(){
       ? `${analyticsDisplayDateLong(range.to || range.from)} ~ stats from ${fmt.format(activeCharacterCount)} characters`
       : `${analyticsDisplayDateLong(range.to || range.from)} ~ character stats unavailable`;
   }
-  // Same real 7-day popularity calculation as Rankings, ending on the
-  // selected analytics date. Never substitute the illustrative screenshot score.
-  dashboardRenderAnalyticsStripPopularity(range.to || range.from);
+  // Match the selected Analytics comparison period; ranking weeks stay independent.
+  dashboardRenderAnalyticsStripPopularity(range,fromDay,toDay);
+  analyticsRenderNewOverviewCards(range,fromDay,toDay,messageNow);
 
   dashboardRenderAnalyticsInsights();
 
@@ -17107,35 +17165,36 @@ function dashboardRenderHotBots(){
     </div>`).join('') : '<div class="dashboard-empty">no comparable message growth in this period yet.</div>';
 }
 
-function dashboardRenderAnalyticsStripPopularity(asOfDate){
+function dashboardRenderAnalyticsStripPopularity(range,fromDay,toDay){
   const el=document.getElementById('analyticsStripPopularity');
   if(!el)return;
   el.textContent='—';
   el.classList.remove('has-score');
-  const isDay=/^\d{4}-\d{2}-\d{2}$/.test(String(asOfDate||''));
-  if(!isDay){el.title='No dated popularity score available';return;}
+  const start=fromDay?.date||'';
+  const end=toDay?.date||'';
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(start)||!/^\d{4}-\d{2}-\d{2}$/.test(end)||start>=end){
+    el.title='No comparable message snapshots for selected analytics period';
+    return;
+  }
   try{
     rankingsLoad();
-    // The analytics end date may be ahead of the last recorded messagebatch.
-    // Use the most recent valid scored end date, without inventing new growth.
-    const candidates=rankingsDays().filter(d=>d.date<=asOfDate).map(d=>d.date).reverse();
-    let scoredDate='',result=null;
-    for(const date of candidates){
-      const check=rankingsHotForSpan(rankingsAddDays(date,-7),date);
-      if(check.valid && Number.isFinite(check.score)){
-        result=check;scoredDate=date;break;
-      }
+    // Analytics uses its selected comparison dates and the same message / coefficient
+    // calculation as Popular. The independent Monday ranking cycle is untouched.
+    const result=rankingsHotForSpan(start,end);
+    if(!result.valid || !Number.isFinite(result.score)){
+      el.title='No comparable popularity score for selected analytics period';
+      return;
     }
-    if(!result){el.title='No comparable 7-day popularity score available yet';return;}
     el.textContent=`${rankingsFloat(result.score)} 🔥`;
     el.classList.add('has-score');
-    el.title=`7-day popularity score at ${analyticsDisplayDateLong(scoredDate)}${scoredDate!==asOfDate?' · latest saved messagebatch':''}${result.incomplete?' · partial measurements':''}`;
+    const rangeDescription=`${analyticsDisplayDateLong(start)} → ${analyticsDisplayDateLong(end)}`;
+    const notExact=(start!==range.from||end!==range.to);
+    el.title=`Popularity for selected period: ${rangeDescription}${notExact?' · nearest available message snapshots':''}${result.incomplete?' · partial measurements':''}`;
   }catch(err){
     el.title='Popularity score unavailable';
     console.warn('Analytics popularity strip:',err);
   }
 }
-
 function dashboardRenderProfilePopularity(){
   const value=document.getElementById('analyticsProfilePopularityScore');
   const details=document.getElementById('analyticsProfilePopularityDetails');
@@ -17391,7 +17450,7 @@ function topSlotsRenderHome(){
       <span class="dashboard-rank">${index+1}</span>
       <div>
         <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbManualBoosterInline(cid,date)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
-        <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages · `:''}slot #${index+1}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
+        <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages`:''}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
         <span class="dashboard-bot-growth">${Number.isFinite(growth)?dashboardSigned(growth):'—'}</span>
@@ -22087,6 +22146,25 @@ body.dashboard-shell .dashboard-subs-inline-check{
 }
 body.dashboard-shell .dashboard-subs-inline-check:empty{display:none}
 body.dashboard-shell .dashboard-subs-card #dashboardSubscribersMeta{display:none!important}
+</style>
+
+<style id="pb-analytics-20261103-targeted-tweaks">
+/* Original orange booster arrow, without its brown square in bot/top-slot lists. */
+body.dashboard-shell .pb-bot-booster-inline .pb-orange-booster-arrow{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+  margin-left:4px!important;
+  width:14px!important;
+  height:14px!important;
+  vertical-align:middle!important;
+}
+body.dashboard-shell .pb-bot-booster-inline .pb-orange-booster-arrow svg{
+  width:14px!important;
+  height:14px!important;
+}
 </style>
 </body>
 </html>
