@@ -7931,7 +7931,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       </div>
       <div id="analyticsCustomDates" class="analytics-custom-dates">
         <label class="analytics-date-control"><span id="analyticsFromDisplay">from</span><input id="analyticsFrom" type="date" aria-label="analytics from"></label>
-        <span class="analytics-date-arrow" aria-hidden="true">→</span>
+        
         <label class="analytics-date-control"><span id="analyticsToDisplay">to</span><input id="analyticsTo" type="date" aria-label="analytics to"></label>
       </div>
     </div>
@@ -7987,12 +7987,12 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <div class="analytics-card analytics-compact-card">
         <span>milestones</span>
         <strong id="analyticsNewMilestones">—</strong>
-        <em id="analyticsNewMilestonesMeta">new in selected range</em>
+        <em id="analyticsNewMilestonesMeta">new</em>
       </div>
       <div class="analytics-card analytics-compact-card">
         <span>unique users</span>
         <strong id="analyticsEstimatedUcu">—</strong>
-        <em id="analyticsEstimatedUcuMeta">estimated UCU</em>
+        <em id="analyticsEstimatedUcuMeta"></em>
       </div>
     </div>
 
@@ -11865,7 +11865,7 @@ function analyticsRenderNewOverviewCards(range,fromDay,toDay,totalMessages){
   if(milestones){
     const count=analyticsNewMilestonesForRange(range.from,range.to,fromDay,toDay);
     milestones.textContent=Number.isFinite(count)?fmt.format(count):'—';
-    if(milestoneMeta)milestoneMeta.textContent=Number.isFinite(count)?'new in selected range':'insufficient message data';
+    if(milestoneMeta)milestoneMeta.textContent=Number.isFinite(count)?'new':'—';
   }
   if(ucu){
     // Calibrate messages per UCU ONLY from uncapped message/CV observations,
@@ -11874,7 +11874,7 @@ function analyticsRenderNewOverviewCards(range,fromDay,toDay,totalMessages){
     const valid=Number.isFinite(totalMessages)&&Number.isFinite(ratio)&&ratio>0;
     ucu.textContent=valid?'≈ '+fmt.format(Math.floor(totalMessages/ratio)):'—';
     if(ucuMeta){
-      ucuMeta.textContent=valid?'estimated · all messages':'historical ratio unavailable';
+      ucuMeta.textContent='';
       ucuMeta.title=valid?`All messages ÷ ${ratio.toLocaleString('nl-NL',{maximumFractionDigits:2})} messages per UCU (historical ratio). UCU estimate, not deduplicated people.`:'';
     }
   }
@@ -22165,6 +22165,61 @@ body.dashboard-shell .pb-bot-booster-inline .pb-orange-booster-arrow svg{
   width:14px!important;
   height:14px!important;
 }
+
+/* Analytics layout refinement — 03 Nov: one spacing scale and equal-width date controls. */
+body.dashboard-shell #analyticsPanel .analytics-content > .analytics-info-strip{
+  margin:0 0 10px!important;
+  min-height:44px;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-row{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  margin:0 0 10px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-picker{
+  padding:0!important;
+  height:44px!important;
+  min-width:0!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-range-picker::before{
+  height:44px!important;
+  border-radius:15px!important;
+  font-size:12px!important;
+}
+body.dashboard-shell #analyticsPanel #analyticsPeriod{
+  height:44px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-custom-dates{
+  display:contents!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-date-control{
+  height:44px!important;
+  border-radius:15px!important;
+  box-sizing:border-box!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-date-control>span{
+  font-size:clamp(10px,2.8vw,13px)!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-date-arrow{display:none!important;}
+body.dashboard-shell #analyticsPanel .analytics-cards{
+  gap:10px!important;
+  margin-top:0!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-cards>.analytics-card{
+  min-height:80px!important;
+  border-radius:16px!important;
+  padding:11px 12px!important;
+}
+body.dashboard-shell #analyticsPanel #analyticsEstimatedUcuMeta:empty{display:none!important;}
+
 </style>
 </body>
 </html>
