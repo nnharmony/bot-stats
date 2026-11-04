@@ -7912,6 +7912,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
   <div class="analytics-content">
 
+    <div class="analytics-period-card">
     <div id="analyticsInfoStrip" class="analytics-info-strip">
       <span id="analyticsInfoSummary">—</span>
       <span id="analyticsStripPopularity" class="analytics-strip-popularity" title="popularity for selected analytics period">—</span>
@@ -7935,8 +7936,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
         <label class="analytics-date-control"><span id="analyticsToDisplay">to</span><input id="analyticsTo" type="date" aria-label="analytics to"></label>
       </div>
     </div>
-
-
+    </div>
 
     <div class="analytics-cards">
       <div class="analytics-card">
@@ -22257,6 +22257,37 @@ body.dashboard-shell #analyticsPanel .analytics-date-control{
   border:1px solid #bd8eb9!important;
   background:rgba(48,42,55,.36)!important;
   box-shadow:none!important;
+}
+</style>
+
+<style id="pb-analytics-unified-period-card-20261104">
+/* One shared card for the period summary and its three controls. */
+body.dashboard-shell #analyticsPanel .analytics-period-card{
+  background:#2b2230;
+  border:1px solid #735a73;
+  border-radius:14px;
+  overflow:hidden;
+  margin:22px 0 12px;
+  padding:0 12px 12px;
+  box-sizing:border-box;
+}
+body.dashboard-shell #analyticsPanel .analytics-period-card > .analytics-info-strip{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  margin:0 0 12px!important;
+  padding:12px 0!important;
+  min-height:44px!important;
+  box-shadow:none!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-period-card > .analytics-range-row{
+  margin:0!important;
+  gap:10px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-period-card .analytics-range-picker::before,
+body.dashboard-shell #analyticsPanel .analytics-period-card .analytics-date-control{
+  background:rgba(23,22,30,.72)!important;
+  border:1px solid #bd8eb9!important;
 }
 </style>
 </body>
