@@ -1,0 +1,90 @@
+{
+  "mode": "normal",
+  "started_at": "2026-11-05T14:15:09.932Z",
+  "snapshot_timestamp": null,
+  "bot_ids": [
+    "bsTTS",
+    "bDfmr",
+    "bTQu8",
+    "akhhg",
+    "ahZ3P",
+    "acWVq",
+    "a8BQr",
+    "aAbGf",
+    "aAYfC",
+    "aLnyd",
+    "aWuvL",
+    "aTDfY",
+    "4mBT9",
+    "4kqes",
+    "442bT",
+    "4Jq6k",
+    "48TWk",
+    "4ADuq",
+    "4qHqN",
+    "4EGsN",
+    "4DNE3",
+    "4D6Ww",
+    "YeCb8",
+    "YYZd8",
+    "YVLJv",
+    "YUwTr",
+    "Yvvgu",
+    "YSMu5",
+    "YRQhH",
+    "YL4ys",
+    "YZFnB",
+    "Xt443",
+    "XYqtB",
+    "XKK4Q",
+    "XKZNk",
+    "XVWHL",
+    "XUUmn",
+    "XUEfB",
+    "XA5He",
+    "XAFVe",
+    "XS5br",
+    "XSahn",
+    "XSNEh",
+    "XRdDd",
+    "XQ5RC",
+    "XQXYf"
+  ],
+  "results": {
+    "bsTTS": {
+      "cid": "bsTTS",
+      "name": "Zack",
+      "url": "https://www.polybuzz.ai/character/profile/zack-bsTTS?pre_source=1",
+      "messages": 229,
+      "collectors": 1
+    },
+    "bDfmr": {
+      "cid": "bDfmr",
+      "name": "Ravi",
+      "url": "https://www.polybuzz.ai/character/profile/ravi-bDfmr?pre_source=1",
+      "messages": 43203,
+      "collectors": 16
+    },
+    "bTQu8": {
+      "cid": "bTQu8",
+      "name": "Denis",
+      "url": "https://www.polybuzz.ai/character/profile/denis-bTQu8?pre_source=1",
+      "messages": 186037,
+      "collectors": 36
+    },
+    "akhhg": {
+      "cid": "akhhg",
+      "name": "Tristan",
+      "url": "https://www.polybuzz.ai/character/profile/tristan-akhhg?pre_source=1",
+      "messages": 4591347,
+      "collectors": 376
+    },
+    "ahZ3P": {
+      "cid": "ahZ3P",
+      "name": "Dean Johnson",
+      "url": "https://www.polybuzz.ai/character/profile/dean-johnson-ahZ3P?pre_source=1",
+      "messages": 6004,
+      "collectors": 6
+    }
+  }
+}
