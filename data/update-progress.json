@@ -225,6 +225,43 @@
       "url": "https://www.polybuzz.ai/character/profile/ren-YVLJv?pre_source=1",
       "messages": 1665916,
       "collectors": 204
+    },
+    "YUwTr": {
+      "cid": "YUwTr",
+      "name": "Yuri",
+      "url": "https://www.polybuzz.ai/character/profile/yuri-YUwTr?pre_source=1",
+      "messages": 4237,
+      "collectors": 4
+    },
+    "Yvvgu": {
+      "cid": "Yvvgu",
+      "name": "Military unit",
+      "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
+      "messages": 31297,
+      "collectors": 9,
+      "stale": true,
+      "error": "No interaction statistics found"
+    },
+    "YSMu5": {
+      "cid": "YSMu5",
+      "name": "Your Russian bodyguard",
+      "url": "https://www.polybuzz.ai/character/profile/your-russian-bodyguard-YSMu5?pre_source=1",
+      "messages": 66456,
+      "collectors": 42
+    },
+    "YRQhH": {
+      "cid": "YRQhH",
+      "name": "The obsession",
+      "url": "https://www.polybuzz.ai/character/profile/the-obsession-YRQhH?pre_source=1",
+      "messages": 1775,
+      "collectors": 3
+    },
+    "YL4ys": {
+      "cid": "YL4ys",
+      "name": "Mafia — the Haddad Family",
+      "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
+      "messages": 3192,
+      "collectors": 5
     }
   }
 }
