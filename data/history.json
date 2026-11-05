@@ -37892,9 +37892,7 @@
           "name": "Benjamin",
           "url": "https://www.polybuzz.ai/character/profile/benjamin-XA5He?pre_source=1",
           "messages": 357,
-          "collectors": 4,
-          "stale": true,
-          "error": "No interaction statistics found"
+          "collectors": 4
         },
         {
           "cid": "XUEfB",
@@ -37977,10 +37975,8 @@
           "cid": "Yvvgu",
           "name": "Military unit",
           "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
-          "messages": 31297,
-          "collectors": 9,
-          "stale": true,
-          "error": "No interaction statistics found"
+          "messages": 31467,
+          "collectors": 9
         },
         {
           "cid": "YUwTr",
