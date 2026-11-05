@@ -33,6 +33,11 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - name: Collect statistics
         env:
           TRACK_MODE: ${{ inputs.mode }}
@@ -41,9 +46,8 @@ jobs:
       - name: Commit updated history
         shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/history.json
+          git add -A -- data/history.json data/update-progress.json
+
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
