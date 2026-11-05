@@ -7,7 +7,7 @@ const historyPath = "data/history.json";
 const progressPath = "data/update-progress.json";
 
 const BATCH_SIZE = 5;
-const WAIT_MS = 60000;
+const WAIT_MS = 30000;
 const MODE = process.env.TRACK_MODE || "normal";
 
 if (!["normal", "retry"].includes(MODE)) {
