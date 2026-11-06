@@ -6670,6 +6670,14 @@ body.dashboard-shell .pb-chart-periods select,body.dashboard-shell .pb-chart-per
 </style>
 
 
+
+<style id="pb-booster-before-growth-20261106">
+/* Booster indicator immediately precedes the growth figure, without altering the icon. */
+body.dashboard-shell .dashboard-bot-growth .pb-bot-booster-inline,
+body.dashboard-shell #pbBotsView .pb-compact-main-table td:nth-child(4) .pb-bot-booster-inline{display:inline-flex!important;vertical-align:middle!important;margin-right:5px!important;margin-left:0!important;}
+body.dashboard-shell .dashboard-bot-growth .pb-orange-booster-arrow,
+body.dashboard-shell #pbBotsView .pb-compact-main-table td:nth-child(4) .pb-orange-booster-arrow{margin-left:0!important;}
+</style>
 </head>
 
 <body>
@@ -17417,10 +17425,10 @@ function topSlotsRenderHome(){
       <div class="dashboard-bot-row">
         <span class="dashboard-rank">${index+1}</span>
         <div>
-          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}${pbManualBoosterInline(bot.cid,topSlotsDefaultDate())}</div>
+          <div class="dashboard-bot-name">${archiveEscape(bot.name||bot.cid)}${pbPerformanceInline(bot.cid,performance)}</div>
           <div class="dashboard-bot-meta ${bot.stale?'stale':''}">${bot.stale?'⚠ ':''}${Number.isFinite(bot.messages)?fmt.format(bot.messages):'—'} messages · ${Number.isFinite(bot.collectors)?fmt.format(bot.collectors):'—'} collectors</div>
         </div>
-        <span class="dashboard-bot-growth">${dashboardSigned(bot.growth)}</span>
+        <span class="dashboard-bot-growth">${pbManualBoosterInline(bot.cid,topSlotsDefaultDate())}${dashboardSigned(bot.growth)}</span>
       </div>`).join('') : '<div class="dashboard-empty">no growth data yet.</div>';
     return;
   }
@@ -17449,11 +17457,11 @@ function topSlotsRenderHome(){
     return `<div class="dashboard-bot-row">
       <span class="dashboard-rank">${index+1}</span>
       <div>
-        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbManualBoosterInline(cid,date)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
+        <div class="dashboard-bot-name">${archiveEscape(name)}${pbPerformanceInline(cid,performance)}${pbStatusInline(cid,date)}${pbAttentionInline(cid,date)}</div>
         <div class="dashboard-bot-meta">${Number.isFinite(messages)?`${fmt.format(messages)} messages`:''}${movement.previousDate?` · vs ${shortGraphDate(movement.previousDate)}`:''}${patternText}</div>
       </div>
       <div class="dashboard-slot-side">
-        <span class="dashboard-bot-growth">${Number.isFinite(growth)?dashboardSigned(growth):'—'}</span>
+        <span class="dashboard-bot-growth">${pbManualBoosterInline(cid,date)}${Number.isFinite(growth)?dashboardSigned(growth):'—'}</span>
         ${movement.label?`<span class="dashboard-slot-movement ${movement.className}">${movement.label}</span>`:''}
       </div>
     </div>`;
@@ -20923,10 +20931,10 @@ function pbRenderBots(){if(!state.meta.size)return;
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
  box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
- <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbManualBoosterInline(b.cid,statusDate)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
+ <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
  <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
  <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
- <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${signed(b.growth)}</td>
+ <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${pbManualBoosterInline(b.cid,statusDate)}${signed(b.growth)}</td>
  <td aria-label="collectors">${pbCollectorSvg}${Number.isFinite(b.collectors)?fmt.format(b.collectors):'—'}</td></tr>`).join('')||'<tr class="pb-bot-no-results"><td colspan="5">no matching bots.</td></tr>';
  const total=allRows.filter(b=>Number.isFinite(b.growth));
  const totals=allRows.reduce((sum,b)=>({start:sum.start+(b.startMessages||0),now:sum.now+(b.messages||0),collectors:sum.collectors+(b.collectors||0)}),{start:0,now:0,collectors:0});
