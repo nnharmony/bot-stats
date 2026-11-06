@@ -260,6 +260,41 @@
       "url": "https://www.polybuzz.ai/character/profile/mafia-the-haddad-family-YL4ys?pre_source=1",
       "messages": 3192,
       "collectors": 5
+    },
+    "YZFnB": {
+      "cid": "YZFnB",
+      "name": "Kieran",
+      "url": "https://www.polybuzz.ai/character/profile/kieran-YZFnB?pre_source=1",
+      "messages": 215040,
+      "collectors": 95
+    },
+    "Xt443": {
+      "cid": "Xt443",
+      "name": "Idris Kassab - mafia enemy",
+      "url": "https://www.polybuzz.ai/character/profile/idris-kassab-mafia-enemy-Xt443?pre_source=1",
+      "messages": 56532,
+      "collectors": 14
+    },
+    "XYqtB": {
+      "cid": "XYqtB",
+      "name": "Silas Moreau",
+      "url": "https://www.polybuzz.ai/character/profile/silas-moreau-XYqtB?pre_source=1",
+      "messages": 8275,
+      "collectors": 9
+    },
+    "XKK4Q": {
+      "cid": "XKK4Q",
+      "name": "Xander",
+      "url": "https://www.polybuzz.ai/character/profile/xander-XKK4Q?pre_source=1",
+      "messages": 401393,
+      "collectors": 164
+    },
+    "XKZNk": {
+      "cid": "XKZNk",
+      "name": "Intruder",
+      "url": "https://www.polybuzz.ai/character/profile/intruder-XKZNk?pre_source=1",
+      "messages": 4271,
+      "collectors": 3
     }
   }
 }
