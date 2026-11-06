@@ -7466,7 +7466,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
   
   <section class="dashboard-card">
     <div class="dashboard-card-head">
-      <strong>latest 30 events</strong>
+      <strong>Latest Events</strong>
       <button type="button" data-open-dashboard-view="events">view all</button>
     </div>
     <div id="dashboardRecentEvents" class="dashboard-recent-list"><div class="dashboard-empty">loading…</div></div>
@@ -7593,7 +7593,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     <div id="freezeCenterTimeline" class="freeze-center-list"></div>
   </section>
   <section class="freeze-center-links"><button type="button" data-open-dashboard-view="backfill">historical backfill</button></section>
-  <p class="freeze-center-note">Suspected stalls stay inactive until you use check activity. Two subsequent exact daily updates with zero growth confirm a freeze. Activity checks are saved on this device; old events are retained for later cleanup.</p>
+  <p class="freeze-center-note">A stalled character is only marked Check Activity. After you start a check, two subsequent exact daily updates with zero growth confirm a freeze; any message growth closes the check.</p>
 </section>
 
 <section id="dashboardTopSlots" class="dashboard-slots" data-dashboard-view="slots" hidden>
@@ -8037,16 +8037,18 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
     </div>
 
     <details class="analytics-records-card" id="analyticsRecords">
-      <summary><span>🏆 records</span><small>profile · bots</small></summary>
+      <summary><span>personal records</span><small>profile · characters · 30D</small></summary>
       <div class="analytics-records-inner">
         <div class="analytics-records-section-title">profile records</div>
         <div id="analyticsProfileRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
         <div class="analytics-records-section-title">bot records</div>
         <div id="analyticsBotRecordRows" class="analytics-records-list"><div class="dashboard-empty">loading…</div></div>
-        <div class="analytics-records-section-title">🏅 personal bot records · 30D</div>
+        <div class="analytics-records-section-title">🏅 historical character records · 30D</div>
         <div class="analytics-personal-tools">
-          <label for="analyticsPersonalBotFilter">bot</label>
-          <select id="analyticsPersonalBotFilter" aria-label="Filter personal bests by bot"><option value="">all bots</option></select>
+          <label><span>search</span><input id="analyticsPersonalSearch" type="search" autocomplete="off" placeholder="character name" aria-label="Search personal records by character"></label>
+          <label><span>character</span><select id="analyticsPersonalBotFilter" aria-label="Filter personal records by character"><option value="">all characters</option></select></label>
+          <label><span>from</span><input id="analyticsPersonalFrom" type="date" aria-label="Personal records from date"></label>
+          <label><span>to</span><input id="analyticsPersonalTo" type="date" aria-label="Personal records to date"></label>
         </div>
         <div id="analyticsPersonalRecordCount" class="analytics-personal-count">Historic 30D personal best moments, with dates.</div>
         <div id="analyticsPersonalRecordRows" class="analytics-personal-list"><div class="dashboard-empty">open to load records…</div></div>
@@ -8191,11 +8193,27 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
     <section class="cv-day-estimate" id="cvDayEstimate">
       <div class="cv-day-head">
-        <div class="cv-day-title-row"><span>creator value update</span><label class="cv-day-date-picker"><span class="visually-hidden-pb">historical cv update</span><input id="cvDayHistoryDate" type="date" aria-label="select historical creator value date"></label><small id="cvDayDate">—</small></div>
-        <strong id="cvDayTotal">—</strong>
+        <div class="cv-day-title-row"><span>creator value update</span><button id="cvDayHistoryButton" class="cv-day-date-button" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="cvHistoryWheel">select date</button><small id="cvDayDate">—</small></div>
+        <div class="cv-day-change"><strong id="cvDayTotal">—</strong><small id="cvDayChangeKind"></small></div>
+      </div>
+      <input id="cvDayHistoryDate" type="hidden" value="">
+      <div id="cvHistoryWheel" class="cv-history-wheel" role="dialog" aria-modal="true" aria-labelledby="cvHistoryWheelTitle" hidden>
+        <div class="cv-history-wheel-card">
+          <div class="cv-history-wheel-head">
+            <strong id="cvHistoryWheelTitle">creator value update</strong>
+            <button id="cvHistoryWheelCancel" type="button">cancel</button>
+          </div>
+          <div class="cv-history-wheel-columns" aria-label="Choose month, day and year">
+            <div class="cv-wheel-column" id="cvHistoryMonthWheel" role="listbox" aria-label="month" tabindex="0"></div>
+            <div class="cv-wheel-column" id="cvHistoryDayWheel" role="listbox" aria-label="day" tabindex="0"></div>
+            <div class="cv-wheel-column" id="cvHistoryYearWheel" role="listbox" aria-label="year" tabindex="0"></div>
+            <div class="cv-wheel-selection" aria-hidden="true"></div>
+          </div>
+          <button id="cvHistoryWheelApply" class="cv-history-wheel-apply" type="button">done</button>
+        </div>
       </div>
       <div class="cv-day-grid">
-        <div><span>characters</span><strong id="cvDayAdjustments">—</strong><small>recorded corrections</small></div>
+        <div><span>characters</span><strong id="cvDayCharacters">—</strong><small id="cvDayCharactersMeta">eligible characters</small></div>
         <div><span>messages</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
         <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small id="cvMessagesPerUcuSource">—</small></div>
         <div><span>UCU</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
@@ -9879,6 +9897,14 @@ function currentFreezeInfo(){
       startKnown:assessment.startKnown!==false
     });
   });
+  state.meta.forEach((meta,cid)=>{
+    if(infos.some(item=>item.cid===cid))return;
+    const manual=manualFreezePeriodsForCid(cid).find(item=>item.active);
+    if(!manual)return;
+    infos.push({cid,name:meta?.name||cid,since:manual.start||'',days:manual.days||1,
+      threshold:null,startMessages:null,type:'manual',status:'manual',verified:true,
+      reasons:['manual freeze record'],startKnown:true});
+  });
   return infos.sort((a,b)=>String(b.since||'').localeCompare(String(a.since||''))||a.name.localeCompare(b.name));
 }
 
@@ -9911,12 +9937,33 @@ function freezePeriodsForCid(cid){
 }
 
 function freezeHistory(){
-  const result=[];
-  state.meta.forEach((meta,cid)=>{
-    // Count-based history only; legacy manual entries remain in the Events archive.
-    const automatic=freezeComputedPeriodsForCid(cid,{includeSuspected:true})
-      .filter(item=>!item.active);
-    automatic.forEach(item=>result.push({...item,name:meta?.name||cid}));
+  const result=[],seen=new Set();
+  const add=item=>{
+    const start=item.start||item.startDate||'';
+    const end=item.end||item.endDate||'';
+    if(!item.cid||!start||!end)return;
+    const key=`${item.cid}|${start}|${end}`;
+    if(seen.has(key))return;
+    seen.add(key);
+    result.push({...item,start,end,days:item.days||freezeCalendarDuration(start,end),active:false,
+      name:state.meta.get(String(item.cid))?.name||String(item.cid)});
+  };
+  pbActivityHistory().filter(item=>item.end).forEach(item=>add(item));
+  state.meta.forEach((_meta,cid)=>manualFreezePeriodsForCid(cid).filter(item=>!item.active).forEach(add));
+
+  // Keep already stored legacy automatic periods readable, without running
+  // the retired automatic detector to manufacture new history.
+  const groups=new Map();
+  (freezeAutoState.events||[]).forEach(event=>{
+    const key=event.periodKey||`${event.cid}|${event.startDate||event.date||''}`;
+    const group=groups.get(key)||[];group.push(event);groups.set(key,group);
+  });
+  groups.forEach(events=>{
+    events.sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+    const startEvent=events.find(event=>['started','detected'].includes(event.kind));
+    const endEvent=events.find(event=>event.kind==='ended');
+    if(startEvent&&endEvent)add({cid:startEvent.cid,start:startEvent.startDate||startEvent.date,end:endEvent.endDate||endEvent.date,
+      type:endEvent.freezeType||startEvent.freezeType||'legacy',status:'legacy record',source:'legacy-record',startKnown:startEvent.startKnown!==false});
   });
   return result.sort((a,b)=>
     String(b.end||'').localeCompare(String(a.end||''))||
@@ -11220,12 +11267,12 @@ const EVENTS_PROFILE='main';
 /* Six manual controls. Keep original persisted IDs ('tagged' and 'alert')
    so old records, filters and on/off transitions remain readable. */
 const EVENT_TAGS=[
-  {id:'violation',label:'🆘 violation'},
-  {id:'banned',label:'🌙 ban'},
-  {id:'edit',label:'☑️ edit'},
-  {id:'avatar',label:'👤 avatar'},
-  {id:'tagged',label:'🌐 web'},
-  {id:'alert',label:'⬆ booster'}
+  {id:'violation',label:'🆘 Violation'},
+  {id:'banned',label:'🌙 Ban'},
+  {id:'edit',label:'☑️ Edit'},
+  {id:'avatar',label:'👤 Avatar'},
+  {id:'tagged',label:'🌐 Web'},
+  {id:'alert',label:'🟠⬆ Booster'}
 ];
 
 const PERSISTENT_TAGS=new Set(['banned','freeze','tagged']);
@@ -12548,17 +12595,41 @@ function cvCapChangeInside(fromDate,toDate){
   );
 }
 
+function cvKnownCreationDate(cid){
+  const id=String(cid||'');
+  if(!id) return '';
+  try{
+    const date=backfillEffectiveCreationDate(id);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))) return String(date);
+  }catch(_){ }
+  const event=(eventsState.events||[])
+    .filter(item=>String(item.cid||'')===id && /^\d{4}-\d{2}-\d{2}$/.test(String(item.date||'')))
+    .filter(item=>dashboardEventTags(item).some(tag=>['new','created'].includes(tag)))
+    .sort((a,b)=>String(a.date).localeCompare(String(b.date)))[0];
+  return event?.date||'';
+}
+
+/* Missing history is not zero. A zero baseline is valid only when a saved
+   creation date proves that the character was published inside this interval. */
+function cvComparableStartMessages(cid,beforeBot,fromDate,toDate){
+  if(Number.isFinite(beforeBot?.messages)) return Number(beforeBot.messages);
+  const creation=cvKnownCreationDate(cid);
+  return creation && creation>String(fromDate||'') && creation<=String(toDate||'') ? 0 : null;
+}
+
+function cvEligibleCharacter(cid){
+  try{return rankingsIsPublic({cid:String(cid)})}catch(_){return true}
+}
+
 function cvCalibration(){
-  const entries=cvSortedEntriesAsc();
+  const entries=cvSortedEntriesAsc().filter(entry=>entry.type==='update'&&entry.date);
   const points=[];
 
-  for(let i=1;i<entries.length;i++){
-    const beforeEntry=entries[i-1];
-    const afterEntry=entries[i];
-
-    if(!beforeEntry?.date || !afterEntry?.date) continue;
-    if(beforeEntry.date===afterEntry.date) continue;
-    if(afterEntry.type==='settlement') continue;
+  for(const afterEntry of entries){
+    const context=cvDailyUpdateContext(afterEntry.date);
+    if(!context?.baseline || context.target!==afterEntry) continue;
+    const beforeEntry=context.baseline;
+    if(!beforeEntry.date || beforeEntry.date===afterEntry.date) continue;
 
     const beforeDay=cvExactDailyEntry(beforeEntry.date);
     const afterDay=cvExactDailyEntry(afterEntry.date);
@@ -12577,6 +12648,7 @@ function cvCalibration(){
     let messageGrowth=0;
 
     for(const [cid,meta] of state.meta){
+      if(!cvEligibleCharacter(cid)) continue;
       if(cvIsCappedBy(cid,afterEntry.date)) continue;
 
       const beforeBot=beforeMap.get(cid);
@@ -12584,10 +12656,10 @@ function cvCalibration(){
 
       if(!afterBot || !Number.isFinite(afterBot.messages)) continue;
 
-      const startMessages=
-        beforeBot && Number.isFinite(beforeBot.messages)
-          ? beforeBot.messages
-          : 0;
+      const startMessages=cvComparableStartMessages(
+        cid,beforeBot,beforeEntry.date,afterEntry.date
+      );
+      if(startMessages===null) continue;
 
       const endMessages=afterBot.messages;
 
@@ -12601,15 +12673,10 @@ function cvCalibration(){
       );
     }
 
-    const actualDelta=
-      Number(afterEntry.total)-
-      Number(beforeEntry.total);
-
-    const knownAdjustment=
-      Number(afterEntry.adjustment || 0);
-
-    const organicCv=
-      actualDelta-knownAdjustment;
+    const actualDelta=context.actualDelta;
+    const knownAdjustment=context.adjustments;
+    const organicCv=context.organicCv;
+    if(!Number.isFinite(organicCv) || organicCv<0) continue;
 
     const ucuCv=
       organicCv-messageCv;
@@ -12711,6 +12778,7 @@ function cvUncappedEstimator(){
   const rows=[];
 
   for(const [cid,meta] of state.meta){
+    if(!cvEligibleCharacter(cid)) continue;
     if(cvIsCappedBy(cid,latest.date)) continue;
 
     const bot=snapshotBot(latest.snapshot,cid);
@@ -12913,6 +12981,166 @@ function cvFormatEstimateSigned(value,digits=1){
   return `${value>0?'+':''}${cvFormatEstimate(value,digits)}`;
 }
 
+const cvHistoryWheelState={ready:false,open:false,draft:'',syncing:false,timers:new Map()};
+const cvHistoryMonthNames=['january','february','march','april','may','june','july','august','september','october','november','december'];
+
+function cvHistoryUpdateDates(){
+  return [...new Set(cvSortedEntriesAsc()
+    .filter(entry=>entry.type==='update'&&/^\d{4}-\d{2}-\d{2}$/.test(String(entry.date||'')))
+    .map(entry=>String(entry.date)))]
+    .sort();
+}
+
+function cvHistoryDateLabel(date){
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))) return 'select date';
+  const [year,month,day]=date.split('-').map(Number);
+  return `${day} ${cvHistoryMonthNames[month-1]} ${year}`;
+}
+
+function cvHistoryNearestUpdate(date){
+  const dates=cvHistoryUpdateDates();
+  if(!dates.length) return '';
+  if(dates.includes(date)) return date;
+  return [...dates].reverse().find(item=>item<=date) || dates[0];
+}
+
+function cvHistoryDaysInMonth(year,month){
+  return new Date(Number(year),Number(month),0).getDate();
+}
+
+function cvHistoryWheelParts(date){
+  const valid=/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))
+    ? String(date) : cvHistoryUpdateDates().at(-1)||new Date().toLocaleDateString('sv-SE');
+  const [year,month,day]=valid.split('-').map(Number);
+  return {year,month,day};
+}
+
+function cvHistoryWheelRenderColumn(element,values,selected,format){
+  if(!element) return;
+  element.__cvValues=values;
+  element.innerHTML=values.map(value=>`<div class="cv-wheel-option" role="option" data-value="${value}" aria-selected="${String(value===selected)}">${archiveEscape(format(value))}</div>`).join('');
+  const index=Math.max(0,values.indexOf(selected));
+  element.scrollTop=index*42;
+}
+
+function cvHistoryWheelRender(date=cvHistoryWheelState.draft){
+  const dates=cvHistoryUpdateDates();
+  if(!dates.length) return;
+  const first=cvHistoryWheelParts(dates[0]);
+  const last=cvHistoryWheelParts(dates.at(-1));
+  const parts=cvHistoryWheelParts(date||dates.at(-1));
+  parts.year=Math.max(first.year,Math.min(last.year,parts.year));
+  parts.month=Math.max(1,Math.min(12,parts.month));
+  parts.day=Math.max(1,Math.min(cvHistoryDaysInMonth(parts.year,parts.month),parts.day));
+  cvHistoryWheelState.draft=`${String(parts.year).padStart(4,'0')}-${String(parts.month).padStart(2,'0')}-${String(parts.day).padStart(2,'0')}`;
+  const years=Array.from({length:last.year-first.year+1},(_,index)=>first.year+index);
+  const months=Array.from({length:12},(_,index)=>index+1);
+  const days=Array.from({length:cvHistoryDaysInMonth(parts.year,parts.month)},(_,index)=>index+1);
+  cvHistoryWheelState.syncing=true;
+  cvHistoryWheelRenderColumn(document.getElementById('cvHistoryMonthWheel'),months,parts.month,value=>cvHistoryMonthNames[value-1]);
+  cvHistoryWheelRenderColumn(document.getElementById('cvHistoryDayWheel'),days,parts.day,value=>String(value));
+  cvHistoryWheelRenderColumn(document.getElementById('cvHistoryYearWheel'),years,parts.year,value=>String(value));
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{cvHistoryWheelState.syncing=false}));
+}
+
+function cvHistoryWheelReadColumn(element){
+  const values=element?.__cvValues||[];
+  if(!values.length) return null;
+  const index=Math.max(0,Math.min(values.length-1,Math.round(element.scrollTop/42)));
+  element.querySelectorAll('.cv-wheel-option').forEach((option,i)=>option.setAttribute('aria-selected',String(i===index)));
+  return values[index];
+}
+
+function cvHistoryWheelCommitColumn(kind,element){
+  if(cvHistoryWheelState.syncing) return;
+  const value=cvHistoryWheelReadColumn(element);
+  if(value===null) return;
+  const parts=cvHistoryWheelParts(cvHistoryWheelState.draft);
+  parts[kind]=Number(value);
+  parts.day=Math.min(parts.day,cvHistoryDaysInMonth(parts.year,parts.month));
+  const next=`${String(parts.year).padStart(4,'0')}-${String(parts.month).padStart(2,'0')}-${String(parts.day).padStart(2,'0')}`;
+  if(kind==='month'||kind==='year') cvHistoryWheelRender(next);
+  else cvHistoryWheelState.draft=next;
+}
+
+function cvHistoryWheelClose(){
+  const dialog=document.getElementById('cvHistoryWheel');
+  if(dialog) dialog.hidden=true;
+  document.getElementById('cvDayHistoryButton')?.setAttribute('aria-expanded','false');
+  document.body.classList.remove('cv-wheel-open');
+  cvHistoryWheelState.open=false;
+}
+
+function cvHistoryWheelOpen(){
+  const dates=cvHistoryUpdateDates();
+  if(!dates.length) return;
+  const input=document.getElementById('cvDayHistoryDate');
+  const dialog=document.getElementById('cvHistoryWheel');
+  if(dialog) dialog.hidden=false;
+  cvHistoryWheelRender(input?.value||dates.at(-1));
+  document.getElementById('cvDayHistoryButton')?.setAttribute('aria-expanded','true');
+  document.body.classList.add('cv-wheel-open');
+  cvHistoryWheelState.open=true;
+  requestAnimationFrame(()=>document.getElementById('cvHistoryMonthWheel')?.focus({preventScroll:true}));
+}
+
+function cvHistoryWheelApply(){
+  const month=cvHistoryWheelReadColumn(document.getElementById('cvHistoryMonthWheel'));
+  const day=cvHistoryWheelReadColumn(document.getElementById('cvHistoryDayWheel'));
+  const year=cvHistoryWheelReadColumn(document.getElementById('cvHistoryYearWheel'));
+  const requested=[year,month,day].every(Number.isFinite)
+    ? `${String(year).padStart(4,'0')}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`
+    : cvHistoryWheelState.draft;
+  const chosen=cvHistoryNearestUpdate(requested);
+  const input=document.getElementById('cvDayHistoryDate');
+  if(chosen&&input){
+    input.value=chosen;
+    input.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  cvHistoryWheelClose();
+  if(chosen)renderCvDayEstimate();
+}
+
+function cvHistoryWheelInit(){
+  if(cvHistoryWheelState.ready) return;
+  cvHistoryWheelState.ready=true;
+  document.getElementById('cvDayHistoryButton')?.addEventListener('click',cvHistoryWheelOpen);
+  document.getElementById('cvHistoryWheelCancel')?.addEventListener('click',cvHistoryWheelClose);
+  document.getElementById('cvHistoryWheelApply')?.addEventListener('click',cvHistoryWheelApply);
+  const columns=[['month','cvHistoryMonthWheel'],['day','cvHistoryDayWheel'],['year','cvHistoryYearWheel']];
+  columns.forEach(([kind,id])=>{
+    const column=document.getElementById(id);
+    if(!column) return;
+    column.addEventListener('scroll',()=>{
+      clearTimeout(cvHistoryWheelState.timers.get(id));
+      cvHistoryWheelState.timers.set(id,setTimeout(()=>cvHistoryWheelCommitColumn(kind,column),90));
+    },{passive:true});
+    column.addEventListener('click',event=>{
+      const option=event.target.closest('.cv-wheel-option');
+      if(!option) return;
+      const index=(column.__cvValues||[]).indexOf(Number(option.dataset.value));
+      if(index>=0){
+        cvHistoryWheelState.syncing=false;
+        column.scrollTop=index*42;
+        cvHistoryWheelCommitColumn(kind,column);
+      }
+    });
+    column.addEventListener('keydown',event=>{
+      if(!['ArrowUp','ArrowDown'].includes(event.key)) return;
+      event.preventDefault();
+      const direction=event.key==='ArrowDown'?1:-1;
+      column.scrollTop=Math.max(0,column.scrollTop+direction*42);
+      cvHistoryWheelCommitColumn(kind,column);
+    });
+  });
+  document.getElementById('cvHistoryWheel')?.addEventListener('click',event=>{
+    if(event.target.id==='cvHistoryWheel') cvHistoryWheelClose();
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&cvHistoryWheelState.open) cvHistoryWheelClose();
+  });
+}
+
 function cvDailyUpdateContext(date=''){
   const entries=cvSortedEntriesAsc();
   if(!entries.length) return null;
@@ -13006,6 +13234,7 @@ function cvUncappedMessagesForDate(date,targetEntry=null){
   let bots=0;
 
   for(const [cid,afterBot] of afterMap){
+    if(!cvEligibleCharacter(cid)) continue;
     if(!Number.isFinite(afterBot?.messages)) continue;
 
     // Already capped before this interval = no more character CV.
@@ -13015,7 +13244,8 @@ function cvUncappedMessagesForDate(date,targetEntry=null){
     if(cappedDate && cappedDate<after.date) continue;
 
     const beforeBot=beforeMap.get(cid);
-    const start=Number.isFinite(beforeBot?.messages) ? beforeBot.messages : 0;
+    const start=cvComparableStartMessages(cid,beforeBot,before.date,after.date);
+    if(start===null) continue;
     const delta=afterBot.messages-start;
     if(!Number.isFinite(delta) || delta<=0) continue;
 
@@ -13066,9 +13296,11 @@ function cvCapReconstruct(date=''){
   const candidates=[];
 
   for(const [cid,after] of afterMap){
+    if(!cvEligibleCharacter(cid)) continue;
     if(!Number.isFinite(after?.messages)) continue;
     const before=beforeMap.get(cid);
-    const start=Number.isFinite(before?.messages)?before.messages:0;
+    const start=cvComparableStartMessages(cid,before,interval.fromDate,interval.date);
+    if(start===null) continue;
     const count=Math.max(0,after.messages-start);
     if(!count || (cvCappedDate(cid) && cvCappedDate(cid)<interval.date)) continue;
 
@@ -13095,7 +13327,7 @@ function cvCapReconstruct(date=''){
   let reconciled=false;
   let reason='';
   if(excessCv<=1e-7){
-    reason='No negative ucu residual in this cv update; no cap correction needed.';
+    reason='No cap correction needed ✓';
   }else if(organic<0){
     reason='Organic cv is negative; check settlements / adjustments before cap reconstruction.';
   }else if(!candidates.length){
@@ -13180,8 +13412,7 @@ function renderCvCapReconstruction(){
     ${r.candidates.map(c=>`<div><span>${cvCapReconEsc(c.name)}${c.manuallyDated?' · manually tagged capped':''}</span><span>+${n(c.count)} msg</span></div>`).join('')}
     ${r.candidates.length>1?'<em>Several possible contributors: the total is reconstructable, but per-bot attribution is not uniquely determined.</em>':''}
   </div>`:'';
-  const readableReason=r.reason==='No negative ucu residual in this cv update; no cap correction needed.'
-    ? 'No cap correction needed ✓' : r.reason;
+  const readableReason=r.reason;
   const why=readableReason==='No cap correction needed ✓'?'<p class="cv-cap-recon-muted">No cap correction needed ✓</p>':'';
   box.innerHTML=main+result+info+candidates+why;
 }
@@ -13195,6 +13426,19 @@ function cvDailyEstimate(date=''){
   const ratio=cvCalibration().rolling;
   const actualMessages=cvUncappedMessagesForDate(context.target.date,context.target);
 
+  // A negative organic change is a correction/decrease, never earned CV.
+  // Preserve the signed change and adjustments without inventing a message/UCU split.
+  if(context.organicCv<0){
+    return {
+      mode:'decrease',date:context.target.date,
+      fromDate:actualMessages?.fromDate||context.baseline?.date||'',
+      actualDelta:context.actualDelta,adjustments:context.adjustments,
+      organicCv:context.organicCv,rawMessages:actualMessages?.uncappedMessages??null,
+      uncappedMessages:null,bots:actualMessages?.bots??null,
+      messageCv:null,ucuCv:null,estimatedUcu:null,ratio
+    };
+  }
+
   // Once the message snapshot for this CV date is loaded, the message part is
   // known. The remaining organic cv is therefore the UCU contribution.
   if(actualMessages){
@@ -13207,7 +13451,7 @@ function cvDailyEstimate(date=''){
     // are not a possible explanation. Keep the split explicitly unresolved and
     // preserve the genuine discrepancy for cap reconstruction, rather than
     // masking it with zero or treating it as a negative contribution.
-    if(!Number.isFinite(ucuCv) || ucuCv < -1e-7 || context.organicCv < 0){
+    if(!Number.isFinite(ucuCv) || ucuCv < -1e-7){
       return {
         mode:'unresolved-cap',date:context.target.date,fromDate:actualMessages.fromDate,
         actualDelta:context.actualDelta,adjustments:context.adjustments,
@@ -13289,17 +13533,22 @@ function renderCvDayEstimate(){
   const dateSelect=document.getElementById('cvDayHistoryDate');
   let selectedDate='';
   if(dateSelect){
-    const dates=[...new Set(cvSortedEntriesAsc().filter(e=>e.type==='update'&&e.date).map(e=>e.date))].reverse();
+    const dates=cvHistoryUpdateDates();
     const previous=dateSelect.value;
-    // Native iOS date control opens the scroll-wheel picker, not a long list
-    // or day-by-day arrows. Preserve the user's selected historical date.
-    dateSelect.min=dates[dates.length-1]||'';
-    dateSelect.max=dates[0]||'';
-    dateSelect.value=previous || dates[0] || '';
+    dateSelect.value=dates.includes(previous)?previous:(dates.at(-1)||'');
     selectedDate=dateSelect.value;
+    const button=document.getElementById('cvDayHistoryButton');
+    if(button){
+      button.textContent=cvHistoryDateLabel(selectedDate);
+      button.disabled=!dates.length;
+    }
   }
+  cvHistoryWheelInit();
   const estimate=cvDailyEstimate(selectedDate);
   const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
+  const change=document.querySelector('.cv-day-change');
+  change?.classList.toggle('is-decrease',Boolean(estimate&&estimate.actualDelta<0));
+  set('#cvDayChangeKind',!estimate?'':estimate.actualDelta<0?'decrease / correction':'earned change');
 
   // Use the current daily figures once its message batch has arrived.
   // The historical ratio is shown only while that batch is missing.
@@ -13330,16 +13579,28 @@ function renderCvDayEstimate(){
     set('#cvDayMessages','—');
     set('#cvDayUcuCv','—');
     set('#cvDayUcu','—');
-    set('#cvDayAdjustments','—');
+    set('#cvDayCharacters','—');
+    set('#cvDayCharactersMeta','eligible characters');
     set('#cvDayExpected','—');
     set('#cvDayFormula','enter a cv update to see its breakdown.');
     return;
   }
 
-  set('#cvDayTotal',estimate.actualDelta<0?'—':cvFormatEstimateSigned(estimate.actualDelta));
-  set('#cvLatestTop',estimate.actualDelta<0?'—':cvFormatEstimateSigned(estimate.actualDelta));
-  set('#cvDayAdjustments',cvFormatEstimateSigned(estimate.adjustments,0));
+  set('#cvDayTotal',cvFormatEstimateSigned(estimate.actualDelta));
+  set('#cvLatestTop',estimate.actualDelta<0?'correction':cvFormatEstimateSigned(estimate.actualDelta));
+  set('#cvDayCharacters',Number.isFinite(estimate.bots)?fmt.format(estimate.bots):'—');
+  set('#cvDayCharactersMeta',Number.isFinite(estimate.bots)?'eligible characters':'awaiting messages');
   set('#cvDayExpected',cvFormatEstimateSigned(estimate.organicCv));
+
+  if(estimate.mode==='decrease'){
+    set('#cvDayDate','correction recorded');
+    set('#cvDayMessageCv','—');
+    set('#cvDayMessages',Number.isFinite(estimate.rawMessages)?`${fmt.format(Math.round(estimate.rawMessages))} observed messages · not assigned to negative CV`:'not classified as earned CV');
+    set('#cvDayUcuCv','—');
+    set('#cvDayUcu','—');
+    set('#cvDayFormula',`${cvFormatEstimateSigned(estimate.actualDelta)} net CV · ${cvFormatEstimateSigned(estimate.adjustments)} recorded adjustments · ${cvFormatEstimateSigned(estimate.organicCv)} remaining decrease. No negative value is counted as earned message or UCU CV.`);
+    return;
+  }
 
   if(estimate.mode==='exact' || estimate.mode==='cap-reconstructed'){
     const inferred=estimate.mode==='cap-reconstructed';
@@ -13351,8 +13612,9 @@ function renderCvDayEstimate(){
 
     const warning=inferred?' · estimated cap exclusion; see cap reconstruction':'';
 
-    set('#cvDayFormula',
-      `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
+    set('#cvDayFormula',estimate.actualDelta<0
+      ? `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} = ${cvFormatEstimate(estimate.organicCv)} earned cv · ${cvFormatEstimateSigned(estimate.adjustments)} recorded adjustment · ${cvFormatEstimateSigned(estimate.actualDelta)} net correction${warning}`
+      : `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
     );
     return;
   }
@@ -13413,8 +13675,9 @@ function renderCvDashboard(){
         ? 'highest creator level reached'
         : `${fmt.format(remaining)} creator value to next level`;
 
-    const progress=Number.isFinite(target)&&target>0
-      ? Math.max(0,Math.min(100,(currentValue/target)*100)) : 100;
+    const levelSpan=Number.isFinite(target)?target-levelRange.min:0;
+    const progress=levelSpan>0
+      ? Math.max(0,Math.min(100,((currentValue-levelRange.min)/levelSpan)*100)) : 100;
 
     document.querySelector('#cvProgressBar').style.width=`${progress}%`;
   }else{
@@ -16310,7 +16573,7 @@ function freezeCenterRender(){
   const timeline=[...(freezeAutoState.events||[]).filter(relevant),...manual]
     .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
   const summary=[
-    ['inactive',subset.filter(item=>item.status==='inactive').length],
+    ['check activity',subset.filter(item=>item.status==='check').length],
     ['checking',subset.filter(item=>item.status==='checking').length],
     ['freeze',subset.filter(item=>item.status==='total').length],
     ['watching',subset.filter(item=>item.status==='watching').length]
@@ -16332,20 +16595,20 @@ function freezeCenterRender(){
   }
   const checkBox=document.querySelector('#freezeCenterCheckActivity');
   if(checkBox){
-    const checks=subset.filter(item=>['inactive','checking','total'].includes(item.status));
+    const checks=subset.filter(item=>['check','checking','total'].includes(item.status));
     checkBox.innerHTML=checks.length?checks.map(item=>{
       const name=archiveEscape(names.get(item.cid)||item.cid);
       const checked=pbFreezeActivityResult(item.cid,latest);
-      const label=item.status==='inactive'?'inactive · check activity':
+      const label=item.status==='check'?'check activity':
         item.status==='checking'?`checking · ${checked.updates}/2 updates`:'freeze confirmed';
       const detail=Number.isFinite(item.growth)?`latest growth ${freezePatternCompact(item.growth)}`:'no exact growth';
-      const control=item.status==='inactive'?`<button type="button" class="freeze-center-small-button pb-activity-check-btn" data-freeze-activity-check="${archiveEscape(item.cid)}">check activity</button>`:'';
+      const control=item.status==='check'?`<button type="button" class="freeze-center-small-button pb-activity-check-btn" data-freeze-activity-check="${archiveEscape(item.cid)}">check activity</button>`:'';
       return `<div class="freeze-center-row pb-freeze-check-row"><div><b>${name}</b><div class="freeze-center-row-meta">${archiveEscape(label+' · '+detail)}</div></div>${control}</div>`;
     }).join(''):'<div class="freeze-center-muted">no activity checks needed.</div>';
   }
   const patternBox=document.querySelector('#freezeCenterPatterns');
   if(patternBox)patternBox.innerHTML=patterns.length?patterns.map(item=>freezeCenterRow(names.get(item.cid)||item.cid,
-    ({total:'freeze',checking:'checking',inactive:'inactive',watching:'watching',recovering:'recovering'})[item.status]||item.status,
+    ({total:'freeze',checking:'checking',check:'check activity',watching:'watching',recovering:'recovering'})[item.status]||item.status,
     [Number.isFinite(item.growth)?'growth '+freezePatternCompact(item.growth):'',Number.isFinite(item.baseline)?'7d median '+freezePatternCompact(item.baseline):'',(item.reasons||[]).slice(0,2).join(' · ')].filter(Boolean).join(' · '),item.cid)).join(''):'<div class="freeze-center-muted">no suspicious patterns in this selection.</div>';
   const activeBox=document.querySelector('#freezeCenterActive');
   if(activeBox)activeBox.innerHTML=active.length?active.map(item=>freezeCenterRow(item.name,
@@ -17280,47 +17543,97 @@ function dashboardEventTags(event){
   return [...new Set([...tags,...status])];
 }
 
-function dashboardRenderRecentEvents(){
-  const box=document.querySelector('#dashboardRecentEvents');
-  if(!box) return;
+function dashboardManualEventNews(event){
+  const tags=dashboardEventTags(event);
+  const has=tag=>tags.includes(tag);
+  let kind='event',label='event recorded.';
+  if(has('new')||has('created')){kind='new';label='was added as a new character.'}
+  else if(has('capped')){kind='cap';label='reached maximum CV.'}
+  else if(has('avatar')&&has('edit')){kind='avatar';label='profile and avatar were updated.'}
+  else if(has('avatar')){kind='avatar';label='avatar was updated.'}
+  else if(has('edit')){kind='edit';label='was edited.'}
+  else if(has('banned')){kind='ban';label='received a ban event.'}
+  else if(has('violation')){kind='violation';label='received a violation event.'}
+  else if(has('tagged')){kind='web';label=event.status?.tagged===false?'web status was removed.':'web status was updated.'}
+  else if(has('alert')){kind='booster';label='received a booster.'}
+  else if(has('unbanned')){kind='unbanned';label='was unbanned.'}
+  else if(has('top')){kind='ranking';label='recorded a ranking event.'}
+  else if(tags.length){label=`event recorded · ${tags.join(' · ')}.`}
+  const note=String(event?.note||'').trim();
+  return {kind,label,note};
+}
+
+function dashboardLatestEventRows(){
   const special=new Set([TOP_SLOTS_EVENT_CID,HISTORICAL_LEDGER_EVENT_CID]);
-  const events=(Array.isArray(eventsState?.events)?eventsState.events:[])
+  const manual=(Array.isArray(eventsState?.events)?eventsState.events:[])
     .filter(event=>!special.has(event?.cid) && /^\d{4}-\d{2}-\d{2}$/.test(String(event?.date||'')))
-    .map(event=>({date:event.date,cid:event.cid,kind:'manual',event}));
+    .map(event=>{
+      const news=dashboardManualEventNews(event);
+      const creation=['new','created'].some(tag=>dashboardEventTags(event).includes(tag));
+      return {date:event.date,time:event.time||event.updatedAt||'',cid:String(event.cid||'__profile__'),kind:news.kind,
+        label:news.label,note:news.note,key:creation?`new|${event.date}|${event.cid}`:`manual|${event.id||event.updatedAt||''}|${event.date}|${event.cid}|${news.kind}`};
+    });
   const days=[...state.daily].filter(day=>/^\d{4}-\d{2}-\d{2}$/.test(String(day?.date||'')))
     .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   const bestGrowth=new Map();
-  const thresholds=[1000,10000,50000,100000,250000,500000,1000000,2000000,3000000,4000000,5000000,10000000];
+  const thresholds=dashboardMilestoneRows().map(row=>row.value).sort((a,b)=>a-b);
   const news=[];
   // Reconstruct records and milestones from actual saved snapshots, without
   // inventing dates or claiming that a missing snapshot represents zero.
   for(let i=1;i<days.length;i++){
     const previous=new Map((days[i-1].snapshot?.bots||[]).map(bot=>[String(bot.cid),bot]));
+    const exactDaily=freezeDateDiffDays(days[i-1].date,days[i].date)===1;
     for(const bot of days[i].snapshot?.bots||[]){
       const cid=String(bot.cid||'');
+      if(!cvEligibleCharacter(cid))continue;
       const before=previous.get(cid);
-      if(!cid||!before||!Number.isFinite(bot.messages)||!Number.isFinite(before.messages))continue;
-      const growth=bot.messages-before.messages;
+      if(!cid||!Number.isFinite(bot.messages))continue;
+      const start=cvComparableStartMessages(cid,before,days[i-1].date,days[i].date);
+      if(start===null)continue;
+      const growth=bot.messages-start;
       if(growth<0)continue;
-      if(growth>0 && growth>(bestGrowth.get(cid)||0)){
+      if(exactDaily && growth>0 && growth>(bestGrowth.get(cid)||0)){
         bestGrowth.set(cid,growth);
-        news.push({date:days[i].date,cid,kind:'record',label:`personal growth record · +${fmt.format(growth)} messages`});
+        news.push({date:days[i].date,time:'',cid,kind:'record',label:`reached a new personal daily growth record · +${fmt.format(growth)} messages.`,note:'',key:`record|${days[i].date}|${cid}|${growth}`});
       }
-      const crossed=thresholds.filter(t=>before.messages<t && bot.messages>=t);
-      if(crossed.length)news.push({date:days[i].date,cid,kind:'milestone',label:`reached ${fmt.format(crossed[crossed.length-1])} messages`});
+      const crossed=thresholds.filter(value=>start<value && bot.messages>=value);
+      if(crossed.length){
+        const milestone=crossed.at(-1);
+        news.push({date:days[i].date,time:'',cid,kind:'milestone',label:`reached ${dashboardCompactTotalMessages(milestone)} messages.`,note:'',key:`milestone|${days[i].date}|${cid}|${milestone}`});
+      }
     }
   }
-  const rows=[...events,...news]
-    .sort((a,b)=>String(b.date).localeCompare(String(a.date)) || (a.kind==='manual'?-1:1))
-    .slice(0,30);
+
+  // Creation dates already saved in Events, CV history or the historical
+  // backfill are valid news. Unknown first appearances are never dated here.
+  for(const [cid] of state.meta){
+    if(!cvEligibleCharacter(cid))continue;
+    const date=effectiveNewCreationDate(cid);
+    if(/^\d{4}-\d{2}-\d{2}$/.test(String(date||''))){
+      news.push({date,time:'',cid:String(cid),kind:'new',label:'was added as a new character.',note:'',key:`new|${date}|${cid}`});
+    }
+  }
+
+  const unique=new Map();
+  [...manual,...news].forEach(row=>{
+    const existing=unique.get(row.key);
+    // Keep a manually registered version when it carries a note.
+    if(!existing || (!existing.note&&row.note)) unique.set(row.key,row);
+  });
+  return [...unique.values()]
+    .sort((a,b)=>String(b.date).localeCompare(String(a.date)) || String(b.time||'').localeCompare(String(a.time||'')) || a.kind.localeCompare(b.kind))
+    .slice(0,100);
+}
+
+function dashboardRenderRecentEvents(){
+  const box=document.querySelector('#dashboardRecentEvents');
+  if(!box) return;
+  const rows=dashboardLatestEventRows();
   if(!rows.length){box.innerHTML='<div class="dashboard-empty">no recent events yet.</div>';return;}
   box.innerHTML=rows.map(row=>{
     const bot=row.cid==='__profile__'?'profile':eventBotLabel(row.cid);
-    if(row.kind!=='manual')return `<div class="dashboard-recent-row"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(row.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b><small class="dashboard-recent-note">${archiveEscape(row.label)}</small></div></div>`;
-    const tags=dashboardEventTags(row.event);
-    const tagsHtml=tags.length?`<div class="dashboard-recent-tags">${tags.slice(0,4).map(tag=>`<span class="dashboard-recent-tag">${archiveEscape(tag)}</span>`).join('')}</div>`:'';
-    const note=String(row.event.note||'').trim();
-    return `<div class="dashboard-recent-row"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(row.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b>${tagsHtml}${note?`<small class="dashboard-recent-note">${archiveEscape(note)}</small>`:''}</div></div>`;
+    const note=row.note?`<small class="dashboard-recent-note">${archiveEscape(row.note)}</small>`:'';
+    return `<div class="dashboard-recent-row" data-latest-event-kind="${archiveEscape(row.kind)}"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(row.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b><small class="dashboard-recent-note">${archiveEscape(row.label)}</small>${note}</div></div>`;
   }).join('');
 }
 
@@ -17616,7 +17929,7 @@ function topSlotsSuggestGrowth(){
     const cid=String(bot.cid||'');
     const old=previous.get(cid);
     const growth=Number(bot.messages)-Number(old?.messages);
-    return {cid,growth,valid:!!cid && old && Number.isFinite(Number(bot.messages)) && Number.isFinite(Number(old.messages))};
+    return {cid,growth,valid:!!cid && cvEligibleCharacter(cid) && old && Number.isFinite(Number(bot.messages)) && Number.isFinite(Number(old.messages))};
   }).filter(row=>row.valid && row.growth>0)
     .sort((a,b)=>b.growth-a.growth || a.cid.localeCompare(b.cid));
   if(!candidates.length){
@@ -17905,6 +18218,30 @@ function pbLoadActivityChecks(){
 function pbSaveActivityChecks(){
   try{localStorage.setItem(PB_ACTIVITY_CHECK_KEY,JSON.stringify(pbLoadActivityChecks()))}catch(_){ }
 }
+function pbActivityHistory(){
+  const history=pbLoadActivityChecks().__history;
+  return Array.isArray(history)?history:[];
+}
+function pbRecordActivityFreeze(cid,result){
+  if(!result?.startDate||!result?.confirmedDate)return;
+  const checks=pbLoadActivityChecks();
+  const history=Array.isArray(checks.__history)?checks.__history:[];
+  const key=`${String(cid)}|${result.startDate}`;
+  if(!history.some(item=>item.key===key)){
+    history.push({key,cid:String(cid),start:result.startDate,confirmedDate:result.confirmedDate,end:'',source:'activity-check',type:'confirmed',status:'confirmed',startKnown:true});
+    checks.__history=history;
+    pbSaveActivityChecks();
+  }
+}
+function pbCloseActivityFreeze(cid,date){
+  const checks=pbLoadActivityChecks();
+  const history=Array.isArray(checks.__history)?checks.__history:[];
+  let changed=false;
+  history.forEach(item=>{
+    if(String(item.cid)===String(cid)&&!item.end){item.end=date;item.status='recovered';changed=true}
+  });
+  if(changed){checks.__history=history;pbSaveActivityChecks()}
+}
 function pbFreezeActivityResult(cid,date){
   const record=pbLoadActivityChecks()[String(cid)];
   if(!record?.date || !/^\d{4}-\d{2}-\d{2}$/.test(record.date) || date<record.date)return {status:'unchecked',updates:0};
@@ -17932,6 +18269,7 @@ function pbFreezeActivityMark(cid){
   // Don't start a check without an exact current baseline to count two future batches from.
   if(!row || !Number.isFinite(row.now))return false;
   const records=pbLoadActivityChecks();
+  if(records[String(cid)]?.date)return true;
   records[String(cid)]={date,messages:row.now};
   pbSaveActivityChecks();
   freezeCenterRender();
@@ -17947,9 +18285,10 @@ function pbFinishActivityCheck(cid,date){
   const closed=checks.__resolved||{};
   closed[cid]=date;
   checks.__resolved=closed;
+  pbCloseActivityFreeze(cid,date);
   pbSaveActivityChecks();
 }
-function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
+function freezeLegacyAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
   const full=freezeGrowthSeriesForCid(cid).filter(row=>row.date<=date);
   const current=full.at(-1);
   const manual={active:false,startDate:''}; // Legacy manual flags do not drive live freeze state.
@@ -18109,6 +18448,66 @@ function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
     collectorGrowth,zeroStreak,legacyThreshold,suspectThreshold,confirmThreshold,startDate,startKnown:true,startMessages,
     profile,verified:Boolean(verified),verification:verified||null,recovered,recoveryDate:recoveryStartDate,openAuto:Boolean(openAuto)
   };
+}
+
+/* Final Activity Check workflow. A stalled pattern can request a check, but it
+   cannot confirm a freeze. Confirmation requires the user's check plus two
+   subsequent exact daily message updates with zero growth. */
+function freezeAssessmentForCid(cid,date=topSlotsDefaultDate(),options={}){
+  const full=freezeGrowthSeriesForCid(cid).filter(row=>row.date<=date);
+  const current=full.at(-1);
+  const empty={cid,date,status:'watching',freezeType:'watching',active:false,score:0,
+    reasons:['insufficient exact data for this date'],signals:{},sequence:[],baseline:null,growth:null,ratio:null,
+    slotRank:null,collectorGrowth:null,zeroStreak:0,legacyThreshold:2,suspectThreshold:1,confirmThreshold:2,
+    startDate:'',startKnown:true,startMessages:null,profile:null,verified:false,verification:null,recovered:false,
+    recoveryDate:'',openAuto:false,insufficient:true};
+  if(!current||current.date!==date)return empty;
+
+  const prior=full.slice(0,-1).filter(row=>Number.isFinite(row.growth)&&row.growth>=0);
+  const recentPrior=prior.slice(-7);
+  const baseline=freezePatternMedian(recentPrior.map(row=>row.growth));
+  const sequence=full.slice(-7).map(row=>row.growth);
+  const slots=topSlotsSnapshot(date);
+  const slotIndex=slots.indexOf(String(cid));
+  const slotRank=slotIndex>=0?slotIndex+1:null;
+  const collectorGrowth=Number.isFinite(current.collectorGrowth)?current.collectorGrowth:null;
+  const currentGrowth=current.growth;
+  const everGrew=prior.some(row=>row.growth>0);
+  const recentlyActive=recentPrior.some(row=>row.growth>0);
+  const collectorSignal=Number.isFinite(collectorGrowth)&&collectorGrowth>0;
+  const reasons=[];
+  let status='normal',active=false,startDate='',score=0,recovered=false,recoveryDate='';
+
+  if(!options.historical){
+    const check=pbFreezeActivityResult(String(cid),date);
+    if(check.status==='confirmed'){
+      pbRecordActivityFreeze(String(cid),check);
+      status='total';active=true;score=2;startDate=check.startDate;
+      reasons.push('activity checked · 2 daily updates with 0 messages');
+    }else if(check.status==='pending'){
+      status='checking';startDate=check.startDate;score=1;
+      reasons.push(`activity checked · ${check.updates}/2 updates`);
+    }else if(check.status==='recovered'){
+      recovered=true;recoveryDate=date;
+      reasons.push('activity found · check closed');
+      pbFinishActivityCheck(String(cid),date);
+    }else{
+      const resolved=pbLoadActivityChecks().__resolved?.[String(cid)]||'';
+      const shouldCheck=currentGrowth===0&&(recentlyActive||collectorSignal||everGrew&&Number.isFinite(baseline)&&baseline>0);
+      if(shouldCheck&&!(resolved&&date<=resolved)){
+        status='check';score=1;startDate=date;
+        reasons.push('check activity required');
+        if(collectorSignal)reasons.push(`+${collectorGrowth} collectors while messages stayed at 0`);
+      }
+    }
+  }
+
+  const ratio=Number.isFinite(baseline)&&baseline>0&&currentGrowth>=0?currentGrowth/baseline:null;
+  return {cid,date,status,freezeType:status==='total'?'total':status,active,score,reasons,signals:{collectorSupport:collectorSignal},
+    sequence,baseline,growth:currentGrowth,ratio,slotRank,collectorGrowth,zeroStreak:currentGrowth===0?1:0,
+    legacyThreshold:2,suspectThreshold:1,confirmThreshold:2,startDate,startKnown:true,
+    startMessages:current.beforeMessages??null,profile:{everGrew},verified:false,verification:null,recovered,recoveryDate,
+    openAuto:false,insufficient:false};
 }
 
 function freezePeriodsOverlap(a,b){
@@ -18277,7 +18676,7 @@ function freezePatternForCid(cid,date=topSlotsDefaultDate()){
 
 function freezePatternLatest(){
   const date=topSlotsDefaultDate();
-  const priority={total:7,checking:6,inactive:5,recovering:2,watching:1,normal:0};
+  const priority={total:7,checking:6,check:5,recovering:2,watching:1,normal:0};
   const results=[];
   state.meta.forEach((meta,cid)=>{
     const item=freezePatternForCid(cid,date);
@@ -18297,8 +18696,8 @@ function freezePatternRenderHome(){
     return;
   }
   box.innerHTML=items.map(item=>{
-    const icon=item.status==='total'?'👻':item.status==='inactive'?'○':item.status==='checking'?'◌':item.status==='watching'?'·':'○';
-    const label=item.status==='total'?'freeze':item.status==='checking'?'checking activity':item.status==='inactive'?'inactive':item.status;
+    const icon=item.status==='total'?'👻':item.status==='check'?'○':item.status==='checking'?'◌':item.status==='watching'?'·':'○';
+    const label=item.status==='total'?'freeze':item.status==='checking'?'checking activity':item.status==='check'?'check activity':item.status;
     const baseline=Number.isFinite(item.baseline)?`7d median ${freezePatternCompact(item.baseline)}`:'';
     const reason=item.reasons.slice(0,2).join(' · ') || baseline || 'watching early pattern';
     const sequence=item.sequence.map(freezePatternCompact).join(' · ');
@@ -18309,7 +18708,7 @@ function freezePatternRenderHome(){
         <div class="dashboard-freeze-pattern-reason">${archiveEscape([baseline,reason].filter(Boolean).join(' · '))}</div>
         <div class="dashboard-freeze-sequence">${archiveEscape(sequence)}</div>
       </div>
-      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering','inactive','checking'].includes(item.status)?'':` · ${item.score}`}</span>
+      <span class="dashboard-freeze-badge ${item.status}">${archiveEscape(label)}${['watching','recovering','check','checking'].includes(item.status)?'':` · ${item.score}`}</span>
     </div>`;
   }).join('');
 }
@@ -20577,42 +20976,49 @@ function analyticsRenderRollingAndRecords(){
 }
 
 
-/* Historical 30D personal-best moments for EACH public bot.
-   Mirrors the 30D personal-best criterion in Breakouts: the selected day's
-   growth must exceed every one of the preceding 30 observed daily intervals.
-   All 32 boundary snapshots must be consecutive and reliable. */
-const analyticsPersonalState={filter:'',visible:24,items:[]};
+/* Historical personal records for every public character. Missing snapshots
+   break a comparison run; they are never converted to zero growth. */
+const analyticsPersonalState={filter:'',query:'',from:'',to:'',visible:24,items:[]};
 function analyticsPersonalBestMoments(){
-  const days=rankingsDays(),available=new Map(days.map(d=>[d.date,d]));
+  const days=rankingsDays();
   const publicBots=rankingsPublicBots();
-  const results=[];
+  const moments=new Map();
+  const add=(cid,name,row,kind,previousBest)=>{
+    const key=`${cid}|${row.date}`;
+    const item=moments.get(key)||{cid,name,date:row.date,growth:row.growth,kinds:[],previousBest:null};
+    if(!item.kinds.includes(kind))item.kinds.push(kind);
+    if(Number.isFinite(previousBest))item.previousBest=previousBest;
+    moments.set(key,item);
+  };
   for(const bot of publicBots){
     const cid=String(bot.cid),name=String(bot.name||cid);
-    for(let idx=0;idx<days.length;idx++){
-      const date=days[idx].date;
-      const start=rankingsAddDays(date,-31);
-      const measurements=[];
-      let valid=true;
-      for(let k=0;k<=31;k++){
-        const entry=available.get(rankingsAddDays(start,k));
-        const v=analyticsReliableNumber(snapshotBot(entry?.snapshot,cid),'messages');
-        if(v===null){valid=false;break;}
-        measurements.push(v);
+    let lifetimeBest=0;
+    let consecutive=[];
+    for(let idx=1;idx<days.length;idx++){
+      const before=days[idx-1],after=days[idx];
+      const beforeBot=snapshotBot(before?.snapshot,cid);
+      const reliableStart=analyticsReliableNumber(beforeBot,'messages');
+      const start=reliableStart===null
+        ? cvComparableStartMessages(cid,beforeBot,before?.date,after?.date)
+        : reliableStart;
+      const end=analyticsReliableNumber(snapshotBot(after?.snapshot,cid),'messages');
+      const exact=freezeDateDiffDays(before?.date,after?.date)===1;
+      if(!exact||start===null||end===null||end<start){consecutive=[];continue;}
+      const row={date:after.date,growth:end-start};
+      consecutive.push(row);
+      if(row.growth>0&&row.growth>lifetimeBest){
+        add(cid,name,row,'lifetime',lifetimeBest);
+        lifetimeBest=row.growth;
       }
-      if(!valid)continue;
-      const deltas=[];
-      for(let k=1;k<measurements.length;k++){
-        const diff=measurements[k]-measurements[k-1];
-        if(diff<0){valid=false;break;}
-        deltas.push(diff);
-      }
-      if(!valid)continue;
-      const today=deltas[30];
-      if(today>0 && today>Math.max(...deltas.slice(0,30))){
-        results.push({cid,name,date,growth:today,previousBest:Math.max(...deltas.slice(0,30))});
+      if(consecutive.length>=31){
+        const previous30=consecutive.slice(-31,-1);
+        const previousBest=Math.max(...previous30.map(item=>item.growth));
+        if(row.growth>0&&row.growth>previousBest)add(cid,name,row,'30d',previousBest);
+        if(consecutive.length>31)consecutive=consecutive.slice(-31);
       }
     }
   }
+  const results=[...moments.values()];
   results.sort((a,b)=>b.date.localeCompare(a.date)||b.growth-a.growth||a.name.localeCompare(b.name));
   return results;
 }
@@ -20625,16 +21031,31 @@ function analyticsRenderPersonalBests(){
   const items=analyticsPersonalState.items;
   const allBots=rankingsPublicBots().slice().sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')));
   const ids=new Set(allBots.map(b=>String(b.cid)));
-  filter.innerHTML='<option value="">all bots</option>'+allBots.map(b=>`<option value="${archiveEscape(String(b.cid))}">${archiveEscape(String(b.name||b.cid))}</option>`).join('');
+  filter.innerHTML='<option value="">all characters</option>'+allBots.map(b=>`<option value="${archiveEscape(String(b.cid))}">${archiveEscape(String(b.name||b.cid))}</option>`).join('');
   if(analyticsPersonalState.filter&&!ids.has(analyticsPersonalState.filter))analyticsPersonalState.filter='';
   filter.value=analyticsPersonalState.filter;
-  const filtered=analyticsPersonalState.filter?items.filter(e=>e.cid===analyticsPersonalState.filter):items;
-  count.textContent=`${filtered.length} recorded 30D personal best${filtered.length===1?'':'s'} · open a result to view that day's Breakouts`;
+  const itemDates=items.map(item=>item.date).filter(Boolean).sort();
+  const fromInput=document.getElementById('analyticsPersonalFrom');
+  const toInput=document.getElementById('analyticsPersonalTo');
+  for(const input of [fromInput,toInput]){
+    if(!input)continue;
+    input.min=itemDates[0]||'';input.max=itemDates.at(-1)||'';
+  }
+  if(fromInput&&fromInput.value!==analyticsPersonalState.from)fromInput.value=analyticsPersonalState.from;
+  if(toInput&&toInput.value!==analyticsPersonalState.to)toInput.value=analyticsPersonalState.to;
+  const query=analyticsPersonalState.query.trim().toLocaleLowerCase();
+  const filtered=items.filter(item=>
+    (!analyticsPersonalState.filter||item.cid===analyticsPersonalState.filter) &&
+    (!query||item.name.toLocaleLowerCase().includes(query)) &&
+    (!analyticsPersonalState.from||item.date>=analyticsPersonalState.from) &&
+    (!analyticsPersonalState.to||item.date<=analyticsPersonalState.to)
+  );
+  count.textContent=`${filtered.length} recorded personal record moment${filtered.length===1?'':'s'} · lifetime and rolling 30D`;
   const visible=filtered.slice(0,analyticsPersonalState.visible);
-  box.innerHTML=visible.length?visible.map(item=>`<button type="button" class="analytics-personal-row" data-analytics-best-day="${item.date}" title="View historical Breakouts on ${analyticsRecordDates(item.date)}">
-    <span><span class="analytics-personal-name">${archiveEscape(item.name)}</span><span class="analytics-personal-badge">🏅 30D personal best</span></span>
+  box.innerHTML=visible.length?visible.map(item=>`<button type="button" class="analytics-personal-row" ${item.kinds.includes('30d')?`data-analytics-best-day="${item.date}" title="View historical Breakouts on ${analyticsRecordDates(item.date)}"`:'title="Historical daily growth record"'}>
+    <span><span class="analytics-personal-name">${archiveEscape(item.name)}</span><span class="analytics-personal-badge">${item.kinds.includes('lifetime')?'🏆 growth record':''}${item.kinds.includes('lifetime')&&item.kinds.includes('30d')?' · ':''}${item.kinds.includes('30d')?'🏅 30D personal best':''}</span></span>
     <span class="analytics-personal-right"><strong>+${fmt.format(item.growth)}</strong><small>${analyticsRecordDates(item.date)}</small></span>
-  </button>`).join(''):'<div class="dashboard-empty">No 30D personal bests found in the saved consecutive daily readings.</div>';
+  </button>`).join(''):'<div class="dashboard-empty">No personal records found for these filters.</div>';
   more.hidden=filtered.length<=analyticsPersonalState.visible;
   more.textContent=`show more ⌄ (${filtered.length-analyticsPersonalState.visible} left)`;
 }
@@ -20646,6 +21067,23 @@ function analyticsInitPersonalRecordControls(){
   });
   document.getElementById('analyticsPersonalBotFilter')?.addEventListener('change',event=>{
     analyticsPersonalState.filter=event.target.value;
+    analyticsPersonalState.visible=24;
+    analyticsRenderPersonalBests();
+  });
+  document.getElementById('analyticsPersonalSearch')?.addEventListener('input',event=>{
+    analyticsPersonalState.query=event.target.value;
+    analyticsPersonalState.visible=24;
+    analyticsRenderPersonalBests();
+  });
+  document.getElementById('analyticsPersonalFrom')?.addEventListener('change',event=>{
+    analyticsPersonalState.from=event.target.value;
+    if(analyticsPersonalState.to&&analyticsPersonalState.from>analyticsPersonalState.to)analyticsPersonalState.to=analyticsPersonalState.from;
+    analyticsPersonalState.visible=24;
+    analyticsRenderPersonalBests();
+  });
+  document.getElementById('analyticsPersonalTo')?.addEventListener('change',event=>{
+    analyticsPersonalState.to=event.target.value;
+    if(analyticsPersonalState.from&&analyticsPersonalState.to<analyticsPersonalState.from)analyticsPersonalState.from=analyticsPersonalState.to;
     analyticsPersonalState.visible=24;
     analyticsRenderPersonalBests();
   });
@@ -20706,7 +21144,7 @@ function pbBotStatus(cid,date){
   const f=freezePatternForCid(cid,date||topSlotsDefaultDate());
   if(!f||f.insufficient)return '';
   if(f.active && f.status==='total')return 'freeze';
-  if(f.status==='inactive')return 'inactive';
+  if(f.status==='check')return 'check';
   if(f.status==='checking')return 'checking';
  }catch(_){ }
  return '';
@@ -20745,7 +21183,7 @@ function pbAttentionInline(cid,date){
 function pbStatusInline(cid,date){
  const status=pbBotStatus(cid,date);
  if(status==='freeze')return '<span class="pb-status-inline" title="confirmed freeze" aria-label="confirmed freeze">*</span>';
- if(status==='inactive')return '';
+ if(status==='check')return '';
  if(status==='checking')return '<span class="pb-status-inline pb-checking-tag" title="checking activity · 2 updates">checking</span>';
  return '';
 }
@@ -20940,7 +21378,8 @@ function pbRenderSlots(){
   const name=state.meta.get(cid)?.name||cid,growth=topSlotsGrowthForDate(date,cid),move=topSlotsMovement(date,cid,i);
   const messages=topSlotsMessagesForDate(date,cid),collectors=pbSlotCollectorsForDate(date,cid);
   const messageLabel=Number.isFinite(messages)?fmt.format(messages)+' messages':'— messages';
-  const tags=pbPerformanceInline(cid,performance)+pbManualBoosterInline(cid,date)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
+  const tags=pbPerformanceInline(cid,performance)+pbStatusInline(cid,date)+pbAttentionInline(cid,date);
+  const booster=pbManualBoosterInline(cid,date);
   const extra=pbSlotAwardsExtra(cid,allAwards);
   // Unchanged position: show nothing, not a dash.
   const movement=(move?.label && move.label!=='—')?move.label:'';
@@ -20958,9 +21397,9 @@ function pbRenderSlots(){
     <div class="pb-slot-thumb-footer">
       <div class="pb-thumb-stat" title="collectors">${pbCollectorSvg}<span>${Number.isFinite(collectors)?fmt.format(collectors):'—'}</span></div>
       <div class="pb-thumb-stat" title="messages">${pbMessageOutlineSvg}<span>${Number.isFinite(messages)?fmt.format(messages):'—'}</span></div>
-      <div class="pb-thumb-growth">${Number.isFinite(growth)?dashboardSigned(growth):'—'}</div>
+      <div class="pb-thumb-growth">${booster}${Number.isFinite(growth)?dashboardSigned(growth):'—'}</div>
     </div></div>`:
-  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${tags}${extra}<small>${listDetails}</small></span><strong>${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
+  `<div class="pb-slot-row"><span class="pb-slot-number">${i+1}</span><span>${archiveEscape(name)}${tags}${extra}<small>${listDetails}</small></span><strong>${booster}${Number.isFinite(growth)?dashboardSigned(growth):'—'}</strong></div>`;
  }).join(''):'<div class="dashboard-empty">no top slots saved for this day. Use edit to record positions.</div>';
 }
 function pbRenderBots(){if(!state.meta.size)return;
@@ -22350,8 +22789,151 @@ body.dashboard-shell #analyticsPanel .analytics-period-card .analytics-date-cont
   border:1px solid #bd8eb9!important;
 }
 
-/* CV historical date: native scroll-wheel date picker on iOS */
-body.dashboard-shell #cvDayHistoryDate{color-scheme:dark;max-width:160px;min-width:0;font:inherit;}
+/* 06 Nov restoration: Creator Value history uses three independent iOS-style wheels. */
+body.dashboard-shell .cv-day-date-button{
+  max-width:150px;
+  min-width:0;
+  border:1px solid rgba(193,145,191,.68)!important;
+  border-radius:9px!important;
+  background:rgba(38,29,43,.72)!important;
+  color:#ead8e8!important;
+  padding:5px 9px!important;
+  font:600 10px/1.25 "Avenir Next",Avenir,sans-serif!important;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.dashboard-shell .cv-day-change{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:80px;}
+body.dashboard-shell .cv-day-change small{font-size:9px;line-height:1.2;color:#beaebf;text-align:right;}
+body.dashboard-shell .cv-day-change small:empty{display:none;}
+body.dashboard-shell .cv-day-change.is-decrease #cvDayTotal{color:#e5a9b9;}
+body.dashboard-shell #cvDayEstimate .cv-day-grid>div{
+  background:linear-gradient(120deg,rgba(33,23,48,.97),rgba(28,22,47,.97))!important;
+}
+body.dashboard-shell .cv-history-wheel{
+  position:fixed;
+  inset:0;
+  z-index:25000;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:12px;
+  padding-bottom:max(12px,env(safe-area-inset-bottom));
+  box-sizing:border-box;
+  background:rgba(9,7,12,.64);
+  backdrop-filter:blur(5px);
+  -webkit-backdrop-filter:blur(5px);
+}
+body.dashboard-shell .cv-history-wheel[hidden]{display:none!important;}
+body.dashboard-shell .cv-history-wheel-card{
+  width:min(100%,430px);
+  border:1px solid #765d78;
+  border-radius:18px;
+  background:#211b25;
+  box-shadow:0 18px 55px rgba(0,0,0,.48);
+  padding:13px;
+  box-sizing:border-box;
+}
+body.dashboard-shell .cv-history-wheel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 2px 10px;}
+body.dashboard-shell .cv-history-wheel-head strong{color:#f0deec;font-size:13px;letter-spacing:.01em;}
+body.dashboard-shell .cv-history-wheel-head button{
+  border:0!important;background:transparent!important;color:#cdb4cd!important;
+  padding:5px 2px!important;font-size:11px!important;
+}
+body.dashboard-shell .cv-history-wheel-columns{
+  --cv-wheel-row:42px;
+  position:relative;
+  display:grid;
+  grid-template-columns:1.35fr .72fr .88fr;
+  gap:3px;
+  height:210px;
+  overflow:hidden;
+  border-top:1px solid rgba(255,255,255,.055);
+  border-bottom:1px solid rgba(255,255,255,.055);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22%,#000 78%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 22%,#000 78%,transparent 100%);
+}
+body.dashboard-shell .cv-wheel-column{
+  position:relative;
+  z-index:2;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-block:84px;
+  box-sizing:border-box;
+  touch-action:pan-y;
+}
+body.dashboard-shell .cv-wheel-column::-webkit-scrollbar{display:none;}
+body.dashboard-shell .cv-wheel-option{
+  height:var(--cv-wheel-row);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  scroll-snap-align:center;
+  scroll-snap-stop:always;
+  color:#a999aa;
+  font:500 17px/1.1 "Avenir Next",Avenir,sans-serif;
+  white-space:nowrap;
+  user-select:none;
+  -webkit-user-select:none;
+  transition:color .12s ease,opacity .12s ease;
+}
+body.dashboard-shell .cv-wheel-option[aria-selected="true"]{color:#f5e6f1;font-weight:650;}
+body.dashboard-shell .cv-wheel-selection{
+  position:absolute;
+  z-index:1;
+  top:84px;
+  left:0;
+  right:0;
+  height:42px;
+  border-top:1px solid rgba(205,157,202,.42);
+  border-bottom:1px solid rgba(205,157,202,.42);
+  border-radius:8px;
+  background:rgba(149,101,151,.12);
+  pointer-events:none;
+}
+body.dashboard-shell .cv-history-wheel-apply{
+  width:100%!important;
+  min-height:40px!important;
+  margin-top:11px!important;
+  border:1px solid #9d739f!important;
+  border-radius:11px!important;
+  background:#4a354e!important;
+  color:#f4dfef!important;
+  font-weight:700!important;
+}
+body.cv-wheel-open{overflow:hidden!important;}
+body.cv-wheel-open #dashboardBottomNav{display:none!important;}
+
+body.dashboard-shell .analytics-personal-tools{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px!important;
+  align-items:end;
+}
+body.dashboard-shell .analytics-personal-tools label{display:flex!important;flex-direction:column;gap:4px;min-width:0;color:#bfaec0;font-size:9px;}
+body.dashboard-shell .analytics-personal-tools input,
+body.dashboard-shell .analytics-personal-tools select{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:35px!important;
+  border:1px solid #5d4962!important;
+  border-radius:9px!important;
+  background:#211b25!important;
+  color:#eadce9!important;
+  padding:6px 8px!important;
+  font-size:11px!important;
+}
+@media(max-width:360px){
+  body.dashboard-shell .cv-history-wheel{padding-inline:7px;}
+  body.dashboard-shell .cv-history-wheel-card{padding:11px 9px;}
+  body.dashboard-shell .cv-wheel-option{font-size:16px;}
+  body.dashboard-shell .analytics-personal-tools{grid-template-columns:1fr;}
+}
 </style>
 </body>
 </html>
