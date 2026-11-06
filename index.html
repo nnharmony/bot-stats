@@ -6448,6 +6448,11 @@ body.dashboard-shell .cv-hero .cv-kicker{padding-right:96px}
   body.dashboard-shell .cv-hero .cv-kicker{padding-right:82px}
 }
 
+
+/* Historical CV date selector: compact and contained in the CV update header. */
+body.dashboard-shell #cvPanel .cv-day-date-picker select{max-width:116px;min-height:32px;padding:4px 8px;border:1px solid #826785;border-radius:10px;background:#302538;color:#f2d5ec;font:inherit;font-size:13px}
+body.dashboard-shell #cvPanel .cv-day-title-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+body.dashboard-shell #cvPanel .cv-day-title-row>small{margin-left:auto}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -8186,7 +8191,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
     <section class="cv-day-estimate" id="cvDayEstimate">
       <div class="cv-day-head">
-        <div class="cv-day-title-row"><span>creator value update</span><small id="cvDayDate">—</small></div>
+        <div class="cv-day-title-row"><span>creator value update</span><label class="cv-day-date-picker"><span class="visually-hidden-pb">historical cv update</span><input id="cvDayHistoryDate" type="date" aria-label="select historical creator value date"></label><small id="cvDayDate">—</small></div>
         <strong id="cvDayTotal">—</strong>
       </div>
       <div class="cv-day-grid">
@@ -8255,7 +8260,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
           <select id="cvCapReconDate" aria-label="select historical cv date"></select>
         </div>
         <div id="cvCapReconResult" aria-live="polite">select a cv update to inspect cap estimates.</div>
-        <p class="cv-cap-recon-footnote">Estimated from real cv updates, message snapshots and the historical message / ucu ratio. A suggested cap is not a confirmed PolyBuzz event. Existing manual capped dates remain authoritative and are never overwritten.</p>
       </div>
     </details>
 
@@ -13176,7 +13180,9 @@ function renderCvCapReconstruction(){
     ${r.candidates.map(c=>`<div><span>${cvCapReconEsc(c.name)}${c.manuallyDated?' · manually tagged capped':''}</span><span>+${n(c.count)} msg</span></div>`).join('')}
     ${r.candidates.length>1?'<em>Several possible contributors: the total is reconstructable, but per-bot attribution is not uniquely determined.</em>':''}
   </div>`:'';
-  const why=`<p class="cv-cap-recon-muted">${cvCapReconEsc(r.reason)}</p>`;
+  const readableReason=r.reason==='No negative ucu residual in this cv update; no cap correction needed.'
+    ? 'No cap correction needed ✓' : r.reason;
+  const why=readableReason==='No cap correction needed ✓'?'<p class="cv-cap-recon-muted">No cap correction needed ✓</p>':'';
   box.innerHTML=main+result+info+candidates+why;
 }
 
@@ -13280,7 +13286,19 @@ function cvDailyEstimate(date=''){
 }
 
 function renderCvDayEstimate(){
-  const estimate=cvDailyEstimate();
+  const dateSelect=document.getElementById('cvDayHistoryDate');
+  let selectedDate='';
+  if(dateSelect){
+    const dates=[...new Set(cvSortedEntriesAsc().filter(e=>e.type==='update'&&e.date).map(e=>e.date))].reverse();
+    const previous=dateSelect.value;
+    // Native iOS date control opens the scroll-wheel picker, not a long list
+    // or day-by-day arrows. Preserve the user's selected historical date.
+    dateSelect.min=dates[dates.length-1]||'';
+    dateSelect.max=dates[0]||'';
+    dateSelect.value=previous || dates[0] || '';
+    selectedDate=dateSelect.value;
+  }
+  const estimate=cvDailyEstimate(selectedDate);
   const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
 
   // Use the current daily figures once its message batch has arrived.
@@ -13298,7 +13316,7 @@ function renderCvDayEstimate(){
       : 'no UCU ratio');
   }else if(estimate?.mode==='estimated' && Number.isFinite(estimate.ratio) && estimate.ratio>0){
     set('#cvMessagesPerUcu',`≈ ${estimate.ratio.toFixed(1)}`);
-    set('#cvMessagesPerUcuSource','historical estimate');
+    set('#cvMessagesPerUcuSource','estimated · awaiting messages');
   }else{
     set('#cvMessagesPerUcu','—');
     set('#cvMessagesPerUcuSource','awaiting data');
@@ -13318,14 +13336,14 @@ function renderCvDayEstimate(){
     return;
   }
 
-  set('#cvDayTotal',cvFormatEstimateSigned(estimate.actualDelta));
-  set('#cvLatestTop',cvFormatEstimateSigned(estimate.actualDelta));
+  set('#cvDayTotal',estimate.actualDelta<0?'—':cvFormatEstimateSigned(estimate.actualDelta));
+  set('#cvLatestTop',estimate.actualDelta<0?'—':cvFormatEstimateSigned(estimate.actualDelta));
   set('#cvDayAdjustments',cvFormatEstimateSigned(estimate.adjustments,0));
   set('#cvDayExpected',cvFormatEstimateSigned(estimate.organicCv));
 
   if(estimate.mode==='exact' || estimate.mode==='cap-reconstructed'){
     const inferred=estimate.mode==='cap-reconstructed';
-    set('#cvDayDate',`${shortGraphDate(estimate.date)} · ${inferred?'≈ cap-adjusted':'calculated'}`);
+    set('#cvDayDate',inferred?'≈ cap-adjusted':'calculated');
     set('#cvDayMessageCv',`${inferred?'≈ ':''}${cvFormatEstimateSigned(estimate.messageCv)}`);
     set('#cvDayMessages',`${inferred?'≈ ':''}${fmt.format(Math.round(estimate.uncappedMessages))} eligible messages`);
     set('#cvDayUcuCv',`${inferred?'≈ ':''}${cvFormatEstimateSigned(estimate.ucuCv)}`);
@@ -13340,7 +13358,7 @@ function renderCvDayEstimate(){
   }
 
   if(estimate.mode==='unresolved-cap'){
-    set('#cvDayDate',`${shortGraphDate(estimate.date)} · cap split unresolved`);
+    set('#cvDayDate','cap split unresolved');
     set('#cvDayMessageCv','—');
     set('#cvDayMessages',`${fmt.format(Math.round(estimate.rawMessages))} observed messages · cap check needed`);
     set('#cvDayUcuCv','—');
@@ -13352,7 +13370,7 @@ function renderCvDayEstimate(){
   }
 
   if(estimate.mode==='estimated'){
-    set('#cvDayDate',`${shortGraphDate(estimate.date)} · ≈ split`);
+    set('#cvDayDate',`≈ estimate`);
     set('#cvDayMessageCv',`≈ ${cvFormatEstimateSigned(estimate.messageCv)}`);
     set('#cvDayMessages',`≈ ${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
     set('#cvDayUcuCv',`≈ ${cvFormatEstimateSigned(estimate.ucuCv)}`);
@@ -13363,7 +13381,7 @@ function renderCvDayEstimate(){
     return;
   }
 
-  set('#cvDayDate',`${shortGraphDate(estimate.date)} · waiting for messages`);
+  set('#cvDayDate','waiting for messages');
   set('#cvDayMessageCv','—');
   set('#cvDayMessages','message snapshot not loaded');
   set('#cvDayUcuCv','—');
@@ -13670,6 +13688,8 @@ function initCvTracker(){
 
   document.querySelector('#cvCapReconDate')
     ?.addEventListener('change',renderCvCapReconstruction);
+  document.querySelector('#cvDayHistoryDate')
+    ?.addEventListener('change',renderCvDayEstimate);
 
   document.querySelector('#cvLedgerRows')
     .addEventListener('click',event=>{
@@ -17263,23 +17283,44 @@ function dashboardEventTags(event){
 function dashboardRenderRecentEvents(){
   const box=document.querySelector('#dashboardRecentEvents');
   if(!box) return;
-  const events=Array.isArray(eventsState?.events) ? eventsState.events : [];
   const special=new Set([TOP_SLOTS_EVENT_CID,HISTORICAL_LEDGER_EVENT_CID]);
-  const rows=events
-    .filter(event=>!special.has(event?.cid) && /^\d{4}-\d{2}-\d{2}$/.test(String(event?.date || '')))
-    .sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')) || String(b.createdAt||'').localeCompare(String(a.createdAt||'')))
-    .slice(0,30);
-  if(!rows.length){
-    box.innerHTML='<div class="dashboard-empty">no recent events yet.</div>';
-    return;
+  const events=(Array.isArray(eventsState?.events)?eventsState.events:[])
+    .filter(event=>!special.has(event?.cid) && /^\d{4}-\d{2}-\d{2}$/.test(String(event?.date||'')))
+    .map(event=>({date:event.date,cid:event.cid,kind:'manual',event}));
+  const days=[...state.daily].filter(day=>/^\d{4}-\d{2}-\d{2}$/.test(String(day?.date||'')))
+    .sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  const bestGrowth=new Map();
+  const thresholds=[1000,10000,50000,100000,250000,500000,1000000,2000000,3000000,4000000,5000000,10000000];
+  const news=[];
+  // Reconstruct records and milestones from actual saved snapshots, without
+  // inventing dates or claiming that a missing snapshot represents zero.
+  for(let i=1;i<days.length;i++){
+    const previous=new Map((days[i-1].snapshot?.bots||[]).map(bot=>[String(bot.cid),bot]));
+    for(const bot of days[i].snapshot?.bots||[]){
+      const cid=String(bot.cid||'');
+      const before=previous.get(cid);
+      if(!cid||!before||!Number.isFinite(bot.messages)||!Number.isFinite(before.messages))continue;
+      const growth=bot.messages-before.messages;
+      if(growth<0)continue;
+      if(growth>0 && growth>(bestGrowth.get(cid)||0)){
+        bestGrowth.set(cid,growth);
+        news.push({date:days[i].date,cid,kind:'record',label:`personal growth record · +${fmt.format(growth)} messages`});
+      }
+      const crossed=thresholds.filter(t=>before.messages<t && bot.messages>=t);
+      if(crossed.length)news.push({date:days[i].date,cid,kind:'milestone',label:`reached ${fmt.format(crossed[crossed.length-1])} messages`});
+    }
   }
-  box.innerHTML=rows.map(event=>{
-    const bot=event.cid==='__profile__' ? 'profile' : eventBotLabel(event.cid);
-    const tags=dashboardEventTags(event);
-    const tagsHtml=tags.length ? `<div class="dashboard-recent-tags">${tags.slice(0,4).map(tag=>`<span class="dashboard-recent-tag">${archiveEscape(tag)}</span>`).join('')}</div>` : '';
-    const note=String(event.note || '').trim();
-    const noteHtml=note ? `<small class="dashboard-recent-note">${archiveEscape(note)}</small>` : '';
-    return `<div class="dashboard-recent-row"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(event.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b>${tagsHtml}${noteHtml}</div></div>`;
+  const rows=[...events,...news]
+    .sort((a,b)=>String(b.date).localeCompare(String(a.date)) || (a.kind==='manual'?-1:1))
+    .slice(0,30);
+  if(!rows.length){box.innerHTML='<div class="dashboard-empty">no recent events yet.</div>';return;}
+  box.innerHTML=rows.map(row=>{
+    const bot=row.cid==='__profile__'?'profile':eventBotLabel(row.cid);
+    if(row.kind!=='manual')return `<div class="dashboard-recent-row"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(row.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b><small class="dashboard-recent-note">${archiveEscape(row.label)}</small></div></div>`;
+    const tags=dashboardEventTags(row.event);
+    const tagsHtml=tags.length?`<div class="dashboard-recent-tags">${tags.slice(0,4).map(tag=>`<span class="dashboard-recent-tag">${archiveEscape(tag)}</span>`).join('')}</div>`:'';
+    const note=String(row.event.note||'').trim();
+    return `<div class="dashboard-recent-row"><div class="dashboard-recent-date">${archiveEscape(shortGraphDate(row.date))}</div><div class="dashboard-recent-main"><b>${archiveEscape(bot)}</b>${tagsHtml}${note?`<small class="dashboard-recent-note">${archiveEscape(note)}</small>`:''}</div></div>`;
   }).join('');
 }
 
@@ -17562,22 +17603,33 @@ function topSlotsCopyPrevious(){
 
 function topSlotsSuggestGrowth(){
   const status=document.querySelector('#topSlotsSaveStatus');
-  if(!topSlotsState.draft.length){
-    const previousDate=topSlotsPreviousSavedDate(topSlotsState.editDate);
-    if(previousDate) topSlotsState.draft=topSlotsSnapshot(previousDate);
-  }
-  if(!topSlotsState.draft.length){
-    if(status){status.textContent='add bots or save a previous ranking first';status.className='slots-save-status'}
+  const date=topSlotsState.editDate;
+  const days=[...state.daily].sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
+  const index=days.findIndex(day=>day.date===date);
+  if(index<=0){
+    if(status){status.textContent='two daily updates are needed to suggest growth';status.className='slots-save-status error'}
     return;
   }
-  topSlotsState.draft=[...topSlotsState.draft].sort((a,b)=>{
-    const ga=topSlotsGrowthForDate(topSlotsState.editDate,a);
-    const gb=topSlotsGrowthForDate(topSlotsState.editDate,b);
-    return (Number.isFinite(gb)?gb:-Infinity)-(Number.isFinite(ga)?ga:-Infinity);
-  });
+  const current=days[index]?.snapshot?.bots || [];
+  const previous=new Map((days[index-1]?.snapshot?.bots||[]).map(bot=>[String(bot.cid),bot]));
+  const candidates=current.map(bot=>{
+    const cid=String(bot.cid||'');
+    const old=previous.get(cid);
+    const growth=Number(bot.messages)-Number(old?.messages);
+    return {cid,growth,valid:!!cid && old && Number.isFinite(Number(bot.messages)) && Number.isFinite(Number(old.messages))};
+  }).filter(row=>row.valid && row.growth>0)
+    .sort((a,b)=>b.growth-a.growth || a.cid.localeCompare(b.cid));
+  if(!candidates.length){
+    if(status){status.textContent='no bots with confirmed positive growth in these two updates';status.className='slots-save-status'}
+    return;
+  }
+  // Suggest from ALL bots with comparable snapshots, not just previously saved slots.
+  // Do not save automatically: the user reviews the proposed ranking first.
+  const count=topSlotsState.draft.length || topSlotsSnapshot(topSlotsPreviousSavedDate(date)).length || 10;
+  topSlotsState.draft=candidates.slice(0,count).map(row=>row.cid);
   topSlotsState.dirty=true;
   topSlotsRenderEditor();
-  if(status){status.textContent='suggested from message growth · review before saving';status.className='slots-save-status ok'}
+  if(status){status.textContent='suggested from all growing bots · review before saving';status.className='slots-save-status ok'}
 }
 
 async function topSlotsSaveEditor(){
@@ -22297,6 +22349,9 @@ body.dashboard-shell #analyticsPanel .analytics-period-card .analytics-date-cont
   background:rgba(23,22,30,.72)!important;
   border:1px solid #bd8eb9!important;
 }
+
+/* CV historical date: native scroll-wheel date picker on iOS */
+body.dashboard-shell #cvDayHistoryDate{color-scheme:dark;max-width:160px;min-width:0;font:inherit;}
 </style>
 </body>
 </html>
