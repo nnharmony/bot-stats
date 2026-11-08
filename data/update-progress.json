@@ -123,6 +123,43 @@
       "collectors": 60,
       "stale": true,
       "error": "No interaction statistics found"
+    },
+    "aLnyd": {
+      "cid": "aLnyd",
+      "name": "Sergei Petrov",
+      "url": "https://www.polybuzz.ai/character/profile/sergei-petrov-aLnyd?pre_source=1",
+      "messages": 9004,
+      "collectors": 12
+    },
+    "aWuvL": {
+      "cid": "aWuvL",
+      "name": "Roman",
+      "url": "https://www.polybuzz.ai/character/profile/roman-aWuvL?pre_source=1",
+      "messages": 978990,
+      "collectors": 255,
+      "stale": true,
+      "error": "No interaction statistics found"
+    },
+    "aTDfY": {
+      "cid": "aTDfY",
+      "name": "Mika",
+      "url": "https://www.polybuzz.ai/character/profile/mika-aTDfY?pre_source=1",
+      "messages": 493829,
+      "collectors": 83
+    },
+    "4mBT9": {
+      "cid": "4mBT9",
+      "name": "Ezra",
+      "url": "https://www.polybuzz.ai/character/profile/ezra-4mBT9?pre_source=1",
+      "messages": 1289,
+      "collectors": 5
+    },
+    "4kqes": {
+      "cid": "4kqes",
+      "name": "Dimitri",
+      "url": "https://www.polybuzz.ai/character/profile/dimitri-4kqes?pre_source=1",
+      "messages": 3144244,
+      "collectors": 273
     }
   }
 }
