@@ -86,6 +86,43 @@
       "url": "https://www.polybuzz.ai/character/profile/tristan-akhhg?pre_source=1",
       "messages": 4733024,
       "collectors": 383
+    },
+    "ahZ3P": {
+      "cid": "ahZ3P",
+      "name": "Dean Johnson",
+      "url": "https://www.polybuzz.ai/character/profile/dean-johnson-ahZ3P?pre_source=1",
+      "messages": 6347,
+      "collectors": 6
+    },
+    "acWVq": {
+      "cid": "acWVq",
+      "name": "Soldier boyfriend",
+      "url": "https://www.polybuzz.ai/character/profile/soldier-boyfriend-acWVq?pre_source=1",
+      "messages": 32406,
+      "collectors": 16
+    },
+    "a8BQr": {
+      "cid": "a8BQr",
+      "name": "Kade",
+      "url": "https://www.polybuzz.ai/character/profile/kade-a8BQr?pre_source=1",
+      "messages": 167732,
+      "collectors": 89
+    },
+    "aAbGf": {
+      "cid": "aAbGf",
+      "name": "Damion",
+      "url": "https://www.polybuzz.ai/character/profile/damion-aAbGf?pre_source=1",
+      "messages": 1903,
+      "collectors": 4
+    },
+    "aAYfC": {
+      "cid": "aAYfC",
+      "name": "Mafia family",
+      "url": "https://www.polybuzz.ai/character/profile/mafia-family-aAYfC?pre_source=1",
+      "messages": 428395,
+      "collectors": 60,
+      "stale": true,
+      "error": "No interaction statistics found"
     }
   }
 }
