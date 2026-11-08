@@ -23076,5 +23076,107 @@ body.dashboard-shell .rankings-highlight{
 body.dashboard-shell .dashboard-nav-button{font-weight:400!important;}
 body.dashboard-shell .dashboard-nav-button.active{font-weight:500!important;}
 </style>
+<style id="pb-profile-header-alignment-8nov">
+/* Header alignment from the approved three-row guide:
+   avatar | UID / Naila / characters | update / meter / subscribers. */
+body.dashboard-shell .dashboard-profile-hero{
+  padding:10px 12px!important;
+}
+body.dashboard-shell .dashboard-profile-details{
+  grid-template-columns:67px minmax(0,35%) minmax(0,1fr)!important;
+  grid-template-rows:21px 39px 25px!important;
+  column-gap:8px!important;
+  min-height:85px!important;
+}
+body.dashboard-shell .dashboard-profile-identity>#dashboardAvatarButton{
+  width:67px!important;min-width:67px!important;max-width:67px!important;
+  height:67px!important;min-height:67px!important;max-height:67px!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy{
+  align-self:end!important;
+  gap:3px!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid{
+  font-family:"Avenir Next",Avenir,system-ui,sans-serif!important;
+  font-size:10.5px!important;font-weight:500!important;
+  line-height:15px!important;letter-spacing:-.015em!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy-symbol{
+  font-size:10px!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-identity-title-line{
+  align-self:center!important;
+}
+body.dashboard-shell .dashboard-profile-identity .dashboard-identity-title-line h1,
+body.dashboard-shell #dashboardProfileName{
+  font-family:"Poppins","Avenir Next",system-ui,sans-serif!important;
+  font-size:22px!important;font-weight:700!important;
+  line-height:1!important;letter-spacing:-.03em!important;
+}
+body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{
+  align-self:end!important;
+  font-family:"Avenir Next",Avenir,system-ui,sans-serif!important;
+  font-size:8.3px!important;font-weight:400!important;
+  line-height:15px!important;letter-spacing:-.015em!important;
+}
+body.dashboard-shell .dashboard-subscriber-meter{
+  height:31px!important;min-height:31px!important;
+}
+body.dashboard-shell .dashboard-subscriber-meter-track{
+  left:0!important;right:0!important;height:7px!important;
+  overflow:hidden!important;border-radius:999px!important;
+}
+body.dashboard-shell .dashboard-subscriber-meter-fill{
+  border-radius:999px!important;
+}
+body.dashboard-shell .dashboard-subscriber-meter-marker{
+  width:17px!important;height:17px!important;
+}
+body.dashboard-shell .dashboard-profile-stats .dashboard-identity-characters,
+body.dashboard-shell .dashboard-profile-subscriber-total,
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard,
+body.dashboard-shell .dashboard-subs-label{
+  font-size:10.5px!important;
+  line-height:21px!important;
+  letter-spacing:-.01em!important;
+}
+body.dashboard-shell .dashboard-profile-stats .dashboard-identity-crown{
+  width:14px!important;min-width:14px!important;height:14px!important;
+}
+body.dashboard-shell .dashboard-profile-stats-divider{
+  transform:translateX(-12px)!important;
+  font-size:11px!important;line-height:21px!important;
+}
+body.dashboard-shell .dashboard-profile-subscriber-total{
+  gap:5px!important;padding-left:0!important;
+}
+@media(max-width:375px){
+  body.dashboard-shell .dashboard-profile-details{
+    grid-template-columns:65px minmax(0,35%) minmax(0,1fr)!important;
+    column-gap:7px!important;
+  }
+  body.dashboard-shell .dashboard-profile-identity>#dashboardAvatarButton{
+    width:65px!important;min-width:65px!important;max-width:65px!important;
+    height:65px!important;min-height:65px!important;max-height:65px!important;
+  }
+}
+@media(max-width:340px){
+  body.dashboard-shell .dashboard-profile-details{
+    grid-template-columns:56px minmax(0,36%) minmax(0,1fr)!important;
+    column-gap:5px!important;
+  }
+  body.dashboard-shell .dashboard-profile-identity>#dashboardAvatarButton{
+    width:56px!important;min-width:56px!important;max-width:56px!important;
+    height:56px!important;min-height:56px!important;max-height:56px!important;
+  }
+  body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid{font-size:9px!important;}
+  body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{font-size:7px!important;}
+  body.dashboard-shell .dashboard-profile-identity .dashboard-identity-title-line h1{font-size:20px!important;}
+  body.dashboard-shell .dashboard-profile-stats-divider{transform:translateX(-5px)!important;}
+  body.dashboard-shell .dashboard-profile-subscriber-total{padding-left:8px!important;}
+  body.dashboard-shell .dashboard-profile-subscriber-total,
+  body.dashboard-shell .dashboard-profile-stats .dashboard-identity-characters{font-size:9.5px!important;}
+}
+</style>
 </body>
 </html>
