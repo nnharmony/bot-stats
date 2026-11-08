@@ -23080,13 +23080,13 @@ body.dashboard-shell .dashboard-nav-button.active{font-weight:500!important;}
 /* Header alignment from the approved three-row guide:
    avatar | UID / Naila / characters | update / meter / subscribers. */
 body.dashboard-shell .dashboard-profile-hero{
-  padding:10px 12px!important;
+  padding:8px 12px!important;
 }
 body.dashboard-shell .dashboard-profile-details{
   grid-template-columns:67px minmax(0,35%) minmax(0,1fr)!important;
-  grid-template-rows:21px 39px 25px!important;
+  grid-template-rows:17px 31px 19px!important;
   column-gap:8px!important;
-  min-height:85px!important;
+  min-height:67px!important;
 }
 body.dashboard-shell .dashboard-profile-identity>#dashboardAvatarButton{
   width:67px!important;min-width:67px!important;max-width:67px!important;
@@ -23124,10 +23124,14 @@ body.dashboard-shell .dashboard-subscriber-meter{
 }
 body.dashboard-shell .dashboard-subscriber-meter-track{
   left:0!important;right:0!important;height:7px!important;
-  overflow:hidden!important;border-radius:999px!important;
+  overflow:visible!important;
+  border-radius:3.5px!important;
+  -webkit-border-radius:3.5px!important;
 }
 body.dashboard-shell .dashboard-subscriber-meter-fill{
-  border-radius:999px!important;
+  border-radius:3.5px!important;
+  -webkit-border-radius:3.5px!important;
+  clip-path:inset(0 round 3.5px)!important;
 }
 body.dashboard-shell .dashboard-subscriber-meter-marker{
   width:17px!important;height:17px!important;
@@ -23137,7 +23141,7 @@ body.dashboard-shell .dashboard-profile-subscriber-total,
 body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard,
 body.dashboard-shell .dashboard-subs-label{
   font-size:10.5px!important;
-  line-height:21px!important;
+  line-height:19px!important;
   letter-spacing:-.01em!important;
 }
 body.dashboard-shell .dashboard-profile-stats .dashboard-identity-crown{
@@ -23145,7 +23149,7 @@ body.dashboard-shell .dashboard-profile-stats .dashboard-identity-crown{
 }
 body.dashboard-shell .dashboard-profile-stats-divider{
   transform:translateX(-12px)!important;
-  font-size:11px!important;line-height:21px!important;
+  font-size:11px!important;line-height:19px!important;
 }
 body.dashboard-shell .dashboard-profile-subscriber-total{
   gap:5px!important;padding-left:0!important;
