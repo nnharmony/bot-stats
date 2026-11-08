@@ -1,0 +1,91 @@
+{
+  "mode": "normal",
+  "started_at": "2026-11-08T14:20:45.147Z",
+  "snapshot_timestamp": null,
+  "bot_ids": [
+    "bMdKF",
+    "bsTTS",
+    "bDfmr",
+    "bTQu8",
+    "akhhg",
+    "ahZ3P",
+    "acWVq",
+    "a8BQr",
+    "aAbGf",
+    "aAYfC",
+    "aLnyd",
+    "aWuvL",
+    "aTDfY",
+    "4mBT9",
+    "4kqes",
+    "442bT",
+    "4Jq6k",
+    "48TWk",
+    "4ADuq",
+    "4qHqN",
+    "4EGsN",
+    "4DNE3",
+    "4D6Ww",
+    "YeCb8",
+    "YYZd8",
+    "YVLJv",
+    "YUwTr",
+    "Yvvgu",
+    "YSMu5",
+    "YRQhH",
+    "YL4ys",
+    "YZFnB",
+    "Xt443",
+    "XYqtB",
+    "XKK4Q",
+    "XKZNk",
+    "XVWHL",
+    "XUUmn",
+    "XUEfB",
+    "XA5He",
+    "XAFVe",
+    "XS5br",
+    "XSahn",
+    "XSNEh",
+    "XRdDd",
+    "XQ5RC",
+    "XQXYf"
+  ],
+  "results": {
+    "bMdKF": {
+      "cid": "bMdKF",
+      "name": "Enemy soldiers",
+      "url": "https://www.polybuzz.ai/character/profile/enemy-soldiers-bMdKF?pre_source=1",
+      "messages": 92,
+      "collectors": 0
+    },
+    "bsTTS": {
+      "cid": "bsTTS",
+      "name": "Zack",
+      "url": "https://www.polybuzz.ai/character/profile/zack-bsTTS?pre_source=1",
+      "messages": 252,
+      "collectors": 1
+    },
+    "bDfmr": {
+      "cid": "bDfmr",
+      "name": "Ravi",
+      "url": "https://www.polybuzz.ai/character/profile/ravi-bDfmr?pre_source=1",
+      "messages": 55935,
+      "collectors": 17
+    },
+    "bTQu8": {
+      "cid": "bTQu8",
+      "name": "Denis",
+      "url": "https://www.polybuzz.ai/character/profile/denis-bTQu8?pre_source=1",
+      "messages": 215924,
+      "collectors": 38
+    },
+    "akhhg": {
+      "cid": "akhhg",
+      "name": "Tristan",
+      "url": "https://www.polybuzz.ai/character/profile/tristan-akhhg?pre_source=1",
+      "messages": 4733024,
+      "collectors": 383
+    }
+  }
+}
