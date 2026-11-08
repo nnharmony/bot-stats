@@ -8213,7 +8213,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
         </div>
       </div>
       <div class="cv-day-grid">
-        <div><span>characters</span><strong id="cvDayCharacters">—</strong><small id="cvDayCharactersMeta">eligible characters</small></div>
+        <div><span>characters</span><strong id="cvDayCharacters">—</strong><small id="cvDayCharactersMeta">character CV</small></div>
         <div><span>messages</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
         <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small id="cvMessagesPerUcuSource">—</small></div>
         <div><span>UCU</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
@@ -12494,6 +12494,12 @@ function cvDefaultAdjustment(type){
   return 0;
 }
 
+/* Character CV is known from its own ledger entries and never depends on the
+   matching message snapshot. Manual corrections remain separate. */
+const CV_CHARACTER_ADJUSTMENT_TYPES=new Set([
+  'new','hq_new','compliant_new','unbanned','ban','shadow_ban','hard_ban','hard_ban_extra'
+]);
+
 
 function suggestCvTotalFromAdjustment(type){
   if(cvState.editingId) return;
@@ -12981,6 +12987,24 @@ function cvFormatEstimateSigned(value,digits=1){
   return `${value>0?'+':''}${cvFormatEstimate(value,digits)}`;
 }
 
+function cvCharacterMeta(estimate){
+  const events=Array.isArray(estimate?.characterEvents)?estimate.characterEvents:[];
+  if(events.length===1) return cvTypeLabel(events[0].type);
+  if(events.length>1) return `${events.length} character updates`;
+  return 'no character CV';
+}
+
+function cvAdjustmentFormulaTerms(estimate){
+  const terms=[];
+  const add=(value,label)=>{
+    if(!Number.isFinite(value)||Math.abs(value)<1e-9) return;
+    terms.push(`${value<0?'−':'+'} ${cvFormatEstimate(Math.abs(value))} ${label}`);
+  };
+  add(estimate?.characterCv,'character CV');
+  add(estimate?.otherAdjustments,'other adjustment');
+  return terms.join(' ');
+}
+
 const cvHistoryWheelState={ready:false,open:false,draft:'',syncing:false,timers:new Map()};
 const cvHistoryMonthNames=['january','february','march','april','may','june','july','august','september','october','november','december'];
 
@@ -13194,16 +13218,25 @@ function cvDailyUpdateContext(date=''){
 
   const actualDelta=Number(target.total)-Number(baseline.total);
 
-  const adjustments=entries
+  const intervalEntries=entries
     .slice(baselineIndex+1,targetIndex+1)
-    .filter(entry=>entry.type!=='settlement')
+    .filter(entry=>entry.type!=='settlement');
+  const adjustments=intervalEntries
     .reduce((sum,entry)=>sum+(Number(entry.adjustment)||0),0);
+  const characterEvents=intervalEntries
+    .filter(entry=>CV_CHARACTER_ADJUSTMENT_TYPES.has(String(entry.type||'')) && Number(entry.adjustment));
+  const characterCv=characterEvents
+    .reduce((sum,entry)=>sum+(Number(entry.adjustment)||0),0);
+  const otherAdjustments=adjustments-characterCv;
 
   return {
     target,
     baseline,
     actualDelta,
     adjustments,
+    characterCv,
+    characterEvents:characterEvents.map(entry=>({type:entry.type,adjustment:Number(entry.adjustment)||0})),
+    otherAdjustments,
     organicCv:Number.isFinite(actualDelta)
       ? actualDelta-adjustments
       : null
@@ -13433,6 +13466,7 @@ function cvDailyEstimate(date=''){
       mode:'decrease',date:context.target.date,
       fromDate:actualMessages?.fromDate||context.baseline?.date||'',
       actualDelta:context.actualDelta,adjustments:context.adjustments,
+      characterCv:context.characterCv,characterEvents:context.characterEvents,otherAdjustments:context.otherAdjustments,
       organicCv:context.organicCv,rawMessages:actualMessages?.uncappedMessages??null,
       uncappedMessages:null,bots:actualMessages?.bots??null,
       messageCv:null,ucuCv:null,estimatedUcu:null,ratio
@@ -13455,6 +13489,7 @@ function cvDailyEstimate(date=''){
       return {
         mode:'unresolved-cap',date:context.target.date,fromDate:actualMessages.fromDate,
         actualDelta:context.actualDelta,adjustments:context.adjustments,
+        characterCv:context.characterCv,characterEvents:context.characterEvents,otherAdjustments:context.otherAdjustments,
         organicCv:context.organicCv,rawMessages:actualMessages.uncappedMessages,
         minimumExcluded:cap.state==='ready'?cap.minExcluded:null,
         capReconstruction:cap,uncappedMessages:null,bots:actualMessages.bots,
@@ -13470,6 +13505,9 @@ function cvDailyEstimate(date=''){
       fromDate:actualMessages.fromDate,
       actualDelta:context.actualDelta,
       adjustments:context.adjustments,
+      characterCv:context.characterCv,
+      characterEvents:context.characterEvents,
+      otherAdjustments:context.otherAdjustments,
       organicCv:context.organicCv,
       uncappedMessages:countedMessages,
       bots:actualMessages.bots,
@@ -13503,6 +13541,9 @@ function cvDailyEstimate(date=''){
       fromDate:context.baseline?.date || '',
       actualDelta:context.actualDelta,
       adjustments:context.adjustments,
+      characterCv:context.characterCv,
+      characterEvents:context.characterEvents,
+      otherAdjustments:context.otherAdjustments,
       organicCv:context.organicCv,
       uncappedMessages:estimatedMessages,
       bots:null,
@@ -13519,6 +13560,9 @@ function cvDailyEstimate(date=''){
     fromDate:context.baseline?.date || '',
     actualDelta:context.actualDelta,
     adjustments:context.adjustments,
+    characterCv:context.characterCv,
+    characterEvents:context.characterEvents,
+    otherAdjustments:context.otherAdjustments,
     organicCv:context.organicCv,
     uncappedMessages:null,
     bots:null,
@@ -13548,7 +13592,9 @@ function renderCvDayEstimate(){
   const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
   const change=document.querySelector('.cv-day-change');
   change?.classList.toggle('is-decrease',Boolean(estimate&&estimate.actualDelta<0));
-  set('#cvDayChangeKind',!estimate?'':estimate.actualDelta<0?'decrease / correction':'earned change');
+  set('#cvDayChangeKind',!estimate?'':estimate.actualDelta<0
+    ? 'decrease / correction'
+    : Math.abs(estimate.adjustments||0)>1e-9?'total change':'earned change');
 
   // Use the current daily figures once its message batch has arrived.
   // The historical ratio is shown only while that batch is missing.
@@ -13580,7 +13626,7 @@ function renderCvDayEstimate(){
     set('#cvDayUcuCv','—');
     set('#cvDayUcu','—');
     set('#cvDayCharacters','—');
-    set('#cvDayCharactersMeta','eligible characters');
+    set('#cvDayCharactersMeta','character CV');
     set('#cvDayExpected','—');
     set('#cvDayFormula','enter a cv update to see its breakdown.');
     return;
@@ -13588,22 +13634,24 @@ function renderCvDayEstimate(){
 
   set('#cvDayTotal',cvFormatEstimateSigned(estimate.actualDelta));
   set('#cvLatestTop',estimate.actualDelta<0?'correction':cvFormatEstimateSigned(estimate.actualDelta));
-  set('#cvDayCharacters',Number.isFinite(estimate.bots)?fmt.format(estimate.bots):'—');
-  set('#cvDayCharactersMeta',Number.isFinite(estimate.bots)?'eligible characters':'awaiting messages');
+  set('#cvDayCharacters',Number.isFinite(estimate.characterCv)?cvFormatEstimateSigned(estimate.characterCv):'—');
+  set('#cvDayCharactersMeta',Number.isFinite(estimate.characterCv)?cvCharacterMeta(estimate):'character CV');
   set('#cvDayExpected',cvFormatEstimateSigned(estimate.organicCv));
 
   if(estimate.mode==='decrease'){
+    const adjustmentTerms=cvAdjustmentFormulaTerms(estimate);
     set('#cvDayDate','correction recorded');
     set('#cvDayMessageCv','—');
     set('#cvDayMessages',Number.isFinite(estimate.rawMessages)?`${fmt.format(Math.round(estimate.rawMessages))} observed messages · not assigned to negative CV`:'not classified as earned CV');
     set('#cvDayUcuCv','—');
     set('#cvDayUcu','—');
-    set('#cvDayFormula',`${cvFormatEstimateSigned(estimate.actualDelta)} net CV · ${cvFormatEstimateSigned(estimate.adjustments)} recorded adjustments · ${cvFormatEstimateSigned(estimate.organicCv)} remaining decrease. No negative value is counted as earned message or UCU CV.`);
+    set('#cvDayFormula',`${cvFormatEstimateSigned(estimate.actualDelta)} net CV${adjustmentTerms?` · ${adjustmentTerms}`:''} · ${cvFormatEstimateSigned(estimate.organicCv)} remaining decrease. No negative value is counted as earned message or UCU CV.`);
     return;
   }
 
   if(estimate.mode==='exact' || estimate.mode==='cap-reconstructed'){
     const inferred=estimate.mode==='cap-reconstructed';
+    const adjustmentTerms=cvAdjustmentFormulaTerms(estimate);
     set('#cvDayDate',inferred?'≈ cap-adjusted':'calculated');
     set('#cvDayMessageCv',`${inferred?'≈ ':''}${cvFormatEstimateSigned(estimate.messageCv)}`);
     set('#cvDayMessages',`${inferred?'≈ ':''}${fmt.format(Math.round(estimate.uncappedMessages))} eligible messages`);
@@ -13613,8 +13661,8 @@ function renderCvDayEstimate(){
     const warning=inferred?' · estimated cap exclusion; see cap reconstruction':'';
 
     set('#cvDayFormula',estimate.actualDelta<0
-      ? `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} = ${cvFormatEstimate(estimate.organicCv)} earned cv · ${cvFormatEstimateSigned(estimate.adjustments)} recorded adjustment · ${cvFormatEstimateSigned(estimate.actualDelta)} net correction${warning}`
-      : `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
+      ? `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} = ${cvFormatEstimate(estimate.organicCv)} earned cv${adjustmentTerms?` · ${adjustmentTerms}`:''} · ${cvFormatEstimateSigned(estimate.actualDelta)} net correction${warning}`
+      : `${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)}${adjustmentTerms?` ${adjustmentTerms}`:''} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv${warning}`
     );
     return;
   }
@@ -13632,13 +13680,14 @@ function renderCvDayEstimate(){
   }
 
   if(estimate.mode==='estimated'){
+    const adjustmentTerms=cvAdjustmentFormulaTerms(estimate);
     set('#cvDayDate',`≈ estimate`);
     set('#cvDayMessageCv',`≈ ${cvFormatEstimateSigned(estimate.messageCv)}`);
     set('#cvDayMessages',`≈ ${fmt.format(Math.round(estimate.uncappedMessages))} uncapped messages`);
     set('#cvDayUcuCv',`≈ ${cvFormatEstimateSigned(estimate.ucuCv)}`);
     set('#cvDayUcu',`≈ ${fmt.format(Math.round(estimate.estimatedUcu))} UCU`);
     set('#cvDayFormula',
-      `≈ ${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)} ${estimate.adjustments<0?'−':'+'} ${cvFormatEstimate(Math.abs(estimate.adjustments))} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv`
+      `≈ ${cvFormatEstimate(estimate.messageCv)} + ${cvFormatEstimate(estimate.ucuCv)}${adjustmentTerms?` ${adjustmentTerms}`:''} = ${cvFormatEstimateSigned(estimate.actualDelta)} cv`
     );
     return;
   }
@@ -22933,6 +22982,32 @@ body.dashboard-shell .analytics-personal-tools select{
   body.dashboard-shell .cv-history-wheel-card{padding:11px 9px;}
   body.dashboard-shell .cv-wheel-option{font-size:16px;}
   body.dashboard-shell .analytics-personal-tools{grid-template-columns:1fr;}
+}
+</style>
+<style id="pb-avenir-next-main-8nov">
+/* Avenir Next is the tracker-wide primary typeface. Existing sizes, spacing,
+   colors and weight hierarchy stay intact. */
+body.dashboard-shell,
+body.dashboard-shell button,
+body.dashboard-shell input,
+body.dashboard-shell select,
+body.dashboard-shell option,
+body.dashboard-shell textarea{
+  font-family:"Avenir Next",Avenir,"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
+}
+body.dashboard-shell #dashboardProfileName{
+  font-family:"Avenir Next",Avenir,"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
+  font-weight:600!important;
+}
+body.dashboard-shell #dashboardHeaderCharacters,
+body.dashboard-shell #dashboardHeaderCharacters *,
+body.dashboard-shell .dashboard-profile-subscriber-total,
+body.dashboard-shell .dashboard-profile-subscriber-total *,
+body.dashboard-shell .dashboard-profile-subscriber-total .dashboard-subs-label,
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard,
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
+body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
+  font-family:"Avenir Next",Avenir,"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
 }
 </style>
 </body>
