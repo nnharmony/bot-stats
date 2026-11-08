@@ -22981,31 +22981,36 @@ body.dashboard-shell .analytics-personal-tools select{
 }
 </style>
 <style id="pb-avenir-next-main-8nov">
-/* Avenir Next is the primary typeface, with a restrained iOS-style hierarchy.
-   Old 750–900 weights are deliberately not inherited by the visible figures. */
+/* One explicit type system for every tracker screen. Older component rules used
+   several rounded faces and weights up to 900; those must not leak through. */
 body.dashboard-shell,
+body.dashboard-shell #app,
+body.dashboard-shell #app *,
 body.dashboard-shell button,
 body.dashboard-shell input,
 body.dashboard-shell select,
 body.dashboard-shell option,
 body.dashboard-shell textarea{
   font-family:"Avenir Next",Avenir,"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
-  font-synthesis:none;
+  font-synthesis:none!important;
 }
+
+/* Calm default. Emphasis is added back deliberately below and never exceeds
+   Avenir Next Semibold, so old ExtraBold/Heavy rules cannot reappear. */
+body.dashboard-shell #app,
+body.dashboard-shell #app *{font-weight:400!important;}
+body.dashboard-shell #app :is(h1,h2,h3,h4,h5,h6,summary,strong,b,th),
+body.dashboard-shell .dashboard-section-title,
+body.dashboard-shell .dashboard-card-head strong,
+body.dashboard-shell .dashboard-level-label,
+body.dashboard-shell .dashboard-cv-caption{
+  font-weight:600!important;
+}
+
+/* Header hierarchy. */
 body.dashboard-shell #dashboardProfileName{
-  font-family:"Avenir Next",Avenir,"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
   font-weight:600!important;
   letter-spacing:-.018em!important;
-}
-body.dashboard-shell #dashboardHeaderCharacters,
-body.dashboard-shell #dashboardHeaderCharacters *,
-body.dashboard-shell .dashboard-profile-subscriber-total,
-body.dashboard-shell .dashboard-profile-subscriber-total *,
-body.dashboard-shell .dashboard-profile-subscriber-total .dashboard-subs-label,
-body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard,
-body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard strong#dashboardSubscribers,
-body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
-  font-family:"Avenir Next",Avenir,"Helvetica Neue",-apple-system,BlinkMacSystemFont,Arial,sans-serif!important;
 }
 body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy,
 body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid{
@@ -23022,14 +23027,25 @@ body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscri
 body.dashboard-shell .dashboard-profile-subscriber-total #dashboardHeaderSubscribersCard.has-goal-meter strong#dashboardSubscribers{
   font-weight:600!important;
 }
-body.dashboard-shell #app :is(h1,h2,h3,h4,h5,h6),
-body.dashboard-shell #app :is(strong,b),
-body.dashboard-shell .dashboard-section-title,
-body.dashboard-shell .dashboard-card-head strong,
-body.dashboard-shell .dashboard-level-label,
-body.dashboard-shell .dashboard-cv-caption{
+
+/* Portfolio/Bots headings were the visible offenders on iPhone. */
+body.dashboard-shell #pbBotsStatsTitle,
+body.dashboard-shell #pbAllBotsHeading,
+body.dashboard-shell .pb-bots-statistics>summary,
+body.dashboard-shell .pb-bots-lower-card>summary,
+body.dashboard-shell #pbAllBots>summary{
+  font-weight:600!important;
+  letter-spacing:-.012em!important;
+}
+body.dashboard-shell .pb-summary-label{font-weight:500!important;}
+body.dashboard-shell .pb-summary-measure small,
+body.dashboard-shell .pb-summary-winner b,
+body.dashboard-shell .pb-pct-up,
+body.dashboard-shell .pb-pct-down{
   font-weight:600!important;
 }
+
+/* Figures stay clear and aligned without becoming chunky. */
 body.dashboard-shell #dashboardHeaderCvCard .dashboard-cv-number-row strong#dashboardCv,
 body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card em,
 body.dashboard-shell .pb-home-hero-stack.pb-home-hero-active .dashboard-performance .dashboard-stat-card strong,
@@ -23038,8 +23054,11 @@ body.dashboard-shell .dashboard-performance .dashboard-stat-card strong,
 body.dashboard-shell .analytics-card strong,
 body.dashboard-shell .cv-day-change strong,
 body.dashboard-shell .cv-day-grid strong,
+body.dashboard-shell .pb-summary-active>strong,
 body.dashboard-shell .pb-summary-measure strong,
-body.dashboard-shell .pb-summary-bottom strong{
+body.dashboard-shell .pb-summary-bottom strong,
+body.dashboard-shell .main-table td:nth-child(4),
+body.dashboard-shell .archive-stat :is(strong,em){
   font-weight:600!important;
   letter-spacing:-.012em!important;
   font-variant-numeric:tabular-nums;
@@ -23048,7 +23067,10 @@ body.dashboard-shell .dashboard-tile-label,
 body.dashboard-shell .dashboard-bot-name,
 body.dashboard-shell .dashboard-bot-growth,
 body.dashboard-shell .dashboard-freeze-name,
-body.dashboard-shell .dashboard-freeze-days{
+body.dashboard-shell .dashboard-freeze-days,
+body.dashboard-shell .rankings-name,
+body.dashboard-shell .rankings-position,
+body.dashboard-shell .rankings-highlight{
   font-weight:600!important;
 }
 body.dashboard-shell .dashboard-nav-button{font-weight:400!important;}
