@@ -13886,6 +13886,14 @@ async function saveCvEntry(){
     status.textContent='saved ✓';
     status.className='ok';
 
+    // A newly saved daily CV update becomes the active card immediately.
+    // Keep a historical selection only while browsing; never leave yesterday
+    // selected after the user has just entered today's update.
+    if(type==='update'){
+      const historyDate=document.querySelector('#cvDayHistoryDate');
+      if(historyDate) historyDate.value=date;
+    }
+
     await loadCv();
     clearCvForm();
   }catch(error){
@@ -23098,7 +23106,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy{
 }
 body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy #dashboardProfileUid{
   font-family:"Avenir Next",Avenir,system-ui,sans-serif!important;
-  font-size:10.5px!important;font-weight:500!important;
+  font-size:9px!important;font-weight:500!important;
   line-height:15px!important;letter-spacing:-.015em!important;
 }
 body.dashboard-shell .dashboard-profile-identity .dashboard-uid-copy-symbol{
@@ -23116,7 +23124,7 @@ body.dashboard-shell #dashboardProfileName{
 body.dashboard-shell .dashboard-subs-card #updated.dashboard-identity-updated{
   align-self:end!important;
   font-family:"Avenir Next",Avenir,system-ui,sans-serif!important;
-  font-size:8.3px!important;font-weight:400!important;
+  font-size:7.5px!important;font-weight:400!important;
   line-height:15px!important;letter-spacing:-.015em!important;
 }
 body.dashboard-shell .dashboard-subscriber-meter{
@@ -23124,17 +23132,32 @@ body.dashboard-shell .dashboard-subscriber-meter{
 }
 body.dashboard-shell .dashboard-subscriber-meter-track{
   left:0!important;right:0!important;height:7px!important;
-  overflow:visible!important;
-  border-radius:3.5px!important;
-  -webkit-border-radius:3.5px!important;
+  overflow:visible!important;border-radius:0!important;
+  background:linear-gradient(#d2cfd4,#d2cfd4) center/ calc(100% - 7px) 7px no-repeat!important;
 }
+body.dashboard-shell .dashboard-subscriber-meter-track::before,
+body.dashboard-shell .dashboard-subscriber-meter-track::after{
+  content:""!important;position:absolute!important;top:0!important;
+  width:7px!important;height:7px!important;border-radius:50%!important;
+  background:#d2cfd4!important;z-index:0!important;
+}
+body.dashboard-shell .dashboard-subscriber-meter-track::before{left:0!important;}
+body.dashboard-shell .dashboard-subscriber-meter-track::after{right:0!important;}
 body.dashboard-shell .dashboard-subscriber-meter-fill{
-  border-radius:3.5px!important;
-  -webkit-border-radius:3.5px!important;
-  clip-path:inset(0 round 3.5px)!important;
+  position:relative!important;z-index:1!important;
+  border-radius:0!important;clip-path:none!important;
+  background:linear-gradient(90deg,#825981,#a477a4) center/ calc(100% - 7px) 7px no-repeat!important;
 }
+body.dashboard-shell .dashboard-subscriber-meter-fill::before,
+body.dashboard-shell .dashboard-subscriber-meter-fill::after{
+  content:""!important;position:absolute!important;top:0!important;
+  width:7px!important;height:7px!important;border-radius:50%!important;
+  z-index:1!important;
+}
+body.dashboard-shell .dashboard-subscriber-meter-fill::before{left:0!important;background:#825981!important;}
+body.dashboard-shell .dashboard-subscriber-meter-fill::after{right:0!important;background:#a477a4!important;}
 body.dashboard-shell .dashboard-subscriber-meter-marker{
-  width:17px!important;height:17px!important;
+  width:17px!important;height:17px!important;z-index:4!important;
 }
 body.dashboard-shell .dashboard-profile-stats .dashboard-identity-characters,
 body.dashboard-shell .dashboard-profile-subscriber-total,
