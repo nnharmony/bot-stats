@@ -13216,10 +13216,24 @@ function cvDailyUpdateContext(date=''){
     organicCv:null
   };
 
-  const actualDelta=Number(target.total)-Number(baseline.total);
+  // The card represents the complete selected CV date. Character adjustments
+  // can be registered after that day's main CV reading, so the last
+  // non-settlement ledger entry on the same date is the financial endpoint.
+  // Keep `target` as the real daily update for message-snapshot matching.
+  let endpoint=target;
+  let endpointIndex=targetIndex;
+  for(let i=targetIndex+1;i<entries.length;i++){
+    const entry=entries[i];
+    if(String(entry.date||'')!==String(target.date||'')) break;
+    if(entry.type==='settlement') continue;
+    endpoint=entry;
+    endpointIndex=i;
+  }
+
+  const actualDelta=Number(endpoint.total)-Number(baseline.total);
 
   const intervalEntries=entries
-    .slice(baselineIndex+1,targetIndex+1)
+    .slice(baselineIndex+1,endpointIndex+1)
     .filter(entry=>entry.type!=='settlement');
   const adjustments=intervalEntries
     .reduce((sum,entry)=>sum+(Number(entry.adjustment)||0),0);
@@ -13231,6 +13245,7 @@ function cvDailyUpdateContext(date=''){
 
   return {
     target,
+    endpoint,
     baseline,
     actualDelta,
     adjustments,
