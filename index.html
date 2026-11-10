@@ -13201,13 +13201,16 @@ function cvDailyUpdateContext(date=''){
     }
   }
 
-  // Otherwise use the latest earlier daily CV update or settlement.
+  // Otherwise use the complete financial endpoint of the previous date.
+  // A character adjustment saved after that date's daily update is already
+  // part of the previous day's closing total and must not be counted again on
+  // the next date.
   if(!baseline){
     for(let i=targetIndex-1;i>=0;i--){
       const entry=entries[i];
       if(
         String(entry.date||'')<String(target.date||'') &&
-        (entry.type==='update' || entry.type==='settlement')
+        Number.isFinite(Number(entry.total))
       ){
         baseline=entry;
         baselineIndex=i;
