@@ -11499,9 +11499,18 @@ function analyticsRange(){
 }
 
 function analyticsDayBaselineForRange(fromDate,toDate){
-  const before=analyticsDayAtOrBefore(fromDate);
+  // The selected range is inclusive. Its baseline is therefore the last
+  // available snapshot BEFORE the From date. In particular, a one-day range
+  // such as 10/11 → 10/11 compares 09/11 with 10/11 instead of comparing the
+  // 10/11 snapshot with itself.
+  const before=[...state.daily]
+    .filter(day=>String(day.date||'')<String(fromDate||''))
+    .sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')))
+    .at(-1) || null;
   if(before) return before;
 
+  // At the beginning of the stored history there is no earlier observation.
+  // Use the first observation in range as the only honest available baseline.
   return [...state.daily]
     .filter(day=>day.date>=fromDate && day.date<=toDate)
     .sort((a,b)=>a.date.localeCompare(b.date))[0] || null;
@@ -11553,7 +11562,7 @@ function analyticsCappedGrowth(fromDate,toDate){
     .filter(day=>day.date>=fromDate && day.date<=toDate)
     .sort((a,b)=>a.date.localeCompare(b.date));
 
-  const baseline=analyticsDayAtOrBefore(fromDate);
+  const baseline=analyticsDayBaselineForRange(fromDate,toDate);
 
   const sequence=[];
 
@@ -11615,7 +11624,7 @@ function analyticsCurrentAndDelta(entries,fromDate,toDate,valueKey='total'){
 
   const current=analyticsEntryAtOrBefore(sorted,toDate);
   const baseline=
-    analyticsEntryAtOrBefore(sorted,fromDate) ||
+    [...sorted].filter(entry=>String(entry.date||'')<String(fromDate||'')).at(-1) ||
     sorted.find(entry=>
       String(entry.date||'')>=fromDate &&
       String(entry.date||'')<=toDate
@@ -21284,9 +21293,17 @@ function pbPortfolioRange(){
  const from=pbPortfolioUi.from||dates[Math.max(0,priorIndex)]||to;
  return {from,to};
 }
+function pbPortfolioComparisonRange(){
+ const range=pbPortfolioRange(),dates=pbPortfolioDates();
+ // The chosen From/To dates are inclusive. Use the latest saved observation
+ // before From as the calculation baseline, so a one-day selection represents
+ // that day's actual growth instead of comparing the snapshot with itself.
+ const baseline=dates.filter(date=>date<range.from).at(-1)||range.from;
+ return {...range,baseline};
+}
 function pbPortfolioRows(){
- const {from,to}=pbPortfolioRange();
- const source=graphSourceDays(),start=source.find(e=>e.date===from),end=source.find(e=>e.date===to);
+ const {baseline,to}=pbPortfolioComparisonRange();
+ const source=graphSourceDays(),start=source.find(e=>e.date===baseline),end=source.find(e=>e.date===to);
  return [...state.meta.values()].map(meta=>{
   const a=trackerSafeBotAtEntry(start,meta.cid),b=trackerSafeBotAtEntry(end,meta.cid);
   const am=analyticsReliableNumber(a,'messages'),bm=analyticsReliableNumber(b,'messages');
@@ -21334,7 +21351,7 @@ function pbPortfolioCvParts(from,to){
  return {organic,adjustments};
 }
 function pbPortfolioSummary(rows){
- const {from,to}=pbPortfolioRange();
+ const {from,to,baseline:comparisonFrom}=pbPortfolioComparisonRange();
  const usable=rows.filter(r=>Number.isFinite(r.growth)),active=usable.filter(r=>r.growth>0);
  const sum=usable.reduce((n,r)=>n+r.growth,0);
  const baseline=usable.reduce((n,r)=>n+r.startMessages,0);
@@ -21357,10 +21374,10 @@ function pbPortfolioSummary(rows){
  put('pbStatMessages',usable.length?signed(sum):'—');pctPut('pbStatPercent',pct);
  put('pbStatCollectors',signed(collectors));pctPut('pbStatCollectorPercent',cPct);
  put('pbStatPopular',usable.length?rankingsFloat(sum/Math.max(1,Number(rankingsConfig.coef)||4000)):'—');
- const cv=pbPortfolioCvParts(from,to);
+ const cv=pbPortfolioCvParts(comparisonFrom,to);
  put('pbStatCv',Number.isFinite(cv.organic)?signed(cv.organic):'—');
  const cvHistory=cvSortedEntriesAsc();
- const cvBaseline=cvHistory.filter(e=>e.date<=from && Number.isFinite(Number(e.total))).at(-1);
+ const cvBaseline=cvHistory.filter(e=>e.date<=comparisonFrom && Number.isFinite(Number(e.total))).at(-1);
  pctPut('pbStatCvPercent',Number.isFinite(cv.organic)&&Number(cvBaseline?.total)>0?cv.organic/Number(cvBaseline.total)*100:null);
  put('pbStatAdjustments',Number.isFinite(cv.adjustments)?(cv.adjustments===0?'+0':signed(cv.adjustments)):'—');
  put('pbStatCvTotal',Number.isFinite(cv.organic)&&Number.isFinite(cv.adjustments)?signed(cv.organic+cv.adjustments):'—');
@@ -21385,7 +21402,7 @@ function pbPortfolioAchievements(rows){
   try{pbPortfolioUi.recordCache=analyticsPersonalBestMoments()}catch(_){pbPortfolioUi.recordCache=[]}
   pbPortfolioUi.lastRecordKey=key;
  }
- const records=pbPortfolioUi.recordCache.filter(item=>item.date>from&&item.date<=to);
+ const records=pbPortfolioUi.recordCache.filter(item=>item.date>=from&&item.date<=to);
  const recordBox=document.getElementById('pbRecordDetails');
  if(recordBox)recordBox.innerHTML=records.length?records.map(r=>`<button type="button" class="pb-achievement-row" data-pb-record-date="${r.date}"><span>${archiveEscape(r.name)}<small>30D personal best · ${shortGraphDate(r.date)}</small></span><strong>+${fmt.format(r.growth)}</strong></button>`).join(''):'<div class="dashboard-empty">no confirmed 30D personal bests for this period.</div>';
  document.getElementById('pbRecordCount').textContent=String(records.length);
@@ -21484,8 +21501,10 @@ function pbRenderSlots(){
 function pbRenderBots(){if(!state.meta.size)return;
  pbPickDates();const allRows=pbPortfolioRows(),rows=allRows.filter(r=>r.isPublic);pbPortfolioSummary(rows);pbPortfolioAchievements(rows);pbRenderSlots();
  const query=(document.getElementById('search')?.value||'').toLowerCase(),sort=document.getElementById('sort')?.value||'creation';
+ const collectorMode=sort==='collectors';
+ const displayedGrowth=bot=>collectorMode?bot.collectorGrowth:bot.growth;
  const filtered=allRows.filter(b=>(b.name+' '+b.cid).toLowerCase().includes(query))
- .filter(b=>pbPortfolioUi.filter==='all'||(pbPortfolioUi.filter==='active'?b.growth>0:b.growth===0));
+ .filter(b=>pbPortfolioUi.filter==='all'||(pbPortfolioUi.filter==='active'?displayedGrowth(b)>0:displayedGrowth(b)===0));
  const performance=pbPerformanceTags();
  const rankPriority={leader:0,popular:1,breakout:2,new:3};
  const currentPriority=bot=>{
@@ -21495,20 +21514,20 @@ function pbRenderBots(){if(!state.meta.size)return;
  };
  filtered.sort((a,b)=>{
   const priority=currentPriority(a)-currentPriority(b);if(priority)return priority;
-  return sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order;
+  return sort==='growth'?(b.growth??-Infinity)-(a.growth??-Infinity):sort==='messages'?(b.messages??-Infinity)-(a.messages??-Infinity):sort==='collectors'?(b.collectorGrowth??-Infinity)-(a.collectorGrowth??-Infinity)||(b.collectors??-Infinity)-(a.collectors??-Infinity):sort==='name'?a.name.localeCompare(b.name):b.order-a.order;
  });
  const label=cid=>tableDisplayLabel(cid),signed=n=>Number.isFinite(n)?(n>0?'+':'')+fmt.format(n):'—';
  const statusDate=pbPortfolioRange().to;
  const box=document.getElementById('rows');if(!box)return;
- box.innerHTML=filtered.map(b=>`<tr class="pb-bot-data-row">
+ box.innerHTML=filtered.map(b=>{const startValue=collectorMode?b.startCollectors:b.startMessages,nowValue=collectorMode?b.collectors:b.messages,growthValue=displayedGrowth(b);return `<tr class="pb-bot-data-row">
  <td><span class="pb-bot-identity" title="${archiveEscape(label(b.cid))}">${b.url?`<a href="${archiveEscape(b.url)}" target="_blank" rel="noopener noreferrer">${archiveEscape(label(b.cid))}</a>`:archiveEscape(label(b.cid))}</span><button type="button" class="pb-chart-mini-link" data-pb-graph-cid="${archiveEscape(b.cid)}" aria-label="open this bot in graph" title="graph for this bot">⌁</button>${pbPerformanceInline(b.cid,performance)}${pbStatusInline(b.cid,statusDate)}${pbAttentionInline(b.cid,statusDate)}</td>
- <td>${Number.isFinite(b.startMessages)?fmt.format(b.startMessages):'—'}</td>
- <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(b.messages)?fmt.format(b.messages):'—'}</td>
- <td class="${b.growth>0?'positive':b.growth<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${pbManualBoosterInline(b.cid,statusDate)}${signed(b.growth)}</td>
- <td aria-label="collectors">${pbCollectorSvg}${Number.isFinite(b.collectors)?fmt.format(b.collectors):'—'}</td></tr>`).join('')||'<tr class="pb-bot-no-results"><td colspan="5">no matching bots.</td></tr>';
- const total=allRows.filter(b=>Number.isFinite(b.growth));
- const totals=allRows.reduce((sum,b)=>({start:sum.start+(b.startMessages||0),now:sum.now+(b.messages||0),collectors:sum.collectors+(b.collectors||0)}),{start:0,now:0,collectors:0});
- box.innerHTML+=`<tr class="total-row"><td>total</td><td>${fmt.format(totals.start)}</td><td>${fmt.format(totals.now)}</td><td>${total.length?signed(total.reduce((sum,b)=>sum+b.growth,0)):'—'}</td><td>${pbCollectorSvg}${fmt.format(totals.collectors)}</td></tr>`;
+ <td>${Number.isFinite(startValue)?fmt.format(startValue):'—'}</td>
+ <td class="${b.stale?'stale':''} ${pbAttentionStatus(b.cid,statusDate)?'pb-now-'+pbAttentionStatus(b.cid,statusDate):performance.get(String(b.cid))?.kind?'pb-now-'+performance.get(String(b.cid)).kind:''}">${Number.isFinite(nowValue)?fmt.format(nowValue):'—'}</td>
+ <td class="${growthValue>0?'positive':growthValue<0?'negative':''} ${!pbAttentionStatus(b.cid,statusDate)&&performance.get(String(b.cid))?.kind?'pb-growth-'+performance.get(String(b.cid)).kind:''}">${collectorMode?'':pbManualBoosterInline(b.cid,statusDate)}${signed(growthValue)}</td>
+ <td aria-label="collectors">${collectorMode?'':pbCollectorSvg+(Number.isFinite(b.collectors)?fmt.format(b.collectors):'—')}</td></tr>`}).join('')||'<tr class="pb-bot-no-results"><td colspan="5">no matching bots.</td></tr>';
+ const total=allRows.filter(b=>Number.isFinite(displayedGrowth(b)));
+ const totals=allRows.reduce((sum,b)=>({start:sum.start+((collectorMode?b.startCollectors:b.startMessages)||0),now:sum.now+((collectorMode?b.collectors:b.messages)||0),collectors:sum.collectors+(b.collectors||0)}),{start:0,now:0,collectors:0});
+ box.innerHTML+=`<tr class="total-row"><td>total</td><td>${fmt.format(totals.start)}</td><td>${fmt.format(totals.now)}</td><td>${total.length?signed(total.reduce((sum,b)=>sum+displayedGrowth(b),0)):'—'}</td><td>${collectorMode?'':pbCollectorSvg+fmt.format(totals.collectors)}</td></tr>`;
  const heading=document.getElementById('pbAllBotsHeading');if(heading)heading.textContent=`${allRows.length} characters`;
  const highlight=document.getElementById('pbBotsHighlights');if(highlight){highlight.classList.toggle('active',pbPortfolioUi.highlights);highlight.setAttribute('aria-pressed',String(pbPortfolioUi.highlights));}
  document.querySelectorAll('[data-pb-bot-filter]').forEach(el=>{let on=el.dataset.pbBotFilter===pbPortfolioUi.filter;el.classList.toggle('active',on);el.setAttribute('aria-pressed',String(on))});
