@@ -332,6 +332,41 @@
       "url": "https://www.polybuzz.ai/character/profile/jarek-dragan-XUEfB?pre_source=1",
       "messages": 100357,
       "collectors": 42
+    },
+    "XA5He": {
+      "cid": "XA5He",
+      "name": "Benjamin",
+      "url": "https://www.polybuzz.ai/character/profile/benjamin-XA5He?pre_source=1",
+      "messages": 357,
+      "collectors": 4
+    },
+    "XAFVe": {
+      "cid": "XAFVe",
+      "name": "Jonathan",
+      "url": "https://www.polybuzz.ai/character/profile/jonathan-XAFVe?pre_source=1",
+      "messages": 539,
+      "collectors": 4
+    },
+    "XS5br": {
+      "cid": "XS5br",
+      "name": "Psych ward",
+      "url": "https://www.polybuzz.ai/character/profile/psych-ward-XS5br?pre_source=1",
+      "messages": 11623,
+      "collectors": 3
+    },
+    "XSahn": {
+      "cid": "XSahn",
+      "name": "Toby - anger issues",
+      "url": "https://www.polybuzz.ai/character/profile/toby-anger-issues-XSahn?pre_source=1",
+      "messages": 6404,
+      "collectors": 2
+    },
+    "XSNEh": {
+      "cid": "XSNEh",
+      "name": "Soren",
+      "url": "https://www.polybuzz.ai/character/profile/soren-XSNEh?pre_source=1",
+      "messages": 79388,
+      "collectors": 38
     }
   }
 }
