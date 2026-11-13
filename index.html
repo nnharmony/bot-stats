@@ -7332,11 +7332,11 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <div class="dashboard-subs-card" aria-label="subscriber information">
         <div id="updated" class="dashboard-identity-updated muted">loading…</div>
         <div id="pbSubscriberControl" class="pb-subscriber-control" role="group" aria-label="subscriber controls">
-          <button id="pbSubscriberDecrease" class="pb-subscriber-control__button" type="button" aria-label="subtract 1 subscriber" title="−1 subscriber">−</button>
+          <button id="pbSubscriberDecrease" class="pb-subscriber-control__hit-area" type="button" aria-label="subtract 1 subscriber" title="−1 subscriber"></button>
           <div id="pbSubscriberProgress" class="pb-subscriber-control__track" role="progressbar" aria-label="subscriber goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div id="pbSubscriberProgressFill" class="pb-subscriber-control__fill"></div>
           </div>
-          <button id="pbSubscriberIncrease" class="pb-subscriber-control__button" type="button" aria-label="add 1 subscriber" title="+1 subscriber">+</button>
+          <button id="pbSubscriberIncrease" class="pb-subscriber-control__hit-area" type="button" aria-label="add 1 subscriber" title="+1 subscriber"></button>
         </div>
         <div id="dashboardSubscribersMeta" class="dashboard-subs-status" role="status" aria-live="polite"></div>
       </div>
@@ -23008,26 +23008,26 @@ body.dashboard-shell .dashboard-profile-subscriber-total{
 </style>
 
 <style id="pb-subscriber-control-style">
-/* Subscriber control: one capsule track, one rounded fill, two visible buttons. */
+/* One visible capsule; its left and right halves adjust the subscriber count. */
 body.dashboard-shell #pbSubscriberControl{
   grid-column:3;grid-row:2;align-self:center;justify-self:stretch;
-  display:grid;grid-template-columns:16px minmax(0,1fr) 16px;align-items:center;
-  column-gap:4px;width:100%;min-width:0;height:31px;margin:0;padding:0;
+  position:relative;display:flex;align-items:center;
+  width:100%;min-width:0;height:31px;margin:0;padding:0;
 }
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__button{
-  display:flex;align-items:center;justify-content:center;
-  width:16px!important;min-width:16px!important;height:31px!important;min-height:31px!important;
+body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__hit-area{
+  position:absolute!important;top:0!important;left:0!important;z-index:1;
+  display:block;width:50%!important;min-width:0!important;height:100%!important;min-height:0!important;
   margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
-  background:transparent!important;box-shadow:none!important;color:#d7cdd9!important;
-  font:500 14px/1 "Avenir Next",Avenir,system-ui,sans-serif!important;
+  background:transparent!important;box-shadow:none!important;font-size:0!important;
   text-shadow:none!important;transform:none!important;
   appearance:none;-webkit-appearance:none;cursor:pointer;touch-action:manipulation;
 }
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__button:focus-visible{
+body.dashboard-shell #pbSubscriberControl #pbSubscriberIncrease{left:50%!important;}
+body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__hit-area:focus-visible{
   outline:2px solid #c9a0d1;outline-offset:-2px;
 }
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__button:disabled{
-  opacity:.4;cursor:wait;
+body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__hit-area:disabled{
+  cursor:wait;
 }
 body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__track{
   display:block;min-width:0;width:100%;height:8px;margin:0;padding:0;border:0;
