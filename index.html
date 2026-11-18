@@ -12749,6 +12749,24 @@ function cvCreationBonusForCid(cid,throughDate=''){
   return hasKnownCharacterEvent ? 30 : 0;
 }
 
+function cvCharacterValueForCid(cid,throughDate=''){
+  const id=String(cid||'');
+  const creationCv=cvCreationBonusForCid(id,throughDate);
+  const correctionTypes=new Set(['ban','shadow_ban','hard_ban','hard_ban_extra','unbanned']);
+  const adjustments=cvSortedEntriesAsc().filter(entry=>
+    String(entry.botCid||'')===id &&
+    (!throughDate || String(entry.date||'')<=String(throughDate)) &&
+    correctionTypes.has(String(entry.type||''))
+  ).map(entry=>{
+    const recorded=entry.adjustment;
+    const value=recorded!==null && recorded!==undefined && recorded!=='' && Number.isFinite(Number(recorded))
+      ? Number(recorded) : cvDefaultAdjustment(entry.type);
+    return {type:entry.type,date:entry.date,value};
+  });
+  const adjustmentCv=adjustments.reduce((sum,entry)=>sum+entry.value,0);
+  return {creationCv,adjustments,adjustmentCv,characterCv:creationCv+adjustmentCv};
+}
+
 function cvUncappedEstimator(){
   const latest=getLatestEntry();
   const ratio=cvCalibration().rolling;
@@ -12774,9 +12792,10 @@ function cvUncappedEstimator(){
     if(!bot || !Number.isFinite(bot.messages)) continue;
 
     const messages=bot.messages;
-    const creationCv=cvCreationBonusForCid(cid,latest.date);
+    const characterValue=cvCharacterValueForCid(cid,latest.date);
+    const {creationCv,adjustmentCv,characterCv}=characterValue;
     const messageCv=Math.max(0,messages*CV_PER_MESSAGE);
-    const minimumCv=Math.min(500,creationCv+messageCv);
+    const minimumCv=Math.min(500,characterCv+messageCv);
 
     let estimatedUcu=null;
     let ucuCv=null;
@@ -12785,7 +12804,7 @@ function cvUncappedEstimator(){
     if(Number.isFinite(ratio) && ratio>0){
       estimatedUcu=messages/ratio;
       ucuCv=Math.max(0,estimatedUcu*CV_PER_UCU);
-      estimatedCv=Math.min(500,creationCv+messageCv+ucuCv);
+      estimatedCv=Math.min(500,characterCv+messageCv+ucuCv);
     }
 
     rows.push({
@@ -12793,6 +12812,9 @@ function cvUncappedEstimator(){
       name:meta?.name || cid,
       messages,
       creationCv,
+      adjustmentCv,
+      characterCv,
+      characterAdjustments:characterValue.adjustments,
       messageCv,
       minimumCv,
       estimatedUcu,
@@ -12882,10 +12904,16 @@ function renderCvEstimator(){
     const creationPart=row.creationCv>0
       ? `${fmt.format(row.creationCv)} creation CV + `
       : '';
+    const correctionPart=row.characterAdjustments.filter(entry=>entry.value!==0).map(entry=>
+      `${entry.value<0?'−':'+'}${fmt.format(Math.abs(entry.value))} ${cvCapReconEsc(String(cvTypeLabel(entry.type)).replace(/\s*[+−-]\d+\s*$/,''))} CV`
+    ).join(' ');
+    const characterPart=correctionPart
+      ? `${row.creationCv?`${fmt.format(row.creationCv)} creation CV `:''}${correctionPart} + `
+      : creationPart;
 
     const detail=known
-      ? `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message cv + ≈${fmt.format(row.ucuCv)} ucu cv`
-      : `${compactAxisValue(row.messages)} msg · ${creationPart}${fmt.format(row.messageCv)} message cv · ucu estimate needs calibration`;
+      ? `${compactAxisValue(row.messages)} msg · ${characterPart}${fmt.format(row.messageCv)} message cv + ≈${fmt.format(row.ucuCv)} ucu cv`
+      : `${compactAxisValue(row.messages)} msg · ${characterPart}${fmt.format(row.messageCv)} message cv · ucu estimate needs calibration`;
 
     return `
       <div class="cv-bot-estimator-row ${cvCapClass(row.estimatedCv)}">
@@ -13338,10 +13366,10 @@ function cvCapReconstruct(date=''){
 
     // A saved cap on this date signals a possible within-batch cap.
     const manuallyDated=cvCappedDate(cid)===interval.date;
-    const creation=cvCreationBonusForCid(cid,interval.fromDate);
+    const creation=cvCharacterValueForCid(cid,interval.fromDate).characterCv;
     const startCv=Number.isFinite(blendedRate)?creation+start*blendedRate:null;
     const endCv=Number.isFinite(blendedRate)?creation+after.messages*blendedRate:null;
-    const hardMinimum=cvCreationBonusForCid(cid,interval.date)+after.messages*CV_PER_MESSAGE;
+    const hardMinimum=cvCharacterValueForCid(cid,interval.date).characterCv+after.messages*CV_PER_MESSAGE;
     const crosses=Number.isFinite(startCv)&&Number.isFinite(endCv)&&endCv>=500;
     const certainAtLeast=hardMinimum>=500;
     if(!manuallyDated && !crosses && !certainAtLeast) continue;
