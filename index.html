@@ -7331,12 +7331,13 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
       <div class="dashboard-subs-card" aria-label="subscriber information">
         <div id="updated" class="dashboard-identity-updated muted">loading…</div>
-        <div id="pbSubscriberControl" class="pb-subscriber-control" role="group" aria-label="subscriber controls">
-          <button id="pbSubscriberDecrease" class="pb-subscriber-control__hit-area" type="button" aria-label="subtract 1 subscriber" title="−1 subscriber"></button>
-          <div id="pbSubscriberProgress" class="pb-subscriber-control__track" role="progressbar" aria-label="subscriber goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div id="pbSubscriberProgressFill" class="pb-subscriber-control__fill"></div>
-          </div>
-          <button id="pbSubscriberIncrease" class="pb-subscriber-control__hit-area" type="button" aria-label="add 1 subscriber" title="+1 subscriber"></button>
+        <div id="pbPillControl" role="group" aria-label="subscriber controls">
+          <svg id="pbPillDrawing" xmlns="http://www.w3.org/2000/svg" width="100%" height="8" role="progressbar" aria-label="subscriber goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <line id="pbPillTrack" x1="4" x2="4" y1="4" y2="4" stroke="#d2cfd4" stroke-width="8" stroke-linecap="round"/>
+            <line id="pbPillValue" x1="4" x2="4" y1="4" y2="4" stroke="#a477a4" stroke-width="8" stroke-linecap="round" visibility="hidden"/>
+          </svg>
+          <button id="pbPillMinus" type="button" aria-label="subtract 1 subscriber" title="−1 subscriber"></button>
+          <button id="pbPillPlus" type="button" aria-label="add 1 subscriber" title="+1 subscriber"></button>
         </div>
         <div id="dashboardSubscribersMeta" class="dashboard-subs-status" role="status" aria-live="polite"></div>
       </div>
@@ -8181,12 +8182,17 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       </div>
       <div class="cv-day-grid">
         <div><span>characters</span><strong id="cvDayCharacters">—</strong><small id="cvDayCharactersMeta">character CV</small></div>
-        <div><span>messages</span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
+        <div id="cvMessageDetailsLink" role="button" tabindex="0" aria-label="view Message CV by bot" aria-haspopup="dialog" aria-controls="cvMessageDetailsDialog"><span>messages <b class="cv-message-link-mark" aria-hidden="true">↗</b></span><strong id="cvDayMessageCv">—</strong><small id="cvDayMessages">—</small></div>
         <div><span>messages / UCU</span><strong id="cvMessagesPerUcu">—</strong><small id="cvMessagesPerUcuSource">—</small></div>
         <div><span>UCU</span><strong id="cvDayUcuCv">—</strong><small id="cvDayUcu">—</small></div>
       </div>
       <div id="cvDayFormula" class="cv-day-formula">—</div>
     </section>
+
+    <dialog id="cvMessageDetailsDialog" aria-labelledby="cvMessageDetailsTitle">
+      <div class="cv-message-details-head"><div><h3 id="cvMessageDetailsTitle">Message CV by bot</h3><small id="cvMessageDetailsDate"></small></div><button id="cvMessageDetailsClose" type="button" aria-label="close Message CV overview">×</button></div>
+      <div id="cvMessageDetailsBody"></div>
+    </dialog>
 
     <div id="cvSettlementFormula" class="cv-formula">
       add a settlement entry from the 1st to calculate the next settlement.
@@ -12285,7 +12291,7 @@ async function saveSubscriberGoal(){
     pbSubscriberSaveMilestone(previousGoal,analyticsState.settings.subscriberGoal);
 
     renderAnalyticsDashboard();
-    pbRenderSubscriberProgress();
+    pbPillRender();
   }catch(error){
     const status=document.querySelector('#subscriberStatus');
     status.textContent=error.message;
@@ -13255,6 +13261,7 @@ function cvUncappedMessagesForDate(date,targetEntry=null){
 
   let uncappedMessages=0;
   let bots=0;
+  const contributions=[];
 
   for(const [cid,afterBot] of afterMap){
     if(!cvEligibleCharacter(cid)) continue;
@@ -13274,13 +13281,15 @@ function cvUncappedMessagesForDate(date,targetEntry=null){
 
     uncappedMessages+=delta;
     bots++;
+    contributions.push({cid:String(cid),name:state.meta.get(cid)?.name||String(cid),messages:delta,messageCv:delta*CV_PER_MESSAGE});
   }
 
   return {
     date:after.date,
     fromDate:before.date,
     uncappedMessages,
-    bots
+    bots,
+    contributions
   };
 }
 
@@ -13563,7 +13572,62 @@ function cvDailyEstimate(date=''){
   };
 }
 
+function cvMessageContributionBreakdown(date){
+  const estimate=cvDailyEstimate(date);
+  const actual=estimate && ['exact','cap-reconstructed'].includes(estimate.mode);
+  if(!actual)return {estimate,rows:[],available:false};
+  const interval=cvUncappedMessagesForDate(estimate.date);
+  if(!interval || !Array.isArray(interval.contributions))return {estimate,rows:[],available:false};
+  let rows=interval.contributions.map(row=>({...row}));
+  const cap=estimate.capReconstruction;
+  if(estimate.mode==='cap-reconstructed' && cap?.excluded>0){
+    if(cap.suggested){
+      const row=rows.find(row=>row.cid===String(cap.suggested.cid));
+      if(!row || row.messages<cap.excluded)return {estimate,rows:[],available:false};
+      row.messages-=cap.excluded;
+      row.messageCv=row.messages*CV_PER_MESSAGE;
+      row.estimated=true;
+    }else{
+      const ids=new Set((cap.candidates||[]).map(row=>String(row.cid)));
+      const shared=rows.filter(row=>ids.has(row.cid));
+      const messages=shared.reduce((sum,row)=>sum+row.messages,0)-cap.excluded;
+      if(!shared.length || messages<0)return {estimate,rows:[],available:false};
+      rows=rows.filter(row=>!ids.has(row.cid));
+      rows.push({name:shared.map(row=>row.name).join(' / '),messages,messageCv:messages*CV_PER_MESSAGE,estimated:true,shared:true});
+    }
+  }
+  rows=rows.filter(row=>row.messages>0).sort((a,b)=>b.messageCv-a.messageCv||a.name.localeCompare(b.name));
+  const sum=rows.reduce((total,row)=>total+row.messageCv,0);
+  if(Math.abs(sum-estimate.messageCv)>1e-7)return {estimate,rows:[],available:false};
+  return {estimate,rows,available:true};
+}
+function renderCvMessageDetails(){
+  const date=document.getElementById('cvDayHistoryDate')?.value||'';
+  const result=cvMessageContributionBreakdown(date);
+  const estimate=result.estimate;
+  document.getElementById('cvMessageDetailsDate').textContent=estimate?cvHistoryDateLabel(estimate.date):'No CV update selected';
+  const body=document.getElementById('cvMessageDetailsBody');
+  if(!result.available){
+    body.innerHTML='<p class="cv-message-details-empty">'+(estimate?.mode==='estimated'||estimate?.mode==='waiting-messages'?'The per-bot breakdown will appear when the matching message update is available.':'Message CV by bot is not determined for this update.')+'</p>';
+    return;
+  }
+  const approx=estimate.mode==='cap-reconstructed'?'≈ ':'';
+  const cv=value=>'+'+new Intl.NumberFormat('nl-NL',{maximumFractionDigits:4}).format(value);
+  body.innerHTML='<div class="cv-message-details-scroll"><table><thead><tr><th>bot</th><th>eligible messages</th><th>Message CV</th></tr></thead><tbody>'+result.rows.map(row=>'<tr><td>'+cvCapReconEsc(row.name)+(row.shared?'<small>Shared cap correction; individual contributions unknown.</small>':'')+'</td><td>'+(row.estimated?'≈ ':'')+fmt.format(row.messages)+'</td><td>'+(row.estimated?'≈ ':'')+cv(row.messageCv)+'</td></tr>').join('')+'</tbody><tfoot><tr><th>total</th><td>'+approx+fmt.format(estimate.uncappedMessages)+'</td><td>'+approx+cv(estimate.messageCv)+'</td></tr></tfoot></table></div>'+(result.rows.length?'':'<p class="cv-message-details-empty">No bots contributed Message CV in this update.</p>');
+}
+function cvMessageDetailsInit(){
+  const link=document.getElementById('cvMessageDetailsLink');
+  const dialog=document.getElementById('cvMessageDetailsDialog');
+  if(!link || !dialog || link.dataset.ready)return;
+  link.dataset.ready='1';
+  const open=()=>{renderCvMessageDetails();if(!dialog.open)dialog.showModal()};
+  link.addEventListener('click',open);
+  link.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open()}});
+  document.getElementById('cvMessageDetailsClose').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close()}});
+}
 function renderCvDayEstimate(){
+  cvMessageDetailsInit();
   const dateSelect=document.getElementById('cvDayHistoryDate');
   let selectedDate='';
   if(dateSelect){
@@ -13579,6 +13643,7 @@ function renderCvDayEstimate(){
   }
   cvHistoryWheelInit();
   const estimate=cvDailyEstimate(selectedDate);
+  if(document.getElementById('cvMessageDetailsDialog')?.open)renderCvMessageDetails();
   const set=(id,value)=>{const el=document.querySelector(id);if(el)el.textContent=value};
   const change=document.querySelector('.cv-day-change');
   change?.classList.toggle('is-decrease',Boolean(estimate&&estimate.actualDelta<0));
@@ -16917,21 +16982,52 @@ function pbSubscriberSaveMilestone(previousGoal,newGoal){
   const start=candidate<newGoal ? candidate : pbSubscriberDefaultMilestoneStart(newGoal);
   try{localStorage.setItem(PB_SUBSCRIBER_MILESTONE_PREF,JSON.stringify({goal:newGoal,start,previousGoal}))}catch(_){}
 }
-function pbRenderSubscriberProgress(){
-  const track=document.getElementById('pbSubscriberProgress');
-  const fill=document.getElementById('pbSubscriberProgressFill');
-  if(!track || !fill)return;
+
+let pbPillSaving=false;
+function pbPillRender(){
+  const drawing=document.getElementById('pbPillDrawing');
+  if(!drawing)return;
+  const width=drawing.getBoundingClientRect().width;
+  if(width<8)return;
   const count=dashboardCurrentSubscribers();
   const goal=Number(analyticsState?.settings?.subscriberGoal);
-  const validGoal=Number.isFinite(goal) && goal>0;
-  const start=validGoal ? pbSubscriberGoalRangeStart(goal) : 0;
-  const progress=validGoal && Number.isFinite(count)
-    ? Math.max(0,Math.min(100,100*(count-start)/Math.max(1,goal-start))) : 0;
-  fill.style.width=progress.toFixed(2)+'%';
-  track.setAttribute('aria-valuenow',progress.toFixed(2));
-  track.setAttribute('aria-valuetext',validGoal && Number.isFinite(count)
-    ? Math.round(count)+' subscribers; goal '+Math.round(goal)+'; '+progress.toFixed(0)+'%'
-    : 'subscriber goal progress unavailable');
+  const valid=Number.isFinite(count) && Number.isFinite(goal) && goal>0;
+  const start=valid ? pbSubscriberGoalRangeStart(goal) : 0;
+  const fraction=valid ? Math.max(0,Math.min(1,(count-start)/Math.max(1,goal-start))) : 0;
+  document.getElementById('pbPillTrack').setAttribute('x2',width-4);
+  const value=document.getElementById('pbPillValue');
+  value.setAttribute('x2',4+(width-8)*fraction);
+  value.setAttribute('visibility',fraction>0?'visible':'hidden');
+  drawing.setAttribute('aria-valuenow',(fraction*100).toFixed(2));
+  drawing.setAttribute('aria-valuetext',valid ? count+' subscribers; goal '+goal : 'subscriber goal unavailable');
+}
+async function pbPillAdjust(delta){
+  if(pbPillSaving || subscriberQuickSaving)return;
+  pbPillSaving=true;
+  const buttons=['pbPillMinus','pbPillPlus'].map(id=>document.getElementById(id));
+  buttons.forEach(button=>{button.disabled=true});
+  dashboardSetSubscriberInlineState('saving');
+  try{
+    const saved=await quickAdjustSubscriber(delta);
+    dashboardSetSubscriberInlineState(saved?'saved':'error',document.querySelector('#subscriberStatus')?.textContent);
+  }catch(error){dashboardSetSubscriberInlineState('error',error?.message)}
+  finally{
+    pbPillSaving=false;
+    buttons.forEach(button=>{button.disabled=false});
+    pbPillRender();
+  }
+}
+function pbPillInit(){
+  const control=document.getElementById('pbPillControl');
+  if(!control)return;
+  if(!control.dataset.bound){
+    control.dataset.bound='1';
+    document.getElementById('pbPillMinus').addEventListener('click',()=>pbPillAdjust(-1));
+    document.getElementById('pbPillPlus').addEventListener('click',()=>pbPillAdjust(1));
+    if(typeof ResizeObserver!=='undefined')new ResizeObserver(pbPillRender).observe(control);
+    window.addEventListener('resize',pbPillRender);
+  }
+  pbPillRender();
 }
 
 function dashboardCurrentSubscribers(){
@@ -17185,22 +17281,6 @@ function dashboardSetSubscriberInlineState(kind,message=''){
   inline.removeAttribute('title');
 }
 
-async function dashboardAdjustSubscribers(delta){
-  if(subscriberQuickSaving) return;
-  dashboardSetSubscriberInlineState('saving');
-  const buttons=[document.querySelector('#pbSubscriberDecrease'),document.querySelector('#pbSubscriberIncrease')];
-  buttons.forEach(button=>{if(button)button.disabled=true});
-  try{
-    // The same existing ledger-saving routine as the Subscriber Hub.
-    const saved=await quickAdjustSubscriber(delta);
-    if(saved) dashboardSetSubscriberInlineState('saved');
-    else dashboardSetSubscriberInlineState('error',document.querySelector('#subscriberStatus')?.textContent || 'unable to save');
-  }catch(error){
-    dashboardSetSubscriberInlineState('error',error?.message || 'unable to save');
-  }finally{
-    buttons.forEach(button=>{if(button)button.disabled=false});
-  }
-}
 
 function dashboardSaveProfileMetaFromInputs(){
   const usernameInput=document.querySelector('#dashboardUsernameInput');
@@ -18937,7 +19017,7 @@ function dashboardRefresh(){
 
   const subs=dashboardCurrentSubscribers();
   setText('#dashboardSubscribers',Number.isFinite(subs)?fmt.format(subs):'—');
-  pbRenderSubscriberProgress();
+  pbPillInit();
   dashboardUpdateProfileCard(cvValue);
   dashboardRenderRecentEvents();
   dashboardRenderAnalyticsInsights();
@@ -20718,8 +20798,6 @@ function dashboardInit(){
   document.querySelector('#dashboardRefreshButton')?.addEventListener('click',()=>window.location.reload());
   document.querySelector('#dashboardEditProfile')?.addEventListener('click',dashboardOpenProfileEditor);
   document.querySelector('#dashboardCopyUid')?.addEventListener('click',dashboardCopyProfileUid);
-  document.querySelector('#pbSubscriberDecrease')?.addEventListener('click',()=>dashboardAdjustSubscribers(-1));
-  document.querySelector('#pbSubscriberIncrease')?.addEventListener('click',()=>dashboardAdjustSubscribers(1));
   document.querySelector('#dashboardAvatarButton')?.addEventListener('click',()=>document.querySelector('#dashboardAvatarInput')?.click());
   document.querySelector('#dashboardAvatarChoose')?.addEventListener('click',()=>document.querySelector('#dashboardAvatarInput')?.click());
   document.querySelector('#dashboardAvatarInput')?.addEventListener('change',event=>dashboardHandleAvatarSelection(event.target.files?.[0] || null));
@@ -23007,36 +23085,43 @@ body.dashboard-shell .dashboard-profile-subscriber-total{
 }
 </style>
 
-<style id="pb-subscriber-control-style">
-/* One visible capsule; its left and right halves adjust the subscriber count. */
-body.dashboard-shell #pbSubscriberControl{
+<style id="pb-pill-control-style">
+body.dashboard-shell #pbPillControl{
   grid-column:3;grid-row:2;align-self:center;justify-self:stretch;
-  position:relative;display:flex;align-items:center;
-  width:100%;min-width:0;height:31px;margin:0;padding:0;
+  position:relative;display:flex;align-items:center;width:100%;min-width:0;height:31px;
 }
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__hit-area{
+body.dashboard-shell #pbPillDrawing{
+  display:block;width:100%;height:8px;overflow:visible;pointer-events:none;
+}
+body.dashboard-shell #pbPillControl>button{
   position:absolute!important;top:0!important;left:0!important;z-index:1;
-  display:block;width:50%!important;min-width:0!important;height:100%!important;min-height:0!important;
+  width:50%!important;min-width:0!important;height:100%!important;min-height:0!important;
   margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
-  background:transparent!important;box-shadow:none!important;font-size:0!important;
-  text-shadow:none!important;transform:none!important;
+  background:transparent!important;box-shadow:none!important;font-size:0!important;transform:none!important;
   appearance:none;-webkit-appearance:none;cursor:pointer;touch-action:manipulation;
 }
-body.dashboard-shell #pbSubscriberControl #pbSubscriberIncrease{left:50%!important;}
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__hit-area:focus-visible{
-  outline:2px solid #c9a0d1;outline-offset:-2px;
-}
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__hit-area:disabled{
-  cursor:wait;
-}
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__track{
-  display:block;min-width:0;width:100%;height:8px;margin:0;padding:0;border:0;
-  border-radius:999px;background:#d2cfd4;overflow:hidden;box-shadow:none;
-}
-body.dashboard-shell #pbSubscriberControl .pb-subscriber-control__fill{
-  display:block;width:0;height:100%;margin:0;padding:0;border:0;
-  border-radius:999px;background:linear-gradient(90deg,#825981,#a477a4);box-shadow:none;
-}
+body.dashboard-shell #pbPillControl>#pbPillPlus{left:50%!important;}
+body.dashboard-shell #pbPillControl>button:focus-visible{outline:2px solid #c9a0d1;outline-offset:-2px;}
+body.dashboard-shell #pbPillControl>button:disabled{cursor:wait;}
+</style>
+<style id="cv-message-contributions-style">
+body.dashboard-shell #cvMessageDetailsLink{cursor:pointer;position:relative;}
+body.dashboard-shell #cvMessageDetailsLink:focus-visible{outline:2px solid #d2a8d5;outline-offset:2px;}
+body.dashboard-shell .cv-message-link-mark{float:right;font-size:12px;font-weight:400;}
+body.dashboard-shell #cvMessageDetailsDialog{box-sizing:border-box;width:calc(100% - 24px);max-width:620px;max-height:80dvh;padding:16px;border:1px solid #79647f;border-radius:18px;background:#251d2e;color:#eee1ef;font-family:inherit;}
+body.dashboard-shell #cvMessageDetailsDialog::backdrop{background:rgba(10,7,15,.72);}
+body.dashboard-shell .cv-message-details-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;}
+body.dashboard-shell .cv-message-details-head h3{font-size:16px;margin:0 0 4px;font-weight:600;}
+body.dashboard-shell .cv-message-details-head small{font-size:12px;color:#cbb8cc;}
+body.dashboard-shell #cvMessageDetailsClose{min-width:32px;width:32px;height:32px;min-height:32px;padding:0;border:0;background:transparent;color:inherit;font-size:24px;box-shadow:none;}
+body.dashboard-shell .cv-message-details-scroll{overflow:auto;max-height:60dvh;}
+body.dashboard-shell #cvMessageDetailsDialog table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+body.dashboard-shell #cvMessageDetailsDialog th,body.dashboard-shell #cvMessageDetailsDialog td{padding:10px 6px;border-bottom:1px solid #514356;text-align:right;vertical-align:top;overflow-wrap:anywhere;}
+body.dashboard-shell #cvMessageDetailsDialog th:first-child,body.dashboard-shell #cvMessageDetailsDialog td:first-child{text-align:left;width:44%;}
+body.dashboard-shell #cvMessageDetailsDialog td small{display:block;color:#c6b5c8;font-size:10px;margin-top:4px;}
+body.dashboard-shell #cvMessageDetailsDialog tfoot{font-weight:600;}
+body.dashboard-shell .cv-message-details-empty{font-size:13px;line-height:1.5;color:#cbb8cc;}
+body.dashboard-shell #cvBotEstimatorRows .cv-cap-bar{background:linear-gradient(90deg,#ffd25c 0%,#ffa15f 24%,#f1849d 48%,#d179c4 72%,#9959ef 100%)!important;}
 </style>
 </body>
 </html>
