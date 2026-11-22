@@ -43794,9 +43794,7 @@
           "name": "Train Compartment",
           "url": "https://www.polybuzz.ai/character/profile/train-compartment-YYZd8?pre_source=1",
           "messages": 1871,
-          "collectors": 1,
-          "stale": true,
-          "error": "No interaction statistics found"
+          "collectors": 1
         },
         {
           "cid": "YeCb8",
@@ -43886,10 +43884,8 @@
           "cid": "aWuvL",
           "name": "Roman",
           "url": "https://www.polybuzz.ai/character/profile/roman-aWuvL?pre_source=1",
-          "messages": 988975,
-          "collectors": 257,
-          "stale": true,
-          "error": "No interaction statistics found"
+          "messages": 989407,
+          "collectors": 256
         },
         {
           "cid": "aLnyd",
