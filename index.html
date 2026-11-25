@@ -12897,7 +12897,7 @@ function renderCvEstimator(){
       : `≥${fmt.format(row.minimumCv)} / 500`;
 
     const width=Math.max(
-      1,
+      0,
       Math.min(
         100,
         ((known ? row.estimatedCv : row.minimumCv)/500)*100
@@ -12926,7 +12926,7 @@ function renderCvEstimator(){
         </div>
         <div class="cv-bot-estimator-detail">${detail}</div>
         <div class="cv-cap-track">
-          <div class="cv-cap-bar" style="width:${width}%"></div>
+          <div class="cv-cap-bar" style="width:${width}%;--cv-gradient-size:${width>0?10000/width:100}%"></div>
         </div>
       </div>
     `;
@@ -16894,7 +16894,7 @@ function pbStepCvMonth(step){
 
 function pbUpdateReturnButton(){
   const button=document.getElementById('pbViewBack');
-  if(button)button.hidden=pbDashboardHistory.length===0;
+  if(button){button.hidden=false;button.disabled=pbDashboardHistory.length===0;}
 }
 function pbDashboardGoBack(){
   const previous=pbDashboardHistory.pop();if(!previous)return;
@@ -16929,9 +16929,11 @@ function pbInitAnalyticsNavigation(){
     card.addEventListener('click',()=>pbAnalyticsOpenDestination(kind));
     card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pbAnalyticsOpenDestination(kind);}});
   });
-  const button=document.createElement('button');button.type='button';button.id='pbViewBack';button.textContent='‹ Terug';button.hidden=true;
+  const button=document.createElement('button');button.type='button';button.id='pbViewBack';
+  button.className='dashboard-header-action';button.setAttribute('aria-label','Terug naar de vorige weergave');button.title='Terug';
+  button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5.5-6.5 6.5 6.5 6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   button.addEventListener('click',pbDashboardGoBack);
-  document.getElementById('dashboardHome')?.before(button);pbUpdateReturnButton();
+  document.getElementById('dashboardRefreshButton')?.before(button);pbUpdateReturnButton();
   const browser=document.getElementById('cvMonthBrowser');if(!browser)return;
   browser.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();pbStepCvMonth(e.key==='ArrowLeft'?-1:1);}});
   let touch=null;
@@ -23297,7 +23299,13 @@ body.dashboard-shell #cvMessageDetailsDialog th:first-child,body.dashboard-shell
 body.dashboard-shell #cvMessageDetailsDialog td small{display:block;color:#c6b5c8;font-size:10px;margin-top:4px;}
 body.dashboard-shell #cvMessageDetailsDialog tfoot{font-weight:600;}
 body.dashboard-shell .cv-message-details-empty{font-size:13px;line-height:1.5;color:#cbb8cc;}
-body.dashboard-shell #cvBotEstimatorRows .cv-cap-bar{background:linear-gradient(90deg,#ffd25c 0%,#ffa15f 24%,#f1849d 48%,#d179c4 72%,#9959ef 100%)!important;}
+body.dashboard-shell #cvBotEstimatorRows .cv-cap-bar{
+  background:linear-gradient(90deg,#ffd25c 0%,#ffa15f 24%,#f1849d 48%,#d179c4 72%,#9959ef 100%)!important;
+  /* Scale the background to the complete track, not to the shortened fill. */
+  background-size:var(--cv-gradient-size,100%) 100%!important;
+  background-position:left center!important;
+  background-repeat:no-repeat!important;
+}
 </style>
 <style id="pb-bot-list-controls-and-colors">
 body.dashboard-shell #pbBotsView .table-controls-row{
@@ -23358,11 +23366,18 @@ body.dashboard-shell [data-analytics-destination]{cursor:pointer;}
 body.dashboard-shell [data-analytics-destination]:focus-visible,
 body.dashboard-shell #pbViewBack:focus-visible,
 body.dashboard-shell #cvMonthBrowser:focus-visible{outline:2px solid #bd8eb9;outline-offset:3px;}
-body.dashboard-shell #pbViewBack{
-  display:block;margin:8px 0 12px;padding:7px 12px;
-  border:1px solid #735a73;border-radius:10px;background:#2b2230;
-  color:inherit;font:inherit;cursor:pointer;
+body.dashboard-shell .pb-sticky-links .dashboard-profile-shortcuts{
+  grid-template-columns:repeat(9,minmax(0,1fr))!important;
+  align-items:center;
 }
+body.dashboard-shell .pb-sticky-links #pbViewBack{
+  margin:0!important;padding:0!important;justify-self:center;
+  width:100%!important;max-width:32px;aspect-ratio:1;
+  height:auto!important;min-height:0!important;
+  border:1px solid #514553!important;border-radius:50%!important;
+  background:#24212a!important;color:inherit;cursor:pointer;
+}
+body.dashboard-shell .pb-sticky-links #pbViewBack:disabled{opacity:.35;cursor:default;}
 body.dashboard-shell #pbViewBack[hidden]{display:none!important;}
 body.dashboard-shell #analyticsMilestonesDestination{scroll-margin-top:88px;}
 body.dashboard-shell #cvMonthBrowser{touch-action:pan-y;min-width:0;}
