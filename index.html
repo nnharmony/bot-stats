@@ -7895,6 +7895,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
   <div class="analytics-content">
 
+    <div class="analytics-overview" aria-label="analytics overview">
     <div class="analytics-period-card">
     <div id="analyticsInfoStrip" class="analytics-info-strip">
       <span id="analyticsInfoSummary">—</span>
@@ -7994,7 +7995,8 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 
 
-    <div class="analytics-milestone-panel">
+    </div><!-- analytics-overview -->
+    <div class="analytics-milestone-panel" id="analyticsMilestonesDestination">
       <div class="analytics-milestone-head">
         <strong>message milestones</strong>
         <button id="analyticsMilestoneToggle" class="analytics-milestone-toggle" type="button" aria-expanded="false" aria-controls="analyticsMilestoneFullPanel">collection overview <span aria-hidden="true">⌄</span></button>
@@ -8150,11 +8152,14 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 <section class="cv-panel" id="cvPanel" aria-label="creator value">
   <div class="cv-content">
 
+        <div class="cv-month-browser" id="cvMonthBrowser" tabindex="0" role="group" aria-label="Monthly creator value history. Swipe left for next month, right for previous month, or use arrow keys.">
         <div class="cv-summary-grid">
       <div class="cv-stat"><span id="cvSettlementStartDate">—</span><strong id="cvSettlementStartValue">—</strong></div>
       <div class="cv-stat"><span id="cvNextSettlement">—</span><strong id="cvSettlementLoss">—</strong></div>
       <div class="cv-stat"><span>new cv</span><strong id="cvEarnedMonth">—</strong></div>
       <div class="cv-stat"><span>next</span><strong id="cvSettlementEstimate">—</strong></div>
+    </div>
+    <div id="cvMonthHistoryStatus" class="cv-month-history-status" aria-live="polite"></div>
     </div>
 
     <section class="cv-day-estimate" id="cvDayEstimate">
@@ -13852,6 +13857,7 @@ function renderCvDashboard(){
       'add an actual settlement entry from the 1st to calculate the next settlement correctly.';
   }
 
+  pbRenderCvMonthHistory();
   const following=document.getElementById('cvFollowingSettlement');
   if(following){
     following.textContent=Number.isFinite(currentValue) && current
@@ -16823,8 +16829,111 @@ function freezeCenterInit(){
 
 }
 
+/* Monthly history reads the ledger without writing or recalculating past records. */
+let pbCvMonthKey='';
+function pbCvMonthShift(key,step){
+  const [year,month]=key.split('-').map(Number);
+  const date=new Date(year,month-1+step,1,12);
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}`;
+}
+function pbCvMonthData(key=''){
+  const entries=cvSortedEntriesAsc().filter(e=>/^\d{4}-\d{2}-\d{2}$/.test(e.date) && e.total!==null && e.total!=='' && Number.isFinite(Number(e.total)));
+  if(!entries.length)return null;
+  const latest=entries.at(-1),lastMonth=latest.date.slice(0,7),firstMonth=entries[0].date.slice(0,7);
+  const month=key && key>=firstMonth && key<=lastMonth?key:lastMonth;
+  const from=month+'-01',to=pbCvMonthShift(month,1)+'-01';
+  const atDate=date=>{
+    const exact=entries.filter(e=>e.date===date);
+    return exact.filter(e=>e.type==='settlement').at(-1) || exact.at(-1) || null;
+  };
+  const start=atDate(from),end=atDate(to);
+  const beforeEnd=entries.filter(e=>e.date>=from && e.date<to).at(-1);
+  const net=start && beforeEnd?Number(beforeEnd.total)-Number(start.total):NaN;
+  const current=month===lastMonth;
+  const forecast=current?cvSettlementForecast():null;
+  // A forecast is allowed only when its baseline really belongs to this month.
+  const validForecast=forecast?.settlement.date===from?forecast:null;
+  return {month,firstMonth,lastMonth,from,to,start,end,net,current,forecast:validForecast};
+}
+function pbRenderCvMonthHistory(){
+  const data=pbCvMonthData(pbCvMonthKey);
+  const status=document.getElementById('cvMonthHistoryStatus');
+  if(!data){if(status)status.textContent='No monthly CV records available';return;}
+  const {month,from,to,start,end,net,current,forecast}=data;
+  pbCvMonthKey=month;
+  const label=date=>new Date(date+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
+  set('cvSettlementStartDate',label(from));
+  set('cvNextSettlement',label(to));
+  set('cvSettlementStartValue',start?fmt.format(Number(start.total)):'—');
+  const closing=end?fmt.format(Number(end.total)):forecast?`≈ ${fmt.format(Math.round(forecast.estimated))}`:'—';
+  set('cvSettlementLoss',closing);
+  set('cvEarnedMonth',Number.isFinite(net)?cvFormatSigned(net):'—');
+  set('cvSettlementEstimate',closing);
+  if(status)status.textContent=!start?'No recorded CV standing on '+label(from):end?'Recorded month standings · swipe to browse':current?(forecast?'Current month · next standing is an estimate':'Current month · next standing not available'):'No recorded CV standing on '+label(to);
+  const browser=document.getElementById('cvMonthBrowser');
+  if(browser){browser.dataset.month=month;browser.setAttribute('aria-label',`${label(from)} to ${label(to)}. Swipe or use left and right arrow keys to browse monthly CV standings.`);}
+}
+function pbStepCvMonth(step){
+  const data=pbCvMonthData(pbCvMonthKey);if(!data)return;
+  const next=pbCvMonthShift(data.month,step);
+  if(next<data.firstMonth || next>data.lastMonth)return;
+  pbCvMonthKey=next;pbRenderCvMonthHistory();
+  const grid=document.querySelector('#cvMonthBrowser .cv-summary-grid');
+  if(grid && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){grid.animate([{opacity:.35,transform:`translateX(${step>0?12:-12}px)`},{opacity:1,transform:'translateX(0)'}],{duration:160});}
+}
+
+function pbUpdateReturnButton(){
+  const button=document.getElementById('pbViewBack');
+  if(button)button.hidden=pbDashboardHistory.length===0;
+}
+function pbDashboardGoBack(){
+  const previous=pbDashboardHistory.pop();if(!previous)return;
+  dashboardShowView(previous.view,{scroll:false,remember:false});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:previous.scrollY,behavior:'instant'})));
+}
+function pbAnalyticsOpenDestination(kind){
+  if(kind==='milestones'){
+    pbDashboardHistory.push({view:'analytics',scrollY:window.scrollY});pbUpdateReturnButton();
+    document.getElementById('analyticsMilestonesDestination')?.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
+  const views={subscribers:'subscribers',cv:'cv',characters:'bots'};
+  if(views[kind]){dashboardShowView(views[kind]);return;}
+  if(!['collectors','messages','capped','uncapped'].includes(kind))return;
+  pbGraphOpenPreset('total');
+  const period=document.getElementById('comparePeriod');if(period){period.value='all';period.disabled=false;}
+  document.getElementById('compareMetric').value=kind==='collectors'?'collectors':'messages';
+  document.getElementById('fromDate').value='';document.getElementById('toDate').value='';
+  cappedFilterMode=['capped','uncapped'].includes(kind)?kind:'off';
+  document.querySelectorAll('#compareBots .pb-chart-bot-list input[type="checkbox"]').forEach(input=>{
+    input.checked=cappedFilterMode!=='off' && (kind==='capped'?cidMatchesGraphTag(input.value,'capped'):!cidMatchesGraphTag(input.value,'capped'));
+  });
+  const total=document.getElementById('totalProfile');if(total)total.checked=cappedFilterMode==='off';
+  syncGraphSelectionTools();syncGraphRankingButtons();drawCompareChart();
+}
+function pbInitAnalyticsNavigation(){
+  const cards={analyticsCollectorsNow:'collectors',analyticsMessagesNow:'messages',analyticsSubscribersNow:'subscribers',analyticsCvNow:'cv',analyticsCappedNow:'capped',analyticsUncappedNow:'uncapped',analyticsBotCount:'characters',analyticsNewMilestones:'milestones'};
+  Object.entries(cards).forEach(([id,kind])=>{
+    const card=document.getElementById(id)?.closest('.analytics-card');if(!card)return;
+    card.dataset.analyticsDestination=kind;card.setAttribute('role','link');card.tabIndex=0;
+    card.addEventListener('click',()=>pbAnalyticsOpenDestination(kind));
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pbAnalyticsOpenDestination(kind);}});
+  });
+  const button=document.createElement('button');button.type='button';button.id='pbViewBack';button.textContent='‹ Terug';button.hidden=true;
+  button.addEventListener('click',pbDashboardGoBack);
+  document.getElementById('dashboardHome')?.before(button);pbUpdateReturnButton();
+  const browser=document.getElementById('cvMonthBrowser');if(!browser)return;
+  browser.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();pbStepCvMonth(e.key==='ArrowLeft'?-1:1);}});
+  let touch=null;
+  browser.addEventListener('touchstart',e=>{touch=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
+  browser.addEventListener('touchend',e=>{if(!touch)return;const t=e.changedTouches[0],dx=t.clientX-touch.x,dy=t.clientY-touch.y;touch=null;if(Math.abs(dx)>=45 && Math.abs(dx)>Math.abs(dy)*1.4)pbStepCvMonth(dx<0?1:-1);},{passive:true});
+  browser.addEventListener('touchcancel',()=>{touch=null;},{passive:true});
+}
+
 /* ===== dashboard shell controller ===== */
 let dashboardCurrentView='home';
+const pbDashboardHistory=[];
 
 function dashboardTargets(){
   return {
@@ -16852,10 +16961,15 @@ function dashboardNavGroup(view){
   return view;
 }
 
-function dashboardShowView(view,{scroll=true}={}){
+function dashboardShowView(view,{scroll=true,remember=true}={}){
   const targets=dashboardTargets();
   if(!targets[view]) view='home';
+  if(remember && view!==dashboardCurrentView){
+    pbDashboardHistory.push({view:dashboardCurrentView,scrollY:window.scrollY});
+    if(pbDashboardHistory.length>50)pbDashboardHistory.shift();
+  }
   dashboardCurrentView=view;
+  pbUpdateReturnButton();
   const chartCard=document.querySelector('#graphPanel');
   if(chartCard) chartCard.hidden=view!=='chart';
   const chartTables=document.querySelector('#pbGraphTables');
@@ -21667,6 +21781,7 @@ function pbInitUpgrade(){
 pbInitUpgrade();
 
 dashboardInit();
+pbInitAnalyticsNavigation();
 analyticsInitPersonalRecordControls();
 
 restoreSiteSession();
@@ -23200,6 +23315,50 @@ body.dashboard-shell #pbBotsView .pb-compact-main-table td:nth-child(2) .pb-char
   box-shadow:none!important;color:#b4a2ef!important;font-size:11px!important;line-height:inherit!important;
   vertical-align:baseline;
 }
+</style>
+<style id="pb-analytics-overview-navigation-20261124">
+/* The overview shares one outer surface; existing text styling is retained. */
+body.dashboard-shell #analyticsPanel .analytics-overview{
+  background:#2b2230;
+  border:1px solid #735a73;
+  border-radius:18px;
+  padding:12px;
+  margin:12px 0;
+  box-sizing:border-box;
+  min-width:0;
+}
+body.dashboard-shell #analyticsPanel .analytics-overview .analytics-period-card{
+  border:0!important;background:transparent!important;border-radius:0!important;
+  margin:0 0 12px!important;padding:0!important;overflow:visible!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-overview .analytics-info-strip{
+  min-height:0!important;padding:2px 0!important;margin:0 0 12px!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-overview .analytics-cards{
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch;gap:10px!important;margin:0!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-overview .analytics-card{
+  min-width:0;box-sizing:border-box;height:100%;background:transparent!important;
+}
+body.dashboard-shell #analyticsPanel .analytics-overview .analytics-card strong{overflow-wrap:anywhere;}
+body.dashboard-shell #analyticsPanel .analytics-overview .analytics-rolling-card{
+  margin:12px 0 0!important;background:transparent!important;
+}
+body.dashboard-shell [data-analytics-destination]{cursor:pointer;}
+body.dashboard-shell [data-analytics-destination]:focus-visible,
+body.dashboard-shell #pbViewBack:focus-visible,
+body.dashboard-shell #cvMonthBrowser:focus-visible{outline:2px solid #bd8eb9;outline-offset:3px;}
+body.dashboard-shell #pbViewBack{
+  display:block;margin:8px 0 12px;padding:7px 12px;
+  border:1px solid #735a73;border-radius:10px;background:#2b2230;
+  color:inherit;font:inherit;cursor:pointer;
+}
+body.dashboard-shell #pbViewBack[hidden]{display:none!important;}
+body.dashboard-shell #analyticsMilestonesDestination{scroll-margin-top:88px;}
+body.dashboard-shell #cvMonthBrowser{touch-action:pan-y;min-width:0;}
+body.dashboard-shell #cvMonthBrowser .cv-summary-grid{margin:0!important;}
+body.dashboard-shell .cv-month-history-status{color:var(--dash-muted);margin:7px 2px 0;}
 </style>
 </body>
 </html>
