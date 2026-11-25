@@ -16853,13 +16853,18 @@ function pbCvMonthData(key=''){
   const forecast=current?cvSettlementForecast():null;
   // A forecast is allowed only when its baseline really belongs to this month.
   const validForecast=forecast?.settlement.date===from?forecast:null;
-  return {month,firstMonth,lastMonth,from,to,start,end,net,current,forecast:validForecast};
+  // Use the same recorded delta as the CV ledger for a completed settlement.
+  const endIndex=end?.type==='settlement'?entries.indexOf(end):-1;
+  const priorSettlementEntry=endIndex>0?entries[endIndex-1]:null;
+  const settlementDelta=priorSettlementEntry?Number(end.total)-Number(priorSettlementEntry.total):NaN;
+  const recordedSettlement=Number.isFinite(settlementDelta) && settlementDelta<=0?settlementDelta:NaN;
+  return {month,firstMonth,lastMonth,from,to,start,end,net,current,forecast:validForecast,recordedSettlement};
 }
 function pbRenderCvMonthHistory(){
   const data=pbCvMonthData(pbCvMonthKey);
   const status=document.getElementById('cvMonthHistoryStatus');
   if(!data){if(status)status.textContent='No monthly CV records available';return;}
-  const {month,from,to,start,end,net,current,forecast}=data;
+  const {month,from,to,start,end,net,current,forecast,recordedSettlement}=data;
   pbCvMonthKey=month;
   const label=date=>new Date(date+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
   const set=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=value;};
@@ -16870,8 +16875,9 @@ function pbRenderCvMonthHistory(){
   set('cvSettlementLoss',closing);
   set('cvEarnedMonth',Number.isFinite(net)?cvFormatSigned(net):'—');
   // "next" is the deduction at the next settlement, never the resulting balance.
-  const loss=forecast?forecast.loss:start?Number(start.total)*0.05:NaN;
-  const deduction=Number.isFinite(loss)?`≈ -${fmt.format(Math.round(loss))}`:'—';
+  const deduction=current
+    ? (forecast?`≈ -${fmt.format(Math.round(forecast.loss))}`:'—')
+    : (Number.isFinite(recordedSettlement)?cvFormatSigned(recordedSettlement):'—');
   set('cvSettlementEstimate',deduction);
   if(status)status.textContent=!start?'No recorded CV standing on '+label(from):end?'Recorded month standings · swipe to browse':current?(forecast?'Current month · next standing is an estimate':'Current month · next standing not available'):'No recorded CV standing on '+label(to);
   const browser=document.getElementById('cvMonthBrowser');
