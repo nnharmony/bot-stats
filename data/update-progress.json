@@ -1,0 +1,17 @@
+{
+  "mode": "retry",
+  "started_at": "2026-11-27T17:32:58.740Z",
+  "snapshot_timestamp": "2026-11-27T14:01:53.511Z",
+  "bot_ids": [
+    "Yvvgu"
+  ],
+  "results": {
+    "Yvvgu": {
+      "cid": "Yvvgu",
+      "name": "Military unit",
+      "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
+      "messages": 35041,
+      "collectors": 10
+    }
+  }
+}
