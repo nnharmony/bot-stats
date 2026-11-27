@@ -45513,9 +45513,7 @@
           "name": "Military unit",
           "url": "https://www.polybuzz.ai/character/profile/military-unit-Yvvgu?pre_source=1",
           "messages": 35041,
-          "collectors": 10,
-          "stale": true,
-          "error": "410 Gone"
+          "collectors": 10
         },
         {
           "cid": "YUwTr",
