@@ -8159,7 +8159,6 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
       <div class="cv-stat"><span>new cv</span><strong id="cvEarnedMonth">—</strong></div>
       <div class="cv-stat"><span>next</span><strong id="cvSettlementEstimate">—</strong></div>
     </div>
-    <div id="cvMonthHistoryStatus" class="cv-month-history-status" aria-live="polite"></div>
     </div>
 
     <section class="cv-day-estimate" id="cvDayEstimate">
@@ -8239,7 +8238,7 @@ body.dashboard-shell .dashboard-profile-identity .dashboard-identity-updated{
 
 
     <details class="cv-bot-estimator">
-      <summary>uncapped bot estimate</summary>
+      <summary>cap estimator</summary>
       <div class="cv-estimator-note">
         message cv = 0.0025 per message. UCU cv = 0.05 per UCU. Character creation value is included in the 500 character cap.
       </div>
@@ -12788,30 +12787,45 @@ function cvUncappedEstimator(){
 
   for(const [cid,meta] of state.meta){
     if(!cvEligibleCharacter(cid)) continue;
-    if(cvIsCappedBy(cid,latest.date)) continue;
+    const cappedDate=cvCappedDate(cid);
+    const capped=cvIsCappedBy(cid,latest.date);
 
     const bot=snapshotBot(latest.snapshot,cid);
 
-    if(!bot || !Number.isFinite(bot.messages)) continue;
-
-    const messages=bot.messages;
-    const characterValue=cvCharacterValueForCid(cid,latest.date);
+    const messages=Number.isFinite(bot?.messages)?bot.messages:null;
+    const characterValue=cvCharacterValueForCid(cid,capped?cappedDate:latest.date);
     const {creationCv,adjustmentCv,characterCv}=characterValue;
-    const messageCv=Math.max(0,messages*CV_PER_MESSAGE);
-    const minimumCv=Math.min(500,characterCv+messageCv);
+    let messageCv=messages===null?null:Math.max(0,messages*CV_PER_MESSAGE);
+    const minimumCv=messageCv===null?null:Math.min(500,characterCv+messageCv);
 
     let estimatedUcu=null;
     let ucuCv=null;
     let estimatedCv=null;
 
-    if(Number.isFinite(ratio) && ratio>0){
+    if(messages!==null && Number.isFinite(ratio) && ratio>0){
       estimatedUcu=messages/ratio;
       ucuCv=Math.max(0,estimatedUcu*CV_PER_UCU);
       estimatedCv=Math.min(500,characterCv+messageCv+ucuCv);
     }
+    let capMessages=null;
+    if(capped){
+      // A manual cap fixes the total at 500. Calibrated UCU is no longer the
+      // total's source; infer its remainder using this bot's cap-date snapshot.
+      const capBot=snapshotBot(cvExactDailyEntry(cappedDate)?.snapshot||{bots:[]},cid);
+      capMessages=Number.isFinite(capBot?.messages)?Number(capBot.messages):null;
+      const capMessageCv=capMessages===null?null:capMessages*CV_PER_MESSAGE;
+      const residual=capMessageCv===null?null:500-characterCv-capMessageCv;
+      messageCv=residual!==null && residual>=0?capMessageCv:null;
+      ucuCv=residual!==null && residual>=0?residual:null;
+      estimatedUcu=ucuCv===null?null:ucuCv/CV_PER_UCU;
+      estimatedCv=500;
+    }
 
     rows.push({
       cid,
+      capped,
+      cappedDate,
+      capMessages,
       name:meta?.name || cid,
       messages,
       creationCv,
@@ -12831,12 +12845,14 @@ function cvUncappedEstimator(){
   }
 
   rows.sort((a,b)=>
+    Number(a.capped)-Number(b.capped) ||
     (b.estimatedCv ?? b.minimumCv)-
     (a.estimatedCv ?? a.minimumCv) ||
     b.messages-a.messages
   );
 
-  const usable=rows.filter(row=>Number.isFinite(row.estimatedCv));
+  const usable=rows.filter(row=>!row.capped && Number.isFinite(row.estimatedCv));
+  const allCapped=rows.length>0 && rows.every(row=>row.capped);
 
   return {
     ratio,
@@ -12844,15 +12860,15 @@ function cvUncappedEstimator(){
     estimatedTotal:
       usable.length
         ? usable.reduce((sum,row)=>sum+row.estimatedCv,0)
-        : null,
+        : allCapped?0:null,
     remainingTotal:
       usable.length
         ? usable.reduce((sum,row)=>sum+row.remaining,0)
-        : null,
+        : allCapped?0:null,
     nearCap:
       usable.length
         ? usable.filter(row=>row.estimatedCv>=400).length
-        : null
+        : allCapped?0:null
   };
 }
 
@@ -12886,21 +12902,21 @@ function renderCvEstimator(){
       : '—';
 
   if(!estimate.rows.length){
-    box.innerHTML='<div class="freeze-empty">no uncapped bots found.</div>';
+    box.innerHTML='<div class="freeze-empty">no characters found.</div>';
     return;
   }
 
   box.innerHTML=estimate.rows.map(row=>{
     const known=Number.isFinite(row.estimatedCv);
-    const displayCv=known
+    const displayCv=row.capped?'500 / 500':known
       ? `≈${fmt.format(row.estimatedCv)} / 500`
-      : `≥${fmt.format(row.minimumCv)} / 500`;
+      : Number.isFinite(row.minimumCv)?`≥${fmt.format(row.minimumCv)} / 500`:'— / 500';
 
     const width=Math.max(
       0,
       Math.min(
         100,
-        ((known ? row.estimatedCv : row.minimumCv)/500)*100
+        ((known ? row.estimatedCv : row.minimumCv??0)/500)*100
       )
     );
 
@@ -12914,23 +12930,107 @@ function renderCvEstimator(){
       ? `${row.creationCv?`${fmt.format(row.creationCv)} creation CV `:''}${correctionPart} + `
       : creationPart;
 
-    const detail=known
+    const detail=row.capped
+      ? `capped · ${cvCapReconEsc(row.cappedDate)} · `+(Number.isFinite(row.ucuCv)
+        ? `${characterPart}≈${fmt.format(row.messageCv)} message cv + ≈${fmt.format(row.ucuCv)} ucu cv · ≈${fmt.format(row.estimatedUcu)} UCU`
+        : '500 CV · message / UCU split unavailable')
+      : !Number.isFinite(row.messages)?'message snapshot unavailable':known
       ? `${compactAxisValue(row.messages)} msg · ${characterPart}${fmt.format(row.messageCv)} message cv + ≈${fmt.format(row.ucuCv)} ucu cv`
       : `${compactAxisValue(row.messages)} msg · ${characterPart}${fmt.format(row.messageCv)} message cv · ucu estimate needs calibration`;
 
     return `
-      <div class="cv-bot-estimator-row ${cvCapClass(row.estimatedCv)}">
+      <div class="cv-bot-estimator-row ${cvCapClass(row.estimatedCv)}" data-cv-cap-cid="${cvCapReconEsc(row.cid)}">
         <div class="cv-bot-estimator-top">
-          <span class="cv-bot-estimator-name">${row.name}</span>
+          <span class="cv-bot-estimator-name">${cvCapReconEsc(row.name)}</span>
           <span class="cv-bot-estimator-value">${displayCv}</span>
         </div>
         <div class="cv-bot-estimator-detail">${detail}</div>
         <div class="cv-cap-track">
           <div class="cv-cap-bar" style="width:${width}%;--cv-gradient-size:${width>0?10000/width:100}%"></div>
         </div>
+        <div class="cv-manual-cap-controls">
+          <label><input type="checkbox" data-cv-cap-toggle ${row.cappedDate?'checked':''}> capped</label>
+          <button type="button" data-cv-cap-edit ${row.cappedDate?'':'hidden'}>date</button>
+          <div class="cv-manual-cap-editor" hidden>
+            <input type="date" data-cv-cap-date aria-label="Cap date for ${cvCapReconEsc(row.name)}" value="${cvCapReconEsc(row.cappedDate || cvManualCapDefaultDate())}">
+            <button type="button" data-cv-cap-save>save</button>
+            <button type="button" data-cv-cap-cancel>cancel</button>
+          </div>
+          <span data-cv-cap-status aria-live="polite"></span>
+        </div>
       </div>
     `;
   }).join('');
+}
+
+function cvManualCapDefaultDate(){
+  return document.getElementById('cvDayHistoryDate')?.value || document.getElementById('cvCapReconDate')?.value || getLatestEntry()?.date || new Date().toLocaleDateString('sv-SE');
+}
+function cvCapEventHasMarker(event){
+  return (event.tags||[]).includes('capped') || event.status?.capped===true;
+}
+function cvCapEventWithoutMarker(event){
+  const status={...(event.status||{})};delete status.capped;
+  return {id:event.id,cid:event.cid,date:event.date,tags:(event.tags||[]).filter(tag=>tag!=='capped'),status,note:event.note||''};
+}
+async function cvPersistManualCap(cid,enabled,date){
+  if(!eventsState.unlocked)throw new Error('Unlock events first to save a cap.');
+  if(!state.meta.has(cid))throw new Error('Character not found.');
+  if(enabled && !/^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error('Choose the cap date.');
+  if(enabled && (!Number.isFinite(Date.parse(date+'T00:00:00Z')) || new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date))throw new Error('Choose a valid cap date.');
+  const existing=(eventsState.events||[]).filter(e=>String(e.cid)===cid && cvCapEventHasMarker(e));
+  // Reuse a dedicated cap event. A mixed event keeps its date and other tags.
+  const dedicated=existing.find(e=>(e.tags||[]).every(tag=>tag==='capped') && !Object.keys(e.status||{}).length && !e.note);
+  // The existing worker stores one event per bot/date: merge into that record.
+  const sameDay=enabled?(eventsState.events||[]).find(e=>String(e.cid)===cid && e.date===date):null;
+  const kept=sameDay || dedicated;
+  if(enabled){
+    await eventsRequest('/events',{method:'POST',body:JSON.stringify({...(kept?{id:kept.id}:{}),cid,date,tags:[...new Set([...(kept?.tags||[]),'capped'])],status:{...(kept?.status||{})},note:kept?.note||''})});
+  }
+  for(const event of existing){
+    if(enabled && event===kept)continue;
+    const cleaned=cvCapEventWithoutMarker(event);
+    if(cleaned.tags.length || Object.keys(cleaned.status).length || cleaned.note){
+      await eventsRequest('/events',{method:'POST',body:JSON.stringify(cleaned)});
+    }else{
+      await eventsRequest('/events/'+encodeURIComponent(event.id),{method:'DELETE'});
+    }
+  }
+}
+function cvInitManualCaps(){
+  const box=document.getElementById('cvBotEstimatorRows');if(!box || box.dataset.manualCapsReady)return;
+  box.dataset.manualCapsReady='1';
+  box.addEventListener('change',event=>{
+    if(!event.target.matches('[data-cv-cap-toggle]'))return;
+    const row=event.target.closest('[data-cv-cap-cid]');
+    row.querySelector('.cv-manual-cap-editor').hidden=false;
+    row.querySelector('[data-cv-cap-date]').disabled=!event.target.checked;
+  });
+  box.addEventListener('click',async event=>{
+    const row=event.target.closest('[data-cv-cap-cid]');if(!row)return;
+    if(event.target.closest('[data-cv-cap-cancel]')){renderCvEstimator();return;}
+    if(event.target.closest('[data-cv-cap-edit]')){row.querySelector('.cv-manual-cap-editor').hidden=false;return;}
+    const button=event.target.closest('[data-cv-cap-save]');if(!button || box.dataset.savingCap)return;
+    const cid=row.dataset.cvCapCid,enabled=row.querySelector('[data-cv-cap-toggle]').checked,date=row.querySelector('[data-cv-cap-date]').value;
+    const status=row.querySelector('[data-cv-cap-status]');
+    status.textContent='saving…';box.dataset.savingCap='1';
+    box.querySelectorAll('input,button').forEach(el=>{el.disabled=true;});
+    try{
+      await cvPersistManualCap(cid,enabled,date);
+      await loadEvents();
+      if(enabled && cvCappedDate(cid)!==date)throw new Error('Cap date not confirmed after reloading.');
+      if(!enabled && cvCappedDate(cid))throw new Error('Cap removal not confirmed after reloading.');
+      drawCompareChart();dashboardRefresh();
+    }catch(error){
+      // Re-read after any partial multi-record update; never show a false success.
+      await loadEvents();
+      const current=[...box.querySelectorAll('[data-cv-cap-cid]')].find(el=>el.dataset.cvCapCid===cid);
+      if(current)current.querySelector('[data-cv-cap-status]').textContent=error.message;
+    }finally{
+      delete box.dataset.savingCap;
+      box.querySelectorAll('input,button').forEach(el=>{el.disabled=false;});
+    }
+  });
 }
 
 function renderCvLedger(){
@@ -14091,6 +14191,8 @@ function initCvTracker(){
 
   document.querySelector('#cvClear')
     .addEventListener('click',clearCvForm);
+
+  cvInitManualCaps();
 
 
   document.querySelector('#cvCapReconDate')
@@ -16862,8 +16964,7 @@ function pbCvMonthData(key=''){
 }
 function pbRenderCvMonthHistory(){
   const data=pbCvMonthData(pbCvMonthKey);
-  const status=document.getElementById('cvMonthHistoryStatus');
-  if(!data){if(status)status.textContent='No monthly CV records available';return;}
+  if(!data)return;
   const {month,from,to,start,end,net,current,forecast,recordedSettlement}=data;
   pbCvMonthKey=month;
   const label=date=>new Date(date+'T12:00:00').toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
@@ -16879,7 +16980,6 @@ function pbRenderCvMonthHistory(){
     ? (forecast?`≈ -${fmt.format(Math.round(forecast.loss))}`:'—')
     : (Number.isFinite(recordedSettlement)?cvFormatSigned(recordedSettlement):'—');
   set('cvSettlementEstimate',deduction);
-  if(status)status.textContent=!start?'No recorded CV standing on '+label(from):end?'Recorded month standings · swipe to browse':current?(forecast?'Current month · next standing is an estimate':'Current month · next standing not available'):'No recorded CV standing on '+label(to);
   const browser=document.getElementById('cvMonthBrowser');
   if(browser){browser.dataset.month=month;browser.setAttribute('aria-label',`${label(from)} to ${label(to)}. Swipe or use left and right arrow keys to browse monthly CV standings.`);}
 }
@@ -23382,7 +23482,22 @@ body.dashboard-shell #pbViewBack[hidden]{display:none!important;}
 body.dashboard-shell #analyticsMilestonesDestination{scroll-margin-top:88px;}
 body.dashboard-shell #cvMonthBrowser{touch-action:pan-y;min-width:0;}
 body.dashboard-shell #cvMonthBrowser .cv-summary-grid{margin:0!important;}
-body.dashboard-shell .cv-month-history-status{color:var(--dash-muted);margin:7px 2px 0;}
+</style>
+<style id="pb-cap-estimator-manual-controls">
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-controls{
+  display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:8px;
+}
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-controls label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;}
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-controls input[type="checkbox"]{accent-color:#bd8eb9;margin:0;}
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-controls button,
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-controls input[type="date"]{
+  background:#24212a;color:inherit;font:inherit;border:1px solid #735a73;border-radius:8px;padding:4px 7px;min-width:0;
+}
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-editor{display:flex;align-items:center;flex-wrap:wrap;gap:6px;}
+body.dashboard-shell #cvBotEstimatorRows .cv-manual-cap-editor[hidden],
+body.dashboard-shell #cvBotEstimatorRows [data-cv-cap-edit][hidden]{display:none!important;}
+body.dashboard-shell #cvBotEstimatorRows [data-cv-cap-status]{flex-basis:100%;}
+body.dashboard-shell #cvBotEstimatorRows [data-cv-cap-status]:empty{display:none;}
 </style>
 </body>
 </html>
